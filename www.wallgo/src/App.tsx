@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import { Navbar } from './layouts/Navbar'
+import { AppRoutes } from './router/AppRoutes'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-      
+      <AppRoutes />
     </>
   )
 }
