@@ -63,11 +63,11 @@ export const Navbar = () => {
                                 </Link>
                             </Tooltip>
                         </li>
-                        <li className='flex items-center space-x-4'>
-                            <Link to={'/'} className='font-medium text-gray-700 hover:text-[var(--special-purple)] transition-colors'>
+                        <li className='flex items-center space-x-3'>
+                            <Link to={'/login'} className='font-bold text-gray-700 hover:text-[var(--special-purple)] transition-colors'>
                                 Login
                             </Link>
-                            <Link to={'/signup'} className='px-4 py-2 font-medium bg-[var(--special-purple)] rounded-lg text-white hover:bg-opacity-90 transition-all'>
+                            <Link to={'/signup'} className='px-4 py-2 font-bold bg-[var(--special-purple)] rounded-lg text-white hover:bg-opacity-90 transition-all'>
                                 Sign Up
                             </Link>
                         </li>

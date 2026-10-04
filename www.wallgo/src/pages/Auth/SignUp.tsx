@@ -1,37 +1,59 @@
 import { ArrowRight, AtSign, Lock, Mail, User } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { Footer } from '../layouts/Footer';
-import { Link } from 'react-router-dom';
+import { Footer } from '../../layouts/Footer';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export const SignUp = () => {
-    const [formData,setFormData] = useState({
-        name:'',
-        username:'',
-        email:'',
-        day:'',
-        month:'',
-        year:'',
-        
+    const [formData, setFormData] = useState({
+        name: '',
+        username: '',
+        email: '',
+        password: '',
+        day: '',
+        month: '',
+        year: '',
     });
-    const slogans : string[] = [
-        "Sign up to start exploring amazing art.",
-        "Discover breathtaking digital photography.",
-        "Where every pixel tells a unique story.",
-        "Share your creative vision with the world.",
+    const [error, setError] = useState("");
+    const url = import.meta.env.VITE_API_URL || 'https://api.wallgo.test';
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    }
+    const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!formData.email || !formData.password || formData.name) {
+            console.log("Email,password,name is oblogatory");
+        }
+        try {
+            axios.post(url, formData).then(res => {
+                if (!res.data.success) {
+                    setError(res.data.message);
+                }
+            });
+        } catch (err) {
+            console.error(error);
+        }
+    }
+    const slogans: string[] = [
+        "Join the community and share your moments.",
+        "Connect with friends and creative minds.",
+        "Share your story with the world.",
+        "Discover what's happening in your network.",
     ];
 
-    const [currentIndex,setCurrentIndex] = useState(0);
-    const [fade,setFade] = useState(true);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [fade, setFade] = useState(true);
     useEffect(() => {
         const interval = setInterval(() => {
             setFade(false);
             setTimeout(() => {
                 setCurrentIndex(prevIndex => (prevIndex + 1) % slogans.length);
                 setFade(true);
-            },300);
-        },5000);
+            }, 300);
+        }, 5000);
         return () => clearInterval(interval);
-    },[slogans.length]);
+    }, [slogans.length]);
+    const navigate = useNavigate();
     return (
         <div className='signup_page min-h-screen flex flex-col justify-between'>
             <div className='flex-grow flex items-center justify-center p-4 py-10'>
@@ -44,7 +66,7 @@ export const SignUp = () => {
                             {slogans[currentIndex]}
                         </p>
                     </div>
-                    <form className='space-y-5'>
+                    <form className='space-y-5' onSubmit={handleSubmit}>
 
                         <div>
                             <label className='block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider'>Full Name</label>
@@ -55,8 +77,8 @@ export const SignUp = () => {
                                 <input
                                     type='text'
                                     name='name'
-                                    // value={formData.name}
-                                    // onChange={handleChange}
+                                    value={formData.name}
+                                    onChange={handleChange}
                                     placeholder='Your full name'
                                     required
                                     className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
@@ -72,8 +94,8 @@ export const SignUp = () => {
                                 <input
                                     type='text'
                                     name='username'
-                                    // value={formData.name}
-                                    // onChange={handleChange}
+                                    value={formData.username}
+                                    onChange={handleChange}
                                     placeholder='Username'
                                     required
                                     className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
@@ -86,6 +108,8 @@ export const SignUp = () => {
                             <div className='grid grid-cols-3 gap-3'>
                                 <select
                                     name='day'
+                                    value={formData.day}
+                                    onChange={handleChange}
                                     className='w-full px-3 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all cursor-pointer'
                                 >
                                     <option value='' className='bg-[#0f172a] text-gray-400'>Day</option>
@@ -98,6 +122,8 @@ export const SignUp = () => {
 
                                 <select
                                     name='month'
+                                    value={formData.month}
+                                    onChange={handleChange}
                                     className='w-full px-3 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all cursor-pointer'
                                 >
                                     <option value='' className='bg-[#0f172a] text-gray-400'>Month</option>
@@ -110,6 +136,8 @@ export const SignUp = () => {
 
                                 <select
                                     name='year'
+                                    value={formData.year}
+                                    onChange={handleChange}
                                     className='w-full px-3 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all cursor-pointer'
                                 >
                                     <option value='' className='bg-[#0f172a] text-gray-400'>Year</option>
@@ -133,8 +161,8 @@ export const SignUp = () => {
                                 <input
                                     type='email'
                                     name='email'
-                                    // value={formData.email}
-                                    // onChange={handleChange}
+                                    value={formData.email}
+                                    onChange={handleChange}
                                     placeholder='name@example.com'
                                     required
                                     className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
@@ -151,8 +179,8 @@ export const SignUp = () => {
                                 <input
                                     type='password'
                                     name='password'
-                                    // value={formData.password}
-                                    // onChange={handleChange}
+                                    value={formData.password}
+                                    onChange={handleChange}
                                     placeholder='••••••••'
                                     required
                                     className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
@@ -177,6 +205,15 @@ export const SignUp = () => {
                             <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
                         </button>
                     </form>
+                    <div className="mt-4">
+                        <button
+                            type="button"
+                            onClick={() => navigate('/login')}
+                            className="w-full py-3 px-4 bg-[#1a1a24]/60 hover:bg-[#1a1a24] border border-white/5 hover:border-white/10 text-slate-300 hover:text-white font-medium text-sm rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer"
+                        >
+                            I already have an account
+                        </button>
+                    </div>
                 </div>
             </div>
             <Footer />
