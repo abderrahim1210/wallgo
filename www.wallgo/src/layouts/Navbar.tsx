@@ -67,7 +67,7 @@ export const Navbar = () => {
                             <Link to={'/'} className='font-medium text-gray-700 hover:text-[var(--special-purple)] transition-colors'>
                                 Login
                             </Link>
-                            <Link to={'/'} className='px-4 py-2 font-medium bg-[var(--special-purple)] rounded-lg text-white hover:bg-opacity-90 transition-all'>
+                            <Link to={'/signup'} className='px-4 py-2 font-medium bg-[var(--special-purple)] rounded-lg text-white hover:bg-opacity-90 transition-all'>
                                 Sign Up
                             </Link>
                         </li>
