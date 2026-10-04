@@ -1,8 +1,9 @@
-import { ArrowRight, AtSign, Lock, Mail, User } from 'lucide-react'
+import { ArrowLeft, ArrowRight, AtSign, Lock, Mail, User } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { Footer } from '../../layouts/Footer';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Helmet } from 'react-helmet-async';
 
 export const SignUp = () => {
     const [formData, setFormData] = useState({
@@ -56,9 +57,19 @@ export const SignUp = () => {
     const navigate = useNavigate();
     return (
         <div className='signup_page min-h-screen flex flex-col justify-between'>
+            <Helmet>
+                <title>WallGo : SignUp</title>
+            </Helmet>
             <div className='flex-grow flex items-center justify-center p-4 py-10'>
                 <div className='w-full max-w-lg  border rounded-3xl shadow-2xl p-10'>
-                    <div className='flex items-center justify-center'>
+                    <div className='relative flex items-center justify-center'>
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="absolute left-0 -top-2 text-slate-400 hover:text-white transition-colors p-2 rounded-xl hover:bg-white/5 flex items-center space-x-1.5 text-xs font-medium group cursor-pointer"
+                        >
+                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                            <span>Back</span>
+                        </button>
                         <img src="/icons/logo_global.png" width={150} className='img-fluid' alt="" />
                     </div>
                     <div className='h-8 flex items-center justify-center mt-2 mb-5 overflow-hidden'>
@@ -187,7 +198,6 @@ export const SignUp = () => {
                                 />
                             </div>
                         </div>
-                        {/* Terms & Info Text (Instagram Style) */}
                         <div className='text-xm text-semibold text-gray-400 space-y-3 font-semibold leading-relaxed'>
                             <p>
                                 People who use our service may have uploaded your contact information to WallGo. <Link to='#' className='text-[var(--special-purple)] hover:underline'>Learn more</Link>.
@@ -208,7 +218,7 @@ export const SignUp = () => {
                     <div className="mt-4">
                         <button
                             type="button"
-                            onClick={() => navigate('/login')}
+                            onClick={() => navigate('/account/login')}
                             className="w-full py-3 px-4 bg-[#1a1a24]/60 hover:bg-[#1a1a24] border border-white/5 hover:border-white/10 text-slate-300 hover:text-white font-medium text-sm rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer"
                         >
                             I already have an account
