@@ -1,4 +1,4 @@
-import { Compass, Flame, Heart, Home, MessagesCircle, UserCircle } from 'lucide-react'
+import { Compass, Flame, Heart, Home, MessagesCircle, PlusSquare, UserCircle } from 'lucide-react'
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Tooltip } from '../templates/Tooltip'
@@ -10,7 +10,7 @@ export const Navbar = () => {
     const currendPath = location.pathname;
 
     const isActive = (path: string) => currendPath === path;
-    const getLinkClass = (path:string) => {
+    const getLinkClass = (path: string) => {
         return `rounded-xl transition-all duration-150 flex items-center justify-center ${isActive(path) ? 'text-[var(--special-purple)] bg-purple-50 shadow-inner' : 'text-gray-600 hover:text-[var(--special-purple)] hover:bg-gray-50'}`;
     }
     return (
@@ -42,6 +42,13 @@ export const Navbar = () => {
                             </Tooltip>
                         </li>
                         <li>
+                            <Tooltip label='Create Post' position={position}>
+                                <Link to="/create-post" className={getLinkClass('/create-post')}>
+                                    <PlusSquare className="w-6 h-6" />
+                                </Link>
+                            </Tooltip>
+                        </li>
+                        <li>
                             <Tooltip label='Messages' position={position}>
                                 <Link to="#" className={getLinkClass('/messages')} title='Messages'>
                                     <MessagesCircle />
@@ -55,10 +62,11 @@ export const Navbar = () => {
                                 </Link>
                             </Tooltip>
                         </li>
+
                     </ul>
 
                     <ul className="flex items-center m-0 p-0 list-none">
-                        <li>
+                        {/* <li>
                             <Link to={'/'} className={linksClasse}>
                                 <Heart className='w-6 h-6' />
                             </Link>
@@ -69,7 +77,7 @@ export const Navbar = () => {
                                     <UserCircle className="w-6 h-6" />
                                 </Link>
                             </Tooltip>
-                        </li>
+                        </li> */}
                         <li className='flex items-center space-x-3'>
                             <Link to={'/account/login'} className='font-bold text-gray-700 hover:text-[var(--special-purple)] transition-colors'>
                                 Login

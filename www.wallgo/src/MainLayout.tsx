@@ -1,6 +1,7 @@
 import React, { type ReactNode } from 'react'
 import { Navbar } from './layouts/Navbar'
 import { Footer } from './layouts/Footer';
+import { MobileCellNavbar } from './layouts/MobileCellNavbar';
 interface MainLayoutProps {
   children: ReactNode;
 }
@@ -12,6 +13,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         {children}
       </div>
       <Footer />
+      <MobileCellNavbar />
     </main>
   )
 }
