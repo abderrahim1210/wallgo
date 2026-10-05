@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('owner_id');
+            $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
+            $table->string('title',155);
+            $table->string('description')->nullable();
+            $table->string('logo_url')->nullable();
+            $table->string('banner_id')->nullable();
             $table->timestamps();
         });
     }

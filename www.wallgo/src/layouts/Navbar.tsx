@@ -29,14 +29,14 @@ export const Navbar = () => {
                     <ul className="hidden md:flex items-center space-x-10 m-0 p-0 list-none">
                         <li>
                             <Tooltip label='Home' position={position}>
-                                <Link to="#" className={getLinkClass('/')}>
+                                <Link to="/" className={getLinkClass('/')}>
                                     <Home />
                                 </Link>
                             </Tooltip>
                         </li>
                         <li>
                             <Tooltip label='For you' position={position}>
-                                <Link to="#" className={getLinkClass('/for_you')}>
+                                <Link to="/search" className={getLinkClass('/search')}>
                                     <Search />
                                 </Link>
                             </Tooltip>
@@ -50,14 +50,14 @@ export const Navbar = () => {
                         </li>
                         <li>
                             <Tooltip label='Messages' position={position}>
-                                <Link to="#" className={getLinkClass('/messages')}>
+                                <Link to="/messages" className={getLinkClass('/messages')}>
                                     <MessagesCircle />
                                 </Link>
                             </Tooltip>
                         </li>
                         <li>
                             <Tooltip label='Discover' position={position}>
-                                <Link to="#" className={getLinkClass('/discover')}>
+                                <Link to="/discover" className={getLinkClass('/discover')}>
                                     <Bookmark />
                                 </Link>
                             </Tooltip>
