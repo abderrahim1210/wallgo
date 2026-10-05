@@ -1,5 +1,6 @@
-import { Bookmark, Heart, MessageCircle, MoreHorizontal, Share2 } from 'lucide-react';
+import { Bookmark, Edit3, Flag, Heart, Link, MessageCircle, MoreHorizontal, Share2, Trash2 } from 'lucide-react';
 import React, { useState } from 'react'
+import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
 
 interface PostCardProps {
     author: {
@@ -34,6 +35,31 @@ export const PostCard: React.FC<PostCardProps> = ({
             setLiked(true);
         }
     }
+
+    const postMenuItems: DropdownItem[] = [
+        {
+            label: 'Copy link',
+            icon: <Link className="w-4 h-4 text-blue-500" />,
+            onClick: () => console.log('Link copied!'),
+        },
+        {
+            label: 'Edit Post',
+            icon: <Edit3 className="w-4 h-4 text-emerald-500" />,
+            onClick: () => console.log('Edit clicked'),
+        },
+        {
+            label: 'Delete Post',
+            icon: <Trash2 className="w-4 h-4 text-red-500" />,
+            danger: true,
+            onClick: () => console.log('Delete clicked'),
+        },
+        {
+            label: 'Report Post',
+            icon: <Flag className="w-4 h-4 text-red-500" />,
+            danger: true,
+            onClick: () => console.log('Report clicked'),
+        },
+    ];
     return (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6 overflow-hidden transition-all duration-200 hover:shadow-md">
             <div className="flex items-center justify-between p-4 pb-3">
@@ -48,9 +74,17 @@ export const PostCard: React.FC<PostCardProps> = ({
                         <span className="text-xs text-gray-500">@{author.username} • {timestamp}</span>
                     </div>
                 </div>
-                <button className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-50">
+                {/* <button className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-50">
                     <MoreHorizontal className="w-5 h-5" />
-                </button>
+                </button> */}
+                <DropdownMenu
+                    trigger={
+                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors">
+                            <MoreHorizontal className="w-5 h-5" />
+                        </button>
+                    }
+                    items={postMenuItems}
+                />
             </div>
 
             <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">

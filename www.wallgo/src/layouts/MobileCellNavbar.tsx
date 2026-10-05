@@ -4,7 +4,7 @@ import { Tooltip } from '../templates/Tooltip';
 import { Link, useLocation } from 'react-router-dom';
 
 export const MobileCellNavbar = () => {
-    const position = "bottom";
+    const position = "top";
     const location = useLocation();
     const currendPath = location.pathname;
 

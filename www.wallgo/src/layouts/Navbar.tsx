@@ -1,4 +1,4 @@
-import { Compass, Flame, Heart, Home, MessagesCircle, PlusSquare, UserCircle } from 'lucide-react'
+import { Bookmark, Clapperboard, Compass, Flame, Heart, Home, MessagesCircle, PlusSquare, Search, UserCircle } from 'lucide-react'
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Tooltip } from '../templates/Tooltip'
@@ -26,7 +26,7 @@ export const Navbar = () => {
                         </li>
                     </ul>
 
-                    <ul className="hidden md:flex items-center space-x-6 m-0 p-0 list-none">
+                    <ul className="hidden md:flex items-center space-x-10 m-0 p-0 list-none">
                         <li>
                             <Tooltip label='Home' position={position}>
                                 <Link to="#" className={getLinkClass('/')}>
@@ -36,29 +36,29 @@ export const Navbar = () => {
                         </li>
                         <li>
                             <Tooltip label='For you' position={position}>
-                                <Link to="#" className={getLinkClass('/for_you')} title='For you'>
-                                    <Flame />
+                                <Link to="#" className={getLinkClass('/for_you')}>
+                                    <Search />
                                 </Link>
                             </Tooltip>
                         </li>
                         <li>
                             <Tooltip label='Create Post' position={position}>
                                 <Link to="/create-post" className={getLinkClass('/create-post')}>
-                                    <PlusSquare className="w-6 h-6" />
+                                    <Clapperboard className="w-6 h-6" />
                                 </Link>
                             </Tooltip>
                         </li>
                         <li>
                             <Tooltip label='Messages' position={position}>
-                                <Link to="#" className={getLinkClass('/messages')} title='Messages'>
+                                <Link to="#" className={getLinkClass('/messages')}>
                                     <MessagesCircle />
                                 </Link>
                             </Tooltip>
                         </li>
                         <li>
                             <Tooltip label='Discover' position={position}>
-                                <Link to="#" className={getLinkClass('/discover')} title='Discover'>
-                                    <Compass />
+                                <Link to="#" className={getLinkClass('/discover')}>
+                                    <Bookmark />
                                 </Link>
                             </Tooltip>
                         </li>
