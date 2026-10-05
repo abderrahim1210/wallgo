@@ -5,7 +5,7 @@ import { Tooltip } from '../templates/Tooltip'
 
 export const Navbar = () => {
     const linksClasse = "text-gray-700 hover:text-[var(--special-purple)] transition duration-150";
-    const position = "top";
+    const position = "bottom";
     const location = useLocation();
     const currendPath = location.pathname;
 
