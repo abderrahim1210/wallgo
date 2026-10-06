@@ -15,7 +15,7 @@ export const Navbar = () => {
     }
     return (
         <>
-            <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 px-6 py-3 shadow-sm">
+            <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 px-6 py-2 shadow-sm">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
 
                     <ul className="flex items-center m-0 p-0 list-none">
@@ -43,7 +43,7 @@ export const Navbar = () => {
                         </li>
                         <li>
                             <Tooltip label='Create Post' position={position}>
-                                <Link to="/create-post" className={getLinkClass('/create-post')}>
+                                <Link to="/reels" className={getLinkClass('/reels')}>
                                     <Clapperboard className="w-6 h-6" />
                                 </Link>
                             </Tooltip>

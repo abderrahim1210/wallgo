@@ -1,4 +1,4 @@
-import { Compass, Flame, Home, MessageCircle, Plus, Search, User } from 'lucide-react';
+import { Clapperboard, Compass, Flame, Home, MessageCircle, Plus, Search, User } from 'lucide-react';
 import React from 'react'
 import { Tooltip } from '../templates/Tooltip';
 import { Link, useLocation } from 'react-router-dom';
@@ -26,15 +26,20 @@ export const MobileCellNavbar = () => {
                 </Link>
             </Tooltip>
 
-            <div className="absolute left-1/2 -translate-x-1/2 -top-8">
+            {/* <div className="absolute left-1/2 -translate-x-1/2 -top-8">
                 <Link
                     to="/create-post"
                     className="flex items-center justify-center w-14 h-14 bg-[var(--special-purple)] text-white rounded-full  border-4 border-white hover:scale-105 transition-transform cursor-pointer"
                 >
                     <Plus className="w-7 h-7" />
                 </Link>
-            </div>
+            </div> */}
 
+            <Tooltip label='Messages' position={position}>
+                <Link to="/messages" className={getLinkClass('/reels')}>
+                    <Clapperboard className="w-6 h-6" />
+                </Link>
+            </Tooltip>
             <Tooltip label='Messages' position={position}>
                 <Link to="/messages" className={getLinkClass('/messages')}>
                     <MessageCircle className="w-6 h-6" />
@@ -43,7 +48,7 @@ export const MobileCellNavbar = () => {
 
             <Tooltip label='Discover' position={position}>
                 <Link to="discover" className={getLinkClass('/discover')}>
-                    <Compass className="w-6 h-6" />
+                    <User className="w-6 h-6" />
                 </Link>
             </Tooltip>
 
