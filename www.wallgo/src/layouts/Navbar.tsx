@@ -50,7 +50,7 @@ export const Navbar = () => {
                         </li>
                         <li>
                             <Tooltip label='Messages' position={position}>
-                                <Link to="/messages" className={getLinkClass('/messages')}>
+                                <Link to="/messenger" className={getLinkClass('/messenger')}>
                                     <MessagesCircle />
                                 </Link>
                             </Tooltip>

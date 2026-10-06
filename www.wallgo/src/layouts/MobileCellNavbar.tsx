@@ -36,12 +36,12 @@ export const MobileCellNavbar = () => {
             </div> */}
 
             <Tooltip label='Messages' position={position}>
-                <Link to="/messages" className={getLinkClass('/reels')}>
+                <Link to="/reels" className={getLinkClass('/reels')}>
                     <Clapperboard className="w-6 h-6" />
                 </Link>
             </Tooltip>
             <Tooltip label='Messages' position={position}>
-                <Link to="/messages" className={getLinkClass('/messages')}>
+                <Link to="/messenger" className={getLinkClass('/messenger')}>
                     <MessageCircle className="w-6 h-6" />
                 </Link>
             </Tooltip>

@@ -5,6 +5,7 @@ import { SignUp } from '../pages/Auth/SignUp'
 import { Login } from '../pages/Auth/Login'
 import { Discover } from '../components/Discover'
 import { Reels } from '../components/Reels'
+import { Messenger } from '../components/Messenger'
 
 export const AppRoutes = () => {
     return (
@@ -14,6 +15,7 @@ export const AppRoutes = () => {
             <Route path='/account/login' element={<Login />} />
             <Route path='/search' element={<Discover />} />
             <Route path='/reels' element={<Reels />} />
+            <Route path='/messenger' element={<Messenger />} />
         </Routes>
     )
 }
