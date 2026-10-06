@@ -57,7 +57,7 @@ export const Navbar = () => {
                         </li>
                         <li>
                             <Tooltip label='Discover' position={position}>
-                                <Link to="/discover" className={getLinkClass('/discover')}>
+                                <Link to="/saved_posts" className={getLinkClass('/saved_posts')}>
                                     <Bookmark />
                                 </Link>
                             </Tooltip>

@@ -6,6 +6,7 @@ import { Login } from '../pages/Auth/Login'
 import { Discover } from '../components/Discover'
 import { Reels } from '../components/Reels'
 import { Messenger } from '../components/Messenger'
+import SavedPosts from '../components/SavedPosts'
 
 export const AppRoutes = () => {
     return (
@@ -16,6 +17,7 @@ export const AppRoutes = () => {
             <Route path='/search' element={<Discover />} />
             <Route path='/reels' element={<Reels />} />
             <Route path='/messenger' element={<Messenger />} />
+            <Route path='/saved_posts' element={<SavedPosts />} />
         </Routes>
     )
 }

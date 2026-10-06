@@ -2,6 +2,7 @@ import React from 'react'
 import { MainLayout } from '../MainLayout'
 import { PostCard } from '../pages/Post/PostCard';
 import { Bookmark, Code, Compass, Flame, Globe, ImageIcon, Pencil, Plus, TrendingUp, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const Home = () => {
   const dummyPosts = [
@@ -44,6 +45,8 @@ export const Home = () => {
       commentsCount: 4,
     },
   ];
+
+  const navigate = useNavigate();
   return (
     <MainLayout>
       <div className="min-h-screen bg-gray-50/50 pb-20 md:pb-10">
@@ -100,7 +103,7 @@ export const Home = () => {
                   <span>My Pages / Groups</span>
                 </button>
 
-                <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
+                <button onClick={() => navigate('/saved_posts')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
                   <Bookmark className="w-5 h-5 text-purple-500" />
                   <span>Bookmarks</span>
                 </button>
