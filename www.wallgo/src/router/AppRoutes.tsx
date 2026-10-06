@@ -7,6 +7,7 @@ import { Discover } from '../components/Discover'
 import { Reels } from '../components/Reels'
 import { Messenger } from '../components/Messenger'
 import SavedPosts from '../components/SavedPosts'
+import CreatePost from '../components/CreatePost'
 
 export const AppRoutes = () => {
     return (
@@ -18,6 +19,7 @@ export const AppRoutes = () => {
             <Route path='/reels' element={<Reels />} />
             <Route path='/messenger' element={<Messenger />} />
             <Route path='/saved_posts' element={<SavedPosts />} />
+            <Route path='/create_post' element={<CreatePost />} />
         </Routes>
     )
 }

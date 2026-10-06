@@ -3,6 +3,7 @@ import { MobileCellNavbar } from '../layouts/MobileCellNavbar';
 import { Bookmark, Heart, MessageCircle, Trash2 } from 'lucide-react';
 import { Navbar } from '../layouts/Navbar';
 import { Helmet } from 'react-helmet-async';
+import { MainLayout } from '../MainLayout';
 
 const SavedPosts = () => {
     const [savedPosts, setSavedPosts] = useState([
@@ -43,11 +44,11 @@ const SavedPosts = () => {
         showNotify('Removed from saved posts');
     };
     return (
-        <>
+        <MainLayout>
             <Helmet>
                 <title>WallGo : Saved Posts</title>
             </Helmet>
-            <Navbar />
+            
             
             <div className="min-h-[calc(100vh-95px)] bg-gray-50 flex justify-center p-4 pb-24 md:pb-8 relative">
                 {notification && (
@@ -119,8 +120,8 @@ const SavedPosts = () => {
                 </div>
             </div>
 
-            <MobileCellNavbar />
-        </>
+            
+        </MainLayout>
     )
 }
 

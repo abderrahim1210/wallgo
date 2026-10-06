@@ -109,7 +109,7 @@ export const Home = () => {
                 </button>
 
                 <div className="pt-3 border-t border-gray-100 mt-3">
-                  <button className="w-full py-3 bg-[var(--special-purple)] text-white font-medium text-sm rounded-xl shadow-md shadow-purple-600/20 flex items-center justify-center space-x-2 transition-all cursor-pointer">
+                  <button onClick={() => navigate('/create_post')} className="w-full py-3 bg-[var(--special-purple)] text-white font-medium text-sm rounded-xl shadow-md shadow-purple-600/20 flex items-center justify-center space-x-2 transition-all cursor-pointer">
                     <Plus className="w-5 h-5" />
                     <span>Create Post</span>
                   </button>
