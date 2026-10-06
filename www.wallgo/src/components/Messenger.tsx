@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { MainLayout } from '../MainLayout';
+import React, { useRef, useState } from 'react'
 import { ArrowLeft, CheckCheck, Image, MoreVertical, Phone, Search, Send, Smile, Video } from 'lucide-react';
 import { Navbar } from '../layouts/Navbar';
 import { Helmet } from 'react-helmet-async';
+import { MobileCellNavbar } from '../layouts/MobileCellNavbar';
 
 export const Messenger = () => {
     const [conversations, setConversations] = useState([
@@ -94,11 +94,11 @@ export const Messenger = () => {
     };
     return (
         <>
-            <Helmet>
-                <title>WallGo : Messenger</title>
-            </Helmet>
             <Navbar />
-            <div className="h-[calc(100vh-55px)] bg-gray-50 flex justify-center items-center p-0 md:p-4 relative">
+            <div className="min-h-[calc(100vh-95px)] bg-gray-50 flex justify-center items-center p-0 md:p-4 pb-10 md:pb-4 relative">
+                <Helmet>
+                    <title>WallGo : Messenger</title>
+                </Helmet>
 
                 {notification && (
                     <div className="absolute top-6 z-50 bg-gray-900 text-white text-xs px-4 py-2 rounded-xl shadow-lg transition-all animate-bounce">
@@ -213,8 +213,8 @@ export const Messenger = () => {
                                 >
                                     <div
                                         className={`max-w-xs md:max-w-md rounded-2xl text-xs leading-relaxed overflow-hidden ${msg.sender === 'me'
-                                                ? 'bg-blue-600 text-white rounded-br-none shadow-sm'
-                                                : 'bg-white text-gray-800 rounded-bl-none border border-gray-200 shadow-sm'
+                                            ? 'bg-blue-600 text-white rounded-br-none shadow-sm'
+                                            : 'bg-white text-gray-800 rounded-bl-none border border-gray-200 shadow-sm'
                                             }`}
                                     >
                                         {msg.image && (
@@ -300,9 +300,9 @@ export const Messenger = () => {
                             </form>
                         </div>
                     </div>
-
                 </div>
             </div>
+            <MobileCellNavbar />
         </>
     )
 }
