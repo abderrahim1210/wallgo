@@ -1,7 +1,7 @@
 import React from 'react'
 import { MainLayout } from '../MainLayout'
 import { PostCard } from '../pages/Post/PostCard';
-import { Bookmark, Code, Compass, Flame, Globe, ImageIcon, Pencil, Plus, TrendingUp, Users } from 'lucide-react';
+import { Bookmark, Code, Compass, Flame, Globe, ImageIcon, Layers, Pencil, Plus, Settings, TrendingUp, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const Home = () => {
@@ -88,24 +88,29 @@ export const Home = () => {
               <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm space-y-2">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 px-4 mb-2">Discover</h3>
 
-                <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-purple-50 text-[var(--special-purple)] font-semibold text-sm transition-colors cursor-pointer">
-                  <Globe className="w-5 h-5" />
-                  <span>Feeds & Timeline</span>
-                </button>
-
                 <button onClick={() => navigate('/myposts')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
                   <Pencil className="w-5 h-5 text-blue-500" />
                   <span>My Posts</span>
                 </button>
 
-                <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
-                  <Users className="w-5 h-5 text-emerald-500" />
-                  <span>My Pages / Groups</span>
+                <button onClick={() => navigate('/pages')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
+                  <Layers className="w-5 h-5 text-emerald-500" />
+                  <span>Pages</span>
+                </button>
+                
+                <button onClick={() => navigate('/groups')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
+                  <Users className="w-5 h-5 text-[var(--special-red)]" />
+                  <span>Groups</span>
                 </button>
 
                 <button onClick={() => navigate('/saved_posts')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
                   <Bookmark className="w-5 h-5 text-purple-500" />
                   <span>Bookmarks</span>
+                </button>
+
+                <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-purple-50 text-gray-600 text-sm transition-colors cursor-pointer">
+                  <Settings className="w-5 h-5 text-[var(--special-gray)]" />
+                  <span>Settings</span>
                 </button>
 
                 <div className="pt-3 border-t border-gray-100 mt-3">

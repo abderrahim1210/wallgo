@@ -9,6 +9,8 @@ import { Messenger } from '../components/Messenger'
 import SavedPosts from '../components/SavedPosts'
 import CreatePost from '../components/CreatePost'
 import { MyPosts } from '../components/MyPosts'
+import { Pages } from '../components/Pages'
+import { Groups } from '../components/Groups'
 
 export const AppRoutes = () => {
     return (
@@ -22,6 +24,8 @@ export const AppRoutes = () => {
             <Route path='/saved_posts' element={<SavedPosts />} />
             <Route path='/create_post' element={<CreatePost />} />
             <Route path='/myposts' element={<MyPosts />} />
+            <Route path='/pages' element={<Pages />} />
+            <Route path='/groups' element={<Groups />} />
         </Routes>
     )
 }
