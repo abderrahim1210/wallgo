@@ -70,22 +70,22 @@ export const Navbar = () => {
                             <Link to={'/'} className={linksClasse}>
                                 <Heart className='w-6 h-6' />
                             </Link>
-                        </li>
+                        </li> */}
                         <li>
                             <Tooltip label='Account' position={position}>
-                                <Link to="#" className={`flex items-center justify-center p-2 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors ${linksClasse}`}>
+                                <Link to="/account/profile" className={getLinkClass('/account/profile')}>
                                     <UserCircle className="w-6 h-6" />
                                 </Link>
                             </Tooltip>
-                        </li> */}
-                        <li className='flex items-center space-x-3'>
+                        </li>
+                        {/* <li className='flex items-center space-x-3'>
                             <Link to={'/account/login'} className='font-bold text-gray-700 hover:text-[var(--special-purple)] transition-colors'>
                                 Login
                             </Link>
                             <Link to={'/account/signup'} className='px-4 py-2 font-bold bg-[var(--special-purple)] rounded-lg text-white hover:bg-opacity-90 transition-all'>
                                 Sign Up
                             </Link>
-                        </li>
+                        </li> */}
                     </ul>
 
                 </div>

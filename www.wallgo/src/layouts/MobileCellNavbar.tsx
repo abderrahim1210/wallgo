@@ -47,7 +47,7 @@ export const MobileCellNavbar = () => {
             </Tooltip>
 
             <Tooltip label='Discover' position={position}>
-                <Link to="/account" className={getLinkClass('/account')}>
+                <Link to="/account/profile" className={getLinkClass('/account/profile')}>
                     <User className="w-6 h-6" />
                 </Link>
             </Tooltip>
