@@ -3,6 +3,9 @@ import { MainLayout } from '../MainLayout'
 import { FaCalendarAlt, FaEnvelope, FaGlobe, FaMapMarkerAlt, FaPhone, FaUserEdit, FaVenusMars } from 'react-icons/fa'
 import { PostGrid } from '../templates/PostGrid'
 import { Helmet } from 'react-helmet-async'
+import { FiCalendar, FiHeart, FiMapPin } from 'react-icons/fi'
+import { VenusAndMars } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export const Profile = () => {
     const profile = {
@@ -17,7 +20,8 @@ export const Profile = () => {
         type: 'public',
         birth: '2006-04-12',
         gender: 'male',
-        location: 'Bouskoura'
+        location: 'Bouskoura',
+        status: 'Single'
     }
 
     const posts = [
@@ -100,6 +104,7 @@ export const Profile = () => {
             commentsCount: 18,
         },
     ];
+    const navigate = useNavigate();
     return (
         <MainLayout>
             <Helmet>
@@ -107,9 +112,9 @@ export const Profile = () => {
             </Helmet>
             <div className="max-w-4xl mx-auto px-4 py-8 pb-20">
 
-                <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
+                <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
 
-                    <div className="h-48 md:h-64 w-full relative bg-gray-200">
+                    <div className="h-48 md:h-60 w-full rounded-xl overflow-hidden relative bg-gray-200">
                         <img
                             src={profile.banner_url}
                             alt="Profile Banner"
@@ -124,7 +129,7 @@ export const Profile = () => {
                                 <img
                                     src={profile.avatar_url}
                                     alt="Avatar"
-                                    className="w-28 h-28 md:w-36 md:h-36 rounded-3xl object-cover border-4 border-white shadow-md bg-white"
+                                    className="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover border-4 border-white shadow-md bg-white"
                                 />
                                 <div className="md:mb-2">
                                     <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
@@ -133,7 +138,7 @@ export const Profile = () => {
                                     <p className="text-sm font-medium text-gray-500">@{profile.username}</p>
                                 </div>
                             </div>
-                            <button className="flex items-center gap-2 px-5 py-2.5 bg-[var(--special-purple)] hover:opacity-90 text-white rounded-xl text-sm font-medium transition shadow-sm cursor-pointer shrink-0">
+                            <button onClick={() => navigate('/account/edit')} className="flex items-center font-semibold gap-2 px-5 py-2.5 bg-[var(--special-purple)] hover:opacity-90 text-white rounded-xl text-sm font-medium transition shadow-sm cursor-pointer shrink-0">
                                 <FaUserEdit className="w-4 h-4" /> Edit Profile
                             </button>
 
@@ -156,23 +161,23 @@ export const Profile = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                            
                             <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                <FaPhone className="text-[var(--special-purple)] w-4 h-4" />
-                                <span>{profile.phone}</span>
+                                <FiMapPin className="text-[var(--special-purple)] w-5 h-5" />
+                                <span>{profile.location}</span>
                             </div>
+
                             <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                <FaCalendarAlt className="text-[var(--special-purple)] w-4 h-4" />
+                                <FiCalendar className="text-[var(--special-purple)] w-5 h-5" />
                                 <span>Born on {profile.birth}</span>
                             </div>
+
                             <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                <FaVenusMars className="text-[var(--special-purple)] w-4 h-4" />
-                                <span className="capitalize">{profile.gender}</span>
+                                <FiHeart className="text-[var(--special-purple)] w-5 h-5" />
+                                <span>{profile.status}</span>
                             </div>
-                            
                             <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                <FaMapMarkerAlt className="text-[var(--special-purple)] w-4 h-4" />
-                                <span>{profile.location}</span>
+                                <FaVenusMars className="text-[var(--special-purple)] w-5 h-5" />
+                                <span className="capitalize">{profile.gender}</span>
                             </div>
                         </div>
                         <div className='mt-3'>
