@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { MainLayout } from '../MainLayout'
 import { PostCard } from '../pages/Post/PostCard';
 import { Bookmark, Code, Compass, Flame, Globe, ImageIcon, Layers, Pencil, Plus, Settings, TrendingUp, Users } from 'lucide-react';
@@ -47,6 +47,31 @@ export const Home = () => {
   ];
 
   const navigate = useNavigate();
+  const quotes = [
+    "Share your world on WallGo. 🎈",
+    "Connect, inspire, and grow together. ✨",
+    "Your wall, your community, your voice. 🎤",
+    "Build ideas, spark conversations.",
+  ];
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [fade, setFade] = useState(true);
+  const [write, isWrite] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFade(false);
+      setTimeout(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % quotes.length);
+        setFade(true);
+      }, 300);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const checkWrite = (e: React.ChangeEvent<HTMLInputElement>) => {
+    isWrite(e.target.value.trim().length > 0);
+  }
   return (
     <MainLayout>
       <div className="min-h-screen bg-gray-50/50 pb-20 md:pb-10">
@@ -97,7 +122,7 @@ export const Home = () => {
                   <Layers className="w-5 h-5 text-emerald-500" />
                   <span>Pages</span>
                 </button>
-                
+
                 <button onClick={() => navigate('/groups')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
                   <Users className="w-5 h-5 text-[var(--special-red)]" />
                   <span>Groups</span>
@@ -125,19 +150,36 @@ export const Home = () => {
           </aside>
 
           <main className="w-full max-w-xl shrink-0">
-            <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-6 flex items-center space-x-3">
-              <img
-                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80"
-                alt="Profile"
-                className="w-10 h-10 rounded-full object-cover shrink-0"
-              />
-              <div className="flex-1 flex items-center space-x-2">
-                <input
-                  type="text"
-                  placeholder="What's on your mind, Abderrahim?"
-                  className="w-full bg-gray-100/80 hover:bg-gray-100 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all rounded-full px-4 py-2.5 text-sm text-gray-800 outline-none border border-transparent"
-                />
-              </div>
+            <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-6 w-full">
+              <div className='mb-3 px-1 h-10 flex items-center overflow-hidden'>
+                {/* <div className=''> */}
+                  <p className={`quote text-2xs text-gray-500 transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}>
+                    {quotes[currentIndex]}
+                  </p>
+                  
+                </div>
+                <div className='flex items-center space-x-3 flex-1 min-w-0'>
+                  <img
+                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80"
+                    alt="Profile"
+                    className="w-10 h-10 rounded-full object-cover shrink-0"
+                  />
+                  <div className="relative flex-1 flex items-center space-x-2 min-w-0">
+                    <input
+                      type="text"
+                      placeholder="What's on your mind, Abderrahim?"
+                      onChange={checkWrite}
+                      className="w-full bg-gray-100/80 hover:bg-gray-100 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all rounded-full px-4 py-2.5 text-sm text-gray-800 outline-none border border-gray-200"
+                    />
+                    {
+                      write && (
+                        <button className='px-5 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-full hover:opacity-90 transition-all shadow-sm cursor-pointer animate-fadeIn font-semibold shrink-0'>Post</button>
+                      )
+                    }
+                  </div>
+                </div>
+
+
             </div>
 
             <div className="space-y-4">

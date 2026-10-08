@@ -16,6 +16,13 @@
     font-weight: bold;
 }
 
+@font-face {
+    font-family: "Fredoka";
+    src: url("./assets/fonts/Fredoka-Regular.ttf");
+    font-style: normal;
+    font-display: swap;
+}
+
 
 :root {
     --special-red: #DB5461;
@@ -53,4 +60,8 @@ body {
 
 .empty-content-item > i {
   font-size: 40px !important;
+}
+
+.quote{
+    font-family: 'Fredoka', 'sans-serif';
 }
