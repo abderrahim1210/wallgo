@@ -1,5 +1,6 @@
 import { Heart, MessageSquare } from 'lucide-react';
-import React from 'react'
+import React, { useState } from 'react'
+import { SelectedPosts } from '../components/SelectedPosts';
 
 interface Post {
     id: number;
@@ -18,18 +19,21 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
 
     if (posts.length === 0) {
         return (
-            <div className="text-center py-12 bg-gray-900 rounded-2xl border border-gray-800">
+            <div className="text-center py-12 rounded-2xl">
                 <p className="text-gray-400">No posts found.</p>
             </div>
         )
     }
+
+    const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+
     return (
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-1 md:gap-2">
             {posts.map((post) => (
                 <div
                     key={post.id}
-                    // onClick={() => onPostClick && onPostClick(post)}
-                    className="relative group aspect-square bg-gray-900 rounded overflow-hidden cursor-pointer "
+                    onClick={() => setSelectedPost(post)}
+                    className="relative group aspect-square bg-gray-900 rounded overflow-hidden cursor-pointer"
                 >
                     {post.image ? (
                         <img
@@ -53,8 +57,13 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
                             <span>{post.commentsCount}</span>
                         </div>
                     </div>
+                    
                 </div>
             ))}
+            {selectedPost && (
+                <SelectedPosts post={selectedPost} onClose={() => setSelectedPost(null)} />
+            )}
+
         </div>
     )
 }
