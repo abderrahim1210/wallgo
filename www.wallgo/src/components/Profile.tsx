@@ -133,10 +133,10 @@ export const Profile = () => {
                                     <p className="text-sm font-medium text-gray-500">@{profile.username}</p>
                                 </div>
                             </div>
-
                             <button className="flex items-center gap-2 px-5 py-2.5 bg-[var(--special-purple)] hover:opacity-90 text-white rounded-xl text-sm font-medium transition shadow-sm cursor-pointer shrink-0">
                                 <FaUserEdit className="w-4 h-4" /> Edit Profile
                             </button>
+
                         </div>
 
                         <p className="text-gray-600 text-sm max-w-2xl mb-6">
@@ -156,10 +156,7 @@ export const Profile = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                            <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                <FaEnvelope className="text-[var(--special-purple)] w-4 h-4" />
-                                <span>{profile.email}</span>
-                            </div>
+                            
                             <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
                                 <FaPhone className="text-[var(--special-purple)] w-4 h-4" />
                                 <span>{profile.phone}</span>
@@ -172,10 +169,7 @@ export const Profile = () => {
                                 <FaVenusMars className="text-[var(--special-purple)] w-4 h-4" />
                                 <span className="capitalize">{profile.gender}</span>
                             </div>
-                            <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                <FaGlobe className="text-[var(--special-purple)] w-4 h-4" />
-                                <span className="capitalize">Account: {profile.type}</span>
-                            </div>
+                            
                             <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
                                 <FaMapMarkerAlt className="text-[var(--special-purple)] w-4 h-4" />
                                 <span>{profile.location}</span>
