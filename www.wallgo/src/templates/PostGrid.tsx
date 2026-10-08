@@ -1,6 +1,7 @@
-import { Heart, MessageSquare } from 'lucide-react';
+import { Album, Heart, MessageSquare } from 'lucide-react';
 import React, { useState } from 'react'
 import { SelectedPosts } from '../components/SelectedPosts';
+import { EmptyContent } from '../components/EmptyContent';
 
 interface Post {
     id: number;
@@ -19,9 +20,7 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
 
     if (posts.length === 0) {
         return (
-            <div className="text-center py-12 rounded-2xl">
-                <p className="text-gray-400">No posts found.</p>
-            </div>
+            <EmptyContent text='No posts found it - try again later !' icon={<Album />} />
         )
     }
 
@@ -57,7 +56,7 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
                             <span>{post.commentsCount}</span>
                         </div>
                     </div>
-                    
+
                 </div>
             ))}
             {selectedPost && (

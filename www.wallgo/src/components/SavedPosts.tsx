@@ -55,7 +55,7 @@ const SavedPosts = () => {
 
                 </div>
                 <div className='mt-3'>
-                    <PostGrid posts={posts} />
+                    <PostGrid posts={[]} />
                 </div>
             </div>
 

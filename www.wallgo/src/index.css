@@ -27,6 +27,7 @@
 
 body {
     font-family: 'Inter', 'sans-serif';
+    background-color: var(--special-white);
 }
 
 .signup_page {
@@ -48,4 +49,8 @@ body {
   white-space: nowrap;
   border-right: 2px solid var(--special-purple);
   animation: typing 3.5s steps(40, end), blink 0.75s step-end infinite;
+}
+
+.empty-content-item > i {
+  font-size: 40px !important;
 }

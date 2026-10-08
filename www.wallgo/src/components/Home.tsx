@@ -108,7 +108,7 @@ export const Home = () => {
                   <span>Bookmarks</span>
                 </button>
 
-                <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-purple-50 text-gray-600 text-sm transition-colors cursor-pointer">
+                <button onClick={() => navigate('/settings')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-purple-50 text-gray-600 text-sm transition-colors cursor-pointer">
                   <Settings className="w-5 h-5 text-[var(--special-gray)]" />
                   <span>Settings</span>
                 </button>

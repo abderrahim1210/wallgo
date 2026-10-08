@@ -26,7 +26,7 @@ export const Navbar = () => {
                         </li>
                     </ul>
 
-                    <ul className="hidden md:flex items-center space-x-10 m-0 p-0 list-none">
+                    <ul className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2 space-x-10 m-0 p-0 list-none">
                         <li>
                             <Tooltip label='Home' position={position}>
                                 <Link to="/" className={getLinkClass('/')}>

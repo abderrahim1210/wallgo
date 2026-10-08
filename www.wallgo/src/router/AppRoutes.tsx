@@ -13,6 +13,7 @@ import { Pages } from '../components/Pages'
 import { Groups } from '../components/Groups'
 import { Profile } from '../components/Profile'
 import { EditProfile } from '../components/EditProfile'
+import { Settings } from '../components/Settings'
 
 export const AppRoutes = () => {
     return (
@@ -30,6 +31,7 @@ export const AppRoutes = () => {
             <Route path='/groups' element={<Groups />} />
             <Route path='/account/profile' element={<Profile />} />
             <Route path='/account/edit' element={<EditProfile />} />
+            <Route path='/settings' element={<Settings />} />
         </Routes>
     )
 }
