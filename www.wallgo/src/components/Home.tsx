@@ -3,6 +3,8 @@ import { MainLayout } from '../MainLayout'
 import { PostCard } from '../pages/Post/PostCard';
 import { Bookmark, Code, Compass, Flame, Globe, ImageIcon, Layers, Pencil, Plus, Settings, TrendingUp, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useModal } from '../hooks/ModalProvider';
+import ModalTemplate from '../templates/ModalTemplate';
 
 export const Home = () => {
   const dummyPosts = [
@@ -72,9 +74,17 @@ export const Home = () => {
   const checkWrite = (e: React.ChangeEvent<HTMLInputElement>) => {
     isWrite(e.target.value.trim().length > 0);
   }
+  const { show, openModal, closeModal } = useModal()!;
   return (
     <MainLayout>
       <div className="min-h-screen bg-gray-50/50 pb-20 md:pb-10">
+        {
+          show === 'my_followers' && (
+            <ModalTemplate show={show} closeModal={closeModal}>
+              <p>My followers</p>
+            </ModalTemplate>
+          )
+        }
         <div className="max-w-7xl mx-auto pt-6 px-2 flex justify-center lg:gap-6">
 
           <aside className="hidden lg:block w-64 shrink-0">
@@ -100,12 +110,12 @@ export const Home = () => {
                   <div className="border-r border-gray-100"></div>
                   <div>
                     <span className="block font-bold text-gray-900 text-sm">1.4k</span>
-                    <span>Followers</span>
+                    <span className='cursor-pointer' onClick={() => openModal('my_followers')}>Followers</span>
                   </div>
                   <div className="border-r border-gray-100"></div>
                   <div>
                     <span className="block font-bold text-gray-900 text-sm">342</span>
-                    <span>Following</span>
+                    <span className='cursor-pointer' onClick={() => openModal('my_followers')}>Following</span>
                   </div>
                 </div>
               </div>
@@ -153,31 +163,31 @@ export const Home = () => {
             <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-6 w-full">
               <div className='mb-3 px-1 h-10 flex items-center overflow-hidden'>
                 {/* <div className=''> */}
-                  <p className={`quote text-2xs text-gray-500 transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}>
-                    {quotes[currentIndex]}
-                  </p>
-                  
-                </div>
-                <div className='flex items-center space-x-3 flex-1 min-w-0'>
-                  <img
-                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80"
-                    alt="Profile"
-                    className="w-10 h-10 rounded-full object-cover shrink-0"
+                <p className={`quote text-2xs text-gray-500 transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}>
+                  {quotes[currentIndex]}
+                </p>
+
+              </div>
+              <div className='flex items-center space-x-3 flex-1 min-w-0'>
+                <img
+                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80"
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full object-cover shrink-0"
+                />
+                <div className="relative flex-1 flex items-center space-x-2 min-w-0">
+                  <input
+                    type="text"
+                    placeholder="What's on your mind, Abderrahim?"
+                    onChange={checkWrite}
+                    className="w-full bg-gray-100/80 hover:bg-gray-100 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all rounded-full px-4 py-2.5 text-sm text-gray-800 outline-none border border-gray-200"
                   />
-                  <div className="relative flex-1 flex items-center space-x-2 min-w-0">
-                    <input
-                      type="text"
-                      placeholder="What's on your mind, Abderrahim?"
-                      onChange={checkWrite}
-                      className="w-full bg-gray-100/80 hover:bg-gray-100 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all rounded-full px-4 py-2.5 text-sm text-gray-800 outline-none border border-gray-200"
-                    />
-                    {
-                      write && (
-                        <button className='px-5 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-full hover:opacity-90 transition-all shadow-sm cursor-pointer animate-fadeIn font-semibold shrink-0'>Post</button>
-                      )
-                    }
-                  </div>
+                  {
+                    write && (
+                      <button className='px-5 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-full hover:opacity-90 transition-all shadow-sm cursor-pointer animate-fadeIn font-semibold shrink-0'>Post</button>
+                    )
+                  }
                 </div>
+              </div>
 
 
             </div>

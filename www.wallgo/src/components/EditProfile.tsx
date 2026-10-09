@@ -3,6 +3,7 @@ import { MainLayout } from '../MainLayout';
 import { Helmet } from 'react-helmet-async';
 import { FaCamera, FaSave, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { useModal } from '../hooks/ModalProvider';
 
 export const EditProfile = () => {
     const profile = {
@@ -17,6 +18,7 @@ export const EditProfile = () => {
         gender: 'male',
         location: 'Bouskoura'
     };
+    // const { show, openModal, closeModal } = useModal();
     return (
         <MainLayout>
             <Helmet>

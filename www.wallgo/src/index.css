@@ -65,3 +65,66 @@ body {
 .quote{
     font-family: 'Fredoka', 'sans-serif';
 }
+
+/* إعدادات الـ Modal الأساسية */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1050;
+  display: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  outline: 0;
+}
+
+.modal.show {
+  display: block !important;
+}
+
+.modal-backdrop {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(4px);
+  z-index: 1040 !important;
+}
+
+.modal-dialog-slide-bottom {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  z-index: 1060 !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  pointer-events: none !important;
+}
+
+.modal-dialog-slide-bottom > div {
+  pointer-events: auto !important;
+  width: 100% !important;
+}
+
+.modal-bottom-sheet-wrapper .modal-content {
+  background: transparent !important;
+  border: none !important;
+  width: 100% !important;
+  box-shadow: none !important;
+}
+
+.modal.fade .modal-dialog-slide-bottom {
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+.modal.show .modal-dialog-slide-bottom {
+  transform: translateY(0);
+}

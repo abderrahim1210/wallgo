@@ -62,7 +62,6 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
             {selectedPost && (
                 <SelectedPosts post={selectedPost} onClose={() => setSelectedPost(null)} />
             )}
-
         </div>
     )
 }

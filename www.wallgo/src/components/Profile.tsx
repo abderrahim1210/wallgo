@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { MainLayout } from '../MainLayout'
 import { FaCalendarAlt, FaEnvelope, FaGlobe, FaMapMarkerAlt, FaPhone, FaUserEdit, FaVenusMars } from 'react-icons/fa'
 import { PostGrid } from '../templates/PostGrid'
@@ -6,6 +6,8 @@ import { Helmet } from 'react-helmet-async'
 import { FiCalendar, FiHeart, FiMapPin } from 'react-icons/fi'
 import { VenusAndMars } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import ModalTemplate from '../templates/ModalTemplate'
+import { useModal } from '../hooks/ModalProvider'
 
 export const Profile = () => {
     const profile = {
@@ -105,11 +107,26 @@ export const Profile = () => {
         },
     ];
     const navigate = useNavigate();
+    const { show, openModal, closeModal } = useModal()!;
     return (
         <MainLayout>
             <Helmet>
                 <title>WallGo : Profile</title>
             </Helmet>
+            {
+                show === 'followers' && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <p>Followers</p>
+                    </ModalTemplate>
+                )
+            }
+            {
+                show === 'followings' && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <p>Followings</p>
+                    </ModalTemplate>
+                )
+            }
             <div className="max-w-4xl mx-auto px-4 py-8 pb-20">
 
                 <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
@@ -124,14 +141,14 @@ export const Profile = () => {
                     </div>
 
                     <div className="px-6 pb-6 relative">
-                        <div className="flex flex-col sm:flex-row justify-between shrink-0 items-start md:items-end -mt-16 md:-mt-20 mb-4 gap-4">
+                        <div className="flex flex-col sm:flex-row justify-between shrink-0 items-start sm:items-end -mt-16 md:-mt-20 mb-4 gap-4">
                             <div className="flex items-end gap-4">
                                 <img
                                     src={profile.avatar_url}
                                     alt="Avatar"
                                     className="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover border-4 border-white shadow-md bg-white"
                                 />
-                                <div className="md:mb-2">
+                                <div className="">
                                     <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                                         {profile.name}
                                     </h1>
@@ -153,10 +170,10 @@ export const Profile = () => {
                                 <span className="font-bold text-gray-900 text-base">45</span> <span className="text-gray-500">Posts</span>
                             </div>
                             <div>
-                                <span className="font-bold text-gray-900 text-base">342</span> <span className="text-gray-500">Followers</span>
+                                <span className="font-bold text-gray-900 text-base cursor-pointer" onClick={() => openModal('followers')}>342 </span><span className="text-gray-500">Followers </span>
                             </div>
                             <div>
-                                <span className="font-bold text-gray-900 text-base">180</span> <span className="text-gray-500">Following</span>
+                                <span className="font-bold text-gray-900 text-base cursor-pointer" onClick={() => openModal('followings')}>180</span> <span className="text-gray-500">Following</span>
                             </div>
                         </div>
 
