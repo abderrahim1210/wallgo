@@ -13,7 +13,7 @@ export const MobileCellNavbar = () => {
         return `rounded-xl transition-all duration-150 flex items-center justify-center ${isActive(path) ? 'text-[var(--special-purple)] bg-purple-50 shadow-inner' : 'text-gray-600 hover:text-[var(--special-purple)] transition-colors'}`;
     }
     return (
-        <div className='md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 px-6 flex items-center justify-between z-50'>
+        <div className='md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 py-3 px-6 flex items-center justify-between z-50 shadow-lg'>
             <Tooltip label='Home' position={position}>
                 <Link to="/" className={getLinkClass('/')}>
                     <Home className="w-6 h-6" />

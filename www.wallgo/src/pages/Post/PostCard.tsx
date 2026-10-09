@@ -2,6 +2,10 @@ import { Bookmark, Edit3, Flag, Heart, Link, MessageCircle, MoreHorizontal, Shar
 import React, { useState } from 'react'
 import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
 import { Toast, type ToastType } from '../../components/Toast';
+import { useModal } from '../../hooks/ModalProvider';
+import ModalTemplate from '../../templates/ModalTemplate';
+import { CommentSection } from '../../components/CommentSection';
+import ShareDropdown from '../../components/ShareDropdown';
 
 interface PostCardProps {
     author: {
@@ -26,6 +30,7 @@ export const PostCard: React.FC<PostCardProps> = ({
     const [liked, setLiked] = useState(false);
     const [likes, setLikes] = useState(likesCount);
     const [saved, setSaved] = useState(false);
+    const { show, openModal, closeModal } = useModal()!;
 
     const handleLike = () => {
         if (liked) {
@@ -115,6 +120,22 @@ export const PostCard: React.FC<PostCardProps> = ({
                 </div>
             )}
 
+            {
+                show === 'comments' && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <CommentSection postId={1} />
+                    </ModalTemplate>
+                )
+            }
+            
+            {
+                show === 'share' && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <ShareDropdown postUrl={window.location.href} />
+                    </ModalTemplate>
+                )
+            }
+
             <div className="px-4 py-3 flex items-center justify-between border-t border-gray-50 mt-1">
                 <div className="flex items-center space-x-6">
                     <button
@@ -128,12 +149,12 @@ export const PostCard: React.FC<PostCardProps> = ({
                         <span className="text-xs font-semibold text-gray-700">{likes}</span>
                     </button>
 
-                    <button className="flex items-center space-x-2 text-gray-600 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">
+                    <button onClick={() => openModal('comments')} className="flex items-center space-x-2 text-gray-600 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">
                         <MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-semibold text-gray-700">{commentsCount}</span>
                     </button>
 
-                    <button className="text-gray-600 hover:text-blue-500 transition-colors group cursor-pointer">
+                    <button onClick={() => openModal('share')} className="text-gray-600 hover:text-blue-500 transition-colors group cursor-pointer">
                         <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
                     </button>
                 </div>

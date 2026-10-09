@@ -35,7 +35,7 @@ export const Home = () => {
       commentsCount: 18,
     },
     {
-      id: 2,
+      id: 3,
       author: {
         name: 'Mohammed',
         username: 'Ahmed',

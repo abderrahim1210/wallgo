@@ -9,7 +9,7 @@ interface ToastProps {
 }
 export const Toast: React.FC<ToastProps> = ({ message, type = 'success', onClose }) => {
     return (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 bg-white rounded-2xl shadow-xl border border-gray-100 transform transition-all animate-in fade-in slide-in-from-bottom-5 duration-300 min-w-[280px] max-w-md">
+        <div className="fixed bottom-15 right-3 z-100 flex items-center gap-3 px-4 py-3 bg-white rounded-2xl shadow-xl border border-gray-100 transform transition-all animate-in fade-in slide-in-from-bottom-5 duration-300 min-w-[280px] max-w-md">
 
             <div className="shrink-0">
                 {type === 'success' && <FiCheckCircle className="w-5 h-5 text-emerald-500" />}
