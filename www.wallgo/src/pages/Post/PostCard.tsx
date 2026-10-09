@@ -1,6 +1,7 @@
 import { Bookmark, Edit3, Flag, Heart, Link, MessageCircle, MoreHorizontal, Share2, Trash2 } from 'lucide-react';
 import React, { useState } from 'react'
 import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
+import { Toast, type ToastType } from '../../components/Toast';
 
 interface PostCardProps {
     author: {
@@ -36,11 +37,20 @@ export const PostCard: React.FC<PostCardProps> = ({
         }
     }
 
+    const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+
+    const triggerToast = (message: string, type: ToastType = 'success') => {
+        setToast({ message, type });
+        setTimeout(() => {
+            setToast(null);
+        }, 3000);
+    };
+
     const postMenuItems: DropdownItem[] = [
         {
             label: 'Copy link',
             icon: <Link className="w-4 h-4 text-blue-500" />,
-            onClick: () => console.log('Link copied!'),
+            onClick: () => triggerToast('Copy link', 'success'),
         },
         {
             label: 'Edit Post',
@@ -85,6 +95,14 @@ export const PostCard: React.FC<PostCardProps> = ({
                     }
                     items={postMenuItems}
                 />
+
+                {
+                    toast && (
+                        <Toast message={toast.message}
+                            type={toast.type}
+                            onClose={() => setToast(null)} />
+                    )
+                }
             </div>
 
             <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">

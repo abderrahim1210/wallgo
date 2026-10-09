@@ -75,6 +75,7 @@ export const Home = () => {
     isWrite(e.target.value.trim().length > 0);
   }
   const { show, openModal, closeModal } = useModal()!;
+
   return (
     <MainLayout>
       <div className="min-h-screen bg-gray-50/50 pb-20 md:pb-10">
