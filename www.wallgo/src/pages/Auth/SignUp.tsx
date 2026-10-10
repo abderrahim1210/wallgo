@@ -1,11 +1,12 @@
 import { ArrowLeft, ArrowRight, AtSign, Lock, Mail, User } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { Footer } from '../../layouts/Footer';
-import { Link, redirect, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Helmet } from 'react-helmet-async';
 
 export const SignUp = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
         username: '',
@@ -16,7 +17,7 @@ export const SignUp = () => {
         year: '',
     });
     const [error, setError] = useState("");
-    const url = import.meta.env.VITE_API_URL || 'https://api.wallgo.test';
+    const url = 'https://api.wallgo.test';
     const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     }
@@ -26,19 +27,17 @@ export const SignUp = () => {
             console.log("Email,password,name is obligatory");
         }
         try {
-            await axios.get(`${url}/sanctum/csrf-cookie`, { 
-                withCredentials: true,
-                withXSRFToken:true
-            });
+            await axios.get(`${url}/sanctum/csrf-cookie`, { withCredentials: true, withXSRFToken: true });
             await axios.post(`${url}/register`, formData, { withCredentials: true, withXSRFToken: true }).then(res => {
                 if (!res.data.success) {
                     setError(res.data.message);
                     console.log(res.data.message);
                 } else {
-                    redirect('/account/login');
+                    navigate('/');
                 }
+
             });
-        } catch (err) {
+        } catch (err: any) {
             console.error(err?.response?.data);
         }
     }
@@ -61,7 +60,7 @@ export const SignUp = () => {
         }, 5000);
         return () => clearInterval(interval);
     }, [slogans.length]);
-    const navigate = useNavigate();
+
     return (
         <div className='signup_page min-h-screen flex flex-col justify-between'>
             <Helmet>

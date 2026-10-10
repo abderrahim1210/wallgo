@@ -19,27 +19,35 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request): Response
+    public function store(Request $request)
     {
-        // $request->validate([
-        //     'name' => ['required', 'string', 'max:255'],
-        //     'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-        //     'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        // ]);
+        $request->validate([
+            'username' => ['required', 'string', 'max:255', 'unique:' . User::class],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'string'],
+            'year'     => ['required'],
+            'month'    => ['required'],
+            'day'      => ['required'],
+        ]);
+
+        $birth = sprintf('%04d-%02d-%02d', $request->year, $request->month, $request->day);
 
         $user = User::create([
             'username' => $request->username,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->string('password')),
-            'bio' => ''
-            // 'birth' => $request->year . '-' . $request->month . '-' . $request->day
+            'birth' => $birth
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return response()->noContent();
+        return response()->json([
+            'success' => true,
+            'message' => 'Account created successfully'
+        ], 201);
     }
 }
