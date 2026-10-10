@@ -57,7 +57,10 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
     ];
     return (
         <>
-            <div className="fixed inset-0 z-40" onClick={onClose} />
+            <div className="fixed inset-0 z-40" onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+            }} />
 
             <div className="absolute right-0 mt-5 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden transform transition-all animate-in fade-in slide-in-from-top-2">
 

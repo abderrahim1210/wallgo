@@ -38,7 +38,8 @@ export const SignUp = () => {
 
             });
         } catch (err: any) {
-            console.error(err?.response?.data);
+            console.error(err?.response?.data?.message);
+            setError(err?.response?.data?.message);
         }
     }
     const slogans: string[] = [
@@ -204,6 +205,13 @@ export const SignUp = () => {
                                 />
                             </div>
                         </div>
+                        {
+                            error && (
+                                <div className='bg-[var(--special-red)] font-semibold rounded p-4 text-white'>
+                                    <p>{error}</p>
+                                </div>
+                            )
+                        }
                         <div className='text-xm text-semibold text-gray-400 space-y-3 font-semibold leading-relaxed'>
                             <p>
                                 People who use our service may have uploaded your contact information to WallGo. <Link to='#' className='text-[var(--special-purple)] hover:underline'>Learn more</Link>.

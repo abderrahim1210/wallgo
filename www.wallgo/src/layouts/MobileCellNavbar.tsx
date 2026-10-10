@@ -48,7 +48,7 @@ export const MobileCellNavbar = () => {
 
             <Tooltip label='Profile' position={position}>
                 <Link to="/account/profile" className={getLinkClass('/account/profile')}>
-                    <User className="w-6 h-6" />
+                    <img src={'/icons/avatar1.svg'} alt='avatar' className='w-7 h-7 object-cover rounded-full' />
                 </Link>
             </Tooltip>
 

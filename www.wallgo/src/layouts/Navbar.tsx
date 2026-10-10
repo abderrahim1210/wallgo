@@ -34,35 +34,35 @@ export const Navbar = () => {
                         <li>
                             <Tooltip label='Home' position={position}>
                                 <Link to="/" className={getLinkClass('/')}>
-                                    <Home />
+                                    <Home className='w-7 h-7' />
                                 </Link>
                             </Tooltip>
                         </li>
                         <li>
                             <Tooltip label='For you' position={position}>
                                 <Link to="/search" className={getLinkClass('/search')}>
-                                    <Search />
+                                    <Search className='w-7 h-7' />
                                 </Link>
                             </Tooltip>
                         </li>
                         <li>
                             <Tooltip label='Create Post' position={position}>
                                 <Link to="/reels" className={getLinkClass('/reels')}>
-                                    <Clapperboard className="w-6 h-6" />
+                                    <Clapperboard className="w-7 h-7" />
                                 </Link>
                             </Tooltip>
                         </li>
                         <li>
                             <Tooltip label='Messages' position={position}>
                                 <Link to="/messenger" className={getLinkClass('/messenger')}>
-                                    <MessagesCircle />
+                                    <MessagesCircle className='w-7 h-7' />
                                 </Link>
                             </Tooltip>
                         </li>
                         <li>
                             <Tooltip label='Discover' position={position}>
                                 <Link to="/saved_posts" className={getLinkClass('/saved_posts')}>
-                                    <Bookmark />
+                                    <Bookmark className='w-7 h-7' />
                                 </Link>
                             </Tooltip>
                         </li>
@@ -74,15 +74,15 @@ export const Navbar = () => {
                             user ? (
                                 <li className='flex items-center space-x-3'>
                                     <Tooltip label='Notifications' position={position}>
-                                        <Link to={'/'} className={`${linksClasse} hover:text-[var(--special-red)]`} onClick={() => setNotifOpen(prev => !prev)}>
-                                            <Heart className='w-6 h-6' />
-                                        </Link>
+                                        <button className={`${linksClasse} cursor-pointer hover:text-[var(--special-red)]`} onClick={() => setNotifOpen(prev => !prev)}>
+                                            <Heart className='w-7 h-7' />
+                                        </button>
                                     </Tooltip>
                                     <Notifications isOpen={notifOpen} onClose={() => setNotifOpen(false)} />
 
                                     <Tooltip label='Account' position={position}>
-                                        <Link to="/account/profile" className={getLinkClass('/account/profile')}>
-                                            <UserCircle className="w-6 h-6" />
+                                        <Link to="/account/profile" className={`${getLinkClass('/account/profile')} hidden md:block`}>
+                                            <img src={'/icons/avatar1.svg'} alt='avatar' className='w-7 h-7 object-cover rounded-full' />
                                         </Link>
                                     </Tooltip>
                                 </li>

@@ -12,7 +12,7 @@ export const Login = () => {
         password: ''
     });
     const [error, setError] = useState("");
-    const api_url = import.meta.env.VITE_API_URL;
+    const api_url = import.meta.env.VITE_API_URL || 'https://api.wallgo.test';
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -25,13 +25,16 @@ export const Login = () => {
         }
 
         try {
-            await axios.post(api_url).then(res => {
+            await axios.post(`${api_url}/login`, formData, { withCredentials: true, withXSRFToken: true }).then(res => {
                 if (!res.data.success) {
                     setError(res.data.message);
+                } else {
+                    navigate('/');
                 }
             });
-        } catch (err) {
-            console.log(error);
+        } catch (err: any) {
+            console.error(err?.response?.data?.message);
+            setError(err?.response?.data?.message);
         }
     }
     return (
@@ -93,6 +96,13 @@ export const Login = () => {
                                 />
                             </div>
                         </div>
+                        {
+                            error && (
+                                <div className='bg-[var(--special-red)] font-semibold rounded p-4 text-white'>
+                                    <p>{error}</p>
+                                </div>
+                            )
+                        }
 
                         <button
                             type='submit'

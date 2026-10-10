@@ -7,19 +7,38 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): Response
+    public function store(LoginRequest $request)
     {
-        $request->authenticate();
+        try {
+            $request->authenticate();
 
-        $request->session()->regenerate();
+            $request->session()->regenerate();
 
-        return response()->noContent();
+            return response()->json([
+                'success' => true,
+                'message' => 'Logged successfully'
+            ]);
+        } catch (ValidationException $e) {
+            $errorMessage = $e->errors()['email'][0] ?? $e->getMessage();
+            return response()->json([
+                'success' => false,
+                'message' => $errorMessage
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Login Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong. Please try again later.'
+            ], 500);
+        }
     }
 
     /**
