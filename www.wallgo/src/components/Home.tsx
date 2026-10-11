@@ -5,6 +5,8 @@ import { Bookmark, Code, Compass, Flame, Globe, ImageIcon, Layers, Pencil, Plus,
 import { useNavigate } from 'react-router-dom';
 import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
+import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
 
 export const Home = () => {
   const dummyPosts = [
@@ -49,6 +51,23 @@ export const Home = () => {
   ];
 
   const navigate = useNavigate();
+  const api_url = 'https://api.wallgo.test';
+  const fetchInfos = async () => {
+    try {
+      const res = await axios.get(`${api_url}/get_user`, { withCredentials: true, withXSRFToken: true });
+      if (res.data.success) return res.data;
+    } catch (err: any) {
+      console.error(err?.response?.data);
+    }
+  }
+
+  const { data } = useQuery({
+    queryKey: ['user_data_home'],
+    queryFn: fetchInfos
+  });
+
+  const profile = data?.user || null;
+  const stats = data?.stats || [];
   const quotes = [
     "Share your world on WallGo. 🎈",
     "Connect, inspire, and grow together. ✨",
@@ -94,28 +113,28 @@ export const Home = () => {
               <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
                 <div className="flex items-center space-x-3 mb-3 pb-3 border-b border-gray-100">
                   <img
-                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80"
+                    src={profile?.avatar_url ?? '/icons/avatar1.svg'}
                     alt="Abderrahim Khali Ali"
                     className="w-11 h-11 rounded-full object-cover border-2 border-purple-100"
                   />
                   <div className="overflow-hidden">
-                    <h4 className="font-semibold text-sm text-gray-900 truncate">Abderrahim Khali Ali</h4>
-                    <p className="text-xs text-gray-500 truncate">@abderrahim</p>
+                    <h4 className="font-semibold text-sm text-gray-900 truncate">{profile?.name}</h4>
+                    <p className="text-xs text-gray-500 truncate">@{profile?.username}</p>
                   </div>
                 </div>
                 <div className="flex justify-around text-center py-1 text-xs text-gray-600">
                   <div>
-                    <span className="block font-bold text-gray-900 text-sm">128</span>
+                    <span className="block font-bold text-gray-900 text-sm">{stats?.postsCount}</span>
                     <span>Posts</span>
                   </div>
                   <div className="border-r border-gray-100"></div>
                   <div>
-                    <span className="block font-bold text-gray-900 text-sm">1.4k</span>
+                    <span className="block font-bold text-gray-900 text-sm">{stats?.followers_count}</span>
                     <span className='cursor-pointer' onClick={() => openModal('my_followers')}>Followers</span>
                   </div>
                   <div className="border-r border-gray-100"></div>
                   <div>
-                    <span className="block font-bold text-gray-900 text-sm">342</span>
+                    <span className="block font-bold text-gray-900 text-sm">{stats?.followings_count}</span>
                     <span className='cursor-pointer' onClick={() => openModal('my_followers')}>Following</span>
                   </div>
                 </div>
@@ -163,7 +182,6 @@ export const Home = () => {
           <main className="w-full max-w-xl shrink-0">
             <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-6 w-full">
               <div className='mb-3 px-1 h-10 flex items-center overflow-hidden'>
-                {/* <div className=''> */}
                 <p className={`quote text-2xs text-gray-500 transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}>
                   {quotes[currentIndex]}
                 </p>
@@ -171,7 +189,7 @@ export const Home = () => {
               </div>
               <div className='flex items-center space-x-3 flex-1 min-w-0'>
                 <img
-                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80"
+                  src={profile?.avatar_url ?? '/icons/avatar1.svg'}
                   alt="Profile"
                   className="w-10 h-10 rounded-full object-cover shrink-0"
                 />

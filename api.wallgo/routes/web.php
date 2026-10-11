@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\EditProfile;
 use App\Http\Controllers\GetUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -22,7 +23,9 @@ Route::get('/user', function () {
 
 Route::get('/get_user', [GetUser::class, 'index']);
 
-Route::middleware('auth:sanctum', 'CheckUserStatus')->group(function () {});
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/edit_profile', [EditProfile::class, 'edit']);
+});
 
 
 require __DIR__ . '/auth.php';

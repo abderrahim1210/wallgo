@@ -1,24 +1,71 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { MainLayout } from '../MainLayout';
 import { Helmet } from 'react-helmet-async';
 import { FaCamera, FaSave, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useModal } from '../hooks/ModalProvider';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 
 export const EditProfile = () => {
-    const profile = {
-        name: 'Abderrahim',
-        username: 'abdou_12',
-        email: 'abderrahim12@gmail.com',
-        bio: 'Anything',
-        avatar_url: 'https://images.pexels.com/photos/15482284/pexels-photo-15482284.jpeg',
-        banner_url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80',
-        phone: '0654341243',
-        birth: '2006-04-12',
-        gender: 'male',
-        location: 'Bouskoura'
-    };
-    // const { show, openModal, closeModal } = useModal();
+
+    const api_url = 'https://api.wallgo.test'
+    const fetchProfile = async () => {
+        try {
+            const res = await axios.get(`${api_url}/get_user`, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) return res.data.user;
+        } catch (err: any) {
+            console.log(err?.response?.data);
+        }
+    }
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['user_edit'],
+        queryFn: fetchProfile
+    });
+
+    const user = data || null;
+
+    const [formData, setFormData] = useState(user || null);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        setFormData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
+    }
+
+    const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+    const handleFile = (e: React.ChangeEvent<HTMLInputElement>, fn: (path: string) => void) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+            if (typeof reader.result === 'string') {
+                fn(reader.result);
+                setFormData((prev: any) => ({ ...prev, [e.target.name]: reader.result }));
+            }
+        };
+
+        reader.readAsDataURL(file);
+
+        e.target.value = "";
+    }
+
+    const handleSubmit = async () => {
+        try {
+            await axios.post(`${api_url}/edit_profile`, formData, { withCredentials: true, withXSRFToken: true }).then((res) => {
+                if (res.data.success) {
+                    console.log(res.data.message);
+                    return window.location.reload();
+                }
+            });
+        } catch (err: any) {
+            console.log(err?.response?.data);
+        }
+    }
+
+    const bannerRef = useRef<HTMLInputElement>(null);
+    const avatarRef = useRef<HTMLInputElement>(null);
     return (
         <MainLayout>
             <Helmet>
@@ -44,28 +91,50 @@ export const EditProfile = () => {
                     <div className="space-y-4">
                         <label className="block text-sm font-semibold text-gray-700">Profile Banner & Avatar</label>
 
-                        <div className="relative h-40 md:h-52 w-full rounded-2xl overflow-hidden bg-gray-100 border border-gray-200 group">
-                            <img src={profile.banner_url} alt="Banner" className="w-full h-full object-cover" />
+                        <div className={`relative h-40 md:h-52 w-full rounded-2xl overflow-hidden bg-gray-100 border border-gray-200 group ${!user?.banner_url && 'bg-gray-600'}`}>
+                            {
+                                user?.banner_url || bannerPreview && (
+                                    <img src={user?.banner_url || bannerPreview} alt="Banner" className="w-full h-full object-cover" />
+                                )
+                            }
                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
-                                <span className="flex items-center gap-2 text-white text-sm font-medium bg-black/50 px-4 py-2 rounded-xl backdrop-blur-sm">
+                                <button onClick={() => bannerRef.current?.click()} className="flex items-center gap-2 text-white text-sm font-medium bg-black/50 px-4 py-2 rounded-xl backdrop-blur-sm">
                                     <FaCamera className="w-4 h-4" /> Change Banner
-                                </span>
+                                </button>
                             </div>
+                            <input
+                                type="file"
+                                ref={bannerRef}
+                                accept="image/*"
+                                className="hidden"
+                                id="banner-upload"
+                                name='banner_url'
+                                onChange={(e) => handleFile(e, setBannerPreview)}
+                            />
                         </div>
 
                         <div className="flex items-center gap-4 pt-2">
                             <div className="relative w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-md bg-gray-100 group shrink-0">
-                                <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
+                                <img src={user?.avatar_url || avatarPreview || '/icons/avatar1.svg'} alt="Avatar" className="w-full h-full object-cover" />
+                                <div onClick={() => avatarRef.current?.click()} className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
                                     <FaCamera className="text-white w-4 h-4" />
                                 </div>
                             </div>
                             <div>
-                                <button type="button" className="text-sm font-medium text-[var(--special-purple)] hover:underline">
+                                <button type="button" onClick={() => avatarRef.current?.click()} className="text-sm font-medium text-[var(--special-purple)] hover:underline">
                                     Upload new avatar
                                 </button>
                                 <p className="text-xs text-gray-400 mt-0.5">Recommended: Square JPG, PNG. Max 2MB.</p>
                             </div>
+                            <input
+                                type="file"
+                                ref={avatarRef}
+                                accept="image/*"
+                                className="hidden"
+                                id="avatar-upload"
+                                name='avatar_url'
+                                onChange={(e) => handleFile(e, setAvatarPreview)}
+                            />
                         </div>
                     </div>
 
@@ -77,7 +146,7 @@ export const EditProfile = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
                             <input
                                 type="text"
-                                defaultValue={profile.name}
+                                defaultValue={user?.name}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50"
                             />
                         </div>
@@ -86,7 +155,7 @@ export const EditProfile = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Username</label>
                             <input
                                 type="text"
-                                defaultValue={profile.username}
+                                defaultValue={user?.username}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50"
                             />
                         </div>
@@ -95,7 +164,7 @@ export const EditProfile = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
                             <input
                                 type="email"
-                                defaultValue={profile.email}
+                                defaultValue={user?.email}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50"
                             />
                         </div>
@@ -104,7 +173,7 @@ export const EditProfile = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number</label>
                             <input
                                 type="text"
-                                defaultValue={profile.phone}
+                                defaultValue={user?.phone}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50"
                             />
                         </div>
@@ -113,7 +182,7 @@ export const EditProfile = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Birth Date</label>
                             <input
                                 type="date"
-                                defaultValue={profile.birth}
+                                defaultValue={user?.birth}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50"
                             />
                         </div>
@@ -121,7 +190,7 @@ export const EditProfile = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Gender</label>
                             <select
-                                defaultValue={profile.gender}
+                                defaultValue={user?.gender}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 capitalize"
                             >
                                 <option value="male">Male</option>
@@ -133,7 +202,7 @@ export const EditProfile = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Location</label>
                             <input
                                 type="text"
-                                defaultValue={profile.location}
+                                defaultValue={user?.location}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50"
                             />
                         </div>
@@ -142,7 +211,7 @@ export const EditProfile = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Bio</label>
                             <textarea
                                 rows={3}
-                                defaultValue={profile.bio}
+                                defaultValue={user?.bio}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 resize-none"
                             ></textarea>
                         </div>
@@ -158,7 +227,9 @@ export const EditProfile = () => {
                         </Link>
                         <button
                             type="button"
-                            className="flex items-center gap-2 px-6 py-3 bg-[var(--special-purple)] hover:opacity-90 text-white rounded-xl text-sm font-medium transition shadow-sm cursor-pointer"
+                            disabled={!formData && !avatarPreview && !bannerPreview}
+                            onClick={handleSubmit}
+                            className={`flex items-center gap-2 px-6 py-3 bg-[var(--special-purple)] hover:opacity-90 text-white rounded-xl text-sm font-medium transition shadow-sm cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-500`}
                         >
                             <FaSave className="w-4 h-4" /> Save Changes
                         </button>

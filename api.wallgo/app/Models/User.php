@@ -23,7 +23,14 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
-        'birth'
+        'birth',
+        'phone',
+        'status',
+        'gender',
+        'location',
+        'bio',
+        'avatar_url',
+        'banner_url',
     ];
 
     /**
@@ -35,6 +42,21 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id');
+    }
+
+    public function followings()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id');
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
 
     /**
      * Get the attributes that should be cast.

@@ -1,15 +1,16 @@
 import React, { useState } from 'react'
 import { MainLayout } from '../MainLayout'
-import { FaCalendarAlt, FaCamera, FaEnvelope, FaGlobe, FaMapMarkerAlt, FaPhone, FaUserEdit, FaVenusMars } from 'react-icons/fa'
+import { FaCalendarAlt, FaCamera, FaEnvelope, FaGlobe, FaMapMarkerAlt, FaPhone, FaUserEdit, FaUsers, FaVenusMars } from 'react-icons/fa'
 import { PostGrid } from '../templates/PostGrid'
 import { Helmet } from 'react-helmet-async'
 import { FiCalendar, FiHeart, FiMapPin } from 'react-icons/fi'
-import { VenusAndMars } from 'lucide-react'
+import { Users, VenusAndMars } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import ModalTemplate from '../templates/ModalTemplate'
 import { useModal } from '../hooks/ModalProvider'
 import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
+import { EmptyContent } from './EmptyContent'
 
 interface User {
     id: number;
@@ -124,11 +125,15 @@ export const Profile = () => {
         queryFn: fetchInfos
     });
 
-    const profile: User = data.user || null;
-    const stats = data.stats || [];
+    const profile: User = data?.user || null;
+    const stats = data?.stats || [];
+    const followers = data?.followers_list || [];
+    const followings = data?.followings_list || [];
+    const posts_list = data?.posts_list || [];
 
+    if (!profile) return navigate('/account/login');
     if (error) return console.log(error);
-    if (isLoading) return
+    if (isLoading) return <p>Loading ...</p>;
     return (
         <MainLayout>
             <Helmet>
@@ -137,14 +142,18 @@ export const Profile = () => {
             {
                 show === 'followers' && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <p>Followers</p>
+                        {
+                            followers.length > 0 ? (<p>Followers</p>) : (<EmptyContent icon={<FaUsers />} text='No followers yet.' />)
+                        }
                     </ModalTemplate>
                 )
             }
             {
                 show === 'followings' && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <p>Followings</p>
+                        {
+                            followings.length > 0 ? (<p>Followings</p>) : (<EmptyContent icon={<FaUsers />} text='No followings yet.' />)
+                        }
                     </ModalTemplate>
                 )
             }
@@ -153,10 +162,10 @@ export const Profile = () => {
                 <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
 
                     {
-                        profile.banner_url ? (
+                        profile?.banner_url ? (
                             <div className="h-48 md:h-60 w-full rounded-xl overflow-hidden relative bg-gray-200">
                                 <img
-                                    src={profile.banner_url}
+                                    src={profile?.banner_url}
                                     alt="Profile Banner"
                                     className="w-full h-full object-cover"
                                 />
@@ -174,15 +183,15 @@ export const Profile = () => {
                         <div className="flex flex-col sm:flex-row justify-between shrink-0 items-start sm:items-end -mt-16 md:-mt-20 mb-4 gap-4">
                             <div className="flex items-end gap-4">
                                 <img
-                                    src={profile.avatar_url ?? '/icons/avatar1.svg'}
+                                    src={profile?.avatar_url ?? '/icons/avatar1.svg'}
                                     alt="Avatar"
                                     className="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover border-4 border-white shadow-md bg-white"
                                 />
                                 <div className="">
                                     <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                                        {profile.name}
+                                        {profile?.name}
                                     </h1>
-                                    <p className="text-sm font-medium text-gray-500">@{profile.username}</p>
+                                    <p className="text-sm font-medium text-gray-500">@{profile?.username}</p>
                                 </div>
                             </div>
                             <button onClick={() => navigate('/account/edit')} className="flex items-center font-semibold gap-2 px-5 py-2.5 bg-[var(--special-purple)] hover:opacity-90 text-white rounded-xl text-sm font-medium transition shadow-sm cursor-pointer shrink-0">
@@ -192,18 +201,18 @@ export const Profile = () => {
                         </div>
 
                         <p className="text-gray-600 text-sm max-w-2xl mb-6">
-                            {profile.bio}
+                            {profile?.bio}
                         </p>
 
                         <div className="flex items-center gap-6 py-4 border-y border-gray-100 mb-6 text-sm">
                             <div>
-                                <span className="font-bold text-gray-900 text-base">{stats.postsCount}</span> <span className="text-gray-500">Posts</span>
+                                <span className="font-bold text-gray-900 text-base">{posts_list.length}</span> <span className="text-gray-500">Posts</span>
                             </div>
                             <div>
-                                <span className="font-bold text-gray-900 text-base cursor-pointer" onClick={() => openModal('followers')}>180 </span><span className="text-gray-500">Followers </span>
+                                <span className="font-bold text-gray-900 text-base cursor-pointer" onClick={() => openModal('followers')}>{stats?.followers_count} </span><span className="text-gray-500">Followers </span>
                             </div>
                             <div>
-                                <span className="font-bold text-gray-900 text-base cursor-pointer" onClick={() => openModal('followings')}>180 </span> <span className="text-gray-500">Following</span>
+                                <span className="font-bold text-gray-900 text-base cursor-pointer" onClick={() => openModal('followings')}>{stats?.followings_count} </span> <span className="text-gray-500">Following</span>
                             </div>
                         </div>
 
@@ -244,7 +253,7 @@ export const Profile = () => {
                             }
                         </div>
                         <div className='mt-3'>
-                            <PostGrid posts={posts} />
+                            <PostGrid posts={posts_list} />
                         </div>
                     </div>
                 </div>
