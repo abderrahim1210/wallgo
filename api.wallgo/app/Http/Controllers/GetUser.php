@@ -13,7 +13,7 @@ class GetUser extends Controller
     {
         try {
             $user = User::withCount(['followers', 'followings'])->findOrFail(Auth::id());
-            // $posts = Post::where('user_id', Auth::id())->count();
+            $posts = Post::where('user_id', Auth::id())->count();
             $followers_list = $user->followers();
             $followings_list = $user->followings();
             $posts_list = Post::select('id', 'user_id', 'media_url')->where('user_id', $user->id)->first();
@@ -22,7 +22,7 @@ class GetUser extends Controller
                 'success' => true,
                 'user' => $user,
                 'stats' => [
-                    // 'postsCount' => $posts,
+                    'postsCount' => $posts,
                     'followers_count' => $user->followers_count,
                     'followings_count' => $user->followings_count,
                 ],

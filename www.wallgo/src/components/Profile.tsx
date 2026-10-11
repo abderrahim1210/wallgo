@@ -239,7 +239,7 @@ export const Profile = () => {
                                 profile.status && (
                                     <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
                                         <FiHeart className="text-[var(--special-purple)] w-5 h-5" />
-                                        <span>{profile.status}</span>
+                                        <span className='capitalize'>{profile.status}</span>
                                     </div>
                                 )
                             }

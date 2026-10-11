@@ -15,9 +15,7 @@ Route::get('/user', function () {
         'id' => $user->id,
         'email' => $user->email,
         'username' => $user->username,
-        'photo_profile' => $user->photo_profile,
-        'role' => $user->role,
-        'status' => $user->status
+        'avatar_url' => $user->avatar_url,
     ]]);
 });
 

@@ -21,7 +21,7 @@ class EditProfile extends Controller
         $user = User::find($user_id);
 
         $data = $request->all();
-        if ($data['avatar_url']) {
+        if (!empty($data['avatar_url']) && str_starts_with($data['avatar_url'], 'data:image')) {
             $check = new \App\Http\Controllers\ValideImage();
             $valide = $check->valide($data['avatar_url']);
 
@@ -29,17 +29,21 @@ class EditProfile extends Controller
                 try {
                     $upload = new \App\Http\Controllers\CloudinaryActions();
                     $res = $upload->upload($data['avatar_url'], 'wallgo_avatar');
-                    $user->avatar_url = $res['image_url'];
+                    $data['avatar_url'] = $res['image_url'] ?? $res['secure_url'] ?? $res['url'];
                 } catch (\Exception $e) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Upload avatar failed : ' . $e->getMessage()
                     ]);
                 }
+            } else {
+                unset($data['avatar_url']);
             }
+        } else {
+            unset($data['avatar_url']);
         }
 
-        if ($data['banner_url']) {
+        if (!empty($data['banner_url']) && str_starts_with($data['banner_url'], 'data:image')) {
             $check = new \App\Http\Controllers\ValideImage();
             $valide = $check->valide($data['banner_url']);
 
@@ -47,22 +51,24 @@ class EditProfile extends Controller
                 try {
                     $upload = new \App\Http\Controllers\CloudinaryActions();
                     $res = $upload->upload($data['banner_url'], 'wallgo_banner');
-                    $user->banner_url = $res['image_url'];
+                    $data['banner_url'] = $res['image_url'] ?? $res['secure_url'] ?? $res['url'];
                 } catch (\Exception $e) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Upload avatar failed : ' . $e->getMessage()
+                        'message' => 'Upload banner failed : ' . $e->getMessage()
                     ]);
                 }
+            } else {
+                unset($data['banner_url']);
             }
+        } else {
+            unset($data['banner_url']);
         }
 
-        $birthDate = $data['birth'];
 
-        if (empty($birthDate) || "0000-00-00") {
-            $birthDate = null;
-        } else {
-            $birthDate = $birthDate;
+        $birthDate = null;
+        if (!empty($data['birth']) && $data['birth'] !== "0000-00-00" && $data['birth'] !== "null") {
+            $birthDate = $data['birth'];
         }
 
         $user->fill($request->only([
@@ -81,15 +87,23 @@ class EditProfile extends Controller
 
         $user->name = $data['name'];
         $user->username = $data['username'];
-        $email_exist = User::where('email', $user->email)->first();
-        if ($email_exist) return response()->json(['success' => false, 'message' => 'Email already exist']);
-        // if ($user->email !== $data['email']) {
-        //     $user->email = $data['email'];
-        // }
+        if (!empty($data['email']) && $data['email'] !== $user->email) {
+            $email_exist = User::where('email', $data['email'])->where('id', '!=', $user->id)->first();
+            if ($email_exist) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email already exists'
+                ]);
+            }
+            $user->email = $data['email'];
+        }
         $user->bio = $data['bio'];
         $user->status = $data['status'];
         $user->gender = $data['gender'];
         $user->location = $data['location'];
+        $user->avatar_url = $data['avatar_url'] ?? $user->avatar_url;
+        $user->banner_url = $data['banner_url'] ?? $user->banner_url;
+        $user->birth = $birthDate;
 
 
         if ($user->isDirty()) {

@@ -82,7 +82,7 @@ export const Navbar = () => {
 
                                     <Tooltip label='Account' position={position}>
                                         <Link to="/account/profile" className={`${getLinkClass('/account/profile')} hidden md:block`}>
-                                            <img src={'/icons/avatar1.svg'} alt='avatar' className='w-7 h-7 object-cover rounded-full' />
+                                            <img src={user?.avatar_url ?? '/icons/avatar1.svg'} alt='avatar' className='w-7 h-7 object-cover rounded-full' />
                                         </Link>
                                     </Tooltip>
                                 </li>

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { MainLayout } from '../MainLayout';
 import { Helmet } from 'react-helmet-async';
 import { FaCamera, FaSave, FaTimes } from 'react-icons/fa';
@@ -20,13 +20,44 @@ export const EditProfile = () => {
     }
     const { data, isLoading, error } = useQuery({
         queryKey: ['user_edit'],
-        queryFn: fetchProfile
+        queryFn: fetchProfile,
+        staleTime: 1000 * 60 * 5,
+        refetchOnWindowFocus: false,
     });
 
-    const user = data || null;
+    const user = data || {};
 
-    const [formData, setFormData] = useState(user || null);
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const [formData, setFormData] = useState({
+        name: '',
+        username: '',
+        email: '',
+        birth: '',
+        avatar_url: '',
+        banner_url: '',
+        phone: '',
+        gender: '',
+        status: '',
+        bio: '',
+        location: ''
+    });
+    useEffect(() => {
+        if (data) {
+            setFormData({
+                name: data.name || '',
+                username: data.username || '',
+                email: data.email || '',
+                phone: data.phone || '',
+                birth: data.birth || '',
+                gender: data.gender || '',
+                status: data.status || '',
+                bio: data.bio || '',
+                location: data.location || '',
+                avatar_url: data.avatar_url || '',
+                banner_url: data.banner_url || '',
+            });
+        }
+    }, [data?.id]);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         setFormData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
     }
 
@@ -93,8 +124,8 @@ export const EditProfile = () => {
 
                         <div className={`relative h-40 md:h-52 w-full rounded-2xl overflow-hidden bg-gray-100 border border-gray-200 group ${!user?.banner_url && 'bg-gray-600'}`}>
                             {
-                                user?.banner_url || bannerPreview && (
-                                    <img src={user?.banner_url || bannerPreview} alt="Banner" className="w-full h-full object-cover" />
+                                bannerPreview || user?.banner_url && (
+                                    <img src={bannerPreview || user?.banner_url} alt="Banner" className="w-full h-full object-cover" />
                                 )
                             }
                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
@@ -146,7 +177,9 @@ export const EditProfile = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
                             <input
                                 type="text"
-                                defaultValue={user?.name}
+                                value={formData?.name}
+                                onChange={handleChange}
+                                name='name'
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50"
                             />
                         </div>
@@ -155,7 +188,9 @@ export const EditProfile = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Username</label>
                             <input
                                 type="text"
-                                defaultValue={user?.username}
+                                value={formData?.username}
+                                onChange={handleChange}
+                                name='username'
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50"
                             />
                         </div>
@@ -164,7 +199,9 @@ export const EditProfile = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
                             <input
                                 type="email"
-                                defaultValue={user?.email}
+                                value={formData?.email}
+                                onChange={handleChange}
+                                name='email'
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50"
                             />
                         </div>
@@ -173,7 +210,9 @@ export const EditProfile = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number</label>
                             <input
                                 type="text"
-                                defaultValue={user?.phone}
+                                value={formData?.phone}
+                                onChange={handleChange}
+                                name='phone'
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50"
                             />
                         </div>
@@ -182,7 +221,9 @@ export const EditProfile = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Birth Date</label>
                             <input
                                 type="date"
-                                defaultValue={user?.birth}
+                                value={formData?.birth}
+                                onChange={handleChange}
+                                name='birth'
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50"
                             />
                         </div>
@@ -190,7 +231,9 @@ export const EditProfile = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Gender</label>
                             <select
-                                defaultValue={user?.gender}
+                                value={formData?.gender}
+                                onChange={handleChange}
+                                name='gender'
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 capitalize"
                             >
                                 <option value="male">Male</option>
@@ -198,20 +241,39 @@ export const EditProfile = () => {
                             </select>
                         </div>
 
+
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Location</label>
                             <input
                                 type="text"
-                                defaultValue={user?.location}
+                                value={formData?.location}
+                                onChange={handleChange}
+                                name='location'
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50"
                             />
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Status</label>
+                            <select
+                                value={formData?.status}
+                                onChange={handleChange}
+                                name='status'
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 capitalize"
+                            >
+                                <option value="single">Single</option>
+                                <option value="married">Married</option>
+                                <option value="engaged">Engaged</option>
+                                <option value="divorced">Divorded</option>
+                            </select>
                         </div>
 
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Bio</label>
                             <textarea
                                 rows={3}
-                                defaultValue={user?.bio}
+                                value={formData?.bio}
+                                onChange={handleChange}
+                                name='bio'
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 resize-none"
                             ></textarea>
                         </div>
