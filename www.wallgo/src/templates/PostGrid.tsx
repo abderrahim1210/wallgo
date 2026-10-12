@@ -28,7 +28,7 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-1 md:gap-2">
-            {posts.map((post) => (
+            {posts?.map((post) => (
                 <div
                     key={post.id}
                     onClick={() => setSelectedPost(post)}

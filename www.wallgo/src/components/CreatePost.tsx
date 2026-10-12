@@ -1,41 +1,83 @@
 import React, { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MobileCellNavbar } from '../layouts/MobileCellNavbar';
-import { Globe, Image, Lock, Send, Smile, Sparkles, Video, X } from 'lucide-react';
+import { Clock, Globe, Image, Lock, Send, Smile, Sparkles, Video, X } from 'lucide-react';
 import { Navbar } from '../layouts/Navbar';
 import { Helmet } from 'react-helmet-async';
+import { useAuth } from '../hooks/AuthProvider';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+
+interface Post {
+    content: string,
+    post_type: 'regular' | 'time_capsule',
+    schedule_time?: string,
+    expires_at?: string,
+    unlock_time?: string,
+    capsule_status?: string,
+    media_url?: string
+}
 
 const CreatePost = () => {
     const navigate = useNavigate();
     const [content, setContent] = useState('');
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [privacy, setPrivacy] = useState<'public' | 'private'>('public');
+    const [privacy, setPrivacy] = useState<'regular' | 'time_capsule'>('regular');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [notification, setNotification] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-
+    const { user } = useAuth()!;
+    const [post, setPost] = useState<Post>({
+        content: '',
+        post_type: privacy,
+        schedule_time: '',
+        expires_at: '',
+        unlock_time: '',
+        capsule_status: '',
+        media_url: ''
+    });
     const showNotify = (msg: string) => {
         setNotification(msg);
         setTimeout(() => setNotification(null), 2500);
     };
 
     const emojis = ['😊', '🚀', '🔥', '👍', '❤️', '💡', '😎', '💻', '✨', '⭐', '🎉', '👏'];
-
+    const api_url = 'https://api.wallgo.test';
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             const imageUrl = URL.createObjectURL(file);
             setSelectedImage(imageUrl);
             showNotify('Image attached successfully');
+            setPost(prev => ({ ...prev, media_url: imageUrl }));
         }
     };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setPost(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    }
 
     const addEmoji = (emoji: string) => {
         setContent(prev => prev + emoji);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        try {
+            await axios.post(`${api_url}/posts/create`, post, { withCredentials: true, withXSRFToken: true }).then(res => {
+                if (res.data.success) {
+                    toast.success(res.data.message || 'Post uploaded successfully');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    toast.error(res.data.message || 'Upload failed');
+                    console.log(res.data.message);
+                }
+            })
+        } catch (err: any) {
+            console.error(err?.response?.data);
+        }
         if (!content.trim() && !selectedImage) {
             showNotify('Please add some text or an image to post');
             return;
@@ -46,6 +88,8 @@ const CreatePost = () => {
             navigate('/');
         }, 1500);
     };
+
+    const [showCapsuleOptions, setShowCapsuleOptions] = useState(false);
     return (
         <>
             <Helmet>
@@ -77,27 +121,27 @@ const CreatePost = () => {
                     <form onSubmit={handleSubmit}>
                         <div className="p-4 flex items-center space-x-3">
                             <img
-                                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80"
+                                src={user?.avatar_url || '/icons/avatar1.svg'}
                                 alt="User Avatar"
                                 className="w-11 h-11 rounded-full object-cover border border-gray-200"
                             />
                             <div>
-                                <h4 className="text-sm font-semibold text-gray-900">Abderrahim Khali Ali</h4>
+                                <h4 className="text-sm font-semibold text-gray-900">{user?.username}</h4>
                                 <div className="flex items-center space-x-1 mt-0.5">
                                     <button
                                         type="button"
-                                        onClick={() => setPrivacy(privacy === 'public' ? 'private' : 'public')}
+                                        onClick={() => setPrivacy(privacy === 'regular' ? 'time_capsule' : 'regular')}
                                         className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
                                     >
-                                        {privacy === 'public' ? (
+                                        {privacy === 'regular' ? (
                                             <>
                                                 <Globe className="w-3 h-3 text-blue-600" />
-                                                <span>Public</span>
+                                                <span>Regular</span>
                                             </>
                                         ) : (
                                             <>
-                                                <Lock className="w-3 h-3 text-gray-600" />
-                                                <span>Only me</span>
+                                                <Clock className="w-3 h-3 text-gray-600" />
+                                                <span>Time Capsule</span>
                                             </>
                                         )}
                                     </button>
@@ -107,9 +151,10 @@ const CreatePost = () => {
 
                         <div className="px-4 pb-2">
                             <textarea
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                                placeholder="What's on your mind, Abderrahim?"
+                                value={post?.content}
+                                onChange={handleChange}
+                                name='content'
+                                placeholder={`What's on your mind, ${user?.name ?? ''}?`}
                                 rows={4}
                                 className="w-full text-gray-900 text-xs md:text-sm placeholder-gray-400 focus:outline-none resize-none"
                             ></textarea>
@@ -185,6 +230,18 @@ const CreatePost = () => {
                             </div>
                         </div>
 
+                        {
+                            privacy === "time_capsule" && (
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCapsuleOptions(!showCapsuleOptions)}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${showCapsuleOptions ? 'bg-purple-100 text-[var(--special-purple)]' : 'hover:bg-gray-100'}`}
+                                >
+                                    <Clock className="w-4 h-4" /> Time Capsule
+                                </button>
+                            )
+                        }
+
                         <div className="p-4 border-t border-gray-200 bg-gray-50/50 flex justify-end">
                             <button
                                 type="submit"
@@ -194,6 +251,22 @@ const CreatePost = () => {
                                 <span>Post</span>
                             </button>
                         </div>
+
+                        {
+                            privacy === "time_capsule" && showCapsuleOptions && (
+                                <div className="mt-3 p-3 bg-purple-50/50 rounded-2xl border border-purple-100 space-y-3">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-1">Unlock Time</label>
+                                            <input onChange={handleChange} value={post?.unlock_time} type="datetime-local" name="unlock_time" className="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs bg-white outline-none" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-1">Expires At</label>
+                                            <input onChange={handleChange} value={post?.expires_at} type="datetime-local" name="expires_at" className="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs bg-white outline-none" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                     </form>
                 </div>
             </div>
