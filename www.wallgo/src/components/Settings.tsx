@@ -1,10 +1,44 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MainLayout } from '../MainLayout'
 import { Helmet } from 'react-helmet-async'
-import { Bell, ChevronRight, Moon, Settings as SettingsIcon, Shield, User } from 'lucide-react'
+import { Bell, ChevronRight, Info, Moon, Settings as SettingsIcon, Shield, User } from 'lucide-react'
+import axios from 'axios'
+import { useAuth } from '../hooks/AuthProvider'
+import toast, { Toaster } from 'react-hot-toast'
 
 export const Settings = () => {
   const [activeTab, setActiveTab] = useState('account');
+  const [data, setData] = useState({
+    visibility: '',
+    currentPassword: '',
+    password: ''
+  });
+
+  const api_url = 'https://api.wallgo.test';
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setData(prev => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  const handleSubmit = async () => {
+    try {
+      await axios.post(`${api_url}/settings`, data, { withCredentials: true, withXSRFToken: true }).then(res => {
+        if (res.data.success) {
+          toast.success(res.data.message || 'Settings updated successfully');
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        }
+        else {
+          toast.error(res.data.message || 'Update Failed');
+          console.log(res.data.message);
+        }
+      });
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Updated Failed');
+      console.log(err?.response?.data);
+    }
+  }
   return (
     <MainLayout>
       <Helmet>
@@ -74,7 +108,7 @@ export const Settings = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Account Visibility</label>
-                    <select className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] outline-none text-sm bg-gray-50/50">
+                    <select value={data?.visibility} name='visibility' onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] outline-none text-sm bg-gray-50/50">
                       <option value="public">Public Account</option>
                       <option value="private">Private Account</option>
                     </select>
@@ -113,11 +147,11 @@ export const Settings = () => {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                    <input type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none text-sm bg-gray-50/50" />
+                    <input value={data.currentPassword} name='currentPassword' onChange={handleChange} type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none text-sm bg-gray-50/50" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                    <input type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none text-sm bg-gray-50/50" />
+                    <input value={data.password} name='password' onChange={handleChange} type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none text-sm bg-gray-50/50" />
                   </div>
                 </div>
               </div>
@@ -142,7 +176,7 @@ export const Settings = () => {
             )}
 
             <div className="mt-8 pt-4 border-t border-gray-100 flex justify-end">
-              <button className="px-6 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-xl hover:opacity-90 transition cursor-pointer">
+              <button className="px-6 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-xl hover:opacity-90 transition cursor-pointer" onClick={handleSubmit}>
                 Save Changes
               </button>
             </div>

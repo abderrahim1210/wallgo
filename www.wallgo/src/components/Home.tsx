@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { MainLayout } from '../MainLayout'
 import { PostCard } from '../pages/Post/PostCard';
 import { Bookmark, Code, Compass, Flame, Globe, ImageIcon, Layers, Pencil, Plus, Settings, TrendingUp, Users } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
 import axios from 'axios';
@@ -63,7 +63,9 @@ export const Home = () => {
 
   const { data } = useQuery({
     queryKey: ['user_data_home'],
-    queryFn: fetchInfos
+    queryFn: fetchInfos,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 
   const profile = data?.user || null;
@@ -110,76 +112,140 @@ export const Home = () => {
           <aside className="hidden lg:block w-64 shrink-0">
             <div className="sticky top-20 space-y-4">
 
-              <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
-                <div className="flex items-center space-x-3 mb-3 pb-3 border-b border-gray-100">
-                  <img
-                    src={profile?.avatar_url ?? '/icons/avatar1.svg'}
-                    alt="Abderrahim Khali Ali"
-                    className="w-11 h-11 rounded-full object-cover border-2 border-purple-100"
-                  />
-                  <div className="overflow-hidden">
-                    <h4 className="font-semibold text-sm text-gray-900 truncate">{profile?.name}</h4>
-                    <p className="text-xs text-gray-500 truncate">@{profile?.username}</p>
-                  </div>
-                </div>
-                <div className="flex justify-around text-center py-1 text-xs text-gray-600">
-                  <div>
-                    <span className="block font-bold text-gray-900 text-sm">{stats?.postsCount}</span>
-                    <span>Posts</span>
-                  </div>
-                  <div className="border-r border-gray-100"></div>
-                  <div>
-                    <span className="block font-bold text-gray-900 text-sm">{stats?.followers_count}</span>
-                    <span className='cursor-pointer' onClick={() => openModal('my_followers')}>Followers</span>
-                  </div>
-                  <div className="border-r border-gray-100"></div>
-                  <div>
-                    <span className="block font-bold text-gray-900 text-sm">{stats?.followings_count}</span>
-                    <span className='cursor-pointer' onClick={() => openModal('my_followers')}>Following</span>
-                  </div>
-                </div>
-              </div>
+              {
+                profile ? (
+                  <>
+                    <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+                      <div className="flex items-center space-x-3 mb-3 pb-3 border-b border-gray-100">
+                        <img
+                          src={profile?.avatar_url ?? '/icons/avatar1.svg'}
+                          alt="Abderrahim Khali Ali"
+                          className="w-11 h-11 rounded-full object-cover border-2 border-purple-100"
+                        />
+                        <div className="overflow-hidden">
+                          <h4 className="font-semibold text-sm text-gray-900 truncate">{profile?.name}</h4>
+                          <p className="text-xs text-gray-500 truncate">@{profile?.username}</p>
+                        </div>
+                      </div>
+                      <div className="flex justify-around text-center py-1 text-xs text-gray-600">
+                        <div>
+                          <span className="block font-bold text-gray-900 text-sm">{stats?.postsCount}</span>
+                          <span>Posts</span>
+                        </div>
+                        <div className="border-r border-gray-100"></div>
+                        <div>
+                          <span className="block font-bold text-gray-900 text-sm">{stats?.followers_count}</span>
+                          <span className='cursor-pointer' onClick={() => openModal('my_followers')}>Followers</span>
+                        </div>
+                        <div className="border-r border-gray-100"></div>
+                        <div>
+                          <span className="block font-bold text-gray-900 text-sm">{stats?.followings_count}</span>
+                          <span className='cursor-pointer' onClick={() => openModal('my_followers')}>Following</span>
+                        </div>
+                      </div>
+                    </div>
 
-              <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm space-y-2">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 px-4 mb-2">Discover</h3>
+                    <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm space-y-2">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 px-4 mb-2">Discover</h3>
 
-                <button onClick={() => navigate('/myposts')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
-                  <Pencil className="w-5 h-5 text-blue-500" />
-                  <span>My Posts</span>
-                </button>
+                      <button onClick={() => navigate('/myposts')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
+                        <Pencil className="w-5 h-5 text-blue-500" />
+                        <span>My Posts</span>
+                      </button>
 
-                <button onClick={() => navigate('/pages')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
-                  <Layers className="w-5 h-5 text-emerald-500" />
-                  <span>Pages</span>
-                </button>
+                      <button onClick={() => navigate('/pages')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
+                        <Layers className="w-5 h-5 text-emerald-500" />
+                        <span>Pages</span>
+                      </button>
 
-                <button onClick={() => navigate('/groups')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
-                  <Users className="w-5 h-5 text-[var(--special-red)]" />
-                  <span>Groups</span>
-                </button>
+                      <button onClick={() => navigate('/groups')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
+                        <Users className="w-5 h-5 text-[var(--special-red)]" />
+                        <span>Groups</span>
+                      </button>
 
-                <button onClick={() => navigate('/saved_posts')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
-                  <Bookmark className="w-5 h-5 text-purple-500" />
-                  <span>Bookmarks</span>
-                </button>
+                      <button onClick={() => navigate('/saved_posts')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
+                        <Bookmark className="w-5 h-5 text-purple-500" />
+                        <span>Bookmarks</span>
+                      </button>
 
-                <button onClick={() => navigate('/settings')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-purple-50 text-gray-600 text-sm transition-colors cursor-pointer">
-                  <Settings className="w-5 h-5 text-[var(--special-gray)]" />
-                  <span>Settings</span>
-                </button>
+                      <button onClick={() => navigate('/settings')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-purple-50 text-gray-600 text-sm transition-colors cursor-pointer">
+                        <Settings className="w-5 h-5 text-[var(--special-gray)]" />
+                        <span>Settings</span>
+                      </button>
 
-                <div className="pt-3 border-t border-gray-100 mt-3">
-                  <button onClick={() => navigate('/create_post')} className="w-full py-3 bg-[var(--special-purple)] text-white font-medium text-sm rounded-xl shadow-md shadow-purple-600/20 flex items-center justify-center space-x-2 transition-all cursor-pointer">
-                    <Plus className="w-5 h-5" />
-                    <span>Create Post</span>
-                  </button>
-                </div>
-              </div>
+                      <div className="pt-3 border-t border-gray-100 mt-3">
+                        <button onClick={() => navigate('/create_post')} className="w-full py-3 bg-[var(--special-purple)] text-white font-medium text-sm rounded-xl shadow-md shadow-purple-600/20 flex items-center justify-center space-x-2 transition-all cursor-pointer">
+                          <Plus className="w-5 h-5" />
+                          <span>Create Post</span>
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 rounded-2xl p-5 text-white shadow-md space-y-4 relative overflow-hidden">
+                      <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
 
+                      <div className="space-y-1.5 relative z-10">
+                        <h3 className="font-bold text-base tracking-tight">Join WallGo Today! 🚀</h3>
+                        <p className="text-xs text-purple-200 leading-relaxed">
+                          Connect with creators, share your favorite wallpapers, and build your community.
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 pt-1 relative z-10">
+                        <Link
+                          to="/account/login"
+                          className="flex-1 py-2.5 px-3 bg-white hover:bg-purple-50 text-purple-900 text-xs font-semibold rounded-xl text-center transition shadow-sm"
+                        >
+                          Sign In
+                        </Link>
+                        <Link
+                          to="/account/signup"
+                          className="flex-1 py-2.5 px-3 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold rounded-xl text-center transition shadow-sm border border-purple-500/50"
+                        >
+                          Sign Up
+                        </Link>
+                      </div>
+                    </div>
+                  </>
+                )
+              }
             </div>
           </aside>
 
           <main className="w-full max-w-xl shrink-0">
+            {
+              !profile && (
+                <>
+                  <div className="lg:hidden bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 rounded-2xl p-5 text-white shadow-md space-y-4 relative overflow-hidden">
+                    <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+
+                    <div className="space-y-1.5 relative z-10">
+                      <h3 className="font-bold text-base tracking-tight">Join WallGo Today! 🚀</h3>
+                      <p className="text-xs text-purple-200 leading-relaxed">
+                        Connect with creators, share your favorite wallpapers, and build your community.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1 relative z-10">
+                      <Link
+                        to="/account/login"
+                        className="flex-1 py-2.5 px-3 bg-white hover:bg-purple-50 text-purple-900 text-xs font-semibold rounded-xl text-center transition shadow-sm"
+                      >
+                        Sign In
+                      </Link>
+                      <Link
+                        to="/account/signup"
+                        className="flex-1 py-2.5 px-3 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold rounded-xl text-center transition shadow-sm border border-purple-500/50"
+                      >
+                        Sign Up
+                      </Link>
+                    </div>
+                  </div>
+                </>
+              )
+            }
             <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-6 w-full">
               <div className='mb-3 px-1 h-10 flex items-center overflow-hidden'>
                 <p className={`quote text-2xs text-gray-500 transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}>
@@ -196,7 +262,7 @@ export const Home = () => {
                 <div className="relative flex-1 flex items-center space-x-2 min-w-0">
                   <input
                     type="text"
-                    placeholder="What's on your mind, Abderrahim?"
+                    placeholder={`What's on your mind, ${profile?.username ?? ''}?`}
                     onChange={checkWrite}
                     className="w-full bg-gray-100/80 hover:bg-gray-100 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all rounded-full px-4 py-2.5 text-sm text-gray-800 outline-none border border-gray-200"
                   />

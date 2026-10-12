@@ -11,9 +11,9 @@ import CreatePost from '../components/CreatePost'
 import { MyPosts } from '../components/MyPosts'
 import { Pages } from '../components/Pages'
 import { Groups } from '../components/Groups'
-import { Profile } from '../components/Profile'
 import { EditProfile } from '../components/EditProfile'
 import { Settings } from '../components/Settings'
+import { Profile } from '../components/Profile'
 
 export const AppRoutes = () => {
     return (
