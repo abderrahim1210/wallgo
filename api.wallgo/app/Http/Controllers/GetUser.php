@@ -16,7 +16,7 @@ class GetUser extends Controller
             $posts = Post::where('user_id', Auth::id())->count();
             $followers_list = $user->followers();
             $followings_list = $user->followings();
-            $posts_list = Post::select('id', 'user_id', 'media_url')->where('user_id', $user->id)->first();
+            $posts_list = Post::select('id', 'user_id', 'media_url')->where('user_id', $user->id)->get();
             if (!$user) return response()->json(['success' => false, 'message' => 'User not found', 401]);
             return response()->json([
                 'success' => true,

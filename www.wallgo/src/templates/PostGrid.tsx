@@ -18,7 +18,7 @@ interface PostGridProps {
 
 export const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
 
-    if (posts.length === 0) {
+    if (posts?.length === 0) {
         return (
             <EmptyContent text='No posts found it - try again later !' icon={<Album />} />
         )
