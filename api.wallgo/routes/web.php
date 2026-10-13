@@ -31,6 +31,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/settings', [Settings::class, 'update']);
 
     Route::post('/posts/create', [Post::class, 'create']);
+
+    Route::get('/posts', [Post::class, 'index']);
 });
 
 

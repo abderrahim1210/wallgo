@@ -1,14 +1,22 @@
-import { Album, Heart, MessageSquare } from 'lucide-react';
+import { Album, FileText, Heart, MessageSquare } from 'lucide-react';
 import React, { useState } from 'react'
 import { SelectedPosts } from '../components/SelectedPosts';
 import { EmptyContent } from '../components/EmptyContent';
+import { PostCard } from '../pages/Post/PostCard';
 
 interface Post {
     id: number;
+    user: {
+        id:number;
+        name: string;
+        username: string;
+        avatar_url: string;
+    };
     content: string;
-    image?: string;
-    likesCount: number;
-    commentsCount: number;
+    media_url: string;
+    likes_count: number;
+    comments_count: number;
+    created_at: string;
 };
 
 interface PostGridProps {
@@ -17,7 +25,7 @@ interface PostGridProps {
 };
 
 export const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
-
+    console.log(posts);
     if (posts?.length === 0) {
         return (
             <EmptyContent text='No posts found it - try again later !' icon={<Album />} />
@@ -27,37 +35,37 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-1 md:gap-2">
+        <div className="gap-1 md:gap-2">
             {posts?.map((post) => (
-                <div
-                    key={post.id}
-                    onClick={() => setSelectedPost(post)}
-                    className="relative group aspect-square bg-gray-900 rounded overflow-hidden cursor-pointer"
-                >
-                    {post.image ? (
-                        <img
-                            src={post.image}
-                            alt="Post media"
-                            className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                        />
-                    ) : (
-                        <div className="w-full h-full p-4 flex items-center justify-center bg-gray-800 text-gray-300 text-xs text-center">
-                            <p className="line-clamp-4">{post.content}</p>
+                post.media_url ? (
+                    <section className='grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5'>
+                        <div
+                            key={post.id}
+                            onClick={() => setSelectedPost(post)}
+                            className="relative group aspect-square bg-gray-900 rounded overflow-hidden cursor-pointer"
+                        >
+                            <img
+                                src={post.media_url}
+                                alt="Post media"
+                                className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                            />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center gap-6 text-white font-semibold">
+                                <div className="flex items-center gap-1.5">
+                                    <Heart size={20} className="fill-white" />
+                                    <span>{post.likes_count}</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <MessageSquare size={20} className="fill-white" />
+                                    <span>{post.comments_count}</span>
+                                </div>
+                            </div>
                         </div>
-                    )}
-
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center gap-6 text-white font-semibold">
-                        <div className="flex items-center gap-1.5">
-                            <Heart size={20} className="fill-white" />
-                            <span>{post.likesCount}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                            <MessageSquare size={20} className="fill-white" />
-                            <span>{post.commentsCount}</span>
-                        </div>
-                    </div>
-
-                </div>
+                    </section>
+                ) : (
+                    <section>
+                        <PostCard key={post.id} {...post} />
+                    </section>
+                )
             ))}
             {selectedPost && (
                 <SelectedPosts post={selectedPost} onClose={() => setSelectedPost(null)} />

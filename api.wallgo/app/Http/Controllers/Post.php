@@ -14,9 +14,9 @@ class Post extends Controller
         $request->validate([
             'content' => ['string', 'max:255', 'required'],
             'post_type' => ['string', 'in:regular,time_capsule'],
-            'schedule_time' => ['nullable', 'time'],
-            'expires_at' => ['nullable', 'time'],
-            'unlock_time' => ['nullable', 'time'],
+            'schedule_time' => ['nullable', 'date'],
+            'expires_at' => ['nullable', 'date'],
+            'unlock_time' => ['nullable', 'date'],
             'capsule_status' => ['nullable', 'string', 'in:published,active'],
             'media_url' => ['nullable', 'string']
         ]);
@@ -73,6 +73,26 @@ class Post extends Controller
             return response()->json([
                 'success' => false,
                 'message' => "Upload failed : " . $e->getMessage()
+            ]);
+        }
+    }
+
+
+    public function index()
+    {
+        $user = User::findOrFail(Auth::id());
+        try {
+            if ($user) {
+                $posts = ModelsPost::withCount(['likes', 'comments'])->with(['user:id,username,name,avatar_url'])->get();
+                return response()->json([
+                    'success' => true,
+                    'posts' => $posts
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
             ]);
         }
     }

@@ -174,10 +174,10 @@ export const Profile = () => {
                                 )
                             }
                         </div>
-                        <div className='mt-3'>
-                            <PostGrid posts={posts_list} />
-                        </div>
                     </div>
+                </div>
+                <div className='mt-3'>
+                    <PostGrid posts={posts_list} />
                 </div>
 
             </div>

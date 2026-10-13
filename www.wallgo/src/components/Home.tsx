@@ -8,50 +8,50 @@ import ModalTemplate from '../templates/ModalTemplate';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 
+
+interface Post {
+  id: number,
+  user: {
+    id:number;
+    name: string;
+    username: string;
+    avatar_url: string;
+  },
+  content: string,
+  media_url: string,
+  // schedule_time?: string,
+  // expires_at?: string,
+  // unlock_time?: string,
+  // is_published?: boolean,
+  created_at: string,
+  // updated_at?: string,
+  // post_type: 'regular' | 'time_capsule',
+  // capsule_status?: string
+  likes_count: number,
+  comments_count: number
+}
 export const Home = () => {
-  const dummyPosts = [
-    {
-      id: 1,
-      author: {
-        name: 'Abderrahim Khali Ali',
-        username: 'abderrahim',
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
-      },
-      content: 'Working on WallGo social media platform UI/UX today! The glassmorphism design with Tailwind is looking amazing. 🚀🔥',
-      image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
-      timestamp: '2h ago',
-      likesCount: 24,
-      commentsCount: 5,
-    },
-    {
-      id: 2,
-      author: {
-        name: 'Sara Miller',
-        username: 'saramiller',
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
-      },
-      content: 'Beautiful sunset captured during my evening walk. Photography is pure therapy! 📸✨',
-      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
-      timestamp: '5h ago',
-      likesCount: 142,
-      commentsCount: 18,
-    },
-    {
-      id: 3,
-      author: {
-        name: 'Mohammed',
-        username: 'Ahmed',
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
-      },
-      content: 'Wooooooooooooow',
-      timestamp: '5h ago',
-      likesCount: 10,
-      commentsCount: 4,
-    },
-  ];
+  const api_url = 'https://api.wallgo.test';
+
+  const fetchPosts = async (): Promise<Post[]> => {
+    try {
+      const res = await axios.get(`${api_url}/posts`, { withCredentials: true, withXSRFToken: true });
+      return res.data.success ? res.data.posts : [];
+    } catch (err: any) {
+      console.log(err?.response?.data?.message);
+      return [];
+    }
+  }
+
+  const { data: posts = [] } = useQuery({
+    queryKey: ['posts'],
+    queryFn: fetchPosts,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false
+  });
+  console.log(posts)
 
   const navigate = useNavigate();
-  const api_url = 'https://api.wallgo.test';
   const fetchInfos = async () => {
     try {
       const res = await axios.get(`${api_url}/get_user`, { withCredentials: true, withXSRFToken: true });
@@ -278,7 +278,7 @@ export const Home = () => {
             </div>
 
             <div className="space-y-4">
-              {dummyPosts.map((post) => (
+              {posts?.map((post) => (
                 <PostCard key={post.id} {...post} />
               ))}
             </div>

@@ -46,10 +46,14 @@ const CreatePost = () => {
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setSelectedImage(imageUrl);
-            showNotify('Image attached successfully');
-            setPost(prev => ({ ...prev, media_url: imageUrl }));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result as string;
+                setSelectedImage(base64String);
+                setPost(prev => ({ ...prev, media_url: base64String }));
+                showNotify('Image attached successfully');
+            };
+            reader.readAsDataURL(file);
         }
     };
 
