@@ -14,6 +14,9 @@ interface Post {
     };
     content: string;
     media_url: string;
+    schedule_time:string,
+    unlock_time:string;
+    expires_at:string;
     likes_count: number;
     comments_count: number;
     created_at: string;

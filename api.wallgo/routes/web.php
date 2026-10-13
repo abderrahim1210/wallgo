@@ -5,6 +5,7 @@ use App\Http\Controllers\EditProfile;
 use App\Http\Controllers\GetUser;
 use App\Http\Controllers\Post;
 use App\Http\Controllers\Settings;
+use App\Models\Post as ModelsPost;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -32,7 +33,30 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/posts/create', [Post::class, 'create']);
 
+    Route::put('/posts/{id}/update', [Post::class, 'update']);
+
     Route::get('/posts', [Post::class, 'index']);
+
+    Route::get('/post/{id}', function ($id) {
+        if (empty($id)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Post id required'
+            ]);
+        }
+        try {
+            $post = ModelsPost::findOrFail($id);
+            return response()->json([
+                'success' => true,
+                'post' => $post
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ]);
+        }
+    });
 });
 
 

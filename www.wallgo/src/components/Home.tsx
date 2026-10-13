@@ -12,21 +12,14 @@ import { useQuery } from '@tanstack/react-query';
 interface Post {
   id: number,
   user: {
-    id:number;
+    id: number;
     name: string;
     username: string;
     avatar_url: string;
   },
   content: string,
   media_url: string,
-  // schedule_time?: string,
-  // expires_at?: string,
-  // unlock_time?: string,
-  // is_published?: boolean,
   created_at: string,
-  // updated_at?: string,
-  // post_type: 'regular' | 'time_capsule',
-  // capsule_status?: string
   likes_count: number,
   comments_count: number
 }
@@ -79,6 +72,7 @@ export const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fade, setFade] = useState(true);
   const [write, isWrite] = useState(false);
+  const [content, setContent] = useState('');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -96,6 +90,14 @@ export const Home = () => {
     isWrite(e.target.value.trim().length > 0);
   }
   const { show, openModal, closeModal } = useModal()!;
+
+  const handleSubmit = async () => {
+    try {
+      
+    } catch (err: any) {
+      console.log(err?.response?.data);
+    }
+  }
 
   return (
     <MainLayout>
@@ -261,6 +263,7 @@ export const Home = () => {
                 />
                 <div className="relative flex-1 flex items-center space-x-2 min-w-0">
                   <input
+                    name='content'
                     type="text"
                     placeholder={`What's on your mind, ${profile?.username ?? ''}?`}
                     onChange={checkWrite}

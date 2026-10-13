@@ -8,6 +8,7 @@ import { CommentSection } from '../../components/CommentSection';
 import ShareDropdown from '../../components/ShareDropdown';
 import moment from 'moment';
 import { useAuth } from '../../hooks/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 interface PostCardProps {
     id: number,
@@ -24,6 +25,7 @@ interface PostCardProps {
     comments_count: number
 }
 export const PostCard: React.FC<PostCardProps> = ({
+    id,
     user,
     content,
     media_url,
@@ -57,6 +59,8 @@ export const PostCard: React.FC<PostCardProps> = ({
 
     const isOwner = currentUser?.id === user?.id;
 
+    const navigate = useNavigate();
+
     const postMenuItems: DropdownItem[] = [
         {
             label: 'Copy link',
@@ -68,7 +72,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             {
                 label: 'Edit Post',
                 icon: <Edit3 className="w-4 h-4 text-emerald-500" />,
-                onClick: () => console.log('Edit clicked'),
+                onClick: () => navigate(`/post/${id}/edit`, {state:{postToEdit:{content:content,media_url:media_url,created_at:created_at},id:id}}),
             },
             {
                 label: 'Delete Post',

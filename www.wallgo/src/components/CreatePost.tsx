@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect, useRef, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { MobileCellNavbar } from '../layouts/MobileCellNavbar';
 import { Clock, Globe, Image, Lock, Send, Smile, Sparkles, Video, X } from 'lucide-react';
 import { Navbar } from '../layouts/Navbar';
@@ -7,6 +7,7 @@ import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../hooks/AuthProvider';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useQuery } from '@tanstack/react-query';
 
 interface Post {
     content: string,
@@ -18,8 +19,15 @@ interface Post {
     media_url?: string
 }
 
-const CreatePost = () => {
+interface CreatePostProps {
+    postToEdit?: Post;
+    id?: number;
+}
+
+const CreatePost: React.FC<CreatePostProps> = ({ postToEdit }) => {
     const navigate = useNavigate();
+    const { id } = useParams();
+    const isEditMode = Boolean(id);
     const [content, setContent] = useState('');
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [privacy, setPrivacy] = useState<'regular' | 'time_capsule'>('regular');
@@ -57,6 +65,47 @@ const CreatePost = () => {
         }
     };
 
+    const fetchPostToEdit = async () => {
+        try {
+            if (id) {
+                const res = await axios.get(`${api_url}/post/${id}`, { withCredentials: true, withXSRFToken: true });
+                if (res.data.success) return res.data;
+            } else {
+                return null;
+            }
+        } catch (err: any) {
+            console.log(err?.response?.data);
+        }
+    }
+
+    const { data } = useQuery({
+        queryKey: ['posts_edits'],
+        queryFn: fetchPostToEdit,
+        // staleTime: 1000 * 60 * 5,
+        enabled: isEditMode,
+        // refetchOnWindowFocus: false
+    });
+
+    // const postEdit = data?.post || {};
+
+    useEffect(() => {
+        if (data?.post) {
+            setPost({
+                content: data.post.content || '',
+                post_type: data.post.post_type || 'regular',
+                schedule_time: data.post.schedule_time || '',
+                expires_at: data.post.expires_at || '',
+                unlock_time: data.post.unlock_time || '',
+                capsule_status: data.post.capsule_status || '',
+                media_url: data.post.media_url || ''
+            });
+            setPrivacy(data.post.post_type || 'regular');
+            if (data.post.media_url) {
+                setSelectedImage(data.post.media_url);
+            }
+        }
+    }, [data]);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setPost(prev => ({ ...prev, [e.target.name]: e.target.value }));
     }
@@ -67,12 +116,18 @@ const CreatePost = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!post.content.trim() && !selectedImage) {
+            showNotify('Please add some text or an image to post');
+            return;
+        }
         try {
-            await axios.post(`${api_url}/posts/create`, post, { withCredentials: true, withXSRFToken: true }).then(res => {
+            const url = isEditMode ? `${api_url}/posts/${id}/update` : `${api_url}/posts/create`;
+            const method = isEditMode ? 'put' : 'post';
+            await axios[method](url, post, { withCredentials: true, withXSRFToken: true }).then(res => {
                 if (res.data.success) {
                     toast.success(res.data.message || 'Post uploaded successfully');
                     setTimeout(() => {
-                        window.location.reload();
+                        navigate('/account/profile')
                     }, 1000);
                 } else {
                     toast.error(res.data.message || 'Upload failed');

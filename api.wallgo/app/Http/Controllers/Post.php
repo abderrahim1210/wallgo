@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post as ModelsPost;
 use App\Models\User;
+use BcMath\Number;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -93,6 +94,39 @@ class Post extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed : ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function update(Request $request,$id)
+    {
+        $user = User::findOrFail(Auth::id());
+        if (!$user) return response()->json(['success' => false, 'message' => 'User not found'], 401);
+        $post = ModelsPost::where('id',$id)->where('user_id',$user->id)->first();
+        if (!$post) return response()->json(['success' => false, 'message' => 'Post not found', 404]);
+        $data = $request->all();
+        try {
+            $fn = new \App\Http\Controllers\MediaValide();
+            $res = $fn->valide($data['media_url']);
+            if ($request->filled('media_url') && str_starts_with($request->media_url, 'data:image')) {
+                if ($res) {
+                    $data['media_url'] = $res['image_url'] ?? $res['secure_url'] ?? $res['url'];
+                } else {
+                    unset($data['media_url']);
+                }
+            } else {
+                unset($data['media_url']);
+            }
+
+            $post->update($data);
+            return response()->json([
+                'success' => true,
+                'message' => 'Post updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : '  . $e->getMessage()
             ]);
         }
     }
