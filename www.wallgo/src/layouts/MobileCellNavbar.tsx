@@ -2,12 +2,13 @@ import { Clapperboard, Compass, Flame, Home, MessageCircle, Plus, Search, User }
 import React from 'react'
 import { Tooltip } from '../templates/Tooltip';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../hooks/AuthProvider';
 
 export const MobileCellNavbar = () => {
     const position = "top";
     const location = useLocation();
     const currendPath = location.pathname;
-
+    const { user } = useAuth()!;
     const isActive = (path: string) => currendPath === path;
     const getLinkClass = (path: string) => {
         return `rounded-xl transition-all duration-150 flex items-center justify-center ${isActive(path) ? 'text-[var(--special-purple)] bg-purple-50 shadow-inner' : 'text-gray-600 hover:text-[var(--special-purple)] transition-colors'}`;
@@ -48,7 +49,7 @@ export const MobileCellNavbar = () => {
 
             <Tooltip label='Profile' position={position}>
                 <Link to="/account/profile" className={getLinkClass('/account/profile')}>
-                    <img src={'/icons/avatar1.svg'} alt='avatar' className='w-7 h-7 object-cover rounded-full' />
+                    <img src={user && user?.avatar_url ? user.avatar_url : '/icons/avatar1.svg'} alt='avatar' className='w-7 h-7 object-cover rounded-full' />
                 </Link>
             </Tooltip>
 

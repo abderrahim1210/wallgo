@@ -9,7 +9,9 @@ import ShareDropdown from '../../components/ShareDropdown';
 import moment from 'moment';
 import { useAuth } from '../../hooks/AuthProvider';
 import { useNavigate } from 'react-router-dom';
-
+import Swal from 'sweetalert2';
+import { toast as toastLib } from 'react-hot-toast'
+import axios from 'axios';
 interface PostCardProps {
     id: number,
     user: {
@@ -61,6 +63,36 @@ export const PostCard: React.FC<PostCardProps> = ({
 
     const navigate = useNavigate();
 
+    const deletePost = async (id: number) => {
+        if (!id) return toastLib.error('Post ID not found');
+        try {
+            Swal.fire({
+                icon: "question",
+                title: "Delete post",
+                text: "Are you sure to delete this post ?",
+                confirmButtonColor: "#DB5461",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                showConfirmButton: true,
+                showCancelButton:true
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const res = await axios.delete(`${api_url}/posts/${id}`, { withCredentials: true, withXSRFToken: true });
+                    if (res.data.success) {
+                        toastLib.success('Post deleted !');
+                        setTimeout(() => {
+                            navigate('/account/profile');
+                        }, 1000);
+                    } else {
+                        toastLib.error('Failed to delete post');
+                        console.log(res.data.message);
+                    }
+                }
+            })
+        } catch (err: any) {
+            console.log(err?.response?.data);
+        }
+    }
     const postMenuItems: DropdownItem[] = [
         {
             label: 'Copy link',
@@ -72,13 +104,13 @@ export const PostCard: React.FC<PostCardProps> = ({
             {
                 label: 'Edit Post',
                 icon: <Edit3 className="w-4 h-4 text-emerald-500" />,
-                onClick: () => navigate(`/post/${id}/edit`, {state:{postToEdit:{content:content,media_url:media_url,created_at:created_at},id:id}}),
+                onClick: () => navigate(`/post/${id}/edit`, { state: { postToEdit: { content: content, media_url: media_url, created_at: created_at }, id: id } }),
             },
             {
                 label: 'Delete Post',
                 icon: <Trash2 className="w-4 h-4 text-red-500" />,
                 danger: true,
-                onClick: () => console.log('Delete clicked'),
+                onClick: () => deletePost(id),
             },
         ] : []),
         ...(!isOwner ? [
@@ -90,6 +122,9 @@ export const PostCard: React.FC<PostCardProps> = ({
             },
         ] : [])
     ];
+
+    const api_url = 'https://api.wallgo.test'
+
     return (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
             <div className="flex items-center justify-between p-4 pb-3">

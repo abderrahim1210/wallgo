@@ -57,6 +57,8 @@ Route::middleware('auth:sanctum')->group(function () {
             ]);
         }
     });
+
+    Route::delete('/posts/{id}', [Post::class, 'destroy']);
 });
 
 

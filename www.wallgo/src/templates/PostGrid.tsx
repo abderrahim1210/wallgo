@@ -3,20 +3,24 @@ import React, { useState } from 'react'
 import { SelectedPosts } from '../components/SelectedPosts';
 import { EmptyContent } from '../components/EmptyContent';
 import { PostCard } from '../pages/Post/PostCard';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 interface Post {
     id: number;
     user: {
-        id:number;
+        id: number;
         name: string;
         username: string;
         avatar_url: string;
     };
     content: string;
     media_url: string;
-    schedule_time:string,
-    unlock_time:string;
-    expires_at:string;
+    schedule_time: string,
+    unlock_time: string;
+    expires_at: string;
     likes_count: number;
     comments_count: number;
     created_at: string;
@@ -28,15 +32,15 @@ interface PostGridProps {
 };
 
 export const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
-    console.log(posts);
     if (posts?.length === 0) {
         return (
             <EmptyContent text='No posts found it - try again later !' icon={<Album />} />
         )
     }
 
+    const api_url = 'https://api.wallgo.test';
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-
+    const navigate = useNavigate();
     return (
         <div className="gap-1 md:gap-2">
             {posts?.map((post) => (

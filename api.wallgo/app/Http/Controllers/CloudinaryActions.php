@@ -41,4 +41,24 @@ class CloudinaryActions extends Controller
             throw $e;
         }
     }
+
+    public function destroy($url,$pathC)
+    {
+        if (str_contains($url, 'https://')) {
+            $urlParts = explode('/', $url);
+            $fileNameWithExt = end($urlParts);
+            $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            $publicId = $pathC . $fileName;
+
+            try {
+                $uploader = new \Cloudinary\Api\Upload\UploadApi();
+                $uploader->destroy($publicId);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ]);
+            }
+        }
+    }
 }

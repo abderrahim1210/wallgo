@@ -98,11 +98,11 @@ class Post extends Controller
         }
     }
 
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
         $user = User::findOrFail(Auth::id());
         if (!$user) return response()->json(['success' => false, 'message' => 'User not found'], 401);
-        $post = ModelsPost::where('id',$id)->where('user_id',$user->id)->first();
+        $post = ModelsPost::where('id', $id)->where('user_id', $user->id)->first();
         if (!$post) return response()->json(['success' => false, 'message' => 'Post not found', 404]);
         $data = $request->all();
         try {
@@ -127,6 +127,43 @@ class Post extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed : '  . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function destroy($id)
+    {
+        $user = User::findOrFail(Auth::id());
+        $post = ModelsPost::findOrFail($id);
+        if (!$user) return response()->json(['success' => false, 'message' => 'User not found'], 401);
+        if (!$post) return response()->json(['success' => false, 'message' => 'Post by this id not found'], 404);
+
+        if ($post->user_id !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => "You don't have permission for delete this post"
+            ]);
+        }
+        try {
+            if ($post->media_url) {
+                $cloudinary = new \App\Http\Controllers\CloudinaryActions();
+                $cloudinary->destroy($post->media_url, 'wallgo_medias/');
+            }
+
+
+            $post->likes()->delete();
+            $post->comments()->delete();
+
+            $post->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
             ]);
         }
     }
