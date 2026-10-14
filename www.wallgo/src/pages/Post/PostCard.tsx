@@ -9,34 +9,38 @@ import ShareDropdown from '../../components/ShareDropdown';
 import moment from 'moment';
 import { useAuth } from '../../hooks/AuthProvider';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import { toast as toastLib } from 'react-hot-toast'
-import axios from 'axios';
+import type { Post } from '../../templates/PostGrid';
+import { SelectedPosts } from '../../components/SelectedPosts';
+
 interface PostCardProps {
-    id: number,
-    user: {
-        id: number;
-        name: string;
-        username: string;
-        avatar_url: string;
-    };
-    content: string,
-    media_url: string,
-    created_at: string,
-    likes_count: number,
-    comments_count: number
+    // id: number,
+    // user: {
+    //     id: number;
+    //     name: string;
+    //     username: string;
+    //     avatar_url: string;
+    // };
+    // content: string,
+    // media_url: string,
+    // created_at: string,
+    // likes_count: number,
+    // comments_count: number,
+    post:Post;
+    onDelete : (id:number) => void;
 }
 export const PostCard: React.FC<PostCardProps> = ({
-    id,
-    user,
-    content,
-    media_url,
-    created_at,
-    likes_count,
-    comments_count
+    // id,
+    // user,
+    // content,
+    // media_url,
+    // created_at,
+    // likes_count,
+    // comments_count,
+    post,
+    onDelete
 }) => {
     const [liked, setLiked] = useState(false);
-    const [likes, setLikes] = useState(likes_count);
+    const [likes, setLikes] = useState(post?.likes_count);
     const [saved, setSaved] = useState(false);
     const { show, openModal, closeModal } = useModal()!;
     const { user: currentUser } = useAuth()!;
@@ -59,40 +63,10 @@ export const PostCard: React.FC<PostCardProps> = ({
         }, 3000);
     };
 
-    const isOwner = currentUser?.id === user?.id;
+    const isOwner = currentUser?.id === post?.user.id;
 
     const navigate = useNavigate();
 
-    const deletePost = async (id: number) => {
-        if (!id) return toastLib.error('Post ID not found');
-        try {
-            Swal.fire({
-                icon: "question",
-                title: "Delete post",
-                text: "Are you sure to delete this post ?",
-                confirmButtonColor: "#DB5461",
-                confirmButtonText: "Yes",
-                cancelButtonText: "No",
-                showConfirmButton: true,
-                showCancelButton:true
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    const res = await axios.delete(`${api_url}/posts/${id}`, { withCredentials: true, withXSRFToken: true });
-                    if (res.data.success) {
-                        toastLib.success('Post deleted !');
-                        setTimeout(() => {
-                            navigate('/account/profile');
-                        }, 1000);
-                    } else {
-                        toastLib.error('Failed to delete post');
-                        console.log(res.data.message);
-                    }
-                }
-            })
-        } catch (err: any) {
-            console.log(err?.response?.data);
-        }
-    }
     const postMenuItems: DropdownItem[] = [
         {
             label: 'Copy link',
@@ -104,13 +78,13 @@ export const PostCard: React.FC<PostCardProps> = ({
             {
                 label: 'Edit Post',
                 icon: <Edit3 className="w-4 h-4 text-emerald-500" />,
-                onClick: () => navigate(`/post/${id}/edit`, { state: { postToEdit: { content: content, media_url: media_url, created_at: created_at }, id: id } }),
+                onClick: () => navigate(`/post/${post?.id}/edit`, { state: { postToEdit: { content: post?.content, media_url: post?.media_url, created_at: post?.created_at }, id: post?.id } }),
             },
             {
                 label: 'Delete Post',
                 icon: <Trash2 className="w-4 h-4 text-red-500" />,
                 danger: true,
-                onClick: () => deletePost(id),
+                onClick: () => onDelete(post?.id),
             },
         ] : []),
         ...(!isOwner ? [
@@ -123,20 +97,19 @@ export const PostCard: React.FC<PostCardProps> = ({
         ] : [])
     ];
 
-    const api_url = 'https://api.wallgo.test'
-
+    const [selectedPost, setSelectedPost] = useState<Post | null>(null);
     return (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
             <div className="flex items-center justify-between p-4 pb-3">
                 <div className="flex items-center space-x-3">
                     <img
-                        src={user.avatar_url || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80"}
-                        alt={user.name}
+                        src={post?.user.avatar_url || "/icons/avatar1.svg"}
+                        alt={post?.user.name}
                         className="w-10 h-10 rounded-full object-cover border border-purple-100"
                     />
                     <div>
-                        <h4 className="font-semibold text-sm text-gray-900 leading-tight">{user.name}</h4>
-                        <span className="text-xs text-gray-500">@{user.username} • {moment(created_at).fromNow()}</span>
+                        <h4 className="font-semibold text-sm text-gray-900 leading-tight">{post?.user.name}</h4>
+                        <span className="text-xs text-gray-500">@{post?.user.username} • {moment(post?.created_at).fromNow()}</span>
                     </div>
                 </div>
                 <DropdownMenu
@@ -158,12 +131,12 @@ export const PostCard: React.FC<PostCardProps> = ({
             </div>
 
             <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
-                {content}
+                {post?.content}
             </div>
 
-            {media_url && (
+            {post?.media_url && (
                 <div className="w-full bg-gray-50 max-h-[500px] overflow-hidden flex items-center justify-center">
-                    <img src={media_url} alt="Post content" className="w-full h-auto object-cover max-h-[500px]" />
+                    <img src={post?.media_url} alt="Post content" className="w-full h-auto object-cover max-h-[500px]" onClick={() => setSelectedPost(post)} />
                 </div>
             )}
 
@@ -198,7 +171,7 @@ export const PostCard: React.FC<PostCardProps> = ({
 
                     <button onClick={() => openModal('comments')} className="flex items-center space-x-2 text-gray-600 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">
                         <MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-semibold text-gray-700">{comments_count}</span>
+                        <span className="text-xs font-semibold text-gray-700">{post?.comments_count}</span>
                     </button>
 
                     <button onClick={() => openModal('share')} className="text-gray-600 hover:text-blue-500 transition-colors group cursor-pointer">
@@ -214,6 +187,9 @@ export const PostCard: React.FC<PostCardProps> = ({
                     <Bookmark className={`w-5 h-5 ${saved ? 'fill-[var(--special-purple)]' : ''}`} />
                 </button>
             </div>
+            {selectedPost && (
+                <SelectedPosts post={selectedPost} onClose={() => setSelectedPost(null)} onDelete={onDelete} />
+            )}
         </div>
     )
 }

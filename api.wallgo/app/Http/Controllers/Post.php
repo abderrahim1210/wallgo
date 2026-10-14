@@ -111,6 +111,8 @@ class Post extends Controller
             if ($request->filled('media_url') && str_starts_with($request->media_url, 'data:image')) {
                 if ($res) {
                     $data['media_url'] = $res['image_url'] ?? $res['secure_url'] ?? $res['url'];
+                    $cloudinary = new \App\Http\Controllers\CloudinaryActions();
+                    $cloudinary->destroy($post->media_url, 'wallgo_medias/');
                 } else {
                     unset($data['media_url']);
                 }

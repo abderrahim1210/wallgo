@@ -24,9 +24,10 @@ interface Post {
 interface SelectedPostsProps {
     post: Post;
     onClose: () => void;
+    onDelete:(id:number) => void;
 };
 
-export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose }) => {
+export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose ,onDelete}) => {
     const navigate = useNavigate();
     const { user } = useAuth()!;
     const isOwner = user?.id === post?.user.id;
@@ -47,7 +48,7 @@ export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose }) =
                 label: 'Delete Post',
                 icon: <Trash2 className="w-4 h-4 text-red-500" />,
                 danger: true,
-                onClick: () => console.log('Delete clicked'),
+                onClick: () => onDelete(post?.id),
             },
         ] : []),
         ...(!isOwner ? [

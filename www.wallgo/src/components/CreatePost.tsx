@@ -81,12 +81,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ postToEdit }) => {
     const { data } = useQuery({
         queryKey: ['posts_edits'],
         queryFn: fetchPostToEdit,
-        // staleTime: 1000 * 60 * 5,
         enabled: isEditMode,
-        // refetchOnWindowFocus: false
     });
 
-    // const postEdit = data?.post || {};
 
     useEffect(() => {
         if (data?.post) {
@@ -149,6 +146,20 @@ const CreatePost: React.FC<CreatePostProps> = ({ postToEdit }) => {
     };
 
     const [showCapsuleOptions, setShowCapsuleOptions] = useState(false);
+
+    useEffect(() => {
+        if (!id) {
+            setPost({
+                content: '',
+                post_type: 'regular',
+                schedule_time: '',
+                expires_at: '',
+                unlock_time: '',
+                capsule_status: '',
+                media_url: ''
+            });
+        }
+    }, [id]);
     return (
         <>
             <Helmet>
@@ -307,7 +318,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ postToEdit }) => {
                                 className="w-full md:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl transition-colors shadow-sm flex items-center justify-center space-x-2 cursor-pointer"
                             >
                                 <Send className="w-4 h-4" />
-                                <span>Post</span>
+                                <span>{isEditMode ? 'Update' : 'Post'}</span>
                             </button>
                         </div>
 

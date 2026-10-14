@@ -7,6 +7,7 @@ import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
+import { PostGrid } from '../templates/PostGrid';
 
 
 interface Post {
@@ -17,11 +18,14 @@ interface Post {
     username: string;
     avatar_url: string;
   },
-  content: string,
-  media_url: string,
-  created_at: string,
-  likes_count: number,
-  comments_count: number
+  content: string;
+  media_url: string;
+  schedule_time: string,
+  unlock_time: string;
+  expires_at: string;
+  likes_count: number;
+  comments_count: number;
+  created_at: string;
 }
 export const Home = () => {
   const api_url = 'https://api.wallgo.test';
@@ -42,7 +46,6 @@ export const Home = () => {
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false
   });
-  console.log(posts)
 
   const navigate = useNavigate();
   const fetchInfos = async () => {
@@ -93,7 +96,7 @@ export const Home = () => {
 
   const handleSubmit = async () => {
     try {
-      
+
     } catch (err: any) {
       console.log(err?.response?.data);
     }
@@ -281,9 +284,11 @@ export const Home = () => {
             </div>
 
             <div className="space-y-4">
-              {posts?.map((post) => (
-                <PostCard key={post.id} {...post} />
-              ))}
+              {/* {posts?.map((post) => (
+                // <PostCard key={post.id} {...post} />
+                
+              ))} */}
+              <PostGrid posts={posts} />
             </div>
           </main>
 
