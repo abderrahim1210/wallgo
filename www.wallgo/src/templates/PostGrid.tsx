@@ -38,7 +38,6 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
     }
 
     const api_url = 'https://api.wallgo.test';
-    const [selectedPost, setSelectedPost] = useState<Post | null>(null);
     const navigate = useNavigate();
     const deletePost = async (id: number) => {
         if (!id) return toast.error('Post ID not found');
@@ -70,46 +69,14 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
             console.log(err?.response?.data);
         }
     }
-    const location = useLocation();
+
     return (
         <div className="gap-1 md:gap-2">
-            {/* {location.pathname === '/account/profile' && posts?.map((post) => (
-                post.media_url ? (
-                    <section className='grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5'>
-                        <div
-                            key={post.id}
-                            onClick={() => setSelectedPost(post)}
-                            className="relative group aspect-square bg-gray-900 rounded overflow-hidden cursor-pointer"
-                        >
-                            <img
-                                src={post.media_url}
-                                alt="Post media"
-                                className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                            />
-                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center gap-6 text-white font-semibold">
-                                <div className="flex items-center gap-1.5">
-                                    <Heart size={20} className="fill-white" />
-                                    <span>{post.likes_count}</span>
-                                </div>
-                                <div className="flex items-center gap-1.5">
-                                    <MessageSquare size={20} className="fill-white" />
-                                    <span>{post.comments_count}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                ) : (
-                    <section>
-                        <PostCard key={post.id} {...post} onDelete={deletePost} />
-                    </section>
-                )
-            ))} */}
+
             {posts?.map((post) => (
                 <PostCard key={post.id} post={post} onDelete={deletePost} />
             ))}
-            {/* {selectedPost && (
-                <SelectedPosts post={selectedPost} onClose={() => setSelectedPost(null)} onDelete={deletePost} />
-            )} */}
+
         </div>
     )
 }

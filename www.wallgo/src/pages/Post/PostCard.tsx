@@ -1,4 +1,4 @@
-import { Bookmark, Edit3, Flag, Heart, Link, MessageCircle, MoreHorizontal, Share2, Trash2 } from 'lucide-react';
+import { AlertTriangle, Bookmark, Edit3, Flag, Heart, Link, MessageCircle, MoreHorizontal, Share2, Trash2, X } from 'lucide-react';
 import React, { useState } from 'react'
 import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
 import { Toast, type ToastType } from '../../components/Toast';
@@ -11,6 +11,7 @@ import { useAuth } from '../../hooks/AuthProvider';
 import { useNavigate } from 'react-router-dom';
 import type { Post } from '../../templates/PostGrid';
 import { SelectedPosts } from '../../components/SelectedPosts';
+import { Report } from '../../components/Report';
 
 interface PostCardProps {
     // id: number,
@@ -25,8 +26,8 @@ interface PostCardProps {
     // created_at: string,
     // likes_count: number,
     // comments_count: number,
-    post:Post;
-    onDelete : (id:number) => void;
+    post: Post;
+    onDelete: (id: number) => void;
 }
 export const PostCard: React.FC<PostCardProps> = ({
     // id,
@@ -92,7 +93,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 label: 'Report Post',
                 icon: <Flag className="w-4 h-4 text-red-500" />,
                 danger: true,
-                onClick: () => console.log('Report clicked'),
+                onClick: () => openModal('report'),
             },
         ] : [])
     ];
@@ -152,6 +153,14 @@ export const PostCard: React.FC<PostCardProps> = ({
                 show === 'share' && (
                     <ModalTemplate show={show} closeModal={closeModal}>
                         <ShareDropdown postUrl={window.location.href} />
+                    </ModalTemplate>
+                )
+            }
+
+            {
+                show === 'report' && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <Report id={post?.id} type='post_id' />
                     </ModalTemplate>
                 )
             }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post as ModelsPost;
+use App\Models\Report;
 use App\Models\User;
 use BcMath\Number;
 use Illuminate\Http\Request;
@@ -161,6 +162,34 @@ class Post extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Post deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function report(Request $request)
+    {
+        $user = User::findOrFail(Auth::id());
+        if (!$user) return response()->json(['success' => false, 'message' => 'User not found'], 401);
+        $post = ModelsPost::select('id')->where('id', $request->id)->first();
+        if (!$post) return response()->json(['success' => false, 'message' => 'Post not found'], 404);
+        $request->validate([
+            'reason' => ['string', 'required', 'min:10', 'max:555'],
+            'description' => ['nullable', 'string']
+        ]);
+        try {
+            $post->reports()->create([
+                'user_id' => $user->id,
+                'reason' => $request->reason,
+                'description' => $request->description
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Report send succefully'
             ]);
         } catch (\Exception $e) {
             return response()->json([

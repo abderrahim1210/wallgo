@@ -63,6 +63,11 @@ class User extends Authenticatable
         return $this->hasMany(Like::class);
     }
 
+    public function reports()
+    {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     /**
      * Get the attributes that should be cast.
      *
