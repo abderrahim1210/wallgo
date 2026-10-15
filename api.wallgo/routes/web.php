@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\EditProfile;
 use App\Http\Controllers\GetUser;
+use App\Http\Controllers\GetUsers;
 use App\Http\Controllers\Post;
 use App\Http\Controllers\Settings;
 use App\Models\Post as ModelsPost;
@@ -61,6 +62,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/posts/{id}', [Post::class, 'destroy']);
 
     Route::post('/posts/send_report', [Post::class, 'report']);
+
+    Route::get('/get_suggested_users', [GetUsers::class, 'get']);
 });
 
 

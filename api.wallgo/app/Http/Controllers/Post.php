@@ -178,7 +178,7 @@ class Post extends Controller
         $post = ModelsPost::select('id')->where('id', $request->id)->first();
         if (!$post) return response()->json(['success' => false, 'message' => 'Post not found'], 404);
         $request->validate([
-            'reason' => ['string', 'required', 'min:10', 'max:555'],
+            'reason' => ['string', 'required'],
             'description' => ['nullable', 'string']
         ]);
         try {

@@ -8,6 +8,7 @@ import ModalTemplate from '../templates/ModalTemplate';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { PostGrid } from '../templates/PostGrid';
+import toast from 'react-hot-toast';
 
 
 interface Post {
@@ -26,6 +27,12 @@ interface Post {
   likes_count: number;
   comments_count: number;
   created_at: string;
+}
+type User = {
+  id: number,
+  name: string,
+  username: string,
+  avatar_url: string
 }
 export const Home = () => {
   const api_url = 'https://api.wallgo.test';
@@ -57,12 +64,29 @@ export const Home = () => {
     }
   }
 
+  const fetchUsers = async () => {
+    try {
+      const res = await axios.get(`${api_url}/get_suggested_users`, { withCredentials: true, withXSRFToken: true });
+      if (res.data.success) return res.data;
+    } catch (err: any) {
+      console.error(err?.response?.data);
+    }
+  }
+
+  const { data: users = [] } = useQuery({
+    queryKey: ['suggested_users'],
+    queryFn: fetchUsers,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+  });
+
   const { data } = useQuery({
     queryKey: ['user_data_home'],
     queryFn: fetchInfos,
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
   });
+
 
   const profile = data?.user || null;
   const stats = data?.stats || [];
@@ -91,12 +115,23 @@ export const Home = () => {
 
   const checkWrite = (e: React.ChangeEvent<HTMLInputElement>) => {
     isWrite(e.target.value.trim().length > 0);
+    setContent(e.target.value);
   }
   const { show, openModal, closeModal } = useModal()!;
 
   const handleSubmit = async () => {
+    if (content === '') return toast.error('Type a text for add a post');
     try {
-
+      const res = await axios.post(`${api_url}/posts/create`, {content:content}, { withCredentials: true, withXSRFToken: true });
+      if (res.data.success) {
+        toast.success(res.data.message || 'Post uploaded successfully');
+        setTimeout(() => {
+          navigate('/account/profile');
+        }, 1000);
+      } else {
+        toast.error(res.data.message || 'Failed to upload the post');
+        console.error(res.data.message);
+      }
     } catch (err: any) {
       console.log(err?.response?.data);
     }
@@ -267,6 +302,7 @@ export const Home = () => {
                 <div className="relative flex-1 flex items-center space-x-2 min-w-0">
                   <input
                     name='content'
+                    value={content}
                     type="text"
                     placeholder={`What's on your mind, ${profile?.username ?? ''}?`}
                     onChange={checkWrite}
@@ -274,7 +310,7 @@ export const Home = () => {
                   />
                   {
                     write && (
-                      <button className='px-5 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-full hover:opacity-90 transition-all shadow-sm cursor-pointer animate-fadeIn font-semibold shrink-0'>Post</button>
+                      <button onClick={handleSubmit} className='px-5 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-full hover:opacity-90 transition-all shadow-sm cursor-pointer animate-fadeIn font-semibold shrink-0'>Post</button>
                     )
                   }
                 </div>
@@ -284,10 +320,6 @@ export const Home = () => {
             </div>
 
             <div className="space-y-4">
-              {/* {posts?.map((post) => (
-                // <PostCard key={post.id} {...post} />
-                
-              ))} */}
               <PostGrid posts={posts} />
             </div>
           </main>
@@ -314,26 +346,34 @@ export const Home = () => {
                 </div>
               </div>
 
-              <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
-                <div className="flex items-center space-x-2 mb-4 text-gray-900 font-bold text-sm">
-                  <Users className="w-4 h-4 text-[var(--special-purple)]" />
-                  <span>Who to follow</span>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2.5">
-                      <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" alt="User" className="w-9 h-9 rounded-full object-cover" />
-                      <div>
-                        <h5 className="text-xs font-semibold text-gray-900 leading-tight">Sara Miller</h5>
-                        <span className="text-[11px] text-gray-500">@saramiller</span>
-                      </div>
+              {
+                users?.length > 0 && (
+                  <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+                    <div className="flex items-center space-x-2 mb-4 text-gray-900 font-bold text-sm">
+                      <Users className="w-4 h-4 text-[var(--special-purple)]" />
+                      <span>Who to follow</span>
                     </div>
-                    <button className="px-3 py-1 bg-purple-50 hover:bg-purple-100 text-[var(--special-purple)] text-xs font-semibold rounded-full transition-colors cursor-pointer">
-                      Follow
-                    </button>
+                    {
+                      users?.map((u: User) => (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2.5">
+                              <img src={u?.avatar_url ? u.avatar_url : '/icons/avatar1.svg'} alt="User" className="w-9 h-9 rounded-full object-cover" />
+                              <div>
+                                <h5 className="text-xs font-semibold text-gray-900 leading-tight">{u?.name}</h5>
+                                <span className="text-[11px] text-gray-500">@{u?.username}</span>
+                              </div>
+                            </div>
+                            <button className="px-3 py-1 bg-purple-50 hover:bg-purple-100 text-[var(--special-purple)] text-xs font-semibold rounded-full transition-colors cursor-pointer">
+                              Follow
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    }
                   </div>
-                </div>
-              </div>
+                )
+              }
             </div>
           </aside>
 
