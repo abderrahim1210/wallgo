@@ -9,11 +9,12 @@ use Illuminate\Support\Facades\Auth;
 
 class GetUser extends Controller
 {
-    public function index()
+    public function index($id=null)
     {
         try {
-            $user = User::withCount(['followers', 'followings'])->findOrFail(Auth::id());
-            $posts = Post::where('user_id', Auth::id())->count();
+            $user_id = $id ?? Auth::id();
+            $user = User::withCount(['followers', 'followings'])->findOrFail($user_id);
+            $posts = Post::where('user_id', $user_id)->count();
             $followers_list = $user->followers();
             $followings_list = $user->followings();
             $posts_list = Post::withCount(['likes','comments'])->with(['user:id,name,username,avatar_url'])->select('id', 'user_id','content', 'media_url','created_at')->where('user_id', $user->id)->get();

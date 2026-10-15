@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\EditProfile;
+use App\Http\Controllers\FollowController;
 use App\Http\Controllers\GetUser;
 use App\Http\Controllers\GetUsers;
 use App\Http\Controllers\Post;
 use App\Http\Controllers\Settings;
 use App\Models\Post as ModelsPost;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -25,7 +27,7 @@ Route::get('/user', function () {
     ]]);
 });
 
-Route::get('/get_user', [GetUser::class, 'index']);
+Route::get('/get_user/{id?}', [GetUser::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/edit_profile', [EditProfile::class, 'edit']);
@@ -64,6 +66,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/posts/send_report', [Post::class, 'report']);
 
     Route::get('/get_suggested_users', [GetUsers::class, 'get']);
+
+    Route::post('/add_follow', [FollowController::class, 'add_follow']);
+
+    Route::get('/check_follow/{id}', [FollowController::class, 'checkFollow']);
 });
 
 

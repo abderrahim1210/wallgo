@@ -33,6 +33,7 @@ export const AppRoutes = () => {
             <Route path='/account/edit' element={<EditProfile />} />
             <Route path='/settings' element={<Settings />} />
             <Route path='/post/:id/edit' element={<CreatePost />} />
+            <Route path='/profile/:id/:username' element={<Profile />} />
         </Routes>
     )
 }

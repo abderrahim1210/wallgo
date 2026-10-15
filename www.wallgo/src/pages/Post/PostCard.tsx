@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Post } from '../../templates/PostGrid';
 import { SelectedPosts } from '../../components/SelectedPosts';
 import { Report } from '../../components/Report';
-
+import { Link as LinkR } from 'react-router-dom'
 interface PostCardProps {
     // id: number,
     // user: {
@@ -109,7 +109,11 @@ export const PostCard: React.FC<PostCardProps> = ({
                         className="w-10 h-10 rounded-full object-cover border border-purple-100"
                     />
                     <div>
-                        <h4 className="font-semibold text-sm text-gray-900 leading-tight">{post?.user.name}</h4>
+                        <h4 className="font-semibold text-sm text-gray-900 leading-tight">
+                            <LinkR to={`/profile/${post?.user.id}/${post?.user.username}`}>
+                                {post?.user.name}
+                            </LinkR>
+                        </h4>
                         <span className="text-xs text-gray-500">@{post?.user.username} • {moment(post?.created_at).fromNow()}</span>
                     </div>
                 </div>

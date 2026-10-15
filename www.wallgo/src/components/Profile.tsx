@@ -1,39 +1,57 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState, type FC } from 'react'
 import { MainLayout } from '../MainLayout'
 import { FaCalendarAlt, FaCamera, FaEnvelope, FaGlobe, FaMapMarkerAlt, FaPhone, FaUserEdit, FaUsers, FaVenusMars } from 'react-icons/fa'
 import { PostGrid } from '../templates/PostGrid'
 import { Helmet } from 'react-helmet-async'
 import { FiCalendar, FiHeart, FiMapPin } from 'react-icons/fi'
 import { Users, VenusAndMars } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import ModalTemplate from '../templates/ModalTemplate'
 import { useModal } from '../hooks/ModalProvider'
 import axios from 'axios'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { EmptyContent } from './EmptyContent'
+import { useAuth } from '../hooks/AuthProvider'
+import toast from 'react-hot-toast'
 
 interface User {
     id: number;
     name: string;
     username: string;
-    bio: string;
-    email: string;
-    birth: string;
-    avatar_url: string;
-    banner_url: string;
-    phone: number;
-    status: string;
-    gender: string;
-    location: string;
+    bio?: string;
+    email?: string;
+    birth?: string;
+    avatar_url?: string;
+    banner_url?: string;
+    phone?: number;
+    status?: string;
+    gender?: string;
+    location?: string;
 }
+
+
+
 export const Profile = () => {
+    const { id } = useParams();
     const api_url = 'https://api.wallgo.test';
     const navigate = useNavigate();
     const { show, openModal, closeModal } = useModal()!;
+    const { user } = useAuth()!;
+    const [follow, setFollow] = useState(false);
+    const queryClient = useQueryClient();
+
+    useEffect(() => {
+        if (id) {
+            axios.get(`${api_url}/check_follow/${id}`, { withCredentials: true, withXSRFToken: true }).then(res => {
+                if (res.data.success) setFollow(Boolean(res.data.is_followed));
+            });
+        }
+    }, [id]);
 
     const fetchInfos = async () => {
         try {
-            const res = await axios.get(`${api_url}/get_user`, { withCredentials: true, withXSRFToken: true });
+            const url = id ? `${api_url}/get_user/${id}` : `${api_url}/get_user`;
+            const res = await axios.get(url, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) return res.data;
         } catch (err: any) {
             console.log(err?.response?.message);
@@ -43,9 +61,8 @@ export const Profile = () => {
     const { data, isLoading, error } = useQuery({
         queryKey: ['user_data'],
         queryFn: fetchInfos,
-        staleTime: 1000 * 60 * 5,
-        refetchOnWindowFocus: false,
     });
+
 
     const profile: User = data?.user || null;
     const stats = data?.stats || [];
@@ -53,9 +70,24 @@ export const Profile = () => {
     const followings = data?.followings_list || [];
     const posts_list = data?.posts_list || [];
 
-    if (!profile) return navigate('/account/login');
-    if (error) return console.log(error);
+    // if (!profile) return <Navigate to="/account/login" replace />;
     if (isLoading) return <p>Loading ...</p>;
+    // if (error) {
+    //     console.log(error);
+    //     return <p>Something went wrong.</p>;
+    // }
+
+    const add_follow = async (following_id: number) => {
+        try {
+            const res = await axios.post(`${api_url}/add_follow`, { following_id: following_id }, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) {
+                setFollow(prev => !prev);
+                queryClient.invalidateQueries({ queryKey: ['user_data', id] });
+            }
+        } catch (err: any) {
+            console.error(err?.response?.data);
+        }
+    }
     return (
         <MainLayout>
             <Helmet>
@@ -116,9 +148,23 @@ export const Profile = () => {
                                     <p className="text-sm font-medium text-gray-500">@{profile?.username}</p>
                                 </div>
                             </div>
-                            <button onClick={() => navigate('/account/edit')} className="flex items-center font-semibold gap-2 px-5 py-2.5 bg-[var(--special-purple)] hover:opacity-90 text-white rounded-xl text-sm font-medium transition shadow-sm cursor-pointer shrink-0">
-                                <FaUserEdit className="w-4 h-4" /> Edit Profile
-                            </button>
+                            {
+                                profile?.id === user?.id ? (
+                                    <button onClick={() => navigate('/account/edit')} className="flex items-center font-semibold gap-2 px-5 py-2.5 bg-[var(--special-purple)] hover:opacity-90 text-white rounded-xl text-sm font-medium transition shadow-sm cursor-pointer shrink-0">
+                                        <FaUserEdit className="w-4 h-4" /> Edit Profile
+                                    </button>
+                                ) : (
+                                    <div className="flex items-center gap-3">
+                                        <button onClick={() => add_follow(Number(id))} className={`flex items-center justify-center gap-2 px-6 py-2.5 ${follow ? 'bg-fuchsia-50 border border-[var(--special-purple)] text-[var(--special-purple)]' : 'bg-[var(--special-purple)] text-white'} hover:opacity-90  rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0`}>
+                                            <span>{follow ? 'Followed' : 'Follow'}</span>
+                                        </button>
+
+                                        <button className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0">
+                                            <span>Message</span>
+                                        </button>
+                                    </div>
+                                )
+                            }
 
                         </div>
 
@@ -140,7 +186,7 @@ export const Profile = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
                             {
-                                profile.location && (
+                                profile?.location && (
                                     <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
                                         <FiMapPin className="text-[var(--special-purple)] w-5 h-5" />
                                         <span>{profile.location}</span>
@@ -149,7 +195,7 @@ export const Profile = () => {
                             }
 
                             {
-                                profile.birth && (
+                                profile?.birth && (
                                     <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
                                         <FiCalendar className="text-[var(--special-purple)] w-5 h-5" />
                                         <span>Born on {profile.birth}</span>
@@ -158,7 +204,7 @@ export const Profile = () => {
                             }
 
                             {
-                                profile.status && (
+                                profile?.status && (
                                     <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
                                         <FiHeart className="text-[var(--special-purple)] w-5 h-5" />
                                         <span className='capitalize'>{profile.status}</span>
@@ -166,7 +212,7 @@ export const Profile = () => {
                                 )
                             }
                             {
-                                profile.gender && (
+                                profile?.gender && (
                                     <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
                                         <FaVenusMars className="text-[var(--special-purple)] w-5 h-5" />
                                         <span className="capitalize">{profile.gender}</span>
