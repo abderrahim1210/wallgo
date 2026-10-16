@@ -26,9 +26,13 @@ class GetUsers extends Controller
                 ->select('id', 'name', 'username', 'avatar_url')
                 ->take(10)
                 ->get();
+
+            $follows = User::find($userId)->followings;            
+
             return response()->json([
                 'success' => true,
-                'users' => $suggestedUsers
+                'users' => $suggestedUsers,
+                'follows' => $follows
             ]);
         } catch (\Exception $e) {
             return response()->json([

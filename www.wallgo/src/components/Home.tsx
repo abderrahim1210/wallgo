@@ -6,9 +6,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
 import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { PostGrid } from '../templates/PostGrid';
 import toast from 'react-hot-toast';
+import { useFollow } from './useFollow';
 
 
 interface Post {
@@ -67,7 +68,7 @@ export const Home = () => {
   const fetchUsers = async () => {
     try {
       const res = await axios.get(`${api_url}/get_suggested_users`, { withCredentials: true, withXSRFToken: true });
-      if (res.data.success) return res.data;
+      if (res.data.success) return res.data.users;
     } catch (err: any) {
       console.error(err?.response?.data);
     }
@@ -87,10 +88,18 @@ export const Home = () => {
     refetchOnWindowFocus: false,
   });
 
+  const {data:followsL=[]} = useQuery({
+    queryKey:['follows'],
+    queryFn:async () => {
+      const res = await axios.get(`${api_url}/follows`,{withCredentials:true,withXSRFToken:true});
+      return res.data.follows;
+    }
+  })
+
 
   const profile = data?.user || null;
   const stats = data?.stats || [];
-  const followers = data?.followers || [];
+  const follows = data?.follows || [];
   const quotes = [
     "Share your world on WallGo. 🎈",
     "Connect, inspire, and grow together. ✨",
@@ -140,22 +149,17 @@ export const Home = () => {
   const redirectToProfile = () => {
     navigate(`/account/profile`);
   }
+
+  const queryClient = useQueryClient();
+  const { add_follow } = useFollow();
+  const follow = (id:number) => {
+    add_follow(id);
+    follows.includes(id) ? follows.filter((fid: number) => fid !== id) : [...follows, id];
+    queryClient.invalidateQueries({queryKey:['suggested_users']});
+  }
   return (
     <MainLayout>
       <div className="min-h-screen bg-gray-50/50 pb-20 md:pb-10">
-        {/* {
-          show === 'my_followers' && (
-            <ModalTemplate show={show} closeModal={closeModal}>
-              {
-                followers.length > 0 ? (
-                  followers?.map((u: User) => (
-                    <FollowUser user={u} onFollow={add_follow} closeModal={closeModal} />
-                  ))
-                ) : (<EmptyContent icon={<FaUsers />} text='No followers yet.' />)
-              }
-            </ModalTemplate>
-          )
-        } */}
         <div className="max-w-7xl mx-auto pt-6 px-2 flex justify-center lg:gap-6">
 
           <aside className="hidden lg:block w-64 shrink-0">
@@ -373,8 +377,8 @@ export const Home = () => {
                                 <span className="text-[11px] text-gray-500">@{u?.username}</span>
                               </div>
                             </div>
-                            <button className="px-3 py-1 bg-purple-50 hover:bg-purple-100 text-[var(--special-purple)] text-xs font-semibold rounded-full transition-colors cursor-pointer">
-                              Follow
+                            <button onClick={() => follow(u?.id)} className="px-3 py-1 bg-purple-50 hover:bg-purple-100 text-[var(--special-purple)] text-xs font-semibold rounded-full transition-colors cursor-pointer">
+                              {follows.includes(u?.id) ? 'Followed' : 'Follow'}
                             </button>
                           </div>
                         </div>

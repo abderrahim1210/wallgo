@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { MainLayout } from '../MainLayout'
 import { Helmet } from 'react-helmet-async'
-import { Bell, ChevronRight, Info, Moon, Settings as SettingsIcon, Shield, User } from 'lucide-react'
+import { Bell, ChevronRight, Info, LogOut, Moon, Settings as SettingsIcon, Shield, User } from 'lucide-react'
 import axios from 'axios'
 import { useAuth } from '../hooks/AuthProvider'
 import toast, { Toaster } from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
 export const Settings = () => {
   const [activeTab, setActiveTab] = useState('account');
@@ -15,6 +16,7 @@ export const Settings = () => {
   });
 
   const api_url = 'https://api.wallgo.test';
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setData(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -37,6 +39,20 @@ export const Settings = () => {
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Updated Failed');
       console.log(err?.response?.data);
+    }
+  }
+
+  const handleLogOut = async () => {
+    try {
+      const res = await axios.delete(`${api_url}/logout`, { withCredentials: true, withXSRFToken: true });
+      if (res.data.success) {
+        toast.success(res.data.message || 'Logout successfully');
+        setTimeout(() => {
+          navigate('/account/login');
+        }, 1000);
+      }
+    } catch (err: any) {
+      console.error(err?.response?.data);
     }
   }
   return (
@@ -112,6 +128,12 @@ export const Settings = () => {
                       <option value="public">Public Account</option>
                       <option value="private">Private Account</option>
                     </select>
+                  </div>
+                  <div>
+                    <button onClick={handleLogOut} className="flex items-center gap-3 w-full px-4 py-3 rounded-xl font-semibold text-sm text-red-600 hover:bg-red-50 transition-all duration-200 cursor-pointer">
+                      <LogOut className="w-5 h-5 flex-shrink-0" />
+                      <span>Logout</span>
+                    </button>
                   </div>
                 </div>
               </div>

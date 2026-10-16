@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\EditProfile;
 use App\Http\Controllers\FollowController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\GetUsers;
 use App\Http\Controllers\Post;
 use App\Http\Controllers\Settings;
 use App\Models\Post as ModelsPost;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -70,6 +72,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/add_follow', [FollowController::class, 'add_follow']);
 
     Route::get('/check_follow/{id}', [FollowController::class, 'checkFollow']);
+
+    Route::delete('/logout', [AuthenticatedSessionController::class, 'destroy']);
+
+    Route::get('/follows', function () {
+        $user_id = Auth::id();
+        $follows = User::find($user_id)->followings;
+        return response()->json([
+            'follows' => $follows
+        ]);
+    });
 });
 
 
