@@ -1,6 +1,6 @@
-import { Bookmark, Clapperboard, Compass, Flame, Heart, Home, MessagesCircle, PlusSquare, Search, UserCircle } from 'lucide-react'
+import { Bookmark, Clapperboard, Compass, Flame, Heart, Home, MessagesCircle, Plus, PlusCircle, PlusSquare, Search, UserCircle } from 'lucide-react'
 import React, { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Tooltip } from '../templates/Tooltip'
 import { Notifications } from '../components/Notifications'
 import { useAuth } from '../hooks/AuthProvider'
@@ -12,6 +12,7 @@ export const Navbar = () => {
     const currendPath = location.pathname;
 
     const isActive = (path: string) => currendPath === path;
+    const navigate = useNavigate();
     const getLinkClass = (path: string) => {
         return `rounded-xl transition-all duration-150 flex items-center justify-center ${isActive(path) ? 'text-[var(--special-purple)] bg-purple-50 shadow-inner' : 'text-gray-600 hover:text-[var(--special-purple)] hover:bg-gray-50'}`;
     }
@@ -73,12 +74,18 @@ export const Navbar = () => {
                         {
                             user ? (
                                 <li className='flex items-center space-x-3'>
+                                    <Tooltip label='Create post' position={position}>
+                                        <button className={`${linksClasse} cursor-pointer lg:hidden hover:text-[var(--special-purple)]`} onClick={() => navigate('/create_post')}>
+                                            <PlusCircle className='w-7 h-7' />
+                                        </button>
+                                    </Tooltip>
                                     <Tooltip label='Notifications' position={position}>
                                         <button className={`${linksClasse} cursor-pointer hover:text-[var(--special-red)]`} onClick={() => setNotifOpen(prev => !prev)}>
                                             <Heart className='w-7 h-7' />
                                         </button>
                                     </Tooltip>
                                     <Notifications isOpen={notifOpen} onClose={() => setNotifOpen(false)} />
+
 
                                     <Tooltip label='Account' position={position}>
                                         <Link to="/account/profile" className={`${getLinkClass('/account/profile')} hidden md:block`}>
@@ -97,7 +104,7 @@ export const Navbar = () => {
                                 </li>
                             )
                         }
-                        
+
                     </ul>
 
                 </div>
