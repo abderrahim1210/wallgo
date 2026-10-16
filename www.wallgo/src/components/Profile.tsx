@@ -13,6 +13,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { EmptyContent } from './EmptyContent'
 import { useAuth } from '../hooks/AuthProvider'
 import toast from 'react-hot-toast'
+import { FollowUser } from './FollowUser'
 
 interface User {
     id: number;
@@ -27,6 +28,7 @@ interface User {
     status?: string;
     gender?: string;
     location?: string;
+    is_following?:boolean;
 }
 
 
@@ -97,7 +99,11 @@ export const Profile = () => {
                 show === 'followers' && (
                     <ModalTemplate show={show} closeModal={closeModal}>
                         {
-                            followers.length > 0 ? (<p>Followers</p>) : (<EmptyContent icon={<FaUsers />} text='No followers yet.' />)
+                            followers.length > 0 ? (
+                                followers?.map((u:User) => (
+                                    <FollowUser user={u} onFollow={add_follow} closeModal={closeModal} />
+                                ))
+                            ) : (<EmptyContent icon={<FaUsers />} text='No followers yet.' />)
                         }
                     </ModalTemplate>
                 )
@@ -106,7 +112,11 @@ export const Profile = () => {
                 show === 'followings' && (
                     <ModalTemplate show={show} closeModal={closeModal}>
                         {
-                            followings.length > 0 ? (<p>Followings</p>) : (<EmptyContent icon={<FaUsers />} text='No followings yet.' />)
+                            followings.length > 0 ? (
+                                followings?.map((u:User) => (
+                                    <FollowUser user={u} onFollow={add_follow} closeModal={closeModal}  />
+                                ))
+                            ) : (<EmptyContent icon={<FaUsers />} text='No followings yet.' />)
                         }
                     </ModalTemplate>
                 )

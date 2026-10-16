@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Follow;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -15,8 +16,24 @@ class GetUser extends Controller
             $user_id = $id ?? Auth::id();
             $user = User::withCount(['followers', 'followings'])->findOrFail($user_id);
             $posts = Post::where('user_id', $user_id)->count();
-            $followers_list = $user->followers();
-            $followings_list = $user->followings();
+            $followers_list = $user->followers()->get()->map(function($follower) use ($user_id){
+                return [
+                    'id' => $follower->id,
+                    'name' => $follower->name,
+                    'username' => $follower->username,
+                    'avatar_url' => $follower->avatar_url,
+                    'is_following' => Follow::where('follower_id',$user_id)->where('following_id',$follower->id)->exists()
+                ];
+            });
+            $followings_list = $user->followings()->get()->map(function($following) use ($user_id){
+                return [
+                    'id' => $following->id,
+                    'name' => $following->name,
+                    'username' => $following->username,
+                    'avatar_url' => $following->avatar_url,
+                    'is_following' => Follow::where('follower_id',$user_id)->where('following_id',$following->id)->exists()
+                ];
+            });
             $posts_list = Post::withCount(['likes','comments'])->with(['user:id,name,username,avatar_url'])->select('id', 'user_id','content', 'media_url','created_at')->where('user_id', $user->id)->get();
             if (!$user) return response()->json(['success' => false, 'message' => 'User not found', 401]);
             return response()->json([

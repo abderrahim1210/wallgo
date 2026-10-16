@@ -90,6 +90,7 @@ export const Home = () => {
 
   const profile = data?.user || null;
   const stats = data?.stats || [];
+  const followers = data?.followers || [];
   const quotes = [
     "Share your world on WallGo. 🎈",
     "Connect, inspire, and grow together. ✨",
@@ -117,12 +118,11 @@ export const Home = () => {
     isWrite(e.target.value.trim().length > 0);
     setContent(e.target.value);
   }
-  const { show, openModal, closeModal } = useModal()!;
 
   const handleSubmit = async () => {
     if (content === '') return toast.error('Type a text for add a post');
     try {
-      const res = await axios.post(`${api_url}/posts/create`, {content:content}, { withCredentials: true, withXSRFToken: true });
+      const res = await axios.post(`${api_url}/posts/create`, { content: content }, { withCredentials: true, withXSRFToken: true });
       if (res.data.success) {
         toast.success(res.data.message || 'Post uploaded successfully');
         setTimeout(() => {
@@ -137,16 +137,25 @@ export const Home = () => {
     }
   }
 
+  const redirectToProfile = () => {
+    navigate(`/account/profile`);
+  }
   return (
     <MainLayout>
       <div className="min-h-screen bg-gray-50/50 pb-20 md:pb-10">
-        {
+        {/* {
           show === 'my_followers' && (
             <ModalTemplate show={show} closeModal={closeModal}>
-              <p>My followers</p>
+              {
+                followers.length > 0 ? (
+                  followers?.map((u: User) => (
+                    <FollowUser user={u} onFollow={add_follow} closeModal={closeModal} />
+                  ))
+                ) : (<EmptyContent icon={<FaUsers />} text='No followers yet.' />)
+              }
             </ModalTemplate>
           )
-        }
+        } */}
         <div className="max-w-7xl mx-auto pt-6 px-2 flex justify-center lg:gap-6">
 
           <aside className="hidden lg:block w-64 shrink-0">
@@ -175,12 +184,12 @@ export const Home = () => {
                         <div className="border-r border-gray-100"></div>
                         <div>
                           <span className="block font-bold text-gray-900 text-sm">{stats?.followers_count}</span>
-                          <span className='cursor-pointer' onClick={() => openModal('my_followers')}>Followers</span>
+                          <span className='cursor-pointer' onClick={() => redirectToProfile()}>Followers</span>
                         </div>
                         <div className="border-r border-gray-100"></div>
                         <div>
                           <span className="block font-bold text-gray-900 text-sm">{stats?.followings_count}</span>
-                          <span className='cursor-pointer' onClick={() => openModal('my_followers')}>Following</span>
+                          <span className='cursor-pointer' onClick={() => redirectToProfile()}>Following</span>
                         </div>
                       </div>
                     </div>
