@@ -6,30 +6,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
 import axios from 'axios';
+import type { Post } from '../templates/PostGrid';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { PostGrid } from '../templates/PostGrid';
 import toast from 'react-hot-toast';
 import { useFollow } from './useFollow';
 import { FollowUser } from './FollowUser';
 
-
-interface Post {
-  id: number,
-  user: {
-    id: number;
-    name: string;
-    username: string;
-    avatar_url: string;
-  },
-  content: string;
-  media_url: string;
-  schedule_time: string,
-  unlock_time: string;
-  expires_at: string;
-  likes_count: number;
-  comments_count: number;
-  created_at: string;
-}
 type User = {
   id: number,
   name: string,
@@ -89,18 +72,8 @@ export const Home = () => {
     refetchOnWindowFocus: false,
   });
 
-  const {data:followsL=[]} = useQuery({
-    queryKey:['follows'],
-    queryFn:async () => {
-      const res = await axios.get(`${api_url}/follows`,{withCredentials:true,withXSRFToken:true});
-      return res.data.follows;
-    }
-  })
-
-
   const profile = data?.user || null;
   const stats = data?.stats || [];
-  const follows = data?.follows || [];
   const quotes = [
     "Share your world on WallGo. 🎈",
     "Connect, inspire, and grow together. ✨",
@@ -151,13 +124,7 @@ export const Home = () => {
     navigate(`/account/profile`);
   }
 
-  const queryClient = useQueryClient();
   const { add_follow } = useFollow();
-  const follow = (id:number) => {
-    add_follow(id);
-    follows.includes(id) ? follows.filter((fid: number) => fid !== id) : [...follows, id];
-    queryClient.invalidateQueries({queryKey:['suggested_users']});
-  }
   return (
     <MainLayout>
       <div className="min-h-screen bg-gray-50/50 pb-20 md:pb-10">
@@ -369,20 +336,6 @@ export const Home = () => {
                     </div>
                     {
                       users?.map((u: User) => (
-                        // <div className="space-y-4">
-                        //   <div className="flex items-center justify-between">
-                        //     <div className="flex items-center space-x-2.5">
-                        //       <img src={u?.avatar_url ? u.avatar_url : '/icons/avatar1.svg'} alt="User" className="w-9 h-9 rounded-full object-cover" />
-                        //       <div>
-                        //         <h5 className="text-xs font-semibold text-gray-900 leading-tight">{u?.name}</h5>
-                        //         <span className="text-[11px] text-gray-500">@{u?.username}</span>
-                        //       </div>
-                        //     </div>
-                        //     <button onClick={() => follow(u?.id)} className="px-3 py-1 bg-purple-50 hover:bg-purple-100 text-[var(--special-purple)] text-xs font-semibold rounded-full transition-colors cursor-pointer">
-                        //       {followsL.includes(u?.id) ? 'Followed' : 'Follow'}
-                        //     </button>
-                        //   </div>
-                        // </div>
                         <FollowUser user={u} onFollow={add_follow} />
                       ))
                     }

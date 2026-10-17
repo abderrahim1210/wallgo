@@ -13,30 +13,13 @@ import type { Post } from '../../templates/PostGrid';
 import { SelectedPosts } from '../../components/SelectedPosts';
 import { Report } from '../../components/Report';
 import { Link as LinkR } from 'react-router-dom'
+import axios from 'axios';
+import { api_url } from '../Auth/getUser';
 interface PostCardProps {
-    // id: number,
-    // user: {
-    //     id: number;
-    //     name: string;
-    //     username: string;
-    //     avatar_url: string;
-    // };
-    // content: string,
-    // media_url: string,
-    // created_at: string,
-    // likes_count: number,
-    // comments_count: number,
     post: Post;
     onDelete: (id: number) => void;
 }
 export const PostCard: React.FC<PostCardProps> = ({
-    // id,
-    // user,
-    // content,
-    // media_url,
-    // created_at,
-    // likes_count,
-    // comments_count,
     post,
     onDelete
 }) => {
@@ -45,13 +28,27 @@ export const PostCard: React.FC<PostCardProps> = ({
     const [saved, setSaved] = useState(false);
     const { show, openModal, closeModal } = useModal()!;
     const { user: currentUser } = useAuth()!;
-    const handleLike = () => {
+    const handleLike = async () => {
         if (liked) {
             setLikes(likes - 1);
             setLiked(false);
         } else {
             setLikes(likes + 1);
             setLiked(true);
+        }
+        try {
+            const res = await axios.post(`${api_url}/add_like`,{post_id:post?.id}, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) {
+                if (res.data.is_liked){
+                    setLiked(true);
+                }else{
+                    setLiked(false);
+                }
+            } else {
+                console.log(res.data.message);
+            }
+        } catch (err: any) {
+            console.error(err?.response?.data);
         }
     }
 
@@ -99,6 +96,8 @@ export const PostCard: React.FC<PostCardProps> = ({
     ];
 
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+
+
     return (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
             <div className="flex items-center justify-between p-4 pb-3">
@@ -176,7 +175,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                         className="flex items-center space-x-2 text-gray-600 hover:text-red-500 transition-colors group cursor-pointer"
                     >
                         <Heart
-                            className={`w-6 h-6 transition-transform active:scale-125 ${liked ? 'text-red-500 fill-red-500' : 'group-hover:scale-110'
+                            className={`w-6 h-6 transition-transform active:scale-125 ${liked || post?.is_liked ? 'text-red-500 fill-red-500' : 'group-hover:scale-110'
                                 }`}
                         />
                         <span className="text-xs font-semibold text-gray-700">{likes}</span>

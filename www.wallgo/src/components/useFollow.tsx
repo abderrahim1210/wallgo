@@ -16,7 +16,6 @@ export const useFollow = ({ setFollow } : useFollowProps = {}) => {
                 if (setFollow){
                     setFollow((prev) => !prev);
                 }
-                // queryClient.invalidateQueries({ queryKey: ['user_data', id] });
             }
         } catch (err: any) {
             console.error(err?.response?.data);

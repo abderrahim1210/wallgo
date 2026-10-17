@@ -83,9 +83,12 @@ class Post extends Controller
     public function index()
     {
         $user = User::findOrFail(Auth::id());
+        $user_id = $user->id;
         try {
             if ($user) {
-                $posts = ModelsPost::withCount(['likes', 'comments'])->with(['user:id,username,name,avatar_url'])->get();
+                $posts = ModelsPost::withCount(['likes', 'comments'])->with(['user:id,username,name,avatar_url'])->withExists(['likes as is_liked' => function ($query) use ($user_id) {
+                    $query->where('user_id', $user_id);
+                }])->get();
                 return response()->json([
                     'success' => true,
                     'posts' => $posts

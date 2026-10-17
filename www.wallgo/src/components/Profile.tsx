@@ -14,6 +14,7 @@ import { EmptyContent } from './EmptyContent'
 import { useAuth } from '../hooks/AuthProvider'
 import toast from 'react-hot-toast'
 import { FollowUser } from './FollowUser'
+import { useFollow } from './useFollow'
 
 interface User {
     id: number;
@@ -28,7 +29,7 @@ interface User {
     status?: string;
     gender?: string;
     location?: string;
-    is_following?:boolean;
+    is_following?: boolean;
 }
 
 
@@ -79,16 +80,21 @@ export const Profile = () => {
     //     return <p>Something went wrong.</p>;
     // }
 
-    const add_follow = async (following_id: number) => {
-        try {
-            const res = await axios.post(`${api_url}/add_follow`, { following_id: following_id }, { withCredentials: true, withXSRFToken: true });
-            if (res.data.success) {
-                setFollow(prev => !prev);
-                queryClient.invalidateQueries({ queryKey: ['user_data', id] });
-            }
-        } catch (err: any) {
-            console.error(err?.response?.data);
-        }
+    // const add_follow = async (following_id: number) => {
+    //     try {
+    //         const res = await axios.post(`${api_url}/add_follow`, { following_id: following_id }, { withCredentials: true, withXSRFToken: true });
+    //         if (res.data.success) {
+    //             setFollow(prev => !prev);
+    //             queryClient.invalidateQueries({ queryKey: ['user_data', id] });
+    //         }
+    //     } catch (err: any) {
+    //         console.error(err?.response?.data);
+    //     }
+    // }
+    const { add_follow } = useFollow();
+    const set_follow = (following_id: number) => {
+        add_follow(following_id);
+        setFollow(prev => !prev);
     }
     return (
         <MainLayout>
@@ -100,7 +106,7 @@ export const Profile = () => {
                     <ModalTemplate show={show} closeModal={closeModal}>
                         {
                             followers.length > 0 ? (
-                                followers?.map((u:User) => (
+                                followers?.map((u: User) => (
                                     <FollowUser user={u} onFollow={add_follow} closeModal={closeModal} />
                                 ))
                             ) : (<EmptyContent icon={<FaUsers />} text='No followers yet.' />)
@@ -113,8 +119,8 @@ export const Profile = () => {
                     <ModalTemplate show={show} closeModal={closeModal}>
                         {
                             followings.length > 0 ? (
-                                followings?.map((u:User) => (
-                                    <FollowUser user={u} onFollow={add_follow} closeModal={closeModal}  />
+                                followings?.map((u: User) => (
+                                    <FollowUser user={u} onFollow={add_follow} closeModal={closeModal} />
                                 ))
                             ) : (<EmptyContent icon={<FaUsers />} text='No followings yet.' />)
                         }
@@ -165,7 +171,7 @@ export const Profile = () => {
                                     </button>
                                 ) : (
                                     <div className="flex items-center gap-3">
-                                        <button onClick={() => add_follow(Number(id))} className={`flex items-center justify-center gap-2 px-6 py-2.5 ${follow ? 'bg-fuchsia-50 border border-[var(--special-purple)] text-[var(--special-purple)]' : 'bg-[var(--special-purple)] text-white'} hover:opacity-90  rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0`}>
+                                        <button onClick={() => set_follow(Number(id))} className={`flex items-center justify-center gap-2 px-6 py-2.5 ${follow ? 'bg-fuchsia-50 border border-[var(--special-purple)] text-[var(--special-purple)]' : 'bg-[var(--special-purple)] text-white'} hover:opacity-90  rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0`}>
                                             <span>{follow ? 'Followed' : 'Follow'}</span>
                                         </button>
 

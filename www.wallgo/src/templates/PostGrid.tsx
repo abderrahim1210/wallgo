@@ -22,6 +22,7 @@ export interface Post {
     unlock_time: string;
     expires_at: string;
     likes_count: number;
+    is_liked:boolean;
     comments_count: number;
     created_at: string;
 };
