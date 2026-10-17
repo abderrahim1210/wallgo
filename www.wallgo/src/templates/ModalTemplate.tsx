@@ -12,7 +12,6 @@ const ModalTemplate: React.FC<ModalTemplateProps> = ({ show, closeModal, childre
             centered={false}
             backdrop={true}
             keyboard={true}
-            backdropClassName="bg-black/50 backdrop-blur-xs"
             className="modal-bottom-sheet-wrapper"
             dialogClassName="modal-dialog-slide-bottom" >
             <div className="bg-white rounded-t-3xl shadow-2xl border border-zinc-100  overflow-hidden transform transition-all duration-300 max-h-[80vh] flex flex-col pointer-events-auto">

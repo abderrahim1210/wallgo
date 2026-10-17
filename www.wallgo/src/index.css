@@ -1,54 +1,70 @@
 @import "tailwindcss";
 
 @font-face {
-    font-family: "Inter";
-    src: url("./assets/fonts/Inter/Inter_regular.ttf");
-    font-style: normal;
-    font-weight: normal;
-    font-display: swap;
+  font-family: "Inter";
+  src: url("./assets/fonts/Inter/Inter_regular.ttf");
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
 }
 
 @font-face {
-    font-family: "Inter";
-    src: url("./assets/fonts/Inter/Inter_bold.ttf");
-    font-style: normal;
-    font-display: swap;
-    font-weight: bold;
+  font-family: "Inter";
+  src: url("./assets/fonts/Inter/Inter_bold.ttf");
+  font-style: normal;
+  font-display: swap;
+  font-weight: bold;
 }
 
 @font-face {
-    font-family: "Fredoka";
-    src: url("./assets/fonts/Fredoka-Regular.ttf");
-    font-style: normal;
-    font-display: swap;
+  font-family: "Fredoka";
+  src: url("./assets/fonts/Fredoka-Regular.ttf");
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url("./assets/fonts/Cairo/static/Cairo-Regular.ttf");
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url("./assets/fonts/Cairo/static/Cairo-Bold.ttf");
+  font-style: normal;
+  font-weight: bold;
 }
 
 
 :root {
-    --special-red: #DB5461;
-    --special-white: #F2F5FF;
-    --special-purple: #7371FC;
-    --special-dark: #14080E;
-    --special-gray: #34344A;
+  --special-red: #DB5461;
+  --special-white: #F2F5FF;
+  --special-purple: #7371FC;
+  --special-dark: #14080E;
+  --special-gray: #34344A;
 }
 
 body {
-    font-family: 'Inter', 'sans-serif';
-    background-color: var(--special-white);
+  font-family: 'Inter','Cairo', 'sans-serif';
+  background-color: var(--special-white);
 }
 
 .signup_page {
-    background-color: #09090b;
-    background-image: 
-        radial-gradient(at 0% 0%, rgba(115, 113, 252, 0.2) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(219, 84, 97, 0.15) 0px, transparent 50%),
-        radial-gradient(at 50% 50%, rgba(52, 52, 74, 0.3) 0px, transparent 50%);
-    background-attachment: fixed;
-    min-height: 100vh;
+  background-color: #09090b;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(115, 113, 252, 0.2) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(219, 84, 97, 0.15) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(52, 52, 74, 0.3) 0px, transparent 50%);
+  background-attachment: fixed;
+  min-height: 100vh;
 }
 
 @keyframes blink {
-  50% { border-color: transparent }
+  50% {
+    border-color: transparent
+  }
 }
 
 .typewriter-text {
@@ -58,12 +74,12 @@ body {
   animation: typing 3.5s steps(40, end), blink 0.75s step-end infinite;
 }
 
-.empty-content-item > i {
+.empty-content-item>i {
   font-size: 40px !important;
 }
 
-.quote{
-    font-family: 'Fredoka', 'sans-serif';
+.quote {
+  font-family: 'Fredoka', 'sans-serif';
 }
 
 .modal {
@@ -107,7 +123,7 @@ body {
   pointer-events: none !important;
 }
 
-.modal-dialog-slide-bottom > div {
+.modal-dialog-slide-bottom>div {
   pointer-events: auto !important;
   width: 100% !important;
 }

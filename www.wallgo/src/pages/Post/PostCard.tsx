@@ -37,11 +37,11 @@ export const PostCard: React.FC<PostCardProps> = ({
             setLiked(true);
         }
         try {
-            const res = await axios.post(`${api_url}/add_like`,{post_id:post?.id}, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.post(`${api_url}/add_like`, { post_id: post?.id }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
-                if (res.data.is_liked){
+                if (res.data.is_liked) {
                     setLiked(true);
-                }else{
+                } else {
                     setLiked(false);
                 }
             } else {
@@ -145,9 +145,9 @@ export const PostCard: React.FC<PostCardProps> = ({
             )}
 
             {
-                show === 'comments' && (
+                show === `comments_${post?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <CommentSection postId={1} />
+                        <CommentSection postId={post?.id} />
                     </ModalTemplate>
                 )
             }
@@ -181,7 +181,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                         <span className="text-xs font-semibold text-gray-700">{likes}</span>
                     </button>
 
-                    <button onClick={() => openModal('comments')} className="flex items-center space-x-2 text-gray-600 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">
+                    <button onClick={() => openModal(`comments_${post?.id}`)} className="flex items-center space-x-2 text-gray-600 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">
                         <MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-semibold text-gray-700">{post?.comments_count}</span>
                     </button>

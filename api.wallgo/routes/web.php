@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\EditProfile;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\GetUser;
@@ -84,7 +85,12 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::post('/add_like', [ControllersLike::class, 'create']);
+
+    Route::get('/comments/{post_id}', [CommentController::class, 'index']);
+
+    Route::post('/comments/create', [CommentController::class, 'create']);
 });
+
 
 
 require __DIR__ . '/auth.php';
