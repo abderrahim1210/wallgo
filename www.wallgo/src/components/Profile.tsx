@@ -41,7 +41,6 @@ export const Profile = () => {
     const { show, openModal, closeModal } = useModal()!;
     const { user } = useAuth()!;
     const [follow, setFollow] = useState(false);
-    const queryClient = useQueryClient();
 
     useEffect(() => {
         if (id) {
