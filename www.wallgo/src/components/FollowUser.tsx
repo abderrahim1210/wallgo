@@ -13,7 +13,7 @@ interface User {
 interface FollowUserProps {
     user: User;
     onFollow: (following_id: number) => void;
-    closeModal: () => void;
+    closeModal?: () => void;
 }
 
 export const FollowUser: React.FC<FollowUserProps> = ({ user, onFollow, closeModal }) => {
@@ -27,7 +27,7 @@ export const FollowUser: React.FC<FollowUserProps> = ({ user, onFollow, closeMod
 
     const preview = () => {
         navigate(`/profile/${user?.id}/${user?.username}`);
-        closeModal();
+        closeModal?.();
         navigate(0);
     }
     return (
