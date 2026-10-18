@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Check, Heart, X } from 'lucide-react';
+import { Check, Edit3, Flag, Heart, Link, MoreHorizontal, Trash2, X } from 'lucide-react';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { api_url } from '../pages/Auth/getUser';
 import { FiSend } from 'react-icons/fi';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/AuthProvider';
+import { DropdownMenu, type DropdownItem } from '../templates/DropdownMenu';
 
 export interface Comment {
     id: number;
@@ -92,6 +93,37 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
             console.error(err?.response.data);
         }
     }
+
+    const isOwner = user?.id === comment?.user.id;
+    const commentMenuItems: DropdownItem[] = [
+        {
+            label: 'Copy Comment',
+            icon: <Link className="w-4 h-4 text-blue-500" />,
+            onClick: () => { return },
+        },
+
+        ...(isOwner ? [
+            {
+                label: `${edit ? 'Cancel Edit' : 'Edit Comment'}`,
+                icon: <Edit3 className="w-4 h-4 text-emerald-500" />,
+                onClick: () => { setEdit(prev => !prev) },
+            },
+            {
+                label: 'Delete Comment',
+                icon: <Trash2 className="w-4 h-4 text-red-500" />,
+                danger: true,
+                onClick: () => { return },
+            },
+        ] : []),
+        ...(!isOwner ? [
+            {
+                label: 'Report Comment',
+                icon: <Flag className="w-4 h-4 text-red-500" />,
+                danger: true,
+                onClick: () => { return },
+            },
+        ] : [])
+    ];
     return (
         <div key={comment?.id} className="pt-3 first:pt-0 flex items-start gap-3">
             <img
@@ -111,7 +143,6 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
                                 <input type="text"
                                     value={newContent}
                                     onChange={(e) => setNewContent(e.target.value)}
-                                    // placeholder={`Reply to @${comment.user.username}...`}
                                     className="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-[var(--special-purple)] transition shadow-sm"
                                 />
                                 <button className='cursor-pointer' onClick={editComment}>
@@ -137,11 +168,14 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
                         <Heart className={`w-4 h-4 ${liked ? 'text-red-500 fill-red-500' : ''}`} /> {comment?.likes_count}
                     </button>
                     <button onClick={() => setAddReplay(prev => !prev)} className="hover:text-[var(--special-purple)] cursor-pointer transition">{addReplay ? 'Cancel' : `Reply ${comment.replies ? `(${comment.replies?.length})` : ''}`}</button>
-                    {
-                        user?.id === comment?.user.id && (
-                            <button className='hover:text-[var(--special-purple)] cursor-pointer transition' onClick={() => setEdit(prev => !prev)}>Edit</button>
-                        )
-                    }
+                    <DropdownMenu
+                        trigger={
+                            <button className="p-2 text-gray-400 hover:text-gray-600 hover:text-[var(--special-purple)] rounded-full transition-colors cursor-pointer">
+                                <MoreHorizontal className="w-5 h-5" />
+                            </button>
+                        }
+                        items={commentMenuItems}
+                    />
                 </div>
                 {addReplay && (
                     <>
