@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Model
 {
-    protected $fillable = ['user_id', 'content', 'post_id'];
+    protected $fillable = ['user_id', 'content', 'post_id', 'reply_to'];
     public function post()
     {
         return $this->belongsTo(Post::class);
@@ -20,5 +20,10 @@ class Comment extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function likes()
+    {
+        return $this->morphMany(Like::class, 'liketable');
     }
 }

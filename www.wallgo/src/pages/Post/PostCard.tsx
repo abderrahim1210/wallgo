@@ -37,7 +37,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             setLiked(true);
         }
         try {
-            const res = await axios.post(`${api_url}/add_like`, { post_id: post?.id }, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.post(`${api_url}/add_like`, { post_id: post?.id, type:'post' }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 if (res.data.is_liked) {
                     setLiked(true);

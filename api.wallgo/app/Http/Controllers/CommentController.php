@@ -14,20 +14,25 @@ class CommentController extends Controller
     {
         $request->validate([
             'post_id' => ['integer', 'required', 'exists:posts,id'],
-            'content' => ['string', 'required', 'max:255']
+            'content' => ['string', 'required', 'max:255'],
+            'reply_to' => ['nullable', 'integer', 'exists:comments,id']
         ]);
         $user = Auth::user();
         if (!$user) return response()->json(['success' => false, 'message' => 'User not found'], 401);
         $user_id = $user->id;
         $post = Post::find($request->post_id);
         if (!$post) return response()->json(['success' => false, 'message' => 'Post not found']);
-
+        if ($request->reply_to){
+            $comment = Comment::find($request->reply_to);
+            if (!$comment) return response()->json(['success' => false, 'message' => 'Comment by id not found']);
+        }
 
         try {
             Comment::create([
                 'user_id' => $user_id,
                 'post_id' => $request->post_id,
-                'content' => $request->content
+                'content' => $request->content,
+                'reply_to' => $request->reply_to
             ]);
             return response()->json([
                 'success' => true,
@@ -47,7 +52,9 @@ class CommentController extends Controller
         if (!$post) return response()->json(['success' => false, 'message' => 'Post by this id not found']);
 
         try {
-            $comments = Comment::with(['user'])->where('post_id', $post_id)->latest()->get();
+            $comments = Comment::with(['user'])->withExists(['likes as is_liked' => function ($q) use ($post_id) {
+                $q->where('post_id', $post_id);
+            }])->where('post_id', $post_id)->latest()->get();
             return response()->json(['success' => true, 'comments' => $comments]);
         } catch (\Exception $e) {
             return response()->json([
