@@ -15,7 +15,8 @@ class CommentController extends Controller
         $request->validate([
             'post_id' => ['integer', 'required', 'exists:posts,id'],
             'content' => ['string', 'required', 'max:255'],
-            'reply_to' => ['nullable', 'integer', 'exists:comments,id']
+            'reply_to' => ['nullable', 'integer', 'exists:comments,id'],
+            'comment_id' => ['nullable', 'integer', 'exists:comments,id']
         ]);
         $user = Auth::user();
         if (!$user) return response()->json(['success' => false, 'message' => 'User not found'], 401);
@@ -27,7 +28,37 @@ class CommentController extends Controller
             if (!$comment) return response()->json(['success' => false, 'message' => 'Comment by id not found']);
         }
 
+        if ($request->comment_id) {
+            $commentExist = Comment::find($request->comment_id);
+        }
         try {
+            if ($request->filled('comment_id')) {
+                $commentExist = Comment::find($request->comment_id);
+
+                if (!$commentExist) {
+                    return response()->json(['success' => false, 'message' => 'Comment not found']);
+                }
+
+                if ($commentExist->user_id !== $user->id) {
+                    return response()->json(['success' => false, 'message' => 'Unauthorized action'], 403);
+                }
+                $commentExist->update([
+                    'content' => $request->content,
+                    'is_edited' => true
+                ]);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Comment updated successfully'
+                ]);
+            }
+
+            if ($request->filled('reply_to')) {
+                $parentComment = Comment::find($request->reply_to);
+                if (!$parentComment) {
+                    return response()->json(['success' => false, 'message' => 'Parent comment not found']);
+                }
+            }
+
             Comment::create([
                 'user_id' => $user_id,
                 'post_id' => $request->post_id,

@@ -1,11 +1,12 @@
 import axios from 'axios';
-import { Heart } from 'lucide-react';
+import { Check, Heart, X } from 'lucide-react';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { api_url } from '../pages/Auth/getUser';
 import { FiSend } from 'react-icons/fi';
 import { useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../hooks/AuthProvider';
 
 export interface Comment {
     id: number;
@@ -36,10 +37,16 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
     const [addReplay, setAddReplay] = useState(false);
     const [replyContent, setReplyContent] = useState('');
     const [liked, setLiked] = useState<boolean>(Boolean(comment?.is_liked));
-
+    const { user } = useAuth()!;
+    const [edit, setEdit] = useState(false);
+    const [newContent, setNewContent] = useState(comment?.content);
     useEffect(() => {
         setLiked(Boolean(comment?.is_liked));
     }, [comment?.is_liked]);
+
+    useEffect(() => {
+        setNewContent(comment?.content);
+    }, [edit]);
 
     const queryClient = useQueryClient();
     const handleLike = async () => {
@@ -71,6 +78,20 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
             console.error(err?.response.data);
         }
     }
+
+    const editComment = async () => {
+        if (!newContent) return null;
+        try {
+            const res = await axios.post(`${api_url}/comments/create`, { content: newContent, post_id: postId, comment_id: comment?.id }, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) {
+                setEdit(false);
+                setNewContent('');
+                queryClient.invalidateQueries({ queryKey: ['comments'] });
+            }
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
     return (
         <div key={comment?.id} className="pt-3 first:pt-0 flex items-start gap-3">
             <img
@@ -84,9 +105,31 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
                         <span className="font-semibold text-xs sm:text-sm text-gray-900 cursor-pointer" onClick={() => navigate(`/profile/${comment?.user.id}/${comment?.user.username}`)}>{comment.user.name}</span>
                         <span className="text-[12px] text-gray-400">{moment(comment.created_at).fromNow()}</span>
                     </div>
-                    <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">
-                        {comment.content}
-                    </p>
+                    {
+                        edit ? (
+                            <div className='flex justify-center items-center gap-2'>
+                                <input type="text"
+                                    value={newContent}
+                                    onChange={(e) => setNewContent(e.target.value)}
+                                    // placeholder={`Reply to @${comment.user.username}...`}
+                                    className="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-[var(--special-purple)] transition shadow-sm"
+                                />
+                                <button className='cursor-pointer' onClick={editComment}>
+                                    <Check className='text-[var(--special-purple)]' />
+                                </button>
+                                <button className='cursor-pointer' onClick={() => {
+                                    setEdit(false);
+                                    setNewContent(comment?.content);
+                                }}>
+                                    <X className='text-red-600' />
+                                </button>
+                            </div>
+                        ) : (
+                            <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">
+                                {comment.content}
+                            </p>
+                        )
+                    }
                 </div>
 
                 <div className="flex items-center gap-4 mt-1.5 ml-3 text-xs text-gray-500 font-medium">
@@ -94,6 +137,11 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
                         <Heart className={`w-4 h-4 ${liked ? 'text-red-500 fill-red-500' : ''}`} /> {comment?.likes_count}
                     </button>
                     <button onClick={() => setAddReplay(prev => !prev)} className="hover:text-[var(--special-purple)] cursor-pointer transition">{addReplay ? 'Cancel' : `Reply ${comment.replies ? `(${comment.replies?.length})` : ''}`}</button>
+                    {
+                        user?.id === comment?.user.id && (
+                            <button className='hover:text-[var(--special-purple)] cursor-pointer transition' onClick={() => setEdit(prev => !prev)}>Edit</button>
+                        )
+                    }
                 </div>
                 {addReplay && (
                     <>
