@@ -92,8 +92,8 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
 
             <div className="overflow-y-auto p-4 space-y-4 divide-y divide-gray-50">
                 {comments?.length > 0 ? (
-                    comments.map((comment: Comment) => (
-                        <CommentItem comment={comment} postId={postId} />
+                    comments.map((comment: Comment, index:number) => (
+                        <CommentItem comment={comment} postId={postId} key={index} />
                     ))
                 ) : (
                     <div className="py-8 text-center text-gray-400">

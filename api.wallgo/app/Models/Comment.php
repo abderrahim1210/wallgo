@@ -26,4 +26,9 @@ class Comment extends Model
     {
         return $this->morphMany(Like::class, 'liketable');
     }
+
+    public function replies()
+    {
+        return $this->hasMany(Comment::class, 'reply_to')->with(['user', 'replies.user'])->withCount('likes');
+    }
 }

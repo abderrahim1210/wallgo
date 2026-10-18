@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { Heart } from 'lucide-react';
 import moment from 'moment';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { api_url } from '../pages/Auth/getUser';
 import { FiSend } from 'react-icons/fi';
+import { useQueryClient } from '@tanstack/react-query';
 
 export interface Comment {
     id: number;
@@ -14,17 +15,20 @@ export interface Comment {
     created_at: string;
     updated_at: string;
     is_liked: boolean;
+    reply_to?: number;
+    likes_count: number;
     user: {
         id: number;
         name: string;
         username: string;
         avatar_url: string;
     }
+    replies?: Comment[]
 }
 
 interface CommentItemProps {
     comment: Comment;
-    postId:number;
+    postId?: number;
 }
 
 export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => {
@@ -32,11 +36,18 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
     const [addReplay, setAddReplay] = useState(false);
     const [replyContent, setReplyContent] = useState('');
     const [liked, setLiked] = useState<boolean>(Boolean(comment?.is_liked));
+
+    useEffect(() => {
+        setLiked(Boolean(comment?.is_liked));
+    }, [comment?.is_liked]);
+
+    const queryClient = useQueryClient();
     const handleLike = async () => {
         try {
             const res = await axios.post(`${api_url}/add_like`, { type: 'comment', comment_id: comment?.id }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 setLiked(prev => !prev);
+                queryClient.invalidateQueries({ queryKey: ['comments'] });
             }
         } catch (err: any) {
             console.error(err?.response.data);
@@ -47,9 +58,12 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
         e.preventDefault();
         if (!replyContent) return null;
         try {
-            const res = await axios.post(`${api_url}/comments/create`, { content: replyContent,post_id:postId, reply_to: comment?.id }, { withCredentials: true, withXSRFToken: true });
+            const cmnt_id = comment?.reply_to ? comment.reply_to : comment?.id;
+            const res = await axios.post(`${api_url}/comments/create`, { content: `@${comment.user.username} ${replyContent}`, post_id: postId, reply_to: cmnt_id }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 setAddReplay(false);
+                queryClient.invalidateQueries({ queryKey: ['comments'] });
+                setReplyContent('');
             } else {
                 console.log(res.data.message);
             }
@@ -58,7 +72,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
         }
     }
     return (
-        <div key={comment.id} className="pt-3 first:pt-0 flex items-start gap-3">
+        <div key={comment?.id} className="pt-3 first:pt-0 flex items-start gap-3">
             <img
                 src={comment?.user.avatar_url ?? "/icons/avatar1.svg"}
                 alt={comment?.user.name}
@@ -76,28 +90,37 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
                 </div>
 
                 <div className="flex items-center gap-4 mt-1.5 ml-3 text-xs text-gray-500 font-medium">
-                    <button onClick={handleLike} className="hover:text-[var(--special-red)] cursor-pointer transition">
-                        <Heart className={`w-4 h-4 ${liked ? 'text-red-500 fill-red-500' : ''}`} />
+                    <button onClick={handleLike} className="hover:text-[var(--special-red)] cursor-pointer transition flex justify-center gap-1">
+                        <Heart className={`w-4 h-4 ${liked ? 'text-red-500 fill-red-500' : ''}`} /> {comment?.likes_count}
                     </button>
-                    <button onClick={() => setAddReplay(prev => !prev)} className="hover:text-[var(--special-purple)] cursor-pointer transition">{addReplay ? 'Cancel' : 'Reply'}</button>
+                    <button onClick={() => setAddReplay(prev => !prev)} className="hover:text-[var(--special-purple)] cursor-pointer transition">{addReplay ? 'Cancel' : `Reply ${comment.replies ? `(${comment.replies?.length})` : ''}`}</button>
                 </div>
                 {addReplay && (
-                    <form onSubmit={handleAddComment} className="mt-3 flex items-center gap-2 animate-fadeIn">
-                        <input
-                            type="text"
-                            value={replyContent}
-                            onChange={(e) => setReplyContent(e.target.value)}
-                            placeholder={`Reply to @${comment.user.username}...`}
-                            className="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-[var(--special-purple)] transition shadow-sm"
-                            autoFocus
-                        />
-                        <button
-                            type="submit"
-                            className="bg-[var(--special-purple)] text-white p-2 rounded-xl hover:opacity-90 transition shadow-sm shrink-0 flex items-center justify-center cursor-pointer"
-                        >
-                            <FiSend className="w-3.5 h-3.5" />
-                        </button>
-                    </form>
+                    <>
+                        <form onSubmit={handleAddComment} className="mt-3 flex items-center gap-2 animate-fadeIn">
+                            <input
+                                type="text"
+                                value={replyContent}
+                                onChange={(e) => setReplyContent(e.target.value)}
+                                placeholder={`Reply to @${comment.user.username}...`}
+                                className="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-[var(--special-purple)] transition shadow-sm"
+                                autoFocus
+                            />
+                            <button
+                                type="submit"
+                                className="bg-[var(--special-purple)] text-white p-2 rounded-xl hover:opacity-90 transition shadow-sm shrink-0 flex items-center justify-center cursor-pointer"
+                            >
+                                <FiSend className="w-3.5 h-3.5" />
+                            </button>
+                        </form>
+                        {comment?.replies && comment.replies.length > 0 && (
+                            <div className="pl-4 mt-3 border-l-2 border-gray-100 space-y-3">
+                                {comment.replies.map((reply: Comment) => (
+                                    <CommentItem key={reply.id} comment={reply} postId={postId} />
+                                ))}
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
 

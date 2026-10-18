@@ -22,7 +22,7 @@ class CommentController extends Controller
         $user_id = $user->id;
         $post = Post::find($request->post_id);
         if (!$post) return response()->json(['success' => false, 'message' => 'Post not found']);
-        if ($request->reply_to){
+        if ($request->reply_to) {
             $comment = Comment::find($request->reply_to);
             if (!$comment) return response()->json(['success' => false, 'message' => 'Comment by id not found']);
         }
@@ -52,9 +52,9 @@ class CommentController extends Controller
         if (!$post) return response()->json(['success' => false, 'message' => 'Post by this id not found']);
 
         try {
-            $comments = Comment::with(['user'])->withExists(['likes as is_liked' => function ($q) use ($post_id) {
+            $comments = Comment::with(['user', 'replies.user'])->withCount(['likes'])->withExists(['likes as is_liked' => function ($q) use ($post_id) {
                 $q->where('post_id', $post_id);
-            }])->where('post_id', $post_id)->latest()->get();
+            }])->where('post_id', $post_id)->whereNull('reply_to')->latest()->get();
             return response()->json(['success' => true, 'comments' => $comments]);
         } catch (\Exception $e) {
             return response()->json([

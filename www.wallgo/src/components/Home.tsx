@@ -335,8 +335,8 @@ export const Home = () => {
                       <span>Who to follow</span>
                     </div>
                     {
-                      users?.map((u: User) => (
-                        <FollowUser user={u} onFollow={add_follow} />
+                      users?.map((u: User, index:number) => (
+                        <FollowUser user={u} onFollow={add_follow} key={index} />
                       ))
                     }
                   </div>
