@@ -16,6 +16,7 @@ import { Settings } from '../components/Settings'
 import { Profile } from '../components/Profile'
 import { CreatePage } from '../components/CreatePage'
 import { PageProfile } from '../components/PageProfile'
+import { EditPage } from '../components/EditPage'
 
 export const AppRoutes = () => {
     return (
@@ -38,6 +39,7 @@ export const AppRoutes = () => {
             <Route path='/profile/:id/:username' element={<Profile />} />
             <Route path='/create_page' element={<CreatePage />} />
             <Route path='/pages/:id' element={<PageProfile />} />
+            <Route path='/pages/:id/edit' element={<EditPage />} />
         </Routes>
     )
 }

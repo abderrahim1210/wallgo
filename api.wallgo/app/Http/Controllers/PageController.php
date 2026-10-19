@@ -96,9 +96,10 @@ class PageController extends Controller
                 'message' => 'Id is required for show page'
             ]);
         }
-
+        $user_id = Auth::id();
         try {
             $page = Page::with(['owner'])->withCount(['followers'])->find($id);
+            if ($user_id !== $page->owner_id) return response()->json(['success' => false, 'message' => "You don't have a permission for edit at this page"]);
             if (!$page) return response()->json(['success' => false, 'message' => "Page by id $id not found"], 404);
             return response()->json([
                 'success' => true,
