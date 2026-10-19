@@ -76,6 +76,11 @@ class User extends Authenticatable
         return $this->hasMany(ModelsComment::class);
     }
 
+    public function pages()
+    {
+        return $this->morphedByMany(GroupPageFollow::class, 'followable');
+    }
+
     /**
      * Get the attributes that should be cast.
      *

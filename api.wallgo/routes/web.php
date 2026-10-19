@@ -8,8 +8,10 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\GetUser;
 use App\Http\Controllers\GetUsers;
 use App\Http\Controllers\Like as ControllersLike;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\Post;
 use App\Http\Controllers\Settings;
+use App\Models\Page;
 use App\Models\Post as ModelsPost;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -91,8 +93,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/comments/create', [CommentController::class, 'create']);
 
     Route::get('/my_posts', [GetUser::class, 'getPosts']);
+
+    Route::get('/pages', [PageController::class, 'index']);
+
+    Route::post('/pages/create', [PageController::class, 'store']);
 });
 
-
+Route::get('/pages/{id}', [PageController::class, 'show']);
 
 require __DIR__ . '/auth.php';

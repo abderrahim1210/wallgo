@@ -14,6 +14,8 @@ import { Groups } from '../components/Groups'
 import { EditProfile } from '../components/EditProfile'
 import { Settings } from '../components/Settings'
 import { Profile } from '../components/Profile'
+import { CreatePage } from '../components/CreatePage'
+import { PageProfile } from '../components/PageProfile'
 
 export const AppRoutes = () => {
     return (
@@ -34,6 +36,8 @@ export const AppRoutes = () => {
             <Route path='/settings' element={<Settings />} />
             <Route path='/post/:id/edit' element={<CreatePost />} />
             <Route path='/profile/:id/:username' element={<Profile />} />
+            <Route path='/create_page' element={<CreatePage />} />
+            <Route path='/pages/:id' element={<PageProfile />} />
         </Routes>
     )
 }
