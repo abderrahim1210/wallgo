@@ -57,4 +57,29 @@ class GetUser extends Controller
             ]);
         }
     }
+
+    public function getPosts()
+    {
+        $user = Auth::user();
+        if (!$user) return response()->json([
+            'success' => false,
+            'message' => 'User not found'
+        ], 401);
+
+        $user_id = $user->id;
+        try {
+            $posts = Post::with(['user'])->withCount(['likes', 'comments'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            }])->where('user_id', $user_id)->get();
+            return response()->json([
+                'success' => true,
+                'posts' => $posts
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

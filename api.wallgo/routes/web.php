@@ -89,6 +89,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/comments/{post_id}', [CommentController::class, 'index']);
 
     Route::post('/comments/create', [CommentController::class, 'create']);
+
+    Route::get('/my_posts', [GetUser::class, 'getPosts']);
 });
 
 

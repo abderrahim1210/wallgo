@@ -61,7 +61,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         }, 3000);
     };
 
-    const isOwner = currentUser?.id === post?.user.id;
+    const isOwner = currentUser?.id === post?.user?.id;
 
     const navigate = useNavigate();
 
