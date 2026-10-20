@@ -97,6 +97,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/pages', [PageController::class, 'index']);
 
     Route::post('/pages/create', [PageController::class, 'store']);
+
+    Route::put('/pages/{id}', [PageController::class, 'update']);
+
+    Route::post('/pages/follow', [PageController::class, 'follow']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);

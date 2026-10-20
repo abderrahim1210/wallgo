@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async';
 import { MainLayout } from '../MainLayout';
 import { PostGrid, type Post } from '../templates/PostGrid';
-import { Users } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { Check, Users } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
 import { useQuery } from '@tanstack/react-query';
@@ -26,13 +26,15 @@ export interface Page {
     banner_url?: string;
     created_at: string;
     followers_count: number;
+    is_followed: boolean;
     posts: Post[]
 }
 
 export const PageProfile = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
+    if (!id) return <p>Id not found</p>;
 
-    if (!id) return <p>Id not found</p>
     const fetchPage = async () => {
         try {
             const res = await axios.get(`${api_url}/pages/${id}`, { withCredentials: true });
@@ -49,9 +51,28 @@ export const PageProfile = () => {
 
     const page = data?.page || null;
 
-    const isFollowed = false;
+    const [followed, setFollowed] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (data) {
+            setFollowed(data?.page?.is_followed);
+        }
+    }, [data]);
 
     const { user } = useAuth()!;
+
+    const handleFollow = async () => {
+        try {
+            const res = await axios.post(`${api_url}/pages/follow`, { type: 'page', page_id: page?.id }, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) {
+                setFollowed(prev => !prev);
+            } else {
+                console.log(res.data.message);
+            }
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
     return (
         <MainLayout>
             <Helmet>
@@ -81,7 +102,8 @@ export const PageProfile = () => {
                             {
                                 user?.id === page?.owner.id ? (
                                     <button
-                                        className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${isFollowed
+                                        onClick={() => navigate(`/pages/${page?.id}/edit`)}
+                                        className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${page?.is_followed
                                             ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                             : 'bg-[var(--special-purple)] text-white hover:opacity-90'
                                             }`}
@@ -90,14 +112,13 @@ export const PageProfile = () => {
                                     </button>
                                 ) : (
                                     <button
-                                        // onClick={handleFollowToggle}
-                                        className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${isFollowed
+                                        onClick={handleFollow}
+                                        className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${followed
                                             ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                             : 'bg-[var(--special-purple)] text-white hover:opacity-90'
                                             }`}
                                     >
-                                        {/* {isFollowed ? <><Check className="w-4 h-4" /> Following</> : 'Follow Page'} */}
-                                        Follow
+                                        {followed ? <><Check className="w-4 h-4" /> Following</> : 'Follow Page'}
                                     </button>
                                 )
                             }
@@ -105,7 +126,7 @@ export const PageProfile = () => {
 
                         <div>
                             <h1 className="text-2xl font-bold text-gray-900">{page?.name}</h1>
-                            <p className="text-sm text-gray-500">{page?.category}</p>
+                            <p className="text-sm capitalize text-gray-500">{page?.category}</p>
                         </div>
 
                         <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100 text-sm text-gray-600">

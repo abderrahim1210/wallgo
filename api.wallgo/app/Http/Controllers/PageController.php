@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
+use App\Models\GroupPageFollow;
 use App\Models\Page;
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,8 +19,8 @@ class PageController extends Controller
     {
         $user_id = Auth::id();
         try {
-            $my_pages = Page::where('owner_id', $user_id)->get();
-            $pages = Page::where('owner_id', '!=', $user_id)->get();
+            $my_pages = Page::withCount(['followers'])->where('owner_id', $user_id)->get();
+            $pages = Page::withCount(['followers'])->where('owner_id', '!=', $user_id)->get();
             return response()->json([
                 'success' => true,
                 'my_pages' => $my_pages,
@@ -98,8 +102,10 @@ class PageController extends Controller
         }
         $user_id = Auth::id();
         try {
-            $page = Page::with(['owner'])->withCount(['followers'])->find($id);
-            if ($user_id !== $page->owner_id) return response()->json(['success' => false, 'message' => "You don't have a permission for edit at this page"]);
+            $page = Page::with(['owner'])->withCount(['followers'])->withExists(['followers as is_followed' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            }])->find($id);
+            // if ($user_id !== $page->owner_id) return response()->json(['success' => false, 'message' => "You don't have a permission for edit at this page"]);
             if (!$page) return response()->json(['success' => false, 'message' => "Page by id $id not found"], 404);
             return response()->json([
                 'success' => true,
@@ -126,7 +132,101 @@ class PageController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You need to login first for upload a photo'
+            ], 401);
+        }
+
+        $user_id = Auth::id();
+
+        $page = Page::find($id);
+        if (!$page) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Page not found'
+            ]);
+        }
+
+        if ($page->owner_id !== $user_id) {
+            return response()->json([
+                'success' => false,
+                'message' => "You don't have a permission for edit this page"
+            ]);
+        }
+
+        $request->validate([
+            'name' => ['string', 'max:155'],
+            'description' => ['string', 'max:355'],
+            'logo_url' => ['string'],
+            'banner_url' => ['string'],
+            'category' => ['string']
+        ]);
+        try {
+            $validator = new \App\Http\Controllers\ValidePageLogoBanner();
+            $logo = null;
+            if ($request->logo_url) {
+                if ($page->logo_url) {
+                    $cloudinary = new \App\Http\Controllers\CloudinaryActions();
+                    $cloudinary->destroy($page->logo_url, 'wallgo_pages_logo_url/');
+                    $page->update([
+                        'logo_url' => null
+                    ]);
+                    $logo = $validator->valide($request->logo_url, 'wallgo_pages_logo_url');
+                } else {
+                    $logo = $page->logo_url;
+                }
+            }
+
+            $banner = null;
+            if ($request->banner_url) {
+                if ($page->banner_url) {
+                    $cloudinary = new \App\Http\Controllers\CloudinaryActions();
+                    $cloudinary->destroy($page->banner_url, 'wallgo_pages_banner_url/');
+                    $page->update([
+                        'banner_url' => null
+                    ]);
+                    $banner = $validator->valide($request->banner_url, 'wallgo_pages_banner_url');
+                } else {
+                    $banner = $page->banner_url;
+                }
+            }
+
+            $page->fill($request->only([
+                'name',
+                'description',
+                'logo_url',
+                'banner_url',
+                'category'
+            ]));
+
+            $page->name = $request->name;
+            $page->description = $request->description;
+            $page->category = $request->category;
+            $page->logo_url = $logo ?? $page->logo_url;
+            $page->banner_url = $banner ?? $page->banner_url;
+
+            if ($page->isDirty()) {
+                $page->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Page updated successfully'
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to update informations for this page'
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -135,5 +235,59 @@ class PageController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+
+    public function follow(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 401);
+        }
+
+        $user_id = Auth::id();
+        $type = $request->type;
+        $followable = null;
+
+        switch ($type) {
+            case 'page':
+                $followable = Page::find($request->page_id);
+                if (!$followable) return response()->json(['success' => false, 'message' => 'Page by this id not found']);
+                break;
+            case 'group':
+                $followable = Group::find($request->group_id);
+                if (!$followable) return response()->json(['success' => false, 'message' => 'Group by this id not found']);
+                break;
+        }
+        try {
+            $existingFollow = GroupPageFollow::where('user_id', $user_id)->where('followable_id', $followable->id)->where('followable_type', get_class($followable))->first();
+            if ($existingFollow) {
+                $existingFollow->delete();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Follow removed successfully',
+                    'is_followed' => false
+                ]);
+            }else{
+                GroupPageFollow::create([
+                    'user_id' => $user_id,
+                    'followable_id' => $followable->id,
+                    'followable_type' => get_class($followable)
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Follow added successfully',
+                    'is_followed' => true
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ]);
+        }
     }
 }
