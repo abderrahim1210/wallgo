@@ -101,6 +101,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/pages/{id}', [PageController::class, 'update']);
 
     Route::post('/pages/follow', [PageController::class, 'follow']);
+
+    Route::get('/get_my_pages', function () {
+        $user_id = Auth::id();
+        $pages = Page::select('id', 'owner_id', 'name')->where('owner_id', $user_id)->get();
+        return response()->json([
+            'success' => true,
+            'pages' => $pages
+        ]);
+    });
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);
