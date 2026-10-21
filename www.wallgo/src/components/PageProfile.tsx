@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async';
 import { MainLayout } from '../MainLayout';
 import { PostGrid, type Post } from '../templates/PostGrid';
-import { Check, PlusSquare, Users } from 'lucide-react';
+import { Check, Pencil, PlusSquare, Settings, Users } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
@@ -50,6 +50,7 @@ export const PageProfile = () => {
     });
 
     const page = data?.page || null;
+    const posts = data?.posts || [];
 
     const [followed, setFollowed] = useState<boolean>(false);
 
@@ -101,22 +102,27 @@ export const PageProfile = () => {
 
                             {
                                 user?.id === page?.owner.id ? (
-                                    <div className='gap-1 flex  '><button
-                                        // onClick={() => navigate(`/pages/${page?.id}/edit`)}
-                                        className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2'
-                                            : 'bg-[var(--special-purple)] text-white hover:opacity-90'
-                                            }`}
-                                    >
-                                        <PlusSquare />
-                                    </button>
+                                    <div className='gap-1 flex  '>
+                                        <button
+                                            onClick={() => navigate('/create_post')}
+                                            className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                            title='Create post for this page'
+                                        >
+                                            <PlusSquare className='w-5 h-5 text-indigo-600' />
+                                        </button>
+                                        <button
+                                            onClick={() => navigate('/create_post')}
+                                            className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                            title='Create post for this page'
+                                        >
+                                            <Settings className='w-5 h-5 text-indigo-600' />
+                                        </button>
                                         <button
                                             onClick={() => navigate(`/pages/${page?.id}/edit`)}
-                                            className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${page?.is_followed
-                                                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                : 'bg-[var(--special-purple)] text-white hover:opacity-90'
-                                                }`}
+                                            className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                            title='Create post for this page'
                                         >
-                                            Edit Page
+                                            <Pencil className='w-5 h-5 text-[var(--special-purple)]' />
                                         </button>
                                     </div>
                                 ) : (
@@ -149,8 +155,8 @@ export const PageProfile = () => {
 
                 <div className="mt-6">
                     <h2 className="text-xl font-bold text-gray-900 mb-4">Page Posts</h2>
-                    {page?.posts && page.posts.length > 0 ? (
-                        <PostGrid posts={page.posts} />
+                    {posts && posts.length > 0 ? (
+                        <PostGrid posts={posts} />
                     ) : (
                         <EmptyContent text=" This page hasn't posted anything yet." icon={<FaRegNewspaper />} />
                     )}

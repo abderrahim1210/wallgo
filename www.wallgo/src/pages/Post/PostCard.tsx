@@ -37,7 +37,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             setLiked(true);
         }
         try {
-            const res = await axios.post(`${api_url}/add_like`, { post_id: post?.id, type:'post' }, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.post(`${api_url}/add_like`, { post_id: post?.id, type: 'post' }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 if (res.data.is_liked) {
                     setLiked(true);
@@ -102,18 +102,38 @@ export const PostCard: React.FC<PostCardProps> = ({
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
             <div className="flex items-center justify-between p-4 pb-3">
                 <div className="flex items-center space-x-3">
-                    <img
-                        src={post?.user.avatar_url || "/icons/avatar1.svg"}
-                        alt={post?.user.name}
-                        className="w-10 h-10 rounded-full object-cover border border-purple-100"
-                    />
+                    {
+                        post?.is_owner && post?.postable ? (
+                            <img
+                                src={post?.postable?.logo_url || '/icons/users.svg'}
+                                alt={post?.user.name}
+                                className="w-10 h-10 rounded-full object-cover border border-purple-100"
+                            />
+                        ) : (
+                            <img
+                                src={post?.user?.avatar_url || '/icons/avatar1.svg'}
+                                alt={post?.user.name}
+                                className="w-10 h-10 rounded-full object-cover border border-purple-100"
+                            />
+                        )
+                    }
                     <div>
                         <h4 className="font-semibold text-sm text-gray-900 leading-tight">
-                            <LinkR to={`/profile/${post?.user.id}/${post?.user.username}`}>
-                                {post?.user.name}
-                            </LinkR>
+                            {
+                                post?.is_owner && post?.postable ? (
+                                    <LinkR to={`/pages/${post?.postable?.id}`}>
+                                        {post?.postable?.name}
+                                    </LinkR>
+                                ) : (
+                                    <LinkR to={`/profile/${post?.user.id}/${post?.user.username}`}>
+                                        {post?.user.name}
+                                    </LinkR>
+                                )
+                            }
                         </h4>
-                        <span className="text-xs text-gray-500">@{post?.user.username} • {moment(post?.created_at).fromNow()}</span>
+                        <span className="text-xs text-gray-500">
+                            {!post?.postable && `@${post?.user.username} • `} {moment(post?.created_at).fromNow()}
+                        </span>
                     </div>
                 </div>
                 <DropdownMenu

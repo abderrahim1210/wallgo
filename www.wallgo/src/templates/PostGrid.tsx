@@ -22,9 +22,15 @@ export interface Post {
     unlock_time: string;
     expires_at: string;
     likes_count: number;
-    is_liked:boolean;
+    is_liked: boolean;
     comments_count: number;
     created_at: string;
+    is_owner?: boolean;
+    postable?: {
+        id?: number;
+        name?: string;
+        logo_url?: string;
+    }
 };
 
 interface PostGridProps {

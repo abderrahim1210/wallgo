@@ -36,7 +36,7 @@ class GetUser extends Controller
             });
             $posts_list = Post::select('id', 'user_id', 'content', 'media_url', 'created_at')->withCount(['likes', 'comments'])->with(['user:id,name,username,avatar_url'])->where('user_id', $user->id)->withExists(['likes as is_liked' => function ($query) use ($user_id) {
                 $query->where('user_id', $user_id);
-            }])->get();
+            }])->whereNull('postable_id')->get();
             if (!$user) return response()->json(['success' => false, 'message' => 'User not found', 401]);
             return response()->json([
                 'success' => true,
@@ -68,9 +68,9 @@ class GetUser extends Controller
 
         $user_id = $user->id;
         try {
-            $posts = Post::with(['user'])->withCount(['likes', 'comments'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
+            $posts = Post::with(['user:id,name,username,avatar_url', 'postable:id,name,logo_url'])->withCount(['likes', 'comments'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
-            }])->where('user_id', $user_id)->where('postable_id','is','null')->get();
+            }])->where('user_id', $user_id)->get();
             return response()->json([
                 'success' => true,
                 'posts' => $posts

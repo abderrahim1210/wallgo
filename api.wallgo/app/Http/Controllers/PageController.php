@@ -105,11 +105,16 @@ class PageController extends Controller
             $page = Page::with(['owner'])->withCount(['followers'])->withExists(['followers as is_followed' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
             }])->find($id);
-            // if ($user_id !== $page->owner_id) return response()->json(['success' => false, 'message' => "You don't have a permission for edit at this page"]);
             if (!$page) return response()->json(['success' => false, 'message' => "Page by id $id not found"], 404);
+            $posts = Post::withCount(['likes', 'comments'])->with(['user:id,name,username,avatar_url', 'postable:id,name,logo_url'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            }])->withExists(['user as is_owner' => function ($q) use ($user_id) {
+                $q->where('id', $user_id);
+            }])->where('postable_id', $page->id)->get();
             return response()->json([
                 'success' => true,
-                'page' => $page
+                'page' => $page,
+                'posts' => $posts
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -270,7 +275,7 @@ class PageController extends Controller
                     'message' => 'Follow removed successfully',
                     'is_followed' => false
                 ]);
-            }else{
+            } else {
                 GroupPageFollow::create([
                     'user_id' => $user_id,
                     'followable_id' => $followable->id,

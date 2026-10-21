@@ -107,9 +107,11 @@ class Post extends Controller
         $user_id = $user->id;
         try {
             if ($user) {
-                $posts = ModelsPost::withCount(['likes', 'comments'])->with(['user:id,username,name,avatar_url'])->withExists(['likes as is_liked' => function ($query) use ($user_id) {
+                $posts = ModelsPost::withCount(['likes', 'comments'])->with(['user:id,username,name,avatar_url', 'postable:id,name,logo_url'])->withExists(['likes as is_liked' => function ($query) use ($user_id) {
                     $query->where('user_id', $user_id);
-                }])->whereNull('postable_id')->whereNull('postable_type')->get();
+                }])->withExists(['user as is_owner' => function ($q) use ($user_id) {
+                    $q->where('id', $user_id);
+                }])->get();
                 return response()->json([
                     'success' => true,
                     'posts' => $posts
