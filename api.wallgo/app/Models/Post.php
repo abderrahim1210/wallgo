@@ -17,6 +17,8 @@ class Post extends Model
         'capsule_status',
         'is_published',
         'media_url',
+        'postable_id',
+        'postable_type'
     ];
 
     public function user()
@@ -38,5 +40,10 @@ class Post extends Model
     public function reports()
     {
         return $this->morphMany(Report::class, 'reportable');
+    }
+
+    public function postable()
+    {
+        return $this->morphTo();
     }
 }

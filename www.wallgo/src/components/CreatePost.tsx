@@ -10,21 +10,22 @@ import toast from 'react-hot-toast';
 import { useQuery } from '@tanstack/react-query';
 
 interface Post {
-    content: string,
-    post_type: 'regular' | 'time_capsule',
-    schedule_time?: string,
-    expires_at?: string,
-    unlock_time?: string,
-    capsule_status?: string,
-    media_url?: string
+    content: string;
+    post_type: 'regular' | 'time_capsule';
+    schedule_time?: string;
+    expires_at?: string;
+    unlock_time?: string;
+    capsule_status?: string;
+    media_url?: string;
+    postable_id?: number;
+    postable_type?: string
 }
 
 interface CreatePostProps {
-    postToEdit?: Post;
     id?: number;
 }
 
-const CreatePost: React.FC<CreatePostProps> = ({ postToEdit }) => {
+const CreatePost: React.FC<CreatePostProps> = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const isEditMode = Boolean(id);
@@ -35,6 +36,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ postToEdit }) => {
     const [notification, setNotification] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { user } = useAuth()!;
+    // const [pageId, setPageId] = useState<number | null>(null);
     const [post, setPost] = useState<Post>({
         content: '',
         post_type: privacy,
@@ -118,7 +120,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ postToEdit }) => {
         }
     }, [data]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setPost(prev => ({ ...prev, [e.target.name]: e.target.value }));
     }
 
@@ -175,7 +177,11 @@ const CreatePost: React.FC<CreatePostProps> = ({ postToEdit }) => {
             });
         }
     }, [id]);
-    const [type, setType] = useState<'normal' | 'pages'>('normal');
+    const [type, setType] = useState<'normal' | 'page'>('normal');
+
+    useEffect(() => {
+        setPost(prev => ({ ...prev, postable_type: type === 'page' ? 'page' : '' }));
+    }, [type])
     return (
         <>
             <Helmet>
@@ -233,7 +239,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ postToEdit }) => {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => setType(type === 'normal' ? 'pages' : 'normal')}
+                                        onClick={() => setType(type === 'normal' ? 'page' : 'normal')}
                                         className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
                                     >
                                         {type === 'normal' ? (
@@ -373,11 +379,12 @@ const CreatePost: React.FC<CreatePostProps> = ({ postToEdit }) => {
                         }
 
                         {
-                            type === 'pages' && (
+                            type === 'page' && (
                                 <div className="mb-3 px-4">
                                     <div className="relative">
                                         <select
-                                            // onChange={(e) => setSelectedPageId(e.target.value)}
+                                            name='postable_id'
+                                            onChange={handleChange}
                                             className="w-full appearance-none bg-gray-50 border border-gray-200 hover:border-gray-300 text-gray-700 text-xs rounded-xl px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer shadow-sm"
                                         >
                                             <option value="">Select a page to post as...</option>

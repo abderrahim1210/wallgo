@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
+use App\Models\Page;
 use App\Models\Post as ModelsPost;
 use App\Models\Report;
 use App\Models\User;
@@ -20,7 +22,9 @@ class Post extends Controller
             'expires_at' => ['nullable', 'date'],
             'unlock_time' => ['nullable', 'date'],
             'capsule_status' => ['nullable', 'string', 'in:published,active'],
-            'media_url' => ['nullable', 'string']
+            'media_url' => ['nullable', 'string'],
+            'postable_id' => ['nullable', 'integer'],
+            'postable_type' => ['nullable', 'string', 'in:page,group']
         ]);
 
         $data = $request->all();
@@ -57,6 +61,21 @@ class Post extends Controller
                 unset($data['media_url']);
             }
 
+            $postable = null;
+            $type = $request->postable_type;
+            if ($request->postable_id && $type) {
+                switch ($type) {
+                    case 'page':
+                        $postable = Page::find($request->postable_id);
+                        if (!$postable) return response()->json(['success' => false, 'message' => 'Page by this id not found']);
+                        break;
+                    case 'group':
+                        $postable = Group::find($request->postable_id);
+                        if (!$postable) return response()->json(['success' => false, 'message' => 'Group by this id not found']);
+                        break;
+                }
+            }
+
             ModelsPost::create([
                 'user_id' => $user->id,
                 'content' => $data['content'],
@@ -65,6 +84,8 @@ class Post extends Controller
                 'unlock_time' => $data['unlock_time'] ?? null,
                 'capsule_status' => $data['capsule_status'] ?? null,
                 'media_url' => $data['media_url'] ?? null,
+                'postable_id' => $postable->id ?? null,
+                'postable_type' => $postable ? get_class($postable) : null
             ]);
 
             return response()->json([
@@ -88,7 +109,7 @@ class Post extends Controller
             if ($user) {
                 $posts = ModelsPost::withCount(['likes', 'comments'])->with(['user:id,username,name,avatar_url'])->withExists(['likes as is_liked' => function ($query) use ($user_id) {
                     $query->where('user_id', $user_id);
-                }])->get();
+                }])->whereNull('postable_id')->whereNull('postable_type')->get();
                 return response()->json([
                     'success' => true,
                     'posts' => $posts

@@ -30,4 +30,8 @@ class Page extends Model
         return $this->morphToMany(User::class, 'followable', 'page_group_follows');
     }
 
+    public function pages()
+    {
+        return $this->morphMany(Page::class, 'postable');
+    }
 }

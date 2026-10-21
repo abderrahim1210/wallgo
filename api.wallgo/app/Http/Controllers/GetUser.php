@@ -70,7 +70,7 @@ class GetUser extends Controller
         try {
             $posts = Post::with(['user'])->withCount(['likes', 'comments'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
-            }])->where('user_id', $user_id)->get();
+            }])->where('user_id', $user_id)->where('postable_id','is','null')->get();
             return response()->json([
                 'success' => true,
                 'posts' => $posts

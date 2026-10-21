@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async';
 import { MainLayout } from '../MainLayout';
 import { PostGrid, type Post } from '../templates/PostGrid';
-import { Check, Users } from 'lucide-react';
+import { Check, PlusSquare, Users } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
@@ -101,15 +101,24 @@ export const PageProfile = () => {
 
                             {
                                 user?.id === page?.owner.id ? (
-                                    <button
-                                        onClick={() => navigate(`/pages/${page?.id}/edit`)}
-                                        className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${page?.is_followed
-                                            ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    <div className='gap-1 flex  '><button
+                                        // onClick={() => navigate(`/pages/${page?.id}/edit`)}
+                                        className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2'
                                             : 'bg-[var(--special-purple)] text-white hover:opacity-90'
                                             }`}
                                     >
-                                        Edit Page
+                                        <PlusSquare />
                                     </button>
+                                        <button
+                                            onClick={() => navigate(`/pages/${page?.id}/edit`)}
+                                            className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${page?.is_followed
+                                                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                : 'bg-[var(--special-purple)] text-white hover:opacity-90'
+                                                }`}
+                                        >
+                                            Edit Page
+                                        </button>
+                                    </div>
                                 ) : (
                                     <button
                                         onClick={handleFollow}
