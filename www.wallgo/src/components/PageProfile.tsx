@@ -10,6 +10,9 @@ import { useQuery } from '@tanstack/react-query';
 import { EmptyContent } from './EmptyContent';
 import { FaRegNewspaper } from 'react-icons/fa';
 import { useAuth } from '../hooks/AuthProvider';
+import { useModal } from '../hooks/ModalProvider';
+import ModalTemplate from '../templates/ModalTemplate';
+import { PageSettings } from './PageSettings';
 
 export interface Page {
     id: number;
@@ -74,11 +77,21 @@ export const PageProfile = () => {
             console.error(err?.response.data);
         }
     }
+
+    const { show, openModal, closeModal } = useModal()!;
     return (
         <MainLayout>
             <Helmet>
                 <title>WallGo : Page</title>
             </Helmet>
+
+            {
+                show === 'pages' && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <PageSettings page_id={page?.id} />
+                    </ModalTemplate>
+                )
+            }
 
             <div className="max-w-4xl mx-auto px-4 py-6">
                 <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
@@ -111,7 +124,7 @@ export const PageProfile = () => {
                                             <PlusSquare className='w-5 h-5 text-indigo-600' />
                                         </button>
                                         <button
-                                            onClick={() => navigate('/create_post')}
+                                            onClick={() => openModal('pages')}
                                             className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
                                             title='Create post for this page'
                                         >

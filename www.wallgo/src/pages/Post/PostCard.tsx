@@ -97,7 +97,6 @@ export const PostCard: React.FC<PostCardProps> = ({
 
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
-
     return (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
             <div className="flex items-center justify-between p-4 pb-3">
