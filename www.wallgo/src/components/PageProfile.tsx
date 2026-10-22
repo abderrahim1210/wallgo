@@ -107,7 +107,7 @@ export const PageProfile = () => {
                         <div className="flex justify-between items-end -mt-12 mb-4">
                             <div className="w-24 h-24 rounded-full border-4 border-white overflow-hidden shadow-md bg-white">
                                 <img
-                                    src={page?.logo_url ?? "/icons/avatar1.svg"}
+                                    src={page?.logo_url ?? "/icons/users.svg"}
                                     alt={page?.name}
                                     className="w-full h-full object-cover"
                                 />

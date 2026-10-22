@@ -156,7 +156,7 @@ export const EditPage = () => {
                                 accept="image/*"
                                 className="hidden"
                                 id="avatar-upload"
-                                name='avatar_url'
+                                name='logo_url'
                                 onChange={(e) => handleFile(e, setLogoPreview)}
                             />
                         </div>

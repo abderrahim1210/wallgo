@@ -110,6 +110,8 @@ Route::middleware('auth:sanctum')->group(function () {
             'pages' => $pages
         ]);
     });
+
+    Route::delete('/pages/{id}', [PageController::class, 'destroy']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);

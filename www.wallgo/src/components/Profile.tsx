@@ -127,27 +127,17 @@ export const Profile = () => {
                 )
             }
             <div className="max-w-4xl mx-auto px-4 py-8 pb-20">
-
                 <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
-
                     {
-                        profile?.banner_url ? (
-                            <div className="h-48 md:h-60 w-full rounded-xl overflow-hidden relative bg-gray-200">
-                                <img
-                                    src={profile?.banner_url}
-                                    alt="Profile Banner"
-                                    className="w-full h-full object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-                            </div>
-                        ) : (
-                            <div className="h-48 md:h-60 w-full rounded-xl overflow-hidden relative bg-gray-500 flex justify-center items-center">
-                                <FaCamera className='w-10 h-10 text-white' />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-                            </div>
-                        )
+                        <div className="h-48 md:h-60 w-full rounded-xl overflow-hidden relative bg-gray-200">
+                            <img
+                                src={profile?.banner_url ?? '/backgrounds/user_banner.svg'}
+                                alt="Profile Banner"
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                        </div>
                     }
-
                     <div className="px-6 pb-6 relative">
                         <div className="flex flex-col sm:flex-row justify-between shrink-0 items-start sm:items-end -mt-16 md:-mt-20 mb-4 gap-4">
                             <div className="flex items-end gap-4">

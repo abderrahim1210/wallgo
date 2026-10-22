@@ -13,17 +13,15 @@ class ValidePageLogoBanner extends Controller
             $valide = $check->valide($file);
 
             if ($valide) {
-                try {
-                    $upload = new \App\Http\Controllers\CloudinaryActions();
-                    $res = $upload->upload($file, $cloud_path);
-                    return $res['image_url'] ?? $res['secure_url'] ?? $res['url'];
-                } catch (\Exception $e) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $e->getMessage()
-                    ]);
+                $upload = new \App\Http\Controllers\CloudinaryActions();
+                $res = $upload->upload($file, $cloud_path);
+                if (is_array($res)) {
+                    return $res['secure_url'] ?? $res['image_url'] ?? $res['url'] ?? null;
                 }
+            } else {
+                throw new \Exception("Invalid image format or corrupted base64 string");
             }
         }
+        throw new \Exception("Invalid image data provided");
     }
 }

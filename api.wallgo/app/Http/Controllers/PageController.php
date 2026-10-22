@@ -163,55 +163,54 @@ class PageController extends Controller
         }
 
         $request->validate([
-            'name' => ['string', 'max:155'],
-            'description' => ['string', 'max:355'],
-            'logo_url' => ['string'],
-            'banner_url' => ['string'],
-            'category' => ['string']
+            'name' => ['nullable', 'string', 'max:155'],
+            'description' => ['nullable', 'string', 'max:355'],
+            'logo_url' => ['nullable', 'string'],
+            'banner_url' => ['nullable', 'string'],
+            'category' => ['nullable', 'string']
         ]);
         try {
             $validator = new \App\Http\Controllers\ValidePageLogoBanner();
-            $logo = null;
-            if ($request->logo_url) {
-                if ($page->logo_url) {
-                    $cloudinary = new \App\Http\Controllers\CloudinaryActions();
-                    $cloudinary->destroy($page->logo_url, 'wallgo_pages_logo_url/');
-                    $page->update([
-                        'logo_url' => null
-                    ]);
-                    $logo = $validator->valide($request->logo_url, 'wallgo_pages_logo_url');
-                } else {
-                    $logo = $page->logo_url;
+            $cloudinary = new \App\Http\Controllers\CloudinaryActions();
+            if ($request->filled('logo_url') && str_starts_with($request->logo_url, 'data:image')) {
+                $uploadedLogoUrl = $validator->valide($request->logo_url, 'wallgo_pages_logo_url');
+                if ($uploadedLogoUrl) {
+                    if ($page->logo_url) {
+                        $cloudinary->destroy($page->logo_url, 'wallgo_pages_logo_url/');
+                    }
+                    $page->logo_url = $uploadedLogoUrl;
                 }
             }
 
-            $banner = null;
-            if ($request->banner_url) {
-                if ($page->banner_url) {
-                    $cloudinary = new \App\Http\Controllers\CloudinaryActions();
-                    $cloudinary->destroy($page->banner_url, 'wallgo_pages_banner_url/');
-                    $page->update([
-                        'banner_url' => null
-                    ]);
-                    $banner = $validator->valide($request->banner_url, 'wallgo_pages_banner_url');
-                } else {
-                    $banner = $page->banner_url;
+            if ($request->filled('banner_url') && str_starts_with($request->banner_url, 'data:image')) {
+                $uploadedBannerUrl = $validator->valide($request->banner_url, 'wallgo_pages_banner_url');
+                if ($uploadedBannerUrl) {
+                    if ($page->banner_url) {
+                        $cloudinary->destroy($page->banner_url, 'wallgo_pages_banner_url/');
+                    }
+                    $page->banner_url = $uploadedBannerUrl;
                 }
             }
 
             $page->fill($request->only([
                 'name',
                 'description',
-                'logo_url',
-                'banner_url',
                 'category'
             ]));
 
-            $page->name = $request->name;
-            $page->description = $request->description;
-            $page->category = $request->category;
-            $page->logo_url = $logo ?? $page->logo_url;
-            $page->banner_url = $banner ?? $page->banner_url;
+            if ($request->filled('name')){
+                $page->name = $request->name;
+            }
+
+            if ($request->has('description')){
+                $page->description = $request->description;
+            }
+
+            if ($request->filled('category')){
+                $page->category = $request->category;
+            }
+            // $page->logo_url = $logo ?? $page->logo_url;
+            // $page->banner_url = $banner ?? $page->banner_url;
 
             if ($page->isDirty()) {
                 $page->save();
@@ -239,7 +238,35 @@ class PageController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        if (!$id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Id not exist'
+            ]);
+        }
+
+        $page = Page::find($id);
+        if (!$page) return response()->json(['success' => false, 'message' => 'Page by this id not found']);
+        try {
+            $cloudinary = new \App\Http\Controllers\CloudinaryActions();
+            if ($page->logo_url) {
+                $cloudinary->destroy($page->logo_url, 'wallgo_pages_logo_url/');
+            }
+
+            if ($page->banner_url) {
+                $cloudinary->destroy($page->banner_url, 'wallgo_pages_banner_url/');
+            }
+            $page->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Page deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ]);
+        }
     }
 
 

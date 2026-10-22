@@ -3,6 +3,7 @@ import React from 'react'
 import { api_url } from '../pages/Auth/getUser';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 interface PageSettingsProps {
     page_id: number
@@ -11,20 +12,32 @@ export const PageSettings: React.FC<PageSettingsProps> = ({ page_id }) => {
     const navigate = useNavigate();
     const handleDelete = async () => {
         if (!page_id) return null;
-        try {
-            const res = await axios.delete(`${api_url}/pages/${page_id}`, { withCredentials: true, withXSRFToken: true });
-            if (res.data.success) {
-                toast.success(res.data.message || 'Page deleted successfully');
-                setTimeout(() => {
-                    navigate('/pages');
-                }, 1000);
-            } else {
-                toast.error(res.data.message || 'Failed to delete page');
-                console.log(res.data.message);
+        Swal.fire({
+            title: 'Delete page',
+            text: 'Are you sure for delete this page ?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes , delete it',
+            confirmButtonColor: '#7371FC',
+            cancelButtonText: 'Cancel'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const res = await axios.delete(`${api_url}/pages/${page_id}`, { withCredentials: true, withXSRFToken: true });
+                    if (res.data.success) {
+                        toast.success(res.data.message || 'Page deleted successfully');
+                        setTimeout(() => {
+                            navigate('/pages');
+                        }, 1000);
+                    } else {
+                        toast.error(res.data.message || 'Failed to delete page');
+                        console.log(res.data.message);
+                    }
+                } catch (err: any) {
+                    console.error(err?.response.data);
+                }
             }
-        } catch (err: any) {
-            console.error(err?.response.data);
-        }
+        })
     }
     return (
         <div className="z-50 flex items-center justify-center p-4 animate-fadeIn">
