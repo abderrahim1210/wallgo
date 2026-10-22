@@ -301,7 +301,7 @@ export const Home = () => {
             </div>
 
             <div className="space-y-4">
-              <PostGrid posts={posts} />
+              <PostGrid posts={posts} suggested_follow={users} />
             </div>
           </main>
 

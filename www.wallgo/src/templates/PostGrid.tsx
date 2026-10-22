@@ -1,4 +1,4 @@
-import { Album, FileText, Heart, MessageSquare } from 'lucide-react';
+import { Album, FileText, Heart, MessageSquare, PaperBag } from 'lucide-react';
 import React, { useState } from 'react'
 import { SelectedPosts } from '../components/SelectedPosts';
 import { EmptyContent } from '../components/EmptyContent';
@@ -7,7 +7,14 @@ import toast from 'react-hot-toast';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Skeleton } from './Skeleton';
 
+interface User {
+    id: number;
+    name: string;
+    username: string;
+    avatar_url: string;
+}
 export interface Post {
     id: number;
     user: {
@@ -35,15 +42,17 @@ export interface Post {
 
 interface PostGridProps {
     posts: Post[];
+    suggested_follow?: User[];
 };
 
-export const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
+export const PostGrid: React.FC<PostGridProps> = ({ posts, suggested_follow }) => {
     if (posts?.length === 0) {
         return (
             <EmptyContent text='No posts found it - try again later !' icon={<Album />} />
         )
     }
 
+    const isLoading = false;
     const api_url = 'https://api.wallgo.test';
     const navigate = useNavigate();
     const deletePost = async (id: number) => {
@@ -79,11 +88,45 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
 
     return (
         <div className="gap-1 md:gap-2">
+            {isLoading ? Array(4).fill(0).map((_, i) => <Skeleton key={i} />) : posts.length > 0 ? posts.map((post, index) => (
+                <React.Fragment key={index}>
+                    <PostCard key={post.id} post={post} onDelete={deletePost} />
+                    {(index + 1) % 6 === 0 && suggested_follow && suggested_follow.length > 0 && (
+                        <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm my-2">
+                            <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">
+                                Suggested for you
+                            </h3>
 
-            {posts?.map((post) => (
-                <PostCard key={post.id} post={post} onDelete={deletePost} />
-            ))}
+                            <div className="flex overflow-x-auto space-x-3 pb-2 no-scrollbar snap-x">
+                                {suggested_follow.map((user) => (
+                                    <div
+                                        key={user.id}
+                                        className="min-w-[150px] sm:min-w-[170px] md:max-w-[160px] bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col items-center text-center snap-start shrink-0"
+                                    >
+                                        <img
+                                            src={user.avatar_url || 'https://via.placeholder.com/150'}
+                                            alt={user.name}
+                                            className="w-12 h-12 rounded-full object-cover mb-2 border border-white shadow-sm"
+                                        />
+                                        <h4 className="text-xs font-bold text-gray-800 truncate w-full">{user.name}</h4>
+                                        <span className="text-[10px] text-gray-400 truncate w-full mb-3">@{user.username}</span>
 
+                                        <button
+                                            onClick={() => toast.success(`Followed ${user.name}`)}
+                                            className="w-full py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-semibold rounded-lg shadow-sm transition"
+                                        >
+                                            Follow
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </React.Fragment>
+
+            )) : (
+                <EmptyContent text='No photos yet ' icon={<PaperBag />} />
+            )}
         </div>
     )
 }
