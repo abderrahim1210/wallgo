@@ -8,6 +8,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Skeleton } from './Skeleton';
+import { useFollow } from '../components/useFollow';
 
 interface User {
     id: number;
@@ -55,6 +56,14 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts, suggested_follow }) =
     const isLoading = false;
     const api_url = 'https://api.wallgo.test';
     const navigate = useNavigate();
+    const [follow, setFollow] = useState<boolean>(false);
+    const { add_follow } = useFollow();
+
+    const addFollow = (user_id: number) => {
+        add_follow(user_id);
+        setFollow(prev => !prev);
+    }
+
     const deletePost = async (id: number) => {
         if (!id) return toast.error('Post ID not found');
         try {
@@ -92,7 +101,7 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts, suggested_follow }) =
                 <React.Fragment key={index}>
                     <PostCard key={post.id} post={post} onDelete={deletePost} />
                     {(index + 1) % 6 === 0 && suggested_follow && suggested_follow.length > 0 && (
-                        <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm my-2">
+                        <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm my-2 lg:hidden">
                             <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">
                                 Suggested for you
                             </h3>
@@ -112,8 +121,8 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts, suggested_follow }) =
                                         <span className="text-[10px] text-gray-400 truncate w-full mb-3">@{user.username}</span>
 
                                         <button
-                                            onClick={() => toast.success(`Followed ${user.name}`)}
-                                            className="w-full py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-semibold rounded-lg shadow-sm transition"
+                                            onClick={() => addFollow(user?.id)}
+                                            className={`w-full py-1.5 ${follow ? 'bg-[var(--special-white)] border border-[var(--special-gray)] text-[var(--special-gray)]' : 'bg-[var(--special-purple)] text-white'} text-[11px] font-semibold rounded-lg shadow-sm transition`}
                                         >
                                             Follow
                                         </button>

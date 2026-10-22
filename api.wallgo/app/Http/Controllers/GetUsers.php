@@ -27,7 +27,7 @@ class GetUsers extends Controller
                 ->take(10)
                 ->get();
 
-            $follows = User::find($userId)->followings;            
+            $follows = User::find($userId)->followings;
 
             return response()->json([
                 'success' => true,
