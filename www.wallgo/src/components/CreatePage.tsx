@@ -1,25 +1,32 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MainLayout } from '../MainLayout'
 import { Helmet } from 'react-helmet-async'
 import { ArrowLeft, Camera, ImageIcon, PlusCircle } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { api_url } from '../pages/Auth/getUser'
 import toast from 'react-hot-toast'
 
 export const CreatePage = () => {
+    const { branch } = useParams<{ branch: 'page' | 'group' }>();
     const navigate = useNavigate();
+    if (branch !== 'page' && branch !== 'group') {
+        return <Navigate to={'/error'} replace />
+    }
+
+    const currentBranch: 'Page' | 'Group' = branch === 'page' ? 'Page' : 'Group';
     const [error, setError] = useState('');
-    const [pageData, setPageData] = useState({
+    const [data, setData] = useState({
         name: '',
         description: '',
         logo_url: '',
         banner_url: '',
-        category: ''
+        category: '',
+        type: ''
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        setPageData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+        setData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     }
 
     const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +37,7 @@ export const CreatePage = () => {
 
         reader.onloadend = () => {
             if (typeof reader.result === 'string') {
-                setPageData((prev: any) => ({ ...prev, [e.target.name]: reader.result }));
+                setData((prev: any) => ({ ...prev, [e.target.name]: reader.result }));
             }
         };
 
@@ -39,16 +46,20 @@ export const CreatePage = () => {
         e.target.value = "";
     }
 
-
     const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!pageData.name || !pageData.category) return null;
+        if (!data.name) return null;
         try {
-            const res = await axios.post(`${api_url}/pages/create`, pageData, { withCredentials: true, withXSRFToken: true });
+            const url = `${api_url}/${currentBranch === 'Page' ? 'pages' : 'groups'}/create`;
+            const res = await axios.post(url, data, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 toast.success(res.data.message || 'Page created successfully');
                 setTimeout(() => {
-                    navigate('/pages');
+                    if (currentBranch === 'Page'){
+                        navigate('/pages');
+                    }else{
+                        navigate('/groups');
+                    }
                 }, 1000);
             } else {
                 toast.error(res.data.message || 'Something went wrong');
@@ -62,7 +73,7 @@ export const CreatePage = () => {
     return (
         <MainLayout>
             <Helmet>
-                <title>WallGo : Create page</title>
+                <title>{`WallGo : Create ${currentBranch}`}</title>
             </Helmet>
 
             <div className="max-w-2xl mx-auto px-4 py-6">
@@ -75,7 +86,7 @@ export const CreatePage = () => {
                     </button>
                     <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                         <PlusCircle className="w-7 h-7 text-[var(--special-purple)]" />
-                        Create New Page
+                        Create New {currentBranch}
                     </h1>
                 </div>
 
@@ -89,8 +100,8 @@ export const CreatePage = () => {
                     <div>
                         <label className="block text-xs font-semibold text-gray-700 mb-2">Cover Photo</label>
                         <div className="relative h-40 w-full bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl overflow-hidden flex items-center justify-center hover:border-[var(--special-purple)] transition">
-                            {pageData?.banner_url ? (
-                                <img src={typeof pageData.banner_url === 'object' ? URL.createObjectURL(pageData.banner_url) : pageData.banner_url} alt="Cover Preview" className="w-full h-full object-cover" />
+                            {data?.banner_url ? (
+                                <img src={typeof data.banner_url === 'object' ? URL.createObjectURL(data.banner_url) : data.banner_url} alt="Cover Preview" className="w-full h-full object-cover" />
                             ) : (
                                 <div className="text-center text-gray-400 flex flex-col items-center gap-1">
                                     <ImageIcon className="w-8 h-8" />
@@ -110,8 +121,8 @@ export const CreatePage = () => {
                     <div>
                         <label className="block text-xs font-semibold text-gray-700 mb-2">Page Avatar</label>
                         <div className="relative w-20 h-20 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl overflow-hidden flex items-center justify-center hover:border-[var(--special-purple)] transition">
-                            {pageData?.logo_url ? (
-                                <img src={typeof pageData.logo_url === 'object' ? URL.createObjectURL(pageData.logo_url) : pageData.logo_url} alt="Avatar Preview" className="w-full h-full object-cover" />
+                            {data?.logo_url ? (
+                                <img src={typeof data.logo_url === 'object' ? URL.createObjectURL(data.logo_url) : data.logo_url} alt="Avatar Preview" className="w-full h-full object-cover" />
                             ) : (
                                 <Camera className="w-6 h-6 text-gray-400" />
                             )}
@@ -120,20 +131,17 @@ export const CreatePage = () => {
                                 accept="image/*"
                                 name='logo_url'
                                 onChange={handleFile}
-                                // onChange={handleAvatarChange} 
                                 className="absolute inset-0 opacity-0 cursor-pointer"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1">Page Name *</label>
+                        <label className="block text-xs font-semibold text-gray-700 mb-1">{currentBranch} Name *</label>
                         <input
                             type="text"
-                            // value={name} 
-                            // onChange={(e) => setName(e.target.value)}
                             name='name'
-                            value={pageData?.name}
+                            value={data?.name}
                             onChange={handleChange}
                             placeholder="e.g. WallGo Tech, Photographie..."
                             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white transition"
@@ -141,34 +149,49 @@ export const CreatePage = () => {
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1">Category *</label>
-                        <select
-                            // value={category} 
-                            // onChange={(e) => setCategory(e.target.value)} 
-                            name='category'
-                            value={pageData?.category}
-                            onChange={handleChange}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white transition cursor-pointer"
-                            required
-                        >
-                            <option value="">Select Category</option>
-                            <option value="technology">Technology</option>
-                            <option value="photography">Photography</option>
-                            <option value="business">Business</option>
-                            <option value="education">Education</option>
-                            <option value="entertainment">Entertainment</option>
-                            <option value="personal_blog">Personal Blog</option>
-                        </select>
-                    </div>
+                    {
+                        currentBranch === 'Page' ? (
+                            <div>
+                                <label className="block text-xs font-semibold text-gray-700 mb-1">Category *</label>
+                                <select
+                                    name='category'
+                                    value={data?.category}
+                                    onChange={handleChange}
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white transition cursor-pointer"
+                                    required
+                                >
+                                    <option value="">Select Category</option>
+                                    <option value="technology">Technology</option>
+                                    <option value="photography">Photography</option>
+                                    <option value="business">Business</option>
+                                    <option value="education">Education</option>
+                                    <option value="entertainment">Entertainment</option>
+                                    <option value="personal_blog">Personal Blog</option>
+                                </select>
+                            </div>
+                        ) : (
+                            <div>
+                                <label className="block text-xs font-semibold text-gray-700 mb-1">Type *</label>
+                                <select
+                                    name='type'
+                                    value={data?.type}
+                                    onChange={handleChange}
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white transition cursor-pointer"
+                                    required
+                                >
+                                    <option value="">Select Type</option>
+                                    <option value="public">Public</option>
+                                    <option value="private">Private</option>
+                                </select>
+                            </div>
+                        )
+                    }
 
                     <div>
                         <label className="block text-xs font-semibold text-gray-700 mb-1">Description (Optional)</label>
                         <textarea
-                            // value={description} 
-                            // onChange={(e) => setDescription(e.target.value)} 
                             name='description'
-                            value={pageData?.description}
+                            value={data?.description}
                             onChange={handleChange}
                             rows={3}
                             placeholder="Tell people what your page is about..."

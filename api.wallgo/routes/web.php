@@ -7,6 +7,7 @@ use App\Http\Controllers\EditProfile;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\GetUser;
 use App\Http\Controllers\GetUsers;
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Like as ControllersLike;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Post;
@@ -96,7 +97,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/pages', [PageController::class, 'index']);
 
+    Route::get('/groups', [GroupController::class, 'index']);
+
     Route::post('/pages/create', [PageController::class, 'store']);
+
+    Route::post('/groups/create', [GroupController::class, 'store']);
 
     Route::put('/pages/{id}', [PageController::class, 'update']);
 

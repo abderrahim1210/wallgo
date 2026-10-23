@@ -17,6 +17,7 @@ import { Profile } from '../components/Profile'
 import { CreatePage } from '../components/CreatePage'
 import { PageProfile } from '../components/PageProfile'
 import { EditPage } from '../components/EditPage'
+import { ErrorPage } from '../components/ErrorPage'
 
 export const AppRoutes = () => {
     return (
@@ -37,9 +38,10 @@ export const AppRoutes = () => {
             <Route path='/settings' element={<Settings />} />
             <Route path='/post/:id/edit' element={<CreatePost />} />
             <Route path='/profile/:id/:username' element={<Profile />} />
-            <Route path='/create_page' element={<CreatePage />} />
+            <Route path='/:branch/create' element={<CreatePage />} />
             <Route path='/pages/:id' element={<PageProfile />} />
             <Route path='/pages/:id/edit' element={<EditPage />} />
+            <Route path='/error' element={<ErrorPage />} />
         </Routes>
     )
 }
