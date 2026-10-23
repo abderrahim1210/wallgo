@@ -20,7 +20,9 @@ class PageController extends Controller
         $user_id = Auth::id();
         try {
             $my_pages = Page::withCount(['followers'])->where('owner_id', $user_id)->get();
-            $pages = Page::withCount(['followers'])->where('owner_id', '!=', $user_id)->get();
+            $pages = Page::withCount(['followers'])->withExists(['followers as is_followed' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            }])->where('owner_id', '!=', $user_id)->get();
             return response()->json([
                 'success' => true,
                 'my_pages' => $my_pages,
@@ -198,15 +200,15 @@ class PageController extends Controller
                 'category'
             ]));
 
-            if ($request->filled('name')){
+            if ($request->filled('name')) {
                 $page->name = $request->name;
             }
 
-            if ($request->has('description')){
+            if ($request->has('description')) {
                 $page->description = $request->description;
             }
 
-            if ($request->filled('category')){
+            if ($request->filled('category')) {
                 $page->category = $request->category;
             }
             // $page->logo_url = $logo ?? $page->logo_url;
@@ -285,11 +287,11 @@ class PageController extends Controller
 
         switch ($type) {
             case 'page':
-                $followable = Page::find($request->page_id);
+                $followable = Page::find($request->entity_id);
                 if (!$followable) return response()->json(['success' => false, 'message' => 'Page by this id not found']);
                 break;
             case 'group':
-                $followable = Group::find($request->group_id);
+                $followable = Group::find($request->entity_id);
                 if (!$followable) return response()->json(['success' => false, 'message' => 'Group by this id not found']);
                 break;
         }

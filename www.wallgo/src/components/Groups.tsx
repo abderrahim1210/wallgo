@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { MainLayout } from '../MainLayout';
 import { FaCompass, FaGlobe, FaLock, FaUsers } from 'react-icons/fa';
 import { useQuery } from '@tanstack/react-query';
@@ -6,8 +6,10 @@ import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
 import { EmptyContent } from './EmptyContent';
 import { Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { GroupCard } from './GroupCard';
 
-interface Group {
+export interface Group {
     id: number;
     owner_id: number;
     name: string;
@@ -17,9 +19,11 @@ interface Group {
     banner_url: string;
     created_at: string;
     followers_count: number;
+    is_followed: boolean;
 }
 
 export const Groups = () => {
+    const navigate = useNavigate();
     const fetchGroups = async () => {
         try {
             const res = await axios.get(`${api_url}/groups`, { withCredentials: true, withXSRFToken: true });
@@ -45,27 +49,8 @@ export const Groups = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-3">
                     {
-                        groups?.length > 0 ? groups.map((group: Group) => (
-                            <div key={group.id} className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition group">
-                                <div className="h-28 w-full relative bg-gray-200 overflow-hidden">
-                                    <img src={group.banner_url ?? '/backgrounds/users_group_banner.svg'} alt="Banner" className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-                                    <span className="absolute top-3 right-3 bg-black/60 backdrop-blur-xs text-white text-[10px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
-                                        {group.type === 'private' ? <FaLock className="w-2.5 h-2.5" /> : <FaGlobe className="w-2.5 h-2.5" />}
-                                        {group.type}
-                                    </span>
-                                </div>
-                                <div className="px-5 pb-5 relative">
-                                    <div className="-mt-10 mb-3 flex justify-between items-end">
-                                        <img src={group.logo_url ?? '/icons/users_page.logo.svg'} alt="Logo" className="w-16 h-16 rounded-full object-cover border-4 border-white shadow-md bg-white" />
-                                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">{group.followers_count} members</span>
-                                    </div>
-                                    <h3 className="font-bold text-base text-gray-900">{group.name}</h3>
-                                    <p className="text-xs text-gray-500 line-clamp-2 mt-1 mb-4">{group.description}</p>
-                                    <button className="cursor-pointer w-full py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-xs font-semibold border border-gray-200 transition">
-                                        Manage Group
-                                    </button>
-                                </div>
-                            </div>
+                        groups?.length > 0 ? groups.map((group: Group, index:number) => (
+                            <GroupCard group={group} key={index} />
                         )) : (
                             <EmptyContent text="You don't have any group - try to create a first now !" icon={<Users />} />
                         )
@@ -81,28 +66,7 @@ export const Groups = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-3">
                     {
-                        suggestedGroups?.length > 0 ? suggestedGroups.map((group: Group) => (
-                            <div key={group.id} className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition group">
-                                <div className="h-28 w-full relative bg-gray-200 overflow-hidden">
-                                    <img src={group.banner_url ?? '/backgrounds/users_group_banner.svg'} alt="Banner" className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-                                    <span className="absolute top-3 right-3 bg-black/60 backdrop-blur-xs text-white text-[10px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
-                                        {group.type === 'private' ? <FaLock className="w-2.5 h-2.5" /> : <FaGlobe className="w-2.5 h-2.5" />}
-                                        {group.type}
-                                    </span>
-                                </div>
-                                <div className="px-5 pb-5 relative">
-                                    <div className="-mt-10 mb-3 flex justify-between items-end">
-                                        <img src={group.logo_url ?? '/icons/users_page.logo.svg'} alt="Logo" className="w-16 h-16 rounded-full object-cover border-4 border-white shadow-md bg-white" />
-                                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">{group.followers_count} members</span>
-                                    </div>
-                                    <h3 className="font-bold text-base text-gray-900">{group.name}</h3>
-                                    <p className="text-xs text-gray-500 line-clamp-2 mt-1 mb-4">{group.description}</p>
-                                    <button className="cursor-pointer w-full py-2 bg-[var(--special-purple)] text-white hover:opacity-90 rounded-xl text-xs font-semibold transition shadow-sm">
-                                        Join Group
-                                    </button>
-                                </div>
-                            </div>
-                        )) : (
+                        suggestedGroups?.length > 0 ? suggestedGroups.map((group: Group, index:number) => <GroupCard group={group} key={index} />) : (
                             <div className='flex justify-center items-center py-12 w-full'>
                                 <EmptyContent text='No groups suggested for you - try again later !' icon={<Users />} />
                             </div>

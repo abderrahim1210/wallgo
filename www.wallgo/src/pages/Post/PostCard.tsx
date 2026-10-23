@@ -102,7 +102,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             <div className="flex items-center justify-between p-4 pb-3">
                 <div className="flex items-center space-x-3">
                     {
-                        post?.is_owner && post?.postable ? (
+                        !post?.is_owner && post?.postable ? (
                             <img
                                 src={post?.postable?.logo_url || '/icons/users.svg'}
                                 alt={post?.user.name}
@@ -119,7 +119,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                     <div>
                         <h4 className="font-semibold text-sm text-gray-900 leading-tight">
                             {
-                                post?.is_owner && post?.postable ? (
+                                !post?.is_owner && post?.postable ? (
                                     <LinkR to={`/pages/${post?.postable?.id}`}>
                                         {post?.postable?.name}
                                     </LinkR>

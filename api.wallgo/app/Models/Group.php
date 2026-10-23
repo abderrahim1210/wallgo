@@ -34,4 +34,13 @@ class Group extends Model
     {
         return $this->morphMany(Post::class, 'postable');
     }
+
+    protected static function booted()
+    {
+        static::deleting(function ($page) {
+            $page->posts()->delete();
+            $page->followers()->delete();
+            $page->reports()->delete();
+        });
+    }
 }

@@ -79,17 +79,6 @@ export const Profile = () => {
     //     return <p>Something went wrong.</p>;
     // }
 
-    // const add_follow = async (following_id: number) => {
-    //     try {
-    //         const res = await axios.post(`${api_url}/add_follow`, { following_id: following_id }, { withCredentials: true, withXSRFToken: true });
-    //         if (res.data.success) {
-    //             setFollow(prev => !prev);
-    //             queryClient.invalidateQueries({ queryKey: ['user_data', id] });
-    //         }
-    //     } catch (err: any) {
-    //         console.error(err?.response?.data);
-    //     }
-    // }
     const { add_follow } = useFollow();
     const set_follow = (following_id: number) => {
         add_follow(following_id);

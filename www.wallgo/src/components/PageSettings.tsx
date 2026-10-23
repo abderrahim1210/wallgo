@@ -6,15 +6,17 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 interface PageSettingsProps {
-    page_id: number
+    page_id?: number
+    group_id?: number;
+    type: 'Page' | 'Group';
 }
-export const PageSettings: React.FC<PageSettingsProps> = ({ page_id }) => {
+export const PageSettings: React.FC<PageSettingsProps> = ({ page_id, group_id, type }) => {
     const navigate = useNavigate();
     const handleDelete = async () => {
-        if (!page_id) return null;
+        if (!page_id && !group_id) return null;
         Swal.fire({
-            title: 'Delete page',
-            text: 'Are you sure for delete this page ?',
+            title: `Delete ${type}`,
+            text:  `Are you sure for delete this ${type} ?`,
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes , delete it',
@@ -23,7 +25,8 @@ export const PageSettings: React.FC<PageSettingsProps> = ({ page_id }) => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const res = await axios.delete(`${api_url}/pages/${page_id}`, { withCredentials: true, withXSRFToken: true });
+                    const url = `${api_url}/${type === 'Page' ? 'pages' : 'groups'}/${page_id ?? group_id}`
+                    const res = await axios.delete(url, { withCredentials: true, withXSRFToken: true });
                     if (res.data.success) {
                         toast.success(res.data.message || 'Page deleted successfully');
                         setTimeout(() => {
@@ -43,11 +46,10 @@ export const PageSettings: React.FC<PageSettingsProps> = ({ page_id }) => {
         <div className="z-50 flex items-center justify-center p-4 animate-fadeIn">
             <div className="bg-white rounded-3xl w-full overflow-hidden border border-gray-100 transform transition-all">
 
-                {/* Modal Header */}
                 <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white">
                     <div>
-                        <h3 className="text-lg font-bold text-gray-900">Page Settings</h3>
-                        <p className="text-xs text-gray-500 mt-0.5">Manage your page details and preferences</p>
+                        <h3 className="text-lg font-bold text-gray-900">{type} Settings</h3>
+                        <p className="text-xs text-gray-500 mt-0.5">Manage your {type} details and preferences</p>
                     </div>
                 </div>
 
@@ -56,7 +58,7 @@ export const PageSettings: React.FC<PageSettingsProps> = ({ page_id }) => {
                     <div className="pt-4 border-t border-gray-100">
                         <div className="bg-red-50/50 border border-red-100 rounded-2xl p-4 flex items-center justify-between gap-4">
                             <div>
-                                <h4 className="text-sm font-bold text-red-700">Delete Page</h4>
+                                <h4 className="text-sm font-bold text-red-700">Delete {type}</h4>
                                 <p className="text-xs text-red-500 mt-0.5">
                                     Once deleted, it cannot be recovered.
                                 </p>
@@ -65,7 +67,7 @@ export const PageSettings: React.FC<PageSettingsProps> = ({ page_id }) => {
                                 onClick={handleDelete}
                                 className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-xs transition shadow-sm cursor-pointer whitespace-nowrap"
                             >
-                                Delete Page
+                                Delete {type}
                             </button>
                         </div>
                     </div>

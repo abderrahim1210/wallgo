@@ -117,8 +117,12 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::delete('/pages/{id}', [PageController::class, 'destroy']);
+    
+    Route::delete('/groups/{id}', [GroupController::class, 'destroy']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);
+
+Route::get('/groups/{id}', [GroupController::class, 'show']);
 
 require __DIR__ . '/auth.php';

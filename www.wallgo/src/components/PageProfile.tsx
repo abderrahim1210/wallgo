@@ -13,6 +13,7 @@ import { useAuth } from '../hooks/AuthProvider';
 import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
 import { PageSettings } from './PageSettings';
+import { useFollowPG } from './useFollowPG';
 
 export interface Page {
     id: number;
@@ -65,17 +66,24 @@ export const PageProfile = () => {
 
     const { user } = useAuth()!;
 
-    const handleFollow = async () => {
-        try {
-            const res = await axios.post(`${api_url}/pages/follow`, { type: 'page', page_id: page?.id }, { withCredentials: true, withXSRFToken: true });
-            if (res.data.success) {
-                setFollowed(prev => !prev);
-            } else {
-                console.log(res.data.message);
-            }
-        } catch (err: any) {
-            console.error(err?.response.data);
-        }
+    // const handleFollow = async () => {
+    //     try {
+    //         const res = await axios.post(`${api_url}/pages/follow`, { type: 'page', page_id: page?.id }, { withCredentials: true, withXSRFToken: true });
+    //         if (res.data.success) {
+    //             setFollowed(prev => !prev);
+    //         } else {
+    //             console.log(res.data.message);
+    //         }
+    //     } catch (err: any) {
+    //         console.error(err?.response.data);
+    //     }
+    // }
+
+    const { handleFollow } = useFollowPG();
+
+    const follow = () => {
+        handleFollow(page?.id, 'page');
+        setFollowed(prev => !prev);
     }
 
     const { show, openModal, closeModal } = useModal()!;
@@ -88,7 +96,7 @@ export const PageProfile = () => {
             {
                 show === 'pages' && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <PageSettings page_id={page?.id} />
+                        <PageSettings page_id={page?.id} type='Page' />
                     </ModalTemplate>
                 )
             }
@@ -140,7 +148,7 @@ export const PageProfile = () => {
                                     </div>
                                 ) : (
                                     <button
-                                        onClick={handleFollow}
+                                        onClick={follow}
                                         className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${followed
                                             ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                             : 'bg-[var(--special-purple)] text-white hover:opacity-90'
