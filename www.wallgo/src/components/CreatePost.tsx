@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { MobileCellNavbar } from '../layouts/MobileCellNavbar';
-import { Clock, Flag, Globe, Image, Lock, Send, Smile, Sparkles, User, Video, X } from 'lucide-react';
+import { Clock, Flag, Globe, Image, Lock, Send, Smile, Sparkles, User, Users, Video, X } from 'lucide-react';
 import { Navbar } from '../layouts/Navbar';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../hooks/AuthProvider';
@@ -177,10 +177,10 @@ const CreatePost: React.FC<CreatePostProps> = () => {
             });
         }
     }, [id]);
-    const [type, setType] = useState<'normal' | 'page'>('normal');
+    const [type, setType] = useState<'normal' | 'page' | 'group'>('normal');
 
     useEffect(() => {
-        setPost(prev => ({ ...prev, postable_type: type === 'page' ? 'page' : '' }));
+        setPost(prev => ({ ...prev, postable_type: type === 'page' ? 'page' : type === 'group' ? 'group' : '' }));
     }, [type])
     return (
         <>
@@ -239,7 +239,7 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => setType(type === 'normal' ? 'page' : 'normal')}
+                                        onClick={() => setType(type === 'normal' ? 'page' : type === 'page' ? 'group' : 'normal')}
                                         className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
                                     >
                                         {type === 'normal' ? (
@@ -247,10 +247,15 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                                                 <User className="w-3 h-3 text-blue-600" />
                                                 <span>Normal</span>
                                             </>
-                                        ) : (
+                                        ) : type === 'page' ? (
                                             <>
                                                 <Flag className="w-3 h-3 text-gray-600" />
                                                 <span>Pages</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Users className="w-3 h-3 text-gray-600" />
+                                                <span>Groups</span>
                                             </>
                                         )}
                                     </button>

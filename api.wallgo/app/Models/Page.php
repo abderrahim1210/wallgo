@@ -41,7 +41,7 @@ class Page extends Model
     {
         static::deleting(function ($page) {
             $page->posts()->delete();
-            $page->followers()->delete();
+            $page->followers()->detach();
             $page->reports()->delete();
         });
     }
