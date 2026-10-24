@@ -157,7 +157,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 }
             </div>
 
-            <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+            <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed" onClick={() => navigate(`/post/${post?.id}`)}>
                 {post?.content}
             </div>
 

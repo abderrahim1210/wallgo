@@ -129,6 +129,31 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/pages/{id}', [PageController::class, 'destroy']);
 
     Route::delete('/groups/{id}', [GroupController::class, 'destroy']);
+
+    Route::get('/post/{id}', function ($id) {
+        if (!$id) {
+            return response()->json([
+                'success' => false,
+                'message' => "Id required for return informations"
+            ], 404);
+        }
+        $user_id = Auth::id();
+
+        $post = ModelsPost::withCount(['likes','comments'])->with(['user:id,name,username,avatar_url', 'postable:id,name,logo_url'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
+            $q->where('user_id', $user_id);
+        }])->where('id', $id)->first();
+        if (!$post) {
+            return response()->json([
+                'success' => false,
+                'message' => "Post by id $id not found"
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'post' => $post
+        ]);
+    });
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);
