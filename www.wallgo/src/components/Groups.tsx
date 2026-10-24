@@ -52,7 +52,9 @@ export const Groups = () => {
                         groups?.length > 0 ? groups.map((group: Group, index:number) => (
                             <GroupCard group={group} key={index} />
                         )) : (
-                            <EmptyContent text="You don't have any group - try to create a first now !" icon={<Users />} />
+                            <div className='col-span-full flex justify-center'>
+                                <EmptyContent text="You don't have any group - try to create a first now !" icon={<Users />} />
+                            </div>
                         )
                     }
                 </div>
@@ -67,7 +69,7 @@ export const Groups = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-3">
                     {
                         suggestedGroups?.length > 0 ? suggestedGroups.map((group: Group, index:number) => <GroupCard group={group} key={index} />) : (
-                            <div className='flex justify-center items-center py-12 w-full'>
+                            <div className='col-span-full flex justify-center'>
                                 <EmptyContent text='No groups suggested for you - try again later !' icon={<Users />} />
                             </div>
                         )

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@font-face {
+/* @font-face {
   font-family: "Inter";
   src: url("./assets/fonts/Inter/Inter_regular.ttf");
   font-style: normal;
@@ -11,6 +11,21 @@
 @font-face {
   font-family: "Inter";
   src: url("./assets/fonts/Inter/Inter_bold.ttf");
+  font-style: normal;
+  font-display: swap;
+  font-weight: bold;
+} */
+@font-face {
+  font-family: "Wallgo";
+  src: url("./assets/fonts/WallGoSans-Regular.ttf");
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Wallgo";
+  src: url("./assets/fonts/WallGoSans-Bold.ttf");
   font-style: normal;
   font-display: swap;
   font-weight: bold;
@@ -47,7 +62,7 @@
 }
 
 body {
-  font-family: 'Inter','Cairo', 'sans-serif';
+  font-family: 'Wallgo','Cairo', 'sans-serif';
   background-color: var(--special-white);
 }
 
@@ -142,4 +157,12 @@ body {
 
 .modal.show .modal-dialog-slide-bottom {
   transform: translateY(0);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }

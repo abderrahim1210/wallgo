@@ -29,7 +29,7 @@ export const Navbar = () => {
                     <ul className="flex items-center m-0 p-0 list-none">
                         <li>
                             <Link to={'/'} title='WallGo' className={`${currendPath === '/' && 'bg-blue'}`}>
-                                <img src="/icons/dark_logo.png" alt="WallGo Logo" className="h-10 w-auto object-contain p-1" />
+                                <img src="/icons/logos/mix_logo1.png" alt="WallGo Logo" className="h-10 w-auto object-contain p-1" />
                             </Link>
                         </li>
                     </ul>
