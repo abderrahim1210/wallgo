@@ -10,7 +10,7 @@ import { EmptyContent } from './EmptyContent';
 import { useNavigate } from 'react-router-dom';
 import { PageCard } from './PageCard';
 import PagesIcon from '../Icons/PageIcon';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, PlusCircle, PlusIcon } from 'lucide-react';
 
 export const Pages = () => {
 
@@ -49,8 +49,8 @@ export const Pages = () => {
 
         </div>
         <div className="mb-10 mt-5">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            Your Pages
+          <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
+            Your Pages <button onClick={() => navigate('/page/create')} className='text-[var(--special-white)] bg-[var(--special-purple)] px-4 hover:bg-indigo-100 hover:text-[var(--special-purple)] rounded-full transition-all cursor-pointer flex'>New page <PlusIcon /></button>
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

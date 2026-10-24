@@ -10,7 +10,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <main className='flex flex-col min-h-screen'>
       <Navbar />
-      <div className='flex-grow'>
+      <div className='flex-grow pb-24 md:pb-0'>
         {children}
       </div>
       <Toaster position="top-right" />

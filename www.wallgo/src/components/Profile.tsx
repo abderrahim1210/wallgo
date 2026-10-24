@@ -4,7 +4,7 @@ import { FaCalendarAlt, FaCamera, FaEnvelope, FaGlobe, FaMapMarkerAlt, FaPhone, 
 import { PostGrid } from '../templates/PostGrid'
 import { Helmet } from 'react-helmet-async'
 import { FiCalendar, FiHeart, FiMapPin } from 'react-icons/fi'
-import { Users, VenusAndMars } from 'lucide-react'
+import { Pencil, PlusSquare, Settings, Users, VenusAndMars } from 'lucide-react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import ModalTemplate from '../templates/ModalTemplate'
 import { useModal } from '../hooks/ModalProvider'
@@ -142,7 +142,7 @@ export const Profile = () => {
                                     <p className="text-sm font-medium text-gray-500">@{profile?.username}</p>
                                 </div>
                             </div>
-                            {
+                            {/* {
                                 profile?.id === user?.id ? (
                                     <button onClick={() => navigate('/account/edit')} className="flex items-center font-semibold gap-2 px-5 py-2.5 bg-[var(--special-purple)] hover:opacity-90 text-white rounded-xl text-sm font-medium transition shadow-sm cursor-pointer shrink-0">
                                         <FaUserEdit className="w-4 h-4" /> Edit Profile
@@ -156,9 +156,49 @@ export const Profile = () => {
                                         <button className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0">
                                             <span>Message</span>
                                         </button>
-                                    </div>
+                                    </div>  
                                 )
-                            }
+                            } */}
+
+                            {
+                                user?.id === profile?.id ? (
+                                    <div className='gap-1 flex  '>
+                                        <button
+                                            onClick={() => navigate('/account/edit')}
+                                            className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                            title='Create post for this page'
+                                        >
+                                            <Pencil className='w-5 h-5 text-[var(--special-purple)]' />
+                                        </button>
+                                        <button
+                                            onClick={() => navigate('/create_post')}
+                                            className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                            title='Create post for this page'
+                                        >
+                                            <PlusSquare className='w-5 h-5 text-indigo-600' />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                openModal('pages')
+                                                navigate('/settings');
+                                            }}
+                                            className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                            title='Create post for this page'
+                                        >
+                                            <Settings className='w-5 h-5 text-indigo-600' />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-3">
+                                        <button onClick={() => set_follow(Number(id))} className={`flex items-center justify-center gap-2 px-6 py-2.5 ${follow ? 'bg-fuchsia-50 border border-[var(--special-purple)] text-[var(--special-purple)]' : 'bg-[var(--special-purple)] text-white'} hover:opacity-90  rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0`}>
+                                            <span>{follow ? 'Followed' : 'Follow'}</span>
+                                        </button>
+
+                                        <button className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0">
+                                            <span>Message</span>
+                                        </button>
+                                    </div>
+                                )}
 
                         </div>
 

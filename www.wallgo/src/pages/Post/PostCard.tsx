@@ -176,7 +176,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             }
 
             {
-                show === 'share' && (
+                show === `share-${post?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
                         <ShareDropdown postUrl={window.location.href} />
                     </ModalTemplate>
@@ -209,7 +209,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                         <span className="text-xs font-semibold text-gray-700">{post?.comments_count}</span>
                     </button>
 
-                    <button onClick={() => openModal('share')} className="text-gray-600 hover:text-blue-500 transition-colors group cursor-pointer">
+                    <button onClick={() => openModal(`share-${post?.id}`)} className="text-gray-600 hover:text-blue-500 transition-colors group cursor-pointer">
                         <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
                     </button>
                 </div>

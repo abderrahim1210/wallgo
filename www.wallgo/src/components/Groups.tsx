@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
 import { EmptyContent } from './EmptyContent';
-import { Users } from 'lucide-react';
+import { ArrowLeft, PlusIcon, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { GroupCard } from './GroupCard';
 
@@ -44,12 +44,19 @@ export const Groups = () => {
     return (
         <MainLayout>
             <div className='px-4 py-6'>
-                <div className='flex justify-start items-center'>
-                    <h1 className='font-bold text-3xl flex items-center gap-2'><FaUsers className='w-8 h-8 text-[var(--special-purple)]' /> My Groups <span className='text-[var(--special-purple)]'>({groups?.length ?? 0})</span></h1>
+                <button
+                    onClick={() => navigate(-1)}
+                    className="text-slate-400 transition-colors p-2 rounded-xl hover:bg-white/5 flex items-center space-x-1.5 font-medium group cursor-pointer"
+                >
+                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                    <span>Back</span>
+                </button>
+                <div className='flex justify-start items-center gap-2'>
+                    <h1 className='font-bold text-3xl flex items-center gap-2'><FaUsers className='w-8 h-8 text-[var(--special-purple)]' /> Your Groups <span className='text-[var(--special-purple)]'>({groups?.length ?? 0})</span></h1><button onClick={() => navigate('/group/create')} className='text-[var(--special-white)] bg-[var(--special-purple)] font-bold px-4 hover:bg-indigo-100 hover:text-[var(--special-purple)] rounded-full transition-all cursor-pointer flex'>New group <PlusIcon /></button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-3">
                     {
-                        groups?.length > 0 ? groups.map((group: Group, index:number) => (
+                        groups?.length > 0 ? groups.map((group: Group, index: number) => (
                             <GroupCard group={group} key={index} />
                         )) : (
                             <div className='col-span-full flex justify-center'>
@@ -68,7 +75,7 @@ export const Groups = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-3">
                     {
-                        suggestedGroups?.length > 0 ? suggestedGroups.map((group: Group, index:number) => <GroupCard group={group} key={index} />) : (
+                        suggestedGroups?.length > 0 ? suggestedGroups.map((group: Group, index: number) => <GroupCard group={group} key={index} />) : (
                             <div className='col-span-full flex justify-center'>
                                 <EmptyContent text='No groups suggested for you - try again later !' icon={<Users />} />
                             </div>
