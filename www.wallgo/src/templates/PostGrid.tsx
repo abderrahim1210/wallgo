@@ -38,7 +38,8 @@ export interface Post {
         id?: number;
         name?: string;
         logo_url?: string;
-    }
+    };
+    postable_type: string;
 };
 
 interface PostGridProps {

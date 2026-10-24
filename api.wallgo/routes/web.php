@@ -12,6 +12,7 @@ use App\Http\Controllers\Like as ControllersLike;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Post;
 use App\Http\Controllers\Settings;
+use App\Models\Group;
 use App\Models\Page;
 use App\Models\Post as ModelsPost;
 use App\Models\User;
@@ -116,8 +117,17 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 
+    Route::get('/get_my_groups', function () {
+        $user_id = Auth::id();
+        $groups = Group::select('id', 'owner_id', 'name')->where('owner_id', $user_id)->get();
+        return response()->json([
+            'success' => true,
+            'groups' => $groups
+        ]);
+    });
+
     Route::delete('/pages/{id}', [PageController::class, 'destroy']);
-    
+
     Route::delete('/groups/{id}', [GroupController::class, 'destroy']);
 });
 
