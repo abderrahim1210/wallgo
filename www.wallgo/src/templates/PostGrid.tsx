@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Skeleton } from './Skeleton';
 import { useFollow } from '../components/useFollow';
+import FollowUserCard from '../components/FollowUserCard';
 
 interface User {
     id: number;
@@ -58,13 +59,6 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts, suggested_follow }) =
     const isLoading = false;
     const api_url = 'https://api.wallgo.test';
     const navigate = useNavigate();
-    const [follow, setFollow] = useState<boolean>(false);
-    const { add_follow } = useFollow();
-
-    const addFollow = (user_id: number) => {
-        add_follow(user_id);
-        setFollow(prev => !prev);
-    }
 
     const deletePost = async (id: number) => {
         if (!id) return toast.error('Post ID not found');
@@ -109,26 +103,8 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts, suggested_follow }) =
                             </h3>
 
                             <div className="flex overflow-x-auto space-x-3 pb-2 no-scrollbar snap-x">
-                                {suggested_follow.map((user) => (
-                                    <div
-                                        key={user.id}
-                                        className="min-w-[150px] sm:min-w-[170px] md:max-w-[160px] bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col items-center text-center snap-start shrink-0"
-                                    >
-                                        <img
-                                            src={user.avatar_url || 'https://via.placeholder.com/150'}
-                                            alt={user.name}
-                                            className="w-12 h-12 rounded-full object-cover mb-2 border border-white shadow-sm"
-                                        />
-                                        <h4 className="text-xs font-bold text-gray-800 truncate w-full">{user.name}</h4>
-                                        <span className="text-[10px] text-gray-400 truncate w-full mb-3">@{user.username}</span>
-
-                                        <button
-                                            onClick={() => addFollow(user?.id)}
-                                            className={`w-full py-1.5 ${follow ? 'bg-[var(--special-white)] border border-[var(--special-gray)] text-[var(--special-gray)]' : 'bg-[var(--special-purple)] text-white'} text-[11px] font-semibold rounded-lg shadow-sm transition`}
-                                        >
-                                            Follow
-                                        </button>
-                                    </div>
+                                {suggested_follow.map((user, index: number) => (
+                                    <FollowUserCard user={user} key={index} />
                                 ))}
                             </div>
                         </div>

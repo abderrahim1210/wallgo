@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 import { useFollow } from './useFollow';
 import { FollowUser } from './FollowUser';
 
-type User = {
+export type User = {
   id: number,
   name: string,
   username: string,
