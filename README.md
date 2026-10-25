@@ -2,6 +2,7 @@
 
 <p align="center">
   <img src="./www.wallgo/public/icons/logos/mix_logo.png" alt="Pixora Logo" width="300" />
+  <br />
   <b>A modern full-stack web application for sharing moments, preserving time capsules, and connecting in real-time.</b>
 </p>
 
