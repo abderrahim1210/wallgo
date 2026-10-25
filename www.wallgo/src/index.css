@@ -1,20 +1,5 @@
 @import "tailwindcss";
 
-/* @font-face {
-  font-family: "Inter";
-  src: url("./assets/fonts/Inter/Inter_regular.ttf");
-  font-style: normal;
-  font-weight: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Inter";
-  src: url("./assets/fonts/Inter/Inter_bold.ttf");
-  font-style: normal;
-  font-display: swap;
-  font-weight: bold;
-} */
 @font-face {
   font-family: "Wallgo";
   src: url("./assets/fonts/WallGoSans-Regular.ttf");

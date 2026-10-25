@@ -40,6 +40,7 @@ export interface Post {
         logo_url?: string;
     };
     postable_type: string;
+    is_saved: boolean;
 };
 
 interface PostGridProps {

@@ -30,7 +30,12 @@ export const PostCard: React.FC<PostCardProps> = ({
             setLikes(post?.likes_count);
         }
     }, [post]);
-    const [saved, setSaved] = useState(false);
+    const [saved, setSaved] = useState(Boolean(post?.is_saved));
+    useEffect(() => {
+        if (post) {
+            setSaved(post?.is_saved);
+        }
+    }, [post]);
     const { show, openModal, closeModal } = useModal()!;
     const { user: currentUser } = useAuth()!;
     const handleLike = async () => {
@@ -102,6 +107,21 @@ export const PostCard: React.FC<PostCardProps> = ({
 
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
+    const handleSavePost = async () => {
+        if (!post) return null;
+        try {
+            const res = await axios.post(`${api_url}/post/save`, { post_id: post?.id, type: 'post' }, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) {
+                setSaved(true);
+                triggerToast(res.data.message || 'Post saved successfully', 'success');
+            } else {
+                setSaved(false);
+                triggerToast(res.data.message || 'Failed to save post', 'error');
+            }
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
     return (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
             <div className="flex items-center justify-between p-4 pb-3 cursor-pointer hover:bg-gray-200 transition-all rounded-t-2xl" onClick={() => navigate(`/post/${post?.id}`)}>
@@ -220,7 +240,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 </div>
 
                 <button
-                    onClick={() => setSaved(!saved)}
+                    onClick={handleSavePost}
                     className={`text-gray-600 hover:text-[var(--special-purple)] transition-colors cursor-pointer ${saved ? 'text-[var(--special-purple)]' : ''
                         }`}
                 >

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\EditProfile;
 use App\Http\Controllers\FollowController;
@@ -55,7 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
             ]);
         }
         try {
-            $post = ModelsPost::findOrFail($id);
+            $post = ModelsPost::indOrFail($id);
             return response()->json([
                 'success' => true,
                 'post' => $post
@@ -140,8 +141,10 @@ Route::middleware('auth:sanctum')->group(function () {
         $user_id = Auth::id();
 
         try {
-            $post = ModelsPost::withCount(['likes','comments'])->with(['user:id,username,name,avatar_url', 'postable:id,name,logo_url'])->withExists(['likes as is_liked' => function ($query) use ($user_id) {
+            $post = ModelsPost::withCount(['likes', 'comments'])->with(['user:id,username,name,avatar_url', 'postable:id,name,logo_url'])->withExists(['likes as is_liked' => function ($query) use ($user_id) {
                 $query->where('user_id', $user_id);
+            }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
             }])->find($id);
             if (!$post) {
                 return response()->json([
@@ -161,6 +164,8 @@ Route::middleware('auth:sanctum')->group(function () {
             ]);
         }
     });
+
+    Route::post('/post/save', [BookmarkController::class, 'save']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);

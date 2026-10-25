@@ -48,4 +48,14 @@ class Post extends Model
     {
         return $this->morphTo();
     }
+
+    public function posts()
+    {
+        return $this->morphMany(Bookmark::class, 'booktable');
+    }
+
+    public function bookmarks()
+    {
+        return $this->morphMany(Bookmark::class, 'booktable');
+    }
 }
