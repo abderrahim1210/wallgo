@@ -80,8 +80,8 @@ export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose ,onD
                         items={postMenuItems}
                     />
                 </div>
-                <div className="md:w-1/2 bg-black flex items-center justify-center">
-                    <img src={post?.media_url} alt="Detail" className="max-h-[400px] w-full object-contain" />
+                <div className="md:w-1/2 bg-black flex items-center justify-center rounded-2xl">
+                    <img src={post?.media_url} alt="Detail" className="max-h-[400px] rounded-2xl w-full object-contain" />
                 </div>
 
                 <div className="md:w-1/2 p-5 flex flex-col justify-between">
@@ -101,8 +101,8 @@ export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose ,onD
                     </div>
 
                     <div className="flex items-center space-x-4 pt-3 border-t border-gray-100 text-xs text-gray-500 font-medium">
-                        <span className="flex items-center space-x-1 text-red-500"><Heart className='w-4 h-4' /> {post?.likes_count} Likes</span>
-                        <span className="flex items-center space-x-1 text-purple-500"><MessageCircle className='w-4 h-4' /> {post?.comments_count} Comments</span>
+                        <span className="flex items-center gap-1 text-red-500"><Heart className='w-4 h-4' /> {post?.likes_count} Likes</span>
+                        <span className="flex items-center gap-1 text-purple-500"><MessageCircle className='w-4 h-4' /> {post?.comments_count} Comments</span>
                     </div>
                 </div>
             </div>

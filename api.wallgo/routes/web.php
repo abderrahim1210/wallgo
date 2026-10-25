@@ -130,7 +130,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::delete('/groups/{id}', [GroupController::class, 'destroy']);
 
-    Route::get('/post/{id}', function ($id) {
+    Route::get('/post_preview/{id}', function ($id) {
         if (!$id) {
             return response()->json([
                 'success' => false,
@@ -139,20 +139,27 @@ Route::middleware('auth:sanctum')->group(function () {
         }
         $user_id = Auth::id();
 
-        $post = ModelsPost::withCount(['likes','comments'])->with(['user:id,name,username,avatar_url', 'postable:id,name,logo_url'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
-            $q->where('user_id', $user_id);
-        }])->where('id', $id)->first();
-        if (!$post) {
+        try {
+            $post = ModelsPost::withCount(['likes','comments'])->with(['user:id,username,name,avatar_url', 'postable:id,name,logo_url'])->withExists(['likes as is_liked' => function ($query) use ($user_id) {
+                $query->where('user_id', $user_id);
+            }])->find($id);
+            if (!$post) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Post by id $id not found"
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'post' => $post
+            ]);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => "Post by id $id not found"
-            ], 404);
+                'message' => 'Failed : ' . $e->getMessage()
+            ]);
         }
-
-        return response()->json([
-            'success' => true,
-            'post' => $post
-        ]);
     });
 });
 

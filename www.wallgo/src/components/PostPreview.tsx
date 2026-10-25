@@ -1,7 +1,7 @@
 import React from 'react'
 import { MainLayout } from '../MainLayout'
 import { Helmet } from 'react-helmet-async'
-import { ArrowLeft, Bookmark, Heart, MessageCircle, MoreHorizontal, Share2 } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { api_url } from '../pages/Auth/getUser'
@@ -12,7 +12,7 @@ export const PostPreview = () => {
     const { id } = useParams();
     const fetchInfos = async () => {
         try {
-            const res = await axios.get(`${api_url}/post/${id}`, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.get(`${api_url}/post_preview/${id}`, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) return res.data;
         } catch (err: any) {
             console.error(err?.response.data);
@@ -20,12 +20,12 @@ export const PostPreview = () => {
     }
 
     const { data } = useQuery({
-        queryKey: ['post', id],
+        queryKey: ['post_preview', id],
         queryFn: fetchInfos,
         staleTime: 1000 * 60 * 5
     });
 
-    const post = data?.post || null;
+    const post = data?.post;
 
     const navigate = useNavigate();
     return (

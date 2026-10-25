@@ -1,5 +1,5 @@
 import { AlertTriangle, Bookmark, Edit3, Flag, Heart, Link, MessageCircle, MoreHorizontal, Share2, Trash2, X } from 'lucide-react';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
 import { Toast, type ToastType } from '../../components/Toast';
 import { useModal } from '../../hooks/ModalProvider';
@@ -24,7 +24,12 @@ export const PostCard: React.FC<PostCardProps> = ({
     onDelete
 }) => {
     const [liked, setLiked] = useState(false);
-    const [likes, setLikes] = useState(post?.likes_count);
+    const [likes, setLikes] = useState(Number(post?.likes_count));
+    useEffect(() => {
+        if (post) {
+            setLikes(post?.likes_count);
+        }
+    }, [post]);
     const [saved, setSaved] = useState(false);
     const { show, openModal, closeModal } = useModal()!;
     const { user: currentUser } = useAuth()!;
@@ -99,10 +104,10 @@ export const PostCard: React.FC<PostCardProps> = ({
 
     return (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
-            <div className="flex items-center justify-between p-4 pb-3">
+            <div className="flex items-center justify-between p-4 pb-3 cursor-pointer hover:bg-gray-200 transition-all rounded-t-2xl" onClick={() => navigate(`/post/${post?.id}`)}>
                 <div className="flex items-center space-x-3">
                     {
-                       post?.postable ? (
+                        post?.postable ? (
                             <img
                                 src={post?.postable?.logo_url || '/icons/users.svg'}
                                 alt={post?.user.name}
@@ -157,7 +162,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 }
             </div>
 
-            <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed" onClick={() => navigate(`/post/${post?.id}`)}>
+            <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
                 {post?.content}
             </div>
 
