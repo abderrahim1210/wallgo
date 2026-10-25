@@ -6,6 +6,8 @@ import { FaBookmark } from 'react-icons/fa';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
 import { useQuery } from '@tanstack/react-query';
+import { Skeleton } from '../templates/Skeleton';
+import { ErrorPage } from './ErrorPage';
 
 const SavedPosts = () => {
     const fetchPosts = async () => {
@@ -17,7 +19,7 @@ const SavedPosts = () => {
         }
     }
 
-    const { data: posts = [] } = useQuery({
+    const { data: posts = [], isLoading, isError } = useQuery({
         queryKey: ['posts_saved'],
         queryFn: fetchPosts,
         staleTime: 1000 * 60 * 5
@@ -30,15 +32,25 @@ const SavedPosts = () => {
             </Helmet>
 
 
-            <div className='max-w-2xl mx-auto px-4 py-6'>
-                <div className='flex justify-start items-center'>
-                    <h1 className='font-bold text-3xl flex items-center gap-2'><FaBookmark className='w-8 h-8 text-[var(--special-purple)]' /> Saved Posts <span className='text-[var(--special-purple)]'>({posts.length})</span></h1>
+            {
+                isLoading ? (
+                    <Skeleton type='bookmark' />
+                ) : isError ? (
+                    <div className='mt-10'>
+                        <ErrorPage codeP='500' />
+                    </div>
+                ) : (
+                    <div className='max-w-2xl mx-auto px-4 py-6'>
+                        <div className='flex justify-start items-center'>
+                            <h1 className='font-bold text-3xl flex items-center gap-2'><FaBookmark className='w-8 h-8 text-[var(--special-purple)]' /> Saved Posts <span className='text-[var(--special-purple)]'>({posts.length})</span></h1>
 
-                </div>
-                <div className='mt-3'>
-                    <PostGrid posts={posts} />
-                </div>
-            </div>
+                        </div>
+                        <div className='mt-3'>
+                            <PostGrid posts={posts} />
+                        </div>
+                    </div>
+                )
+            }
 
         </MainLayout>
     )

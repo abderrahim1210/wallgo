@@ -36,7 +36,6 @@ const CreatePost: React.FC<CreatePostProps> = () => {
     const [notification, setNotification] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { user } = useAuth()!;
-    // const [pageId, setPageId] = useState<number | null>(null);
     const [post, setPost] = useState<Post>({
         content: '',
         post_type: privacy,

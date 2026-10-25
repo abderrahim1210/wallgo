@@ -7,6 +7,9 @@ import axios from 'axios'
 import { api_url } from '../pages/Auth/getUser'
 import { useQuery } from '@tanstack/react-query'
 import { PostCard } from '../pages/Post/PostCard'
+import { Skeleton } from '../templates/Skeleton'
+import { ErrorPage } from './ErrorPage'
+import Spinner from '../templates/Spinner'
 
 export const PostPreview = () => {
     const { id } = useParams();
@@ -19,7 +22,7 @@ export const PostPreview = () => {
         }
     }
 
-    const { data } = useQuery({
+    const { data, isLoading, isError } = useQuery({
         queryKey: ['post_preview', id],
         queryFn: fetchInfos,
         staleTime: 1000 * 60 * 5
@@ -34,7 +37,15 @@ export const PostPreview = () => {
                 <title>WallGo : Post</title>
             </Helmet>
 
-            <div className='max-w-xl mx-auto px-4 py-6'>
+            {
+                isLoading ? (
+                    <Spinner text='Fetch post data ...' type='large' />
+                ) : isError ? (
+                    <div className='mt-10'>
+                        <ErrorPage codeP='500' />
+                    </div>
+                ) : (
+                    <div className='max-w-xl mx-auto px-4 py-6'>
                 <button
                     onClick={() => navigate(-1)}
                     className="text-slate-400 transition-colors p-2 rounded-xl hover:bg-white/5 flex items-center space-x-1.5 font-medium group cursor-pointer"
@@ -45,6 +56,8 @@ export const PostPreview = () => {
 
                 <PostCard post={post} onDelete={() => { }} />
             </div>
+                )
+            }
         </MainLayout>
     )
 }

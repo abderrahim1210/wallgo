@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { MainLayout } from '../MainLayout'
 import { PostCard } from '../pages/Post/PostCard';
 import { Bookmark, Code, Compass, Flame, Globe, ImageIcon, Layers, Pencil, Plus, Settings, TrendingUp, Users } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
 import axios from 'axios';
@@ -12,6 +12,8 @@ import { PostGrid } from '../templates/PostGrid';
 import toast from 'react-hot-toast';
 import { useFollow } from './useFollow';
 import { FollowUser } from './FollowUser';
+import Spinner from '../templates/Spinner';
+import { ErrorPage } from './ErrorPage';
 
 export type User = {
   id: number,
@@ -32,7 +34,7 @@ export const Home = () => {
     }
   }
 
-  const { data: posts = [] } = useQuery({
+  const { data: posts = [], isLoading:postsLoading, isError:postsError } = useQuery({
     queryKey: ['posts'],
     queryFn: fetchPosts,
     staleTime: 1000 * 60 * 5,
@@ -125,6 +127,7 @@ export const Home = () => {
   }
 
   const { add_follow } = useFollow();
+
   return (
     <MainLayout>
       <div className="min-h-screen bg-gray-50/50 pb-20 md:pb-10">
@@ -301,7 +304,13 @@ export const Home = () => {
             </div>
 
             <div className="space-y-4">
-              <PostGrid posts={posts} suggested_follow={users} />
+              {
+                postsLoading ? (
+                  <Spinner text='Fetching posts ...' type='mini' />
+                ) : (
+                  <PostGrid posts={posts} suggested_follow={users} />
+                )
+              }
             </div>
           </main>
 
@@ -335,7 +344,7 @@ export const Home = () => {
                       <span>Who to follow</span>
                     </div>
                     {
-                      users?.map((u: User, index:number) => (
+                      users?.map((u: User, index: number) => (
                         <FollowUser user={u} onFollow={add_follow} key={index} />
                       ))
                     }

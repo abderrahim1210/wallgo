@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 import { useModal } from '../hooks/ModalProvider';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { Skeleton } from '../templates/Skeleton';
+import { ErrorPage } from './ErrorPage';
 
 export const EditProfile = () => {
 
@@ -18,7 +20,7 @@ export const EditProfile = () => {
             console.log(err?.response?.data);
         }
     }
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading, isError } = useQuery({
         queryKey: ['user_edit'],
         queryFn: fetchProfile,
         staleTime: 1000 * 60 * 5,
@@ -102,7 +104,15 @@ export const EditProfile = () => {
             <Helmet>
                 <title>WallGo : Edit Profile</title>
             </Helmet>
-            <div className="max-w-3xl mx-auto px-4 py-8 pb-24">
+            {
+                isLoading ? (
+                    <Skeleton type='edit_profile' />
+                ) : isError ? (
+                    <div className='mt-10'>
+                        <ErrorPage codeP='500' />
+                    </div>
+                ) : (
+                    <div className="max-w-3xl mx-auto px-4 py-8 pb-24">
 
                 <div className="flex justify-between items-center mb-6">
                     <div>
@@ -300,6 +310,8 @@ export const EditProfile = () => {
                 </div>
 
             </div>
+                )
+            }
         </MainLayout>
     )
 }

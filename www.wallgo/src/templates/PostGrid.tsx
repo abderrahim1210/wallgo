@@ -93,7 +93,7 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts, suggested_follow }) =
 
     return (
         <div className="gap-1 md:gap-2">
-            {isLoading ? Array(4).fill(0).map((_, i) => <Skeleton key={i} />) : posts.length > 0 ? posts.map((post, index) => (
+            {isLoading ? Array(4).fill(0).map((_, i) => <Skeleton type='post' key={i} />) : posts.length > 0 ? posts.map((post, index) => (
                 <React.Fragment key={index}>
                     <PostCard key={post.id} post={post} onDelete={deletePost} />
                     {(index + 1) % 6 === 0 && suggested_follow && suggested_follow.length > 0 && (

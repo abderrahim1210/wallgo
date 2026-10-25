@@ -44,7 +44,8 @@ export const AppRoutes = () => {
             <Route path='/pages/:id' element={<PageProfile />} />
             <Route path='/groups/:id' element={<GroupeProfile />} />
             <Route path='/pages/:id/edit' element={<EditPage />} />
-            <Route path='/error' element={<ErrorPage />} />
+            <Route path='/error/:code' element={<ErrorPage />} />
+            <Route path='*' element={<ErrorPage />} />
             <Route path='/post/:id' element={<PostPreview />} />
         </Routes>
     )

@@ -8,6 +8,8 @@ import { EmptyContent } from './EmptyContent';
 import { ArrowLeft, PlusIcon, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { GroupCard } from './GroupCard';
+import { Skeleton } from '../templates/Skeleton';
+import { ErrorPage } from './ErrorPage';
 
 export interface Group {
     id: number;
@@ -33,7 +35,7 @@ export const Groups = () => {
         }
     }
 
-    const { data } = useQuery({
+    const { data, isLoading, isError } = useQuery({
         queryKey: ['groups_and_suggested_groups'],
         queryFn: fetchGroups,
     });
@@ -43,46 +45,56 @@ export const Groups = () => {
 
     return (
         <MainLayout>
-            <div className='px-4 py-6'>
-                <button
-                    onClick={() => navigate(-1)}
-                    className="text-slate-400 transition-colors p-2 rounded-xl hover:bg-white/5 flex items-center space-x-1.5 font-medium group cursor-pointer"
-                >
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-                    <span>Back</span>
-                </button>
-                <div className='flex justify-start items-center gap-2'>
-                    <h1 className='font-bold text-3xl flex items-center gap-2'><FaUsers className='w-8 h-8 text-[var(--special-purple)]' /> Your Groups <span className='text-[var(--special-purple)]'>({groups?.length ?? 0})</span></h1><button onClick={() => navigate('/group/create')} className='text-[var(--special-white)] bg-[var(--special-purple)] font-bold px-4 hover:bg-indigo-100 hover:text-[var(--special-purple)] rounded-full transition-all cursor-pointer flex'>New group <PlusIcon /></button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-3">
-                    {
-                        groups?.length > 0 ? groups.map((group: Group, index: number) => (
-                            <GroupCard group={group} key={index} />
-                        )) : (
-                            <div className='col-span-full flex justify-center'>
-                                <EmptyContent text="You don't have any group - try to create a first now !" icon={<Users />} />
+            {
+                isLoading ? (
+                    <Skeleton type='pages_groups' />
+                ) : isError ? (
+                    <ErrorPage codeP='500' />
+                ) : (
+                    <>
+                        <div className='px-4 py-6'>
+                            <button
+                                onClick={() => navigate(-1)}
+                                className="text-slate-400 transition-colors p-2 rounded-xl hover:bg-white/5 flex items-center space-x-1.5 font-medium group cursor-pointer"
+                            >
+                                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                                <span>Back</span>
+                            </button>
+                            <div className='flex justify-start items-center gap-2'>
+                                <h1 className='font-bold text-3xl flex items-center gap-2'><FaUsers className='w-8 h-8 text-[var(--special-purple)]' /> Your Groups <span className='text-[var(--special-purple)]'>({groups?.length ?? 0})</span></h1><button onClick={() => navigate('/group/create')} className='text-[var(--special-white)] bg-[var(--special-purple)] font-bold px-4 hover:bg-indigo-100 hover:text-[var(--special-purple)] rounded-full transition-all cursor-pointer flex'>New group <PlusIcon /></button>
                             </div>
-                        )
-                    }
-                </div>
-            </div>
-            <hr className="border-gray-200 my-8" />
-            <div className='px-4 py-6'>
-                <div className='flex justify-start items-center'>
-                    <h1 className='font-bold text-3xl flex items-center gap-2'><FaUsers className='w-8 h-8 text-[var(--special-purple)]' /> Suggested Groups <span className='text-[var(--special-purple)]'>({suggestedGroups?.length ?? 0})</span></h1>
-                </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-3">
+                                {
+                                    groups?.length > 0 ? groups.map((group: Group, index: number) => (
+                                        <GroupCard group={group} key={index} />
+                                    )) : (
+                                        <div className='col-span-full flex justify-center'>
+                                            <EmptyContent text="You don't have any group - try to create a first now !" icon={<Users />} />
+                                        </div>
+                                    )
+                                }
+                            </div>
+                        </div>
+                        <hr className="border-gray-200 my-8" />
+                        <div className='px-4 py-6'>
+                            <div className='flex justify-start items-center'>
+                                <h1 className='font-bold text-3xl flex items-center gap-2'><FaUsers className='w-8 h-8 text-[var(--special-purple)]' /> Suggested Groups <span className='text-[var(--special-purple)]'>({suggestedGroups?.length ?? 0})</span></h1>
+                            </div>
 
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-3">
-                    {
-                        suggestedGroups?.length > 0 ? suggestedGroups.map((group: Group, index: number) => <GroupCard group={group} key={index} />) : (
-                            <div className='col-span-full flex justify-center'>
-                                <EmptyContent text='No groups suggested for you - try again later !' icon={<Users />} />
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-3">
+                                {
+                                    suggestedGroups?.length > 0 ? suggestedGroups.map((group: Group, index: number) => <GroupCard group={group} key={index} />) : (
+                                        <div className='col-span-full flex justify-center'>
+                                            <EmptyContent text='No groups suggested for you - try again later !' icon={<Users />} />
+                                        </div>
+                                    )
+                                }
                             </div>
-                        )
-                    }
-                </div>
-            </div>
+                        </div>
+                    </>
+                )
+            }
         </MainLayout>
     )
 }

@@ -5,49 +5,15 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
 import toast from 'react-hot-toast';
-
-// interface Comment {
-//     id: number;
-//     user: {
-//         name: string;
-//         username: string;
-//         avatar_url: string;
-//     };
-//     content: string;
-//     crea: string;
-//     likes: number;
-// };
+import Spinner from '../templates/Spinner';
+import { EmptyContent } from './EmptyContent';
+import { FaComments } from 'react-icons/fa';
 
 interface CommentSectionProps {
     postId: number;
     // userId: number;
 }
 export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
-    // const [comments, setComments] = useState<Comment[]>([
-    //     {
-    //         id: 1,
-    //         user: {
-    //             name: 'Sara Miller',
-    //             username: 'saramiller',
-    //             avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
-    //         },
-    //         content: 'This looks absolutely stunning! Great work on the UI 🚀🔥',
-    //         time: '2h ago',
-    //         likes: 4,
-    //     },
-    //     {
-    //         id: 2,
-    //         user: {
-    //             name: 'John Doe',
-    //             username: 'johndoe',
-    //             avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
-    //         },
-    //         content: 'Amazing photography and nice capture!',
-    //         time: '1h ago',
-    //         likes: 2,
-    //     },
-    // ]);
-
     const fetchComments = async () => {
         try {
             const res = await axios.get(`${api_url}/comments/${postId}`, { withCredentials: true, withXSRFToken: true });
@@ -57,7 +23,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
         }
     }
 
-    const { data: comments = [] } = useQuery({
+    const { data: comments = [], isLoading, isError } = useQuery({
         queryKey: ['comments', postId],
         queryFn: fetchComments,
         enabled:!!postId,
@@ -91,13 +57,13 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
             </div>
 
             <div className="overflow-y-auto p-4 space-y-4 divide-y divide-gray-50">
-                {comments?.length > 0 ? (
+                {isLoading ? (<Spinner text='Wait few seconds to get comments ...' type='mini' />) : comments?.length > 0 ? (
                     comments.map((comment: Comment, index:number) => (
                         <CommentItem comment={comment} postId={postId} key={index} />
                     ))
                 ) : (
-                    <div className="py-8 text-center text-gray-400">
-                        No comments yet. Be the first to comment!
+                    <div className="py-8 text-center">
+                       <EmptyContent text=' No comments yet. Be the first to comment!' icon={<FaComments />} />
                     </div>
                 )}
             </div>
