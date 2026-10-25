@@ -1,8 +1,8 @@
 # WallGo 🚀
 
 <p align="center">
-  <b>A modern full-stack web application for sharing moments, preserving time capsules, and connecting in real-time.</b>
   <img src="./www.wallgo/public/icons/logos/mix_logo.png" alt="Pixora Logo" width="300" />
+  <b>A modern full-stack web application for sharing moments, preserving time capsules, and connecting in real-time.</b>
 </p>
 
 <p align="center">
