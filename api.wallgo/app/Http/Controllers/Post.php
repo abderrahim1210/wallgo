@@ -113,7 +113,7 @@ class Post extends Controller
                     $q->where('id', $user_id);
                 }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
                     $q->where('user_id', $user_id);
-                }])->get();
+                }])->latest()->get();
                 return response()->json([
                     'success' => true,
                     'posts' => $posts

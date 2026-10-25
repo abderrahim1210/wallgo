@@ -57,4 +57,33 @@ class BookmarkController extends Controller
             ], 500);
         }
     }
+
+    public function index()
+    {
+        $user_id = Auth::id();
+        if (!$user_id) return response()->json([
+            'success' => false,
+            'message' => 'User not found'
+        ], 401);
+
+        try {
+            $posts = Post::whereHas('bookmarks', function($q) use ($user_id){
+                $q->where('user_id',$user_id);
+            })->withCount(['likes', 'comments'])->with(['user:id,name,username,avatar_url', 'postable:id,name,logo_url'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            }])->get();
+
+            return response()->json([
+                'success' => true,
+                'posts' => $posts
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ]);
+        }
+    }
 }

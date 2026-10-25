@@ -166,6 +166,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::post('/post/save', [BookmarkController::class, 'save']);
+
+    Route::get('/posts/saved', [BookmarkController::class, 'index']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);
