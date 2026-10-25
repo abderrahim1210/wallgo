@@ -5,16 +5,16 @@ import { FiCheck, FiCopy, FiShare2 } from 'react-icons/fi';
 interface ShareDropdownProps {
     // isOpen: boolean;
     // onClose: () => void;
-    postUrl: string;
+    url: string;
 }
 
-const ShareDropdown: React.FC<ShareDropdownProps> = ({ postUrl = window.location.href }) => {
+const ShareDropdown: React.FC<ShareDropdownProps> = ({ url = window.location.href }) => {
     const [copied, setCopied] = useState(false);
 
     // if (!isOpen) return null;
 
     const handleCopyLink = () => {
-        navigator.clipboard.writeText(postUrl);
+        navigator.clipboard.writeText(url);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -30,7 +30,7 @@ const ShareDropdown: React.FC<ShareDropdownProps> = ({ postUrl = window.location
 
                 <div className="grid grid-cols-4 gap-2 mb-4">
                     <button
-                        onClick={() => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(postUrl)}`, '_blank')}
+                        onClick={() => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(url)}`, '_blank')}
                         className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-gray-50 hover:bg-emerald-50 hover:text-emerald-600 transition text-gray-600 group"
                     >
                         <FaWhatsapp className="w-10 h-10 text-emerald-500 group-hover:scale-110 transition-transform" />
@@ -38,7 +38,7 @@ const ShareDropdown: React.FC<ShareDropdownProps> = ({ postUrl = window.location
                     </button>
 
                     <button
-                        onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`, '_blank')}
+                        onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank')}
                         className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-gray-50 hover:bg-blue-50 hover:text-blue-600 transition text-gray-600 group"
                     >
                         <FaFacebook className="w-10 h-10 text-blue-600 group-hover:scale-110 transition-transform" />
@@ -46,7 +46,7 @@ const ShareDropdown: React.FC<ShareDropdownProps> = ({ postUrl = window.location
                     </button>
 
                     <button
-                        onClick={() => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}`, '_blank')}
+                        onClick={() => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}`, '_blank')}
                         className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-gray-50 hover:bg-sky-50 hover:text-sky-500 transition text-gray-600 group"
                     >
                         <FaTwitter className="w-10 h-10 text-sky-400 group-hover:scale-110 transition-transform" />
@@ -54,7 +54,7 @@ const ShareDropdown: React.FC<ShareDropdownProps> = ({ postUrl = window.location
                     </button>
 
                     <button
-                        onClick={() => window.open(`https://t.me/share/url?url=${encodeURIComponent(postUrl)}`, '_blank')}
+                        onClick={() => window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}`, '_blank')}
                         className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-gray-50 hover:bg-sky-50 hover:text-sky-600 transition text-gray-600 group"
                     >
                         <FaTelegram className="w-10 h-10 text-sky-500 group-hover:scale-110 transition-transform" />
@@ -66,7 +66,7 @@ const ShareDropdown: React.FC<ShareDropdownProps> = ({ postUrl = window.location
                     <input
                         type="text"
                         readOnly
-                        value={postUrl}
+                        value={url}
                         className="bg-transparent text-xs text-gray-500 px-2 flex-1 outline-none truncate"
                     />
                     <button

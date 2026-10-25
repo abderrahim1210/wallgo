@@ -12,6 +12,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Like as ControllersLike;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Post;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings;
 use App\Models\Group;
 use App\Models\Page;
@@ -71,7 +72,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::delete('/posts/{id}', [Post::class, 'destroy']);
 
-    Route::post('/posts/send_report', [Post::class, 'report']);
+    Route::post('/send_report', [ReportController::class, 'send']);
 
     Route::get('/get_suggested_users', [GetUsers::class, 'get']);
 

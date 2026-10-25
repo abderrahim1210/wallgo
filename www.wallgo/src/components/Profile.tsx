@@ -4,7 +4,7 @@ import { FaCalendarAlt, FaCamera, FaEnvelope, FaGlobe, FaMapMarkerAlt, FaPhone, 
 import { PostGrid } from '../templates/PostGrid'
 import { Helmet } from 'react-helmet-async'
 import { FiCalendar, FiHeart, FiMapPin } from 'react-icons/fi'
-import { Pencil, PlusSquare, Settings, Users, VenusAndMars } from 'lucide-react'
+import { Edit3, Flag, Link, MoreHorizontal, Pencil, PlusSquare, Settings, Share, Share2, Trash2, Users, VenusAndMars } from 'lucide-react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import ModalTemplate from '../templates/ModalTemplate'
 import { useModal } from '../hooks/ModalProvider'
@@ -18,6 +18,9 @@ import { useFollow } from './useFollow'
 import Spinner from '../templates/Spinner'
 import { Skeleton } from '../templates/Skeleton'
 import { ErrorPage } from './ErrorPage'
+import { DropdownMenu, type DropdownItem } from '../templates/DropdownMenu'
+import ShareDropdown from './ShareDropdown'
+import { Report } from './Report'
 
 interface User {
     id: number;
@@ -80,6 +83,23 @@ export const Profile = () => {
         add_follow(following_id);
         setFollow(prev => !prev);
     }
+
+    const postMenuItems: DropdownItem[] = [
+        {
+            label: 'Share profile',
+            icon: <Share2 className="w-4 h-4 text-blue-500" />,
+            onClick: () => openModal(`share-${profile?.id}`),
+        },
+
+        {
+            label: 'Report profile',
+            icon: <Flag className="w-4 h-4 text-red-500" />,
+            danger: true,
+            onClick: () => openModal(`report-${profile?.id}`),
+        },
+    ]
+
+
     return (
         <MainLayout>
             <Helmet>
@@ -96,6 +116,21 @@ export const Profile = () => {
                                 ))
                             ) : (<EmptyContent icon={<FaUsers />} text='No followers yet.' />)
                         }
+                    </ModalTemplate>
+                )
+            }
+            {
+                show === `share-${profile?.id}` && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <ShareDropdown url={window.location.href} />
+                    </ModalTemplate>
+                )
+            }
+
+            {
+                show === `report-${profile?.id}` && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <Report id={profile?.id} type='user' />
                     </ModalTemplate>
                 )
             }
@@ -153,7 +188,7 @@ export const Profile = () => {
                                                 <button
                                                     onClick={() => navigate('/account/edit')}
                                                     className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
-                                                    title='Create post for this page'
+                                                    title='Edit your account'
                                                 >
                                                     <Pencil className='w-5 h-5 text-[var(--special-purple)]' />
                                                 </button>
@@ -170,7 +205,7 @@ export const Profile = () => {
                                                         navigate('/settings');
                                                     }}
                                                     className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
-                                                    title='Create post for this page'
+                                                    title='Settings'
                                                 >
                                                     <Settings className='w-5 h-5 text-indigo-600' />
                                                 </button>
@@ -184,6 +219,14 @@ export const Profile = () => {
                                                 <button className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0">
                                                     <span>Message</span>
                                                 </button>
+                                                <DropdownMenu
+                                                    trigger={
+                                                        <button className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center">
+                                                            <MoreHorizontal className="w-5 h-5 text-indigo-600" />
+                                                        </button>
+                                                    }
+                                                    items={postMenuItems}
+                                                />
                                             </div>
                                         )}
 

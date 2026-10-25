@@ -5,12 +5,11 @@ import toast from 'react-hot-toast'
 
 
 interface ReportProps {
-    type: 'post_id' | 'page_id' | 'user_id' | 'group_id';
+    type: 'post' | 'page' | 'user' | 'group';
     id: number
 }
 export const Report: React.FC<ReportProps> = ({ type, id }) => {
     const [data, setData] = useState({
-        id:id,
         reportable_id: id,
         reportable_type: type,
         reason: '',
@@ -24,7 +23,7 @@ export const Report: React.FC<ReportProps> = ({ type, id }) => {
     const send_report = async (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const res = await axios.post(`${api_url}/posts/send_report`, data, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.post(`${api_url}/send_report`, data, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 toast.success(res.data.message || 'Report added successfully');
                 setTimeout(() => {
@@ -58,7 +57,7 @@ export const Report: React.FC<ReportProps> = ({ type, id }) => {
                             name='reason'
                             value={data.reason}
                             onChange={handleChange}
-                            className="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all text-gray-800"
+                            className="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--special-purple)] focus:bg-white transition-all text-gray-800"
                             required
                         >
                             <option value="" disabled>Choose a reason...</option>
@@ -80,7 +79,7 @@ export const Report: React.FC<ReportProps> = ({ type, id }) => {
                             value={data.description}
                             onChange={handleChange}
                             placeholder="Please provide more details about why you are reporting this..."
-                            className="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all text-gray-800 resize-none"
+                            className="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--special-purple)] focus:bg-white transition-all text-gray-800 resize-none"
                         ></textarea>
                     </div>
 
