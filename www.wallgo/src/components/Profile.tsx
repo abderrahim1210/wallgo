@@ -97,8 +97,7 @@ export const Profile = () => {
             danger: true,
             onClick: () => openModal(`report-${profile?.id}`),
         },
-    ]
-
+    ];
 
     return (
         <MainLayout>

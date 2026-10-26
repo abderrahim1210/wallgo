@@ -19,8 +19,8 @@ export const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
             <div className="h-28 w-full relative bg-gray-200 overflow-hidden">
                 <img src={group.banner_url ?? '/backgrounds/users_group_banner.svg'} alt="Banner" className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                 <span className="absolute top-3 right-3 bg-black/60 backdrop-blur-xs text-white text-[10px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
-                    {group.type === 'private' ? <FaLock className="w-2.5 h-2.5" /> : <FaGlobe className="w-2.5 h-2.5" />}
-                    {group.type}
+                    {group.visibility === 'private' ? <FaLock className="w-2.5 h-2.5" /> : <FaGlobe className="w-2.5 h-2.5" />}
+                    {group.visibility}
                 </span>
             </div>
             <div className="px-5 pb-5 relative">

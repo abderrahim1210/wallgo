@@ -10,23 +10,28 @@ import type { Page } from './PageProfile'
 import toast from 'react-hot-toast'
 import { Skeleton } from '../templates/Skeleton'
 import { ErrorPage } from './ErrorPage'
+import ButtonSpinner from '../Icons/ButtonSpinner'
+import LoadingButton from '../Icons/LoadingButton'
 
 
 export const EditPage = () => {
-    const { id } = useParams();
+    const { id, type } = useParams<{ id: string, type: 'pages' | 'groups' }>();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
         logo_url: '',
         banner_url: '',
-        category: ''
+        category: '',
+        type: '',
+        visibility: ''
     });
 
 
-    const fetchPage = async () => {
+    const fetchData = async () => {
         try {
-            const res = await axios.get(`${api_url}/pages/${id}`, { withCredentials: true });
+            const res = await axios.get(`${api_url}/${type}/${Number(id)}`, { withCredentials: true });
             if (res.data.success) return res.data;
         } catch (err: any) {
             console.error(err?.response.data);
@@ -34,20 +39,35 @@ export const EditPage = () => {
     }
 
     const { data, isLoading, isError } = useQuery({
-        queryKey: ['page', id],
-        queryFn: fetchPage,
+        queryKey: [type, id],
+        queryFn: fetchData,
         staleTime: 1000 * 60 * 5
     });
 
     useEffect(() => {
         if (data) {
-            setFormData({
-                name: data.page.name || '',
-                description: data.page.description || '',
-                logo_url: data.page.logo_url || '',
-                banner_url: data.page.banner_url || '',
-                category: data.page.category || ''
-            });
+            if (data?.page) {
+                setFormData({
+                    name: data.page.name || '',
+                    description: data.page.description || '',
+                    logo_url: data.page.logo_url || '',
+                    banner_url: data.page.banner_url || '',
+                    category: data.page.category || '',
+                    visibility: '',
+                    type: String(type)
+                });
+            }
+            if (data?.group) {
+                setFormData({
+                    name: data.group.name || '',
+                    description: data.group.description || '',
+                    logo_url: data.group.logo_url || '',
+                    banner_url: data.group.banner_url || '',
+                    category: '',
+                    visibility: data.group.visibility || '',
+                    type: String(type)
+                });
+            }
         }
     }, [data]);
 
@@ -80,14 +100,17 @@ export const EditPage = () => {
     }
 
     const handleSubmit = async () => {
+        setLoading(true);
         try {
-            const res = await axios.put(`${api_url}/pages/${id}`, formData, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.put(`${api_url}/${type}/${id}`, formData, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
+                setLoading(false);
                 toast.success(res.data.message || 'Page updated successfully');
                 setTimeout(() => {
-                    navigate(`/pages/${id}`);
+                    navigate(`/${type}/${id}`);
                 }, 1000);
             } else {
+                setLoading(false);
                 toast.error(res.data.message || 'Failed to update page');
                 console.log(res.data.message);
             }
@@ -114,11 +137,11 @@ export const EditPage = () => {
 
                         <div className="flex justify-between items-center mb-6">
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-900">Edit Page</h1>
+                                <h1 className="text-2xl font-bold text-gray-900">Edit {type === 'pages' ? 'Page' : 'Group'}</h1>
                                 <p className="text-sm text-gray-500">Update your page information</p>
                             </div>
                             <Link
-                                to="/account/profile"
+                                to={`/${type}`}
                                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-medium transition"
                             >
                                 <FaTimes className="w-4 h-4" /> Cancel
@@ -128,7 +151,7 @@ export const EditPage = () => {
                         <div className="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden p-6 md:p-8 space-y-6">
 
                             <div className="space-y-4">
-                                <label className="block text-sm font-semibold text-gray-700">Page Banner & Logo</label>
+                                <label className="block text-sm font-semibold text-gray-700">{type === 'pages' ? 'Page' : 'Group'} Banner & Logo</label>
 
                                 <div className={`relative h-40 md:h-52 w-full rounded-2xl overflow-hidden bg-gray-100 border border-gray-200 group`}>
                                     <img src={bannerPreview || formData?.banner_url || '/backgrounds/users_banner.svg'} alt="Banner" className="w-full h-full object-cover" />
@@ -199,23 +222,45 @@ export const EditPage = () => {
                                     />
                                 </div>
 
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
-                                    <select
-                                        value={formData?.category}
-                                        onChange={handleChange}
-                                        name='category'
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 capitalize"
-                                    >
-                                        <option value="">Choose category</option>
-                                        <option value="technology">Technology</option>
-                                        <option value="education">Education</option>
-                                        <option value="entertainment">Entertainment</option>
-                                        <option value="photography">Photography</option>
-                                        <option value="business">Business</option>
-                                        <option value="personal_blog">Personal Blog</option>
-                                    </select>
-                                </div>
+                                {
+                                    formData?.category && (
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
+                                            <select
+                                                value={formData?.category}
+                                                onChange={handleChange}
+                                                name='category'
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 capitalize"
+                                            >
+                                                <option value="">Choose category</option>
+                                                <option value="technology">Technology</option>
+                                                <option value="education">Education</option>
+                                                <option value="entertainment">Entertainment</option>
+                                                <option value="photography">Photography</option>
+                                                <option value="business">Business</option>
+                                                <option value="personal_blog">Personal Blog</option>
+                                            </select>
+                                        </div>
+                                    )
+                                }
+
+                                {
+                                    formData?.visibility && (
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Visibility</label>
+                                            <select
+                                                value={formData?.visibility}
+                                                onChange={handleChange}
+                                                name='visibility'
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 capitalize"
+                                            >
+                                                <option value="">Select visibility ... </option>
+                                                <option value="public">Public</option>
+                                                <option value="private">Private</option>
+                                            </select>
+                                        </div>
+                                    )
+                                }
 
                             </div>
 
@@ -226,14 +271,17 @@ export const EditPage = () => {
                                 >
                                     Cancel
                                 </Link>
-                                <button
+                                {/* <button
                                     type="button"
                                     disabled={!formData && !logoPreview && !bannerPreview}
                                     onClick={handleSubmit}
                                     className={`flex items-center gap-2 px-6 py-3 bg-[var(--special-purple)] hover:opacity-90 text-white rounded-xl text-sm font-medium transition shadow-sm cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-500`}
                                 >
+                                    {loading ? (<><ButtonSpinner /> <p>Loading</p></>) : (<><FaSave className="w-4 h-4" /><p>Save Changes</p></>)}
+                                </button> */}
+                                <LoadingButton loading={loading} type='button' onClick={handleSubmit} className='flex items-center gap-2 px-6 py-3 bg-[var(--special-purple)] hover:opacity-90 text-white rounded-xl text-sm font-medium transition shadow-sm cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-500'>
                                     <FaSave className="w-4 h-4" /> Save Changes
-                                </button>
+                                </LoadingButton>
                             </div>
 
                         </div>

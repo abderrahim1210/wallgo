@@ -14,6 +14,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\Post;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings;
+use App\Http\Controllers\UpdatePageGroup;
 use App\Models\Group;
 use App\Models\Page;
 use App\Models\Post as ModelsPost;
@@ -106,7 +107,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/groups/create', [GroupController::class, 'store']);
 
-    Route::put('/pages/{id}', [PageController::class, 'update']);
+    Route::put('/pages/{id}', [UpdatePageGroup::class, 'update']);
+    Route::put('/groups/{id}', [UpdatePageGroup::class, 'update']);
 
     Route::post('/pages/follow', [PageController::class, 'follow']);
 

@@ -43,7 +43,7 @@ export const Report: React.FC<ReportProps> = ({ type, id }) => {
 
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                     <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
-                        <AlertTriangle className="w-5 h-5 text-red-500" /> Report Content
+                        <AlertTriangle className="w-5 h-5 text-red-500" /> Report {type}
                     </h3>
                 </div>
 

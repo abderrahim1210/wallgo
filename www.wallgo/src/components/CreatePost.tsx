@@ -8,6 +8,8 @@ import { useAuth } from '../hooks/AuthProvider';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useQuery } from '@tanstack/react-query';
+import ButtonSpinner from '../Icons/ButtonSpinner';
+import LoadingButton from '../Icons/LoadingButton';
 
 interface Post {
     content: string;
@@ -36,6 +38,7 @@ const CreatePost: React.FC<CreatePostProps> = () => {
     const [notification, setNotification] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { user } = useAuth()!;
+    const [loading, setLoading] = useState(false);
     const [post, setPost] = useState<Post>({
         content: '',
         post_type: privacy,
@@ -148,16 +151,19 @@ const CreatePost: React.FC<CreatePostProps> = () => {
             showNotify('Please add some text or an image to post');
             return;
         }
+        setLoading(true);
         try {
             const url = isEditMode ? `${api_url}/posts/${id}/update` : `${api_url}/posts/create`;
             const method = isEditMode ? 'put' : 'post';
             await axios[method](url, post, { withCredentials: true, withXSRFToken: true }).then(res => {
                 if (res.data.success) {
+                    setLoading(false);
                     toast.success(res.data.message || 'Post uploaded successfully');
                     setTimeout(() => {
                         navigate('/account/profile')
                     }, 1000);
                 } else {
+                    setLoading(false);
                     toast.error(res.data.message || 'Upload failed');
                     console.log(res.data.message);
                 }
@@ -371,13 +377,17 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                         }
 
                         <div className="p-4 border-t border-gray-200 bg-gray-50/50 flex justify-end">
-                            <button
+                            {/* <button
                                 type="submit"
                                 className="w-full md:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl transition-colors shadow-sm flex items-center justify-center space-x-2 cursor-pointer"
                             >
                                 <Send className="w-4 h-4" />
                                 <span>{isEditMode ? 'Update' : 'Post'}</span>
-                            </button>
+                            </button> */}
+                            <LoadingButton loading={loading} type="submit">
+                                <Send className="w-4 h-4" />
+                                <span>{isEditMode ? 'Update' : 'Post'}</span>
+                            </LoadingButton>
                         </div>
 
                         {

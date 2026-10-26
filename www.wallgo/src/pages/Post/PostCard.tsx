@@ -1,7 +1,6 @@
-import { AlertTriangle, Bookmark, Edit3, Flag, Heart, Link, MessageCircle, MoreHorizontal, Share2, Trash2, X } from 'lucide-react';
+import { Bookmark, Edit3, Flag, Heart, Link, MessageCircle, MoreHorizontal, Share2, Trash2, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
-import { Toast, type ToastType } from '../../components/Toast';
 import { useModal } from '../../hooks/ModalProvider';
 import ModalTemplate from '../../templates/ModalTemplate';
 import { CommentSection } from '../../components/CommentSection';
@@ -15,6 +14,7 @@ import { Report } from '../../components/Report';
 import { Link as LinkR } from 'react-router-dom'
 import axios from 'axios';
 import { api_url } from '../Auth/getUser';
+import toast from 'react-hot-toast';
 interface PostCardProps {
     post: Post;
     onDelete: (id: number) => void;
@@ -62,15 +62,6 @@ export const PostCard: React.FC<PostCardProps> = ({
         }
     }
 
-    const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
-
-    const triggerToast = (message: string, type: ToastType = 'success') => {
-        setToast({ message, type });
-        setTimeout(() => {
-            setToast(null);
-        }, 3000);
-    };
-
     const isOwner = currentUser?.id === post?.user?.id;
 
     const navigate = useNavigate();
@@ -79,7 +70,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         {
             label: 'Copy link',
             icon: <Link className="w-4 h-4 text-blue-500" />,
-            onClick: () => triggerToast('Copy link', 'success'),
+            onClick: () => toast.success('Copy link'),
         },
 
         ...(isOwner ? [
@@ -113,10 +104,10 @@ export const PostCard: React.FC<PostCardProps> = ({
             const res = await axios.post(`${api_url}/post/save`, { post_id: post?.id, type: 'post' }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 setSaved(true);
-                triggerToast(res.data.message || 'Post saved successfully', 'success');
+                toast.success(res.data.message || 'Post saved successfully');
             } else {
                 setSaved(false);
-                triggerToast(res.data.message || 'Failed to save post', 'error');
+                toast.error(res.data.message || 'Failed to save post');
             }
         } catch (err: any) {
             console.error(err?.response.data);
@@ -173,13 +164,6 @@ export const PostCard: React.FC<PostCardProps> = ({
                     items={postMenuItems}
                 />
 
-                {
-                    toast && (
-                        <Toast message={toast.message}
-                            type={toast.type}
-                            onClose={() => setToast(null)} />
-                    )
-                }
             </div>
 
             <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
@@ -203,7 +187,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             {
                 show === `share-${post?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <ShareDropdown postUrl={window.location.href} />
+                        <ShareDropdown url={window.location.href} />
                     </ModalTemplate>
                 )
             }
@@ -211,7 +195,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             {
                 show === 'report' && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <Report id={post?.id} type='post_id' />
+                        <Report id={post?.id} type='post' />
                     </ModalTemplate>
                 )
             }

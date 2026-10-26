@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
+use App\Models\Page;
 use App\Models\Post;
 use App\Models\Report;
 use App\Models\User;
@@ -29,13 +31,15 @@ class ReportController extends Controller
                     $reportable = User::select('id')->find($request->reportable_id);
                     if (!$reportable) return response()->json(['success' => false, 'message' => "Post by id $request->reportable_id not found"]);
                     break;
+                case 'page':
+                    $reportable = Page::select('id')->find($request->reportable_id);
+                    if (!$reportable) return response()->json(['success' => false, 'message' => "Page by id $request->reportable_id not found"]);
+                    break;
+                case 'group':
+                    $reportable = Group::select('id')->find($request->reportable_id);
+                    if (!$reportable) return response()->json(['success' => false, 'message' => "Group by id $request->reportable_id not found"]);
+                    break;
             }
-
-            // $reportable->reports()->create([
-            //     'user_id' => $user_id,
-            //     'reason' => $request->reason,
-            //     'description' => $request->description
-            // ]);
 
             Report::create([
                 'user_id' => $user_id,

@@ -43,7 +43,8 @@ export const AppRoutes = () => {
             <Route path='/:branch/create' element={<CreatePage />} />
             <Route path='/pages/:id' element={<PageProfile />} />
             <Route path='/groups/:id' element={<GroupeProfile />} />
-            <Route path='/pages/:id/edit' element={<EditPage />} />
+            <Route path='/:type/:id/edit' element={<EditPage />} />
+            <Route path='/:type/:id/edit' element={<EditPage />} />
             <Route path='/error/:code' element={<ErrorPage />} />
             <Route path='*' element={<ErrorPage />} />
             <Route path='/post/:id' element={<PostPreview />} />

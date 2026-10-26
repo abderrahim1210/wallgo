@@ -16,7 +16,7 @@ export interface Group {
     owner_id: number;
     name: string;
     description: string;
-    type: string;
+    visibility: string;
     logo_url: string;
     banner_url: string;
     created_at: string;

@@ -3,15 +3,11 @@ import { FaFacebook, FaTelegram, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 import { FiCheck, FiCopy, FiShare2 } from 'react-icons/fi';
 
 interface ShareDropdownProps {
-    // isOpen: boolean;
-    // onClose: () => void;
     url: string;
 }
 
 const ShareDropdown: React.FC<ShareDropdownProps> = ({ url = window.location.href }) => {
     const [copied, setCopied] = useState(false);
-
-    // if (!isOpen) return null;
 
     const handleCopyLink = () => {
         navigator.clipboard.writeText(url);

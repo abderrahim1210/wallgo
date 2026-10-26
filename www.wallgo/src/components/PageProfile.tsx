@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async';
 import { MainLayout } from '../MainLayout';
 import { PostGrid, type Post } from '../templates/PostGrid';
-import { Check, Pencil, PlusSquare, Settings, Users } from 'lucide-react';
+import { Check, Flag, MoreHorizontal, Pencil, PlusSquare, Settings, Share2, Users } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
@@ -16,6 +16,9 @@ import { PageSettings } from './PageSettings';
 import { useFollowPG } from './useFollowPG';
 import { Skeleton } from '../templates/Skeleton';
 import { ErrorPage } from './ErrorPage';
+import { DropdownMenu, type DropdownItem } from '../templates/DropdownMenu';
+import ShareDropdown from './ShareDropdown';
+import { Report } from './Report';
 
 export interface Page {
     id: number;
@@ -76,6 +79,20 @@ export const PageProfile = () => {
     }
 
     const { show, openModal, closeModal } = useModal()!;
+    const postMenuItems: DropdownItem[] = [
+        {
+            label: 'Share page',
+            icon: <Share2 className="w-4 h-4 text-blue-500" />,
+            onClick: () => openModal(`share-${page?.id}`),
+        },
+
+        {
+            label: 'Report page',
+            icon: <Flag className="w-4 h-4 text-red-500" />,
+            danger: true,
+            onClick: () => openModal(`report-${page?.id}`),
+        },
+    ]
     return (
         <MainLayout>
             <Helmet>
@@ -86,6 +103,22 @@ export const PageProfile = () => {
                 show === 'pages' && (
                     <ModalTemplate show={show} closeModal={closeModal}>
                         <PageSettings page_id={page?.id} type='Page' />
+                    </ModalTemplate>
+                )
+            }
+
+            {
+                show === `share-${page?.id}` && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <ShareDropdown url={window.location.href} />
+                    </ModalTemplate>
+                )
+            }
+
+            {
+                show === `report-${page?.id}` && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <Report id={page?.id} type='page' />
                     </ModalTemplate>
                 )
             }
@@ -144,15 +177,25 @@ export const PageProfile = () => {
                                                 </button>
                                             </div>
                                         ) : (
-                                            <button
-                                                onClick={follow}
-                                                className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${followed
-                                                    ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                    : 'bg-[var(--special-purple)] text-white hover:opacity-90'
-                                                    }`}
-                                            >
-                                                {followed ? <><Check className="w-4 h-4" /> Following</> : 'Follow Page'}
-                                            </button>
+                                            <div className='flex items-center gap-3'>
+                                                <button
+                                                    onClick={follow}
+                                                    className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${followed
+                                                        ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                        : 'bg-[var(--special-purple)] text-white hover:opacity-90'
+                                                        }`}
+                                                >
+                                                    {followed ? <><Check className="w-4 h-4" /> Following</> : 'Follow Page'}
+                                                </button>
+                                                <DropdownMenu
+                                                    trigger={
+                                                        <button className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center">
+                                                            <MoreHorizontal className="w-5 h-5 text-indigo-600" />
+                                                        </button>
+                                                    }
+                                                    items={postMenuItems}
+                                                />
+                                            </div>
                                         )
                                     }
                                 </div>
