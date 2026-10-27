@@ -42,6 +42,7 @@ export interface Post {
     };
     postable_type: string;
     is_saved: boolean;
+    visibility:'private'|'public'
 };
 
 interface PostGridProps {
@@ -57,45 +58,12 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts, suggested_follow }) =
     }
 
     const isLoading = false;
-    const api_url = 'https://api.wallgo.test';
-    const navigate = useNavigate();
-
-    const deletePost = async (id: number) => {
-        if (!id) return toast.error('Post ID not found');
-        try {
-            Swal.fire({
-                icon: "question",
-                title: "Delete post",
-                text: "Are you sure to delete this post ?",
-                confirmButtonColor: "#DB5461",
-                confirmButtonText: "Yes",
-                cancelButtonText: "No",
-                showConfirmButton: true,
-                showCancelButton: true
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    const res = await axios.delete(`${api_url}/posts/${id}`, { withCredentials: true, withXSRFToken: true });
-                    if (res.data.success) {
-                        toast.success('Post deleted !');
-                        setTimeout(() => {
-                            navigate('/account/profile');
-                        }, 1000);
-                    } else {
-                        toast.error('Failed to delete post');
-                        console.log(res.data.message);
-                    }
-                }
-            })
-        } catch (err: any) {
-            console.log(err?.response?.data);
-        }
-    }
 
     return (
         <div className="gap-1 md:gap-2">
             {isLoading ? Array(4).fill(0).map((_, i) => <Skeleton type='post' key={i} />) : posts.length > 0 ? posts.map((post, index) => (
                 <React.Fragment key={index}>
-                    <PostCard key={post.id} post={post} onDelete={deletePost} />
+                    <PostCard key={post.id} post={post} />
                     {(index + 1) % 6 === 0 && suggested_follow && suggested_follow.length > 0 && (
                         <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm my-2 lg:hidden">
                             <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">

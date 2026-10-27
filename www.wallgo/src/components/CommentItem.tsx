@@ -132,7 +132,10 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, openR
         {
             label: 'Copy Comment',
             icon: <Link className="w-4 h-4 text-blue-500" />,
-            onClick: () => { return },
+            onClick: () => {
+                navigator.clipboard.writeText(comment?.content);
+                toast.success('Comment copied successfully');
+            },
         },
 
         ...(isOwner ? [

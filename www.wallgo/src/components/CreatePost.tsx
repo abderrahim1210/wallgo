@@ -20,7 +20,8 @@ interface Post {
     capsule_status?: string;
     media_url?: string;
     postable_id?: number;
-    postable_type?: string
+    postable_type?: string,
+    visibility: string;
 }
 
 interface CreatePostProps {
@@ -39,6 +40,7 @@ const CreatePost: React.FC<CreatePostProps> = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { user } = useAuth()!;
     const [loading, setLoading] = useState(false);
+    const [visibility, setVisibility] = useState<'private' | 'public'>('public');
     const [post, setPost] = useState<Post>({
         content: '',
         post_type: privacy,
@@ -46,7 +48,8 @@ const CreatePost: React.FC<CreatePostProps> = () => {
         expires_at: '',
         unlock_time: '',
         capsule_status: '',
-        media_url: ''
+        media_url: '',
+        visibility: visibility,
     });
     const showNotify = (msg: string) => {
         setNotification(msg);
@@ -128,14 +131,20 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                 expires_at: data.post.expires_at || '',
                 unlock_time: data.post.unlock_time || '',
                 capsule_status: data.post.capsule_status || '',
-                media_url: data.post.media_url || ''
+                media_url: data.post.media_url || '',
+                visibility: data.post.visibility || 'public'
             });
             setPrivacy(data.post.post_type || 'regular');
+            setVisibility(data.post.visibility || 'public');
             if (data.post.media_url) {
                 setSelectedImage(data.post.media_url);
             }
         }
     }, [data]);
+
+    useEffect(() => {
+        setPost(prev => ({...prev, visibility:visibility}));
+    },[visibility]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setPost(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -193,7 +202,8 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                 expires_at: '',
                 unlock_time: '',
                 capsule_status: '',
-                media_url: ''
+                media_url: '',
+                visibility:'public'
             });
         }
     }, [id]);
@@ -240,6 +250,23 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                             <div>
                                 <h4 className="text-sm font-semibold text-gray-900">{user?.username}</h4>
                                 <div className="flex items-center space-x-1 mt-0.5">
+                                    <button
+                                        type="button"
+                                        onClick={() => setVisibility(visibility === 'public' ? 'private' : 'public')}
+                                        className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                                    >
+                                        {visibility === 'public' ? (
+                                            <>
+                                                <Globe className="w-3 h-3 text-blue-600" />
+                                                <span>Public</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Lock className="w-3 h-3 text-gray-600" />
+                                                <span>Private</span>
+                                            </>
+                                        )}
+                                    </button>
                                     <button
                                         type="button"
                                         onClick={() => setPrivacy(privacy === 'regular' ? 'time_capsule' : 'regular')}
@@ -377,13 +404,6 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                         }
 
                         <div className="p-4 border-t border-gray-200 bg-gray-50/50 flex justify-end">
-                            {/* <button
-                                type="submit"
-                                className="w-full md:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl transition-colors shadow-sm flex items-center justify-center space-x-2 cursor-pointer"
-                            >
-                                <Send className="w-4 h-4" />
-                                <span>{isEditMode ? 'Update' : 'Post'}</span>
-                            </button> */}
                             <LoadingButton loading={loading} type="submit">
                                 <Send className="w-4 h-4" />
                                 <span>{isEditMode ? 'Update' : 'Post'}</span>

@@ -10,6 +10,7 @@ import { PostCard } from '../pages/Post/PostCard'
 import { Skeleton } from '../templates/Skeleton'
 import { ErrorPage } from './ErrorPage'
 import Spinner from '../templates/Spinner'
+import { CommentSection } from './CommentSection'
 
 export const PostPreview = () => {
     const { id } = useParams();
@@ -46,16 +47,17 @@ export const PostPreview = () => {
                     </div>
                 ) : (
                     <div className='max-w-xl mx-auto px-4 py-6'>
-                <button
-                    onClick={() => navigate(-1)}
-                    className="text-slate-400 transition-colors p-2 rounded-xl hover:bg-white/5 flex items-center space-x-1.5 font-medium group cursor-pointer"
-                >
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-                    <span>Back</span>
-                </button>
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="text-slate-400 transition-colors p-2 rounded-xl hover:bg-white/5 flex items-center space-x-1.5 font-medium group cursor-pointer"
+                        >
+                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                            <span>Back</span>
+                        </button>
 
-                <PostCard post={post} onDelete={() => { }} />
-            </div>
+                        <PostCard post={post} />
+                        <CommentSection postId={post?.id} setOpenModal={() => {}} />
+                    </div>
                 )
             }
         </MainLayout>

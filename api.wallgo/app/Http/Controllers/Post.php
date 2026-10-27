@@ -24,7 +24,8 @@ class Post extends Controller
             'capsule_status' => ['nullable', 'string', 'in:published,active'],
             'media_url' => ['nullable', 'string'],
             'postable_id' => ['nullable', 'integer'],
-            'postable_type' => ['nullable', 'string', 'in:page,group']
+            'postable_type' => ['nullable', 'string', 'in:page,group'],
+            'visibility' => ['nullable','string','in:public,private']
         ]);
 
         $data = $request->all();
@@ -84,6 +85,7 @@ class Post extends Controller
                 'unlock_time' => $data['unlock_time'] ?? null,
                 'capsule_status' => $data['capsule_status'] ?? null,
                 'media_url' => $data['media_url'] ?? null,
+                'visibility' => $data['visibility'],
                 'postable_id' => $postable->id ?? null,
                 'postable_type' => $postable ? get_class($postable) : null
             ]);
@@ -113,7 +115,7 @@ class Post extends Controller
                     $q->where('id', $user_id);
                 }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
                     $q->where('user_id', $user_id);
-                }])->latest()->get();
+                }])->where('visibility','public')->latest()->get();
                 return response()->json([
                     'success' => true,
                     'posts' => $posts

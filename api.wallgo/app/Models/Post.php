@@ -20,7 +20,8 @@ class Post extends Model
         'is_published',
         'media_url',
         'postable_id',
-        'postable_type'
+        'postable_type',
+        'visibility'
     ];
 
     public function user()

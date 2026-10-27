@@ -1,4 +1,4 @@
-import { Bookmark, Edit3, Flag, Heart, Link, MessageCircle, MoreHorizontal, Share2, Trash2, X } from 'lucide-react';
+import { Bookmark, Edit3, Flag, Globe, Heart, Link, Lock, MessageCircle, MoreHorizontal, Share2, Trash2, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
 import { useModal } from '../../hooks/ModalProvider';
@@ -16,13 +16,12 @@ import axios from 'axios';
 import { api_url } from '../Auth/getUser';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
+import Swal from 'sweetalert2';
 interface PostCardProps {
     post: Post;
-    onDelete: (id: number) => void;
 }
 export const PostCard: React.FC<PostCardProps> = ({
     post,
-    onDelete
 }) => {
     const [liked, setLiked] = useState<boolean>(post?.is_liked);
     const [likes, setLikes] = useState(Number(post?.likes_count));
@@ -67,11 +66,45 @@ export const PostCard: React.FC<PostCardProps> = ({
 
     const navigate = useNavigate();
 
+    const deletePost = async (id: number) => {
+        if (!id) return toast.error('Post ID not found');
+        try {
+            Swal.fire({
+                icon: "question",
+                title: "Delete post",
+                text: "Are you sure to delete this post ?",
+                confirmButtonColor: "#DB5461",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const res = await axios.delete(`${api_url}/posts/${id}`, { withCredentials: true, withXSRFToken: true });
+                    if (res.data.success) {
+                        toast.success('Post deleted !');
+                        setTimeout(() => {
+                            navigate('/account/profile');
+                        }, 1000);
+                    } else {
+                        toast.error('Failed to delete post');
+                        console.log(res.data.message);
+                    }
+                }
+            })
+        } catch (err: any) {
+            console.log(err?.response?.data);
+        }
+    }
+
     const postMenuItems: DropdownItem[] = [
         {
             label: 'Copy link',
             icon: <Link className="w-4 h-4 text-blue-500" />,
-            onClick: () => toast.success('Copy link'),
+            onClick: () => {
+                navigator.clipboard.writeText(`${window.location.href}post/${post?.id}`);
+                toast.success('Copy link')
+            }
         },
 
         ...(isOwner ? [
@@ -84,7 +117,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 label: 'Delete Post',
                 icon: <Trash2 className="w-4 h-4 text-red-500" />,
                 danger: true,
-                onClick: () => onDelete(post?.id),
+                onClick: () => deletePost(post?.id),
             },
         ] : []),
         ...(!isOwner ? [
@@ -109,10 +142,11 @@ export const PostCard: React.FC<PostCardProps> = ({
             console.error(err?.response.data);
         }
     }
+
     return (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
-            <div className="flex items-center justify-between p-4 pb-3 cursor-pointer hover:bg-gray-200 transition-all rounded-t-2xl" onClick={() => navigate(`/post/${post?.id}`)}>
-                <div className="flex items-center space-x-3">
+            <div className="flex items-center justify-between p-4 pb-3 hover:bg-gray-200 transition-all rounded-t-2xl">
+                <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate(`/post/${post?.id}`)}>
                     {
                         post?.postable ? (
                             <img
@@ -146,9 +180,15 @@ export const PostCard: React.FC<PostCardProps> = ({
                                 )
                             }
                         </h4>
-                        <span className="text-xs text-gray-500">
-                            {!post?.postable && `@${post?.user.username} • `} {moment(post?.created_at).fromNow()}
-                        </span>
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
+                            {!post?.postable && (
+                                <span>@{post?.user.username}</span>
+                            )}
+                            <span>•</span>
+                            <span>{moment(post?.created_at).fromNow()}</span>
+                            <span>•</span>
+                            {post?.visibility === 'public' ? <Globe className='w-3.5 h-3.5' /> : <Lock className='w-3.5 h-3.5' />}
+                        </div>
                     </div>
                 </div>
                 <DropdownMenu
@@ -236,7 +276,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 </button>
             </div>
             {selectedPost && (
-                <SelectedPosts post={selectedPost} onClose={() => setSelectedPost(null)} onDelete={onDelete} />
+                <SelectedPosts post={selectedPost} onClose={() => setSelectedPost(null)} onDelete={deletePost} />
             )}
         </div>
     )
