@@ -99,6 +99,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/my_posts', [GetUser::class, 'getPosts']);
 
+    Route::get('/get_posts/{id?}', [GetUser::class, 'getPosts']);
+
     Route::get('/pages', [PageController::class, 'index']);
 
     Route::get('/groups', [GroupController::class, 'index']);

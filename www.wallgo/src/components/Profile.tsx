@@ -1,7 +1,7 @@
 import React, { useEffect, useState, type FC } from 'react'
 import { MainLayout } from '../MainLayout'
 import { FaCalendarAlt, FaCamera, FaEnvelope, FaGlobe, FaMapMarkerAlt, FaPhone, FaUserEdit, FaUsers, FaVenusMars } from 'react-icons/fa'
-import { PostGrid } from '../templates/PostGrid'
+import { PostGrid, type Post } from '../templates/PostGrid'
 import { Helmet } from 'react-helmet-async'
 import { FiCalendar, FiHeart, FiMapPin } from 'react-icons/fi'
 import { Edit3, Flag, Link, MoreHorizontal, Pencil, PlusSquare, Settings, Share, Share2, Trash2, Users, VenusAndMars } from 'lucide-react'
@@ -9,7 +9,7 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import ModalTemplate from '../templates/ModalTemplate'
 import { useModal } from '../hooks/ModalProvider'
 import axios from 'axios'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query'
 import { EmptyContent } from './EmptyContent'
 import { useAuth } from '../hooks/AuthProvider'
 import toast from 'react-hot-toast'
@@ -66,17 +66,41 @@ export const Profile = () => {
         }
     }
 
+    const fetchPosts = async () => {
+        try {
+            const url = id ? `${api_url}/get_posts/${id}` : `${api_url}/get_posts`;
+            const res = await axios.get(url, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) return res.data.posts;
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
+
     const { data, isLoading, isError } = useQuery({
         queryKey: ['user_data'],
         queryFn: fetchInfos,
     });
+
+    const { data: ps, isLoading: postsLoading, isError: postsError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+        queryKey: ['posts'],
+        queryFn: fetchPosts,
+        getNextPageParam: (lastPage: any) => {
+            if (lastPage.current_page < lastPage.last_page) {
+                return lastPage.current_page + 1;
+            }
+            return undefined;
+        },
+        initialPageParam: 1
+    });
+    const posts_list: Post[] = ps?.pages.flatMap((page: any) => page?.data || []) || [];
+
 
 
     const profile: User = data?.user;
     const stats = data?.stats || [];
     const followers = data?.followers_list || [];
     const followings = data?.followings_list || [];
-    const posts_list = data?.posts_list || [];
+    // const posts_list = data?.posts_list || [];
 
     const { add_follow } = useFollow();
     const set_follow = (following_id: number) => {
@@ -290,7 +314,7 @@ export const Profile = () => {
                                 !posts_list ? (
                                     <Spinner text='Wait a few seconds to get all posts ...' type='mini' />
                                 ) : (
-                                    <PostGrid posts={posts_list} />
+                                    <PostGrid isLoading={postsLoading} posts={posts_list} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} />
                                 )
                             }
                         </div>

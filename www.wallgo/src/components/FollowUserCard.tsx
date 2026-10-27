@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import type { User } from './Home'
 import { useFollow } from './useFollow';
+import { useNavigate } from 'react-router-dom';
 
 interface FollowUserCardProps {
     user: User;
@@ -14,6 +15,7 @@ const FollowUserCard: React.FC<FollowUserCardProps> = ({ user }) => {
         add_follow(user_id);
         setFollow(prev => !prev);
     }
+    const navigate = useNavigate();
     return (
         <div
             key={user.id}
@@ -24,7 +26,7 @@ const FollowUserCard: React.FC<FollowUserCardProps> = ({ user }) => {
                 alt={user.name}
                 className="w-12 h-12 rounded-full object-cover mb-2 border border-white shadow-sm"
             />
-            <h4 className="text-xs font-bold text-gray-800 truncate w-full">{user.name}</h4>
+            <h4 className="text-xs font-bold text-gray-800 truncate w-full cursor-pointer" onClick={() => navigate(`/profile/${user?.id}/${user?.username}`)}>{user.name}</h4>
             <span className="text-[10px] text-gray-400 truncate w-full mb-3">@{user.username}</span>
 
             <button
