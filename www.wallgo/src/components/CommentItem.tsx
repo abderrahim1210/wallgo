@@ -30,7 +30,10 @@ export interface Comment {
         username: string;
         avatar_url: string;
     }
-    replies?: Comment[]
+    replies?: Comment[],
+    fetchNextPage: () => void;
+    hasNextPage: boolean;
+    isFetchingNextPage: boolean;
 }
 
 interface CommentItemProps {

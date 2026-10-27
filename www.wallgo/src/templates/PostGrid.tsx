@@ -1,14 +1,9 @@
 import { Album, FileText, Heart, MessageSquare, PaperBag } from 'lucide-react';
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { SelectedPosts } from '../components/SelectedPosts';
 import { EmptyContent } from '../components/EmptyContent';
 import { PostCard } from '../pages/Post/PostCard';
-import toast from 'react-hot-toast';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { Skeleton } from './Skeleton';
-import { useFollow } from '../components/useFollow';
 import FollowUserCard from '../components/FollowUserCard';
 
 interface User {
@@ -42,22 +37,46 @@ export interface Post {
     };
     postable_type: string;
     is_saved: boolean;
-    visibility:'private'|'public'
+    visibility: 'private' | 'public'
 };
 
 interface PostGridProps {
     posts: Post[];
+    isLoading: boolean;
+    fetchNextPage: () => void;
+    hasNextPage: boolean;
+    isFetchingNextPage: boolean;
     suggested_follow?: User[];
 };
 
-export const PostGrid: React.FC<PostGridProps> = ({ posts, suggested_follow }) => {
+export const PostGrid: React.FC<PostGridProps> = ({ posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, suggested_follow }) => {
     if (posts?.length === 0) {
         return (
             <EmptyContent text='No posts found it - try again later !' icon={<Album />} />
         )
     }
 
-    const isLoading = false;
+    const observerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const currentRef = observerRef.current;
+        if (!currentRef) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+                    fetchNextPage();
+                }
+            },
+            { threshold: 1.0 }
+        );
+
+        observer.observe(currentRef);
+
+        return () => {
+            if (currentRef) observer.unobserve(currentRef);
+        };
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     return (
         <div className="gap-1 md:gap-2">
@@ -80,7 +99,15 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts, suggested_follow }) =
                 </React.Fragment>
 
             )) : (
-                <EmptyContent text='No photos yet ' icon={<PaperBag />} />
+                <EmptyContent text='No posts yet ' icon={<FileText />} />
+            )}
+
+            <div ref={observerRef} className="h-10"></div>
+
+            {!hasNextPage && posts.length > 0 && (
+                <div className="text-center py-6 text-xs text-gray-400 font-medium uppercase tracking-wider">
+                    You've reached the end!
+                </div>
             )}
         </div>
     )

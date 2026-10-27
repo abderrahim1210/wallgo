@@ -85,7 +85,7 @@ class CommentController extends Controller
         try {
             $comments = Comment::with(['user', 'replies.user'])->withCount(['likes'])->withExists(['likes as is_liked' => function ($q) use ($post_id) {
                 $q->where('post_id', $post_id);
-            }])->where('post_id', $post_id)->whereNull('reply_to')->latest()->get();
+            }])->where('post_id', $post_id)->whereNull('reply_to')->latest()->paginate(10);
             return response()->json(['success' => true, 'comments' => $comments]);
         } catch (\Exception $e) {
             return response()->json([

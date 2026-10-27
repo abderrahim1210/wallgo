@@ -7,7 +7,7 @@ import { CommentSection } from '../../components/CommentSection';
 import ShareDropdown from '../../components/ShareDropdown';
 import moment from 'moment';
 import { useAuth } from '../../hooks/AuthProvider';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import type { Post } from '../../templates/PostGrid';
 import { SelectedPosts } from '../../components/SelectedPosts';
 import { Report } from '../../components/Report';
@@ -143,6 +143,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         }
     }
 
+    const loacation = useLocation();
     return (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
             <div className="flex items-center justify-between p-4 pb-3 hover:bg-gray-200 transition-all rounded-t-2xl">
@@ -213,9 +214,9 @@ export const PostCard: React.FC<PostCardProps> = ({
             )}
 
             {
-                show === `comments_${post?.id}` && (
+                (show === `comments-${post?.id}-post`) && (location.pathname !== `/post/${post?.id}`) && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <CommentSection postId={post?.id} setOpenModal={setOpenReport} />
+                        <CommentSection key={post?.id} postId={post?.id} setOpenModal={setOpenReport} />
                     </ModalTemplate>
                 )
             }
@@ -257,7 +258,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                         <span className="text-xs font-semibold text-gray-700">{likes || post?.likes_count}</span>
                     </button>
 
-                    <button onClick={() => openModal(`comments_${post?.id}`)} className="flex items-center space-x-2 text-gray-600 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">
+                    <button onClick={() => openModal(`comments-${post?.id}-post`)} className="flex items-center space-x-2 text-gray-600 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">
                         <MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-semibold text-gray-700">{post?.comments_count}</span>
                     </button>

@@ -115,7 +115,7 @@ class Post extends Controller
                     $q->where('id', $user_id);
                 }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
                     $q->where('user_id', $user_id);
-                }])->where('visibility','public')->latest()->get();
+                }])->where('visibility','public')->latest()->paginate(10);
                 return response()->json([
                     'success' => true,
                     'posts' => $posts

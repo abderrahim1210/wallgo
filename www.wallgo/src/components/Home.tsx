@@ -7,7 +7,7 @@ import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
 import axios from 'axios';
 import type { Post } from '../templates/PostGrid';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PostGrid } from '../templates/PostGrid';
 import toast from 'react-hot-toast';
 import { useFollow } from './useFollow';
@@ -24,9 +24,9 @@ export type User = {
 export const Home = () => {
   const api_url = 'https://api.wallgo.test';
 
-  const fetchPosts = async (): Promise<Post[]> => {
+  const fetchPosts = async ({pageParam=1}): Promise<Post[]> => {
     try {
-      const res = await axios.get(`${api_url}/posts`, { withCredentials: true, withXSRFToken: true });
+      const res = await axios.get(`${api_url}/posts?page=${pageParam}`, { withCredentials: true, withXSRFToken: true });
       return res.data.success ? res.data.posts : [];
     } catch (err: any) {
       console.log(err?.response?.data?.message);
@@ -34,10 +34,18 @@ export const Home = () => {
     }
   }
 
-  const { data: posts = [], isLoading:postsLoading, isError:postsError } = useQuery({
+  const { data:ps, isLoading:postsLoading, isError:postsError, fetchNextPage,hasNextPage,isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['posts'],
     queryFn: fetchPosts,
+    getNextPageParam:(lastPage:any) => {
+      if (lastPage.current_page < lastPage.last_page){
+        return lastPage.current_page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam:1
   });
+  const posts: Post[] = ps?.pages.flatMap((page: any) => page?.data || []) || [];
 
   const navigate = useNavigate();
   const fetchInfos = async () => {
@@ -305,8 +313,10 @@ export const Home = () => {
               {
                 postsLoading ? (
                   <Spinner text='Fetching posts ...' type='mini' />
+                ) : postsError ? (
+                  <ErrorPage codeP='500' />
                 ) : (
-                  <PostGrid posts={posts} suggested_follow={users} />
+                  <PostGrid posts={posts} isLoading={postsLoading} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} suggested_follow={users} />
                 )
               }
             </div>

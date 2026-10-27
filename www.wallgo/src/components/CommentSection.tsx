@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { FiSend } from 'react-icons/fi';
 import { CommentItem, type Comment } from './CommentItem';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
 import toast from 'react-hot-toast';
@@ -12,39 +12,74 @@ import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
 import { Report } from './Report';
 import { ErrorPage } from './ErrorPage';
+import LoadingButton from '../Icons/LoadingButton';
 
 interface CommentSectionProps {
     postId: number;
     setOpenModal: (isopen: boolean) => void;
 }
 export const CommentSection: React.FC<CommentSectionProps> = ({ postId, setOpenModal }) => {
-    const fetchComments = async () => {
+    const fetchComments = async ({ pageParam = 1 }) => {
         try {
-            const res = await axios.get(`${api_url}/comments/${postId}`, { withCredentials: true, withXSRFToken: true });
-            if (res.data.success) return res.data.comments;
+            const res = await axios.get(`${api_url}/comments/${postId}?page=${pageParam}`, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) return res.data.comments || null;
         } catch (err: any) {
             console.error(err?.response.data);
         }
     }
 
-    const { data: comments = [], isLoading, isError } = useQuery({
+    const { data: cs, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
         queryKey: ['comments', postId],
         queryFn: fetchComments,
-        enabled: !!postId,
-        staleTime: 1000 * 60 * 5
+        getNextPageParam: (lastPage: any) => {
+            if (lastPage.current_page < lastPage.last_page) {
+                return lastPage.current_page + 1;
+            }
+            return undefined;
+        },
+        initialPageParam: 1
     });
+
+    const comments: Comment[] = cs?.pages.flatMap((page: any) => page?.data || []) || [];
+
+    const observerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const currentRef = observerRef.current;
+        if (!currentRef) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+                    fetchNextPage();
+                }
+            },
+            { threshold: 1.0 }
+        );
+
+        observer.observe(currentRef);
+
+        return () => {
+            if (currentRef) observer.unobserve(currentRef);
+        };
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
 
     const [newComment, setNewComment] = useState('');
     const queryClient = useQueryClient();
+    const [loading, setLoading] = useState(false);
     const handleAddComment = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newComment.trim()) return;
+        setLoading(true);
         try {
             const res = await axios.post(`${api_url}/comments/create`, { post_id: postId, content: newComment }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
+                setLoading(false);
                 toast.success(res.data.message || 'Comment added successfully');
                 queryClient.invalidateQueries({ queryKey: ['comments'] });
             } else {
+                setLoading(false);
                 toast.error(res.data.message || 'Failed to add comment');
                 console.error(res.data.message);
             }
@@ -71,6 +106,14 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId, setOpenM
                         <EmptyContent text=' No comments yet. Be the first to comment!' icon={<FaComments />} />
                     </div>
                 )}
+
+                <div ref={observerRef} className="h-10"></div>
+
+                {!hasNextPage && comments.length > 0 && (
+                    <div className="text-center text-xs text-gray-400 font-medium uppercase tracking-wider">
+                        You've reached the end!
+                    </div>
+                )}
             </div>
 
             <form onSubmit={handleAddComment} className="p-3 bg-gray-50 border-t border-gray-100 flex items-center gap-2">
@@ -81,12 +124,9 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId, setOpenM
                     placeholder="Write a comment..."
                     className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-2.5  text-gray-800 focus:outline-none focus:border-[var(--special-purple)] transition"
                 />
-                <button
-                    type="submit"
-                    className="bg-[var(--special-purple)] text-white p-2.5 rounded-xl hover:opacity-90 transition shadow-sm shrink-0 flex items-center justify-center cursor-pointer"
-                >
+                <LoadingButton type='submit' loading={loading} className="bg-[var(--special-purple)] text-white p-2.5 rounded-xl hover:opacity-90 transition shadow-sm shrink-0 flex items-center justify-center cursor-pointer">
                     <FiSend className="w-5 h-5" />
-                </button>
+                </LoadingButton>
             </form>
 
         </div>

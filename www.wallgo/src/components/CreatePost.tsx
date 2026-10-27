@@ -138,13 +138,15 @@ const CreatePost: React.FC<CreatePostProps> = () => {
             setVisibility(data.post.visibility || 'public');
             if (data.post.media_url) {
                 setSelectedImage(data.post.media_url);
+            } else {
+                setSelectedImage(null);
             }
         }
     }, [data]);
 
     useEffect(() => {
-        setPost(prev => ({...prev, visibility:visibility}));
-    },[visibility]);
+        setPost(prev => ({ ...prev, visibility: visibility }));
+    }, [visibility]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setPost(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -203,7 +205,7 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                 unlock_time: '',
                 capsule_status: '',
                 media_url: '',
-                visibility:'public'
+                visibility: 'public'
             });
         }
     }, [id]);

@@ -58,7 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
             ]);
         }
         try {
-            $post = ModelsPost::indOrFail($id);
+            $post = ModelsPost::findOrFail($id);
             return response()->json([
                 'success' => true,
                 'post' => $post
