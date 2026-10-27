@@ -94,4 +94,26 @@ class CommentController extends Controller
             ]);
         }
     }
+
+    public function destroy(string $id)
+    {
+        $user_id = Auth::id();
+        if (!$user_id) return response()->json(['success' => false, 'message' => 'User not found'], 401);
+        if (!$id) return response()->json(['success' => false, 'message' => 'Id required'], 404);
+        $comment = Comment::find($id);
+        if (!$comment) return response()->json(['success' => false, 'message' => 'Comment not found'], 404);
+        if ($user_id !== $comment->user_id) return response()->json(['success' => false, 'message' => "You don't have a permession for delete this comment"]);
+        try {
+            $comment->delete();
+            return response()->json([
+                'success' => true,
+                'message' => "Comment deleted successfully"
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

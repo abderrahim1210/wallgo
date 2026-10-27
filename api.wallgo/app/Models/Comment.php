@@ -33,4 +33,15 @@ class Comment extends Model
     {
         return $this->hasMany(Comment::class, 'reply_to')->with(['user', 'replies.user'])->withCount('likes');
     }
+
+    protected static function booted()
+    {
+        static::deleting(function ($comment) {
+            $comment->reports()->delete();
+            $comment->likes()->delete();
+            foreach ($comment->replies as $r) {
+                $r->delete();
+            }
+        });
+    }
 }

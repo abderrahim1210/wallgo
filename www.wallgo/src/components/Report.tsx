@@ -2,11 +2,13 @@ import axios from 'axios'
 import { AlertTriangle } from 'lucide-react'
 import React, { useState, type ChangeEvent } from 'react'
 import toast from 'react-hot-toast'
+import LoadingButton from '../Icons/LoadingButton';
+import { useModal } from '../hooks/ModalProvider';
 
 
 interface ReportProps {
-    type: 'post' | 'page' | 'user' | 'group';
-    id: number
+    type: 'post' | 'page' | 'user' | 'group' | 'comment';
+    id: number,
 }
 export const Report: React.FC<ReportProps> = ({ type, id }) => {
     const [data, setData] = useState({
@@ -16,20 +18,25 @@ export const Report: React.FC<ReportProps> = ({ type, id }) => {
         description: '',
     });
 
+    const [loading, setLoading] = useState(false);
+    const { closeModal } = useModal()!;
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         setData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     }
     const api_url = 'https://api.wallgo.test';
     const send_report = async (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setLoading(true);
         try {
             const res = await axios.post(`${api_url}/send_report`, data, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
+                setLoading(false);
                 toast.success(res.data.message || 'Report added successfully');
                 setTimeout(() => {
                     window.location.reload();
                 }, 1000);
             } else {
+                setLoading(false);
                 toast.error(res.data.message || 'Report failed to send');
                 console.error(res.data.message);
             }
@@ -84,18 +91,9 @@ export const Report: React.FC<ReportProps> = ({ type, id }) => {
                     </div>
 
                     <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-                        <button
-                            type="button"
-                            className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            className="px-5 py-2 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-xl shadow-md transition-colors cursor-pointer disabled:opacity-50"
-                        >
+                        <LoadingButton loading={loading} type='submit' className="px-5 py-2 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-xl shadow-md transition-colors cursor-pointer disabled:opacity-50">
                             Submit
-                        </button>
+                        </LoadingButton>
                     </div>
 
                 </form>

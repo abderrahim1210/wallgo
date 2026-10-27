@@ -8,6 +8,11 @@ import { FiSend } from 'react-icons/fi';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/AuthProvider';
 import { DropdownMenu, type DropdownItem } from '../templates/DropdownMenu';
+import { useModal } from '../hooks/ModalProvider';
+import ModalTemplate from '../templates/ModalTemplate';
+import { Report } from './Report';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 export interface Comment {
     id: number;
@@ -31,9 +36,10 @@ export interface Comment {
 interface CommentItemProps {
     comment: Comment;
     postId?: number;
+    openReport: (isopen: boolean) => void;
 }
 
-export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => {
+export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, openReport }) => {
     const navigate = useNavigate();
     const [addReplay, setAddReplay] = useState(false);
     const [replyContent, setReplyContent] = useState('');
@@ -41,6 +47,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
     const { user } = useAuth()!;
     const [edit, setEdit] = useState(false);
     const [newContent, setNewContent] = useState(comment?.content);
+    const { closeModal } = useModal()!;
     useEffect(() => {
         setLiked(Boolean(comment?.is_liked));
     }, [comment?.is_liked]);
@@ -95,6 +102,32 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
     }
 
     const isOwner = user?.id === comment?.user.id;
+    const handleDelete = async () => {
+        Swal.fire({
+            title: "Delete comment",
+            text: `Are you sure for delete this comment ?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes , delete it',
+            confirmButtonColor: '#7371FC',
+            cancelButtonText: 'Cancel'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const res = await axios.delete(`${api_url}/comments/${comment?.id}`, { withCredentials: true, withXSRFToken: true });
+                    if (res.data.success) {
+                        toast.success(res.data.message || 'Comment deleted successfully');
+                        queryClient.invalidateQueries({ queryKey: ['comments'] });
+                    } else {
+                        toast.error(res.data.message || 'Failed to delete comment');
+                        console.log(res.data.message);
+                    }
+                } catch (err: any) {
+                    console.error(err?.response.data);
+                }
+            }
+        })
+    }
     const commentMenuItems: DropdownItem[] = [
         {
             label: 'Copy Comment',
@@ -112,7 +145,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
                 label: 'Delete Comment',
                 icon: <Trash2 className="w-4 h-4 text-red-500" />,
                 danger: true,
-                onClick: () => { return },
+                onClick: handleDelete,
             },
         ] : []),
         ...(!isOwner ? [
@@ -120,7 +153,12 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
                 label: 'Report Comment',
                 icon: <Flag className="w-4 h-4 text-red-500" />,
                 danger: true,
-                onClick: () => { return },
+                onClick: () => {
+                    closeModal?.();
+                    setTimeout(() => {
+                        openReport(true);
+                    }, 50);
+                },
             },
         ] : [])
     ];
@@ -198,7 +236,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId }) => 
                         {comment?.replies && comment.replies.length > 0 && (
                             <div className="pl-4 mt-3 border-l-2 border-gray-100 space-y-3">
                                 {comment.replies.map((reply: Comment) => (
-                                    <CommentItem key={reply.id} comment={reply} postId={postId} />
+                                    <CommentItem key={reply.id} comment={reply} postId={postId} openReport={openReport} />
                                 ))}
                             </div>
                         )}

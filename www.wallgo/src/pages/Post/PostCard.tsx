@@ -15,6 +15,7 @@ import { Link as LinkR } from 'react-router-dom'
 import axios from 'axios';
 import { api_url } from '../Auth/getUser';
 import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 interface PostCardProps {
     post: Post;
     onDelete: (id: number) => void;
@@ -23,7 +24,7 @@ export const PostCard: React.FC<PostCardProps> = ({
     post,
     onDelete
 }) => {
-    const [liked, setLiked] = useState(false);
+    const [liked, setLiked] = useState<boolean>(post?.is_liked);
     const [likes, setLikes] = useState(Number(post?.likes_count));
     useEffect(() => {
         if (post) {
@@ -97,18 +98,13 @@ export const PostCard: React.FC<PostCardProps> = ({
     ];
 
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+    const [openReport, setOpenReport] = useState(false);
 
     const handleSavePost = async () => {
         if (!post) return null;
+        setSaved(prev => !prev);
         try {
-            const res = await axios.post(`${api_url}/post/save`, { post_id: post?.id, type: 'post' }, { withCredentials: true, withXSRFToken: true });
-            if (res.data.success) {
-                setSaved(true);
-                toast.success(res.data.message || 'Post saved successfully');
-            } else {
-                setSaved(false);
-                toast.error(res.data.message || 'Failed to save post');
-            }
+            await axios.post(`${api_url}/post/save`, { post_id: post?.id, type: 'post' }, { withCredentials: true, withXSRFToken: true });
         } catch (err: any) {
             console.error(err?.response.data);
         }
@@ -179,7 +175,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             {
                 show === `comments_${post?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <CommentSection postId={post?.id} />
+                        <CommentSection postId={post?.id} setOpenModal={setOpenReport} />
                     </ModalTemplate>
                 )
             }
@@ -200,6 +196,14 @@ export const PostCard: React.FC<PostCardProps> = ({
                 )
             }
 
+            {
+                openReport && (
+                    <ModalTemplate show={openReport} closeModal={() => setOpenReport(false)}>
+                        <Report id={post?.id} type='comment' />
+                    </ModalTemplate>
+                )
+            }
+
             <div className="px-4 py-3 flex items-center justify-between border-t border-gray-50 mt-1">
                 <div className="flex items-center space-x-6">
                     <button
@@ -210,7 +214,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                             className={`w-6 h-6 transition-transform active:scale-125 ${liked || post?.is_liked ? 'text-red-500 fill-red-500' : 'group-hover:scale-110'
                                 }`}
                         />
-                        <span className="text-xs font-semibold text-gray-700">{likes}</span>
+                        <span className="text-xs font-semibold text-gray-700">{likes || post?.likes_count}</span>
                     </button>
 
                     <button onClick={() => openModal(`comments_${post?.id}`)} className="flex items-center space-x-2 text-gray-600 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">

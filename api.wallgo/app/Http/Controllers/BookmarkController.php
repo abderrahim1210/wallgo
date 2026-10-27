@@ -48,7 +48,6 @@ class BookmarkController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => "Post saved successfully"
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Group;
 use App\Models\Page;
 use App\Models\Post;
@@ -38,6 +39,10 @@ class ReportController extends Controller
                 case 'group':
                     $reportable = Group::select('id')->find($request->reportable_id);
                     if (!$reportable) return response()->json(['success' => false, 'message' => "Group by id $request->reportable_id not found"]);
+                    break;
+                case 'comment':
+                    $reportable = Comment::select('id')->find($request->reportable_id);
+                    if (!$reportable) return response()->json(['success' => false, 'message' => "Comment by id $request->reportable_id not found"]);
                     break;
             }
 

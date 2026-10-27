@@ -171,6 +171,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/post/save', [BookmarkController::class, 'save']);
 
     Route::get('/posts/saved', [BookmarkController::class, 'index']);
+
+    Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);

@@ -8,12 +8,16 @@ import toast from 'react-hot-toast';
 import Spinner from '../templates/Spinner';
 import { EmptyContent } from './EmptyContent';
 import { FaComments } from 'react-icons/fa';
+import { useModal } from '../hooks/ModalProvider';
+import ModalTemplate from '../templates/ModalTemplate';
+import { Report } from './Report';
+import { ErrorPage } from './ErrorPage';
 
 interface CommentSectionProps {
     postId: number;
-    // userId: number;
+    setOpenModal: (isopen: boolean) => void;
 }
-export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
+export const CommentSection: React.FC<CommentSectionProps> = ({ postId, setOpenModal }) => {
     const fetchComments = async () => {
         try {
             const res = await axios.get(`${api_url}/comments/${postId}`, { withCredentials: true, withXSRFToken: true });
@@ -26,7 +30,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     const { data: comments = [], isLoading, isError } = useQuery({
         queryKey: ['comments', postId],
         queryFn: fetchComments,
-        enabled:!!postId,
+        enabled: !!postId,
         staleTime: 1000 * 60 * 5
     });
 
@@ -52,18 +56,19 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     return (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col w-full mx-auto">
 
+
             <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h3 className="font-bold text-gray-800 text-base">Comments ({comments?.length})</h3>
             </div>
 
             <div className="overflow-y-auto p-4 space-y-4 divide-y divide-gray-50">
-                {isLoading ? (<Spinner text='Wait few seconds to get comments ...' type='mini' />) : comments?.length > 0 ? (
-                    comments.map((comment: Comment, index:number) => (
-                        <CommentItem comment={comment} postId={postId} key={index} />
+                {isLoading ? (<Spinner text='Wait few seconds to get comments ...' type='mini' />) : isError ? (<ErrorPage codeP='500' />) : comments?.length > 0 ? (
+                    comments.map((comment: Comment, index: number) => (
+                        <CommentItem comment={comment} postId={postId} key={index} openReport={setOpenModal} />
                     ))
                 ) : (
                     <div className="py-8 text-center">
-                       <EmptyContent text=' No comments yet. Be the first to comment!' icon={<FaComments />} />
+                        <EmptyContent text=' No comments yet. Be the first to comment!' icon={<FaComments />} />
                     </div>
                 )}
             </div>

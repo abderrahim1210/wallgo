@@ -37,8 +37,6 @@ export const Home = () => {
   const { data: posts = [], isLoading:postsLoading, isError:postsError } = useQuery({
     queryKey: ['posts'],
     queryFn: fetchPosts,
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false
   });
 
   const navigate = useNavigate();

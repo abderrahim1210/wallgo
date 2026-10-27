@@ -52,7 +52,7 @@ export const Login = () => {
                             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
                             <span>Back</span>
                         </button>
-                        <img src="/icons/logo_global.png" width={150} className='img-fluid' alt="" />
+                        <img src="/icons/logos/mix_logo.png" width={150} className='img-fluid' alt="" />
                     </div>
                     <div className='h-8 flex items-center justify-center mt-2 mb-5 overflow-hidden'>
                         <p className={`text-gray-300 text-sm text-center typewriter-text`}>
