@@ -14,7 +14,7 @@ class GetUser extends Controller
     {
         try {
             $authenticated_user = Auth::id();
-            $user_id = $id ?? Auth::id();
+            $user_id = empty($id) ? $authenticated_user : $id;
             $user = User::withCount(['followers', 'followings'])->findOrFail($user_id);
             $posts = Post::where('user_id', $user_id)->count();
             $followers_list = $user->followers()->get()->map(function ($follower) use ($user_id) {
@@ -35,14 +35,6 @@ class GetUser extends Controller
                     'is_following' => Follow::where('follower_id', $user_id)->where('following_id', $following->id)->exists()
                 ];
             });
-            $posts_list = Post::select('id', 'user_id', 'content', 'media_url', 'created_at', 'visibility', 'schedule_time')->withCount(['likes', 'comments'])->with(['user:id,name,username,avatar_url'])->where('user_id', $user->id)->withExists(['likes as is_liked' => function ($query) use ($user_id) {
-                $query->where('user_id', $user_id);
-            }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
-                $q->where('user_id', $user_id);
-            }])->whereNull('postable_id')->when(!empty($id) && $id != $authenticated_user, function ($q) {
-                $q->whereNull('schedule_time');
-            })->latest()->get();
-            if (!$user) return response()->json(['success' => false, 'message' => 'User not found', 401]);
             return response()->json([
                 'success' => true,
                 'user' => $user,
@@ -53,7 +45,7 @@ class GetUser extends Controller
                 ],
                 'followers_list' => $followers_list,
                 'followings_list' => $followings_list,
-                'posts_list' => $posts_list
+                // 'posts_list' => $posts_list
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -63,32 +55,22 @@ class GetUser extends Controller
         }
     }
 
-    public function getPosts(string $id = null)
+    public function getPosts($id = null)
     {
-        if (!$id) {
-            $user = Auth::user();
-            if (!$user) return response()->json([
-                'success' => false,
-                'message' => 'User not found'
-            ], 401);
-            $user_id = $user->id;
-        } else {
-            $user = User::find($id);
-            if (!$user) return response()->json([
-                'success' => false,
-                'message' => 'User not found'
-            ]);
-            $user_id = $user->id;
-        }
+        $authenticated_user = Auth::id();
+        $user_id = empty($id) ? $authenticated_user : $id;
 
         try {
-            $posts = Post::with(['user:id,name,username,avatar_url', 'postable:id,name,logo_url'])->withCount(['likes', 'comments'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
-                $q->where('user_id', $user_id);
-            }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
-                $q->where('user_id', $user_id);
-            }])->where('user_id', $user_id)->whereNull('postable_id')->when(!empty($id), function ($q) {
-                $q->whereNull('schedule_time');
-            })->latest()->paginate(10);
+            $posts = Post::with(['user:id,name,username,avatar_url', 'postable:id,name,logo_url'])->withCount(['likes', 'comments'])
+                ->withExists(['likes as is_liked' => function ($q) use ($authenticated_user) {
+                    $q->where('user_id', $authenticated_user);
+                }])->withExists(['bookmarks as is_saved' => function ($q) use ($authenticated_user) {
+                    $q->where('user_id', $authenticated_user);
+                }])->where('user_id', $user_id)->whereNull('postable_id')->when(!empty($id), function ($q) {
+                    $q->where(function ($subQuery) {
+                        $subQuery->whereNull('schedule_time')->orWhere('schedule_time', '<=', now());
+                    });
+                })->latest()->paginate(10);
             return response()->json([
                 'success' => true,
                 'posts' => $posts

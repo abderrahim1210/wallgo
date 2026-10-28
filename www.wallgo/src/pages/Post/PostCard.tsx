@@ -26,39 +26,40 @@ export const PostCard: React.FC<PostCardProps> = ({
 }) => {
     const [liked, setLiked] = useState<boolean>(post?.is_liked);
     const [likes, setLikes] = useState(Number(post?.likes_count));
-    useEffect(() => {
-        if (post) {
-            setLikes(post?.likes_count);
-        }
-    }, [post]);
     const [saved, setSaved] = useState(Boolean(post?.is_saved));
     useEffect(() => {
         if (post) {
-            setSaved(post?.is_saved);
+            setSaved(Boolean(post?.is_saved));
+            setLiked(Boolean(post?.is_liked));
+            setLikes(Number(post?.likes_count) || 0);
         }
-    }, [post]);
+    }, [post?.is_liked, post?.is_saved, post?.likes_count]);
     const { show, openModal, closeModal } = useModal()!;
     const { user: currentUser } = useAuth()!;
     const handleLike = async () => {
-        if (liked) {
-            setLikes(likes - 1);
-            setLiked(false);
-        } else {
-            setLikes(likes + 1);
-            setLiked(true);
-        }
+        const previousLiked = liked;
+        const previousLikes = likes;
+
+        const newLikedState = !liked;
+        setLiked(newLikedState);
+        setLikes(newLikedState ? previousLikes + 1 : Math.max(0, previousLikes - 1));
         try {
             const res = await axios.post(`${api_url}/add_like`, { post_id: post?.id, type: 'post' }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
-                if (res.data.is_liked) {
-                    setLiked(true);
-                } else {
-                    setLiked(false);
+                if (typeof res.data.is_liked === 'boolean') {
+                    setLiked(res.data.is_liked);
+                }
+                if (typeof res.data.likes_count === 'number') {
+                    setLikes(res.data.likes_count);
                 }
             } else {
+                setLiked(previousLiked);
+                setLikes(previousLikes);
                 console.log(res.data.message);
             }
         } catch (err: any) {
+            setLiked(previousLiked);
+            setLikes(previousLikes);
             console.error(err?.response?.data);
         }
     }
@@ -148,8 +149,8 @@ export const PostCard: React.FC<PostCardProps> = ({
     const isLocked = post?.unlock_time && moment(post?.unlock_time).isAfter(moment());
     return (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
-            <div className="flex items-center justify-between p-4 pb-3 hover:bg-gray-200 transition-all rounded-t-2xl">
-                <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate(`/post/${post?.id}`)}>
+            <div className="flex items-center justify-between p-4 pb-3 transition-all rounded-t-2xl">
+                <div className="flex items-center space-x-3">
                     {
                         post?.postable ? (
                             <img
@@ -214,7 +215,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                     <TimeCapsuleLocked unlockTime={post?.unlock_time} createdAt={post?.created_at} />
                 ) : (
                     <>
-                        <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+                        <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed hover:bg-gray-200 cursor-pointer"  onClick={() => navigate(`/post/${post?.id}`)}>
                             {post?.content}
                         </div>
 
@@ -266,7 +267,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                         className="flex items-center space-x-2 text-gray-600 hover:text-red-500 transition-colors group cursor-pointer"
                     >
                         <Heart
-                            className={`w-6 h-6 transition-transform active:scale-125 ${liked || post?.is_liked ? 'text-red-500 fill-red-500' : 'group-hover:scale-110'
+                            className={`w-6 h-6 transition-transform active:scale-125 ${liked ? 'text-red-500 fill-red-500' : 'group-hover:scale-110'
                                 }`}
                         />
                         <span className="text-xs font-semibold text-gray-700">{likes || post?.likes_count}</span>

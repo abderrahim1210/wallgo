@@ -114,7 +114,11 @@ class PageController extends Controller
                 $q->where('id', $user_id);
             }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
-            }])->where('postable_id', $page->id)->get();
+            }])->where('postable_id', $page->id)->when($user_id !== $page->owner_id, function ($q) {
+                $q->where(function ($subQuery) {
+                    $subQuery->whereNull('schedule_time')->orWhere('schedule_time', '<=', now());
+                });
+            })->get();
             return response()->json([
                 'success' => true,
                 'page' => $page,

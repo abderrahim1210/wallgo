@@ -181,4 +181,6 @@ Route::get('/pages/{id}', [PageController::class, 'show']);
 
 Route::get('/groups/{id}', [GroupController::class, 'show']);
 
+Route::get('/groups/{id}/posts', [GroupController::class, 'posts']);
+
 require __DIR__ . '/auth.php';
