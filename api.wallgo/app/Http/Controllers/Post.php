@@ -17,7 +17,7 @@ class Post extends Controller
     {
         $request->validate([
             'content' => ['string', 'max:255', 'required'],
-            'post_type' => ['string', 'in:regular,time_capsule'],
+            'post_type' => ['string', 'in:regular,time_capsule,schedule_time'],
             'schedule_time' => ['nullable', 'date'],
             'expires_at' => ['nullable', 'date'],
             'unlock_time' => ['nullable', 'date'],
@@ -86,6 +86,7 @@ class Post extends Controller
                 'capsule_status' => $data['capsule_status'] ?? null,
                 'media_url' => $data['media_url'] ?? null,
                 'visibility' => $data['visibility'],
+                'post_type' => $data['post_type'] ?? 'regular',
                 'postable_id' => $postable->id ?? null,
                 'postable_type' => $postable ? get_class($postable) : null
             ]);
@@ -115,7 +116,7 @@ class Post extends Controller
                     $q->where('id', $user_id);
                 }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
                     $q->where('user_id', $user_id);
-                }])->where('visibility','public')->latest()->paginate(10);
+                }])->where('visibility','public')->whereNull('schedule_time')->latest()->paginate(10);
                 return response()->json([
                     'success' => true,
                     'posts' => $posts

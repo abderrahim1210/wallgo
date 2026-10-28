@@ -60,14 +60,6 @@ export const Offcanvas: React.FC<OffcanvasProps> = ({ user, onClose }) => {
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-1.5">
-                    <Link
-                        to="/myposts"
-                        onClick={onClose}
-                        className="flex items-center space-x-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 p-3 rounded-xl font-medium transition"
-                    >
-                        <FileText size={20} className='text-blue-500' />
-                        <span>My Posts</span>
-                    </Link>
 
                     <Link
                         to="/pages"

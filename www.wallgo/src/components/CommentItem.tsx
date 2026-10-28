@@ -176,7 +176,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, openR
                 className="w-9 h-9 rounded-full object-cover shrink-0"
             />
             <div className="flex-1 min-w-0">
-                <div className="bg-gray-50 rounded-2xl px-4 py-2.5 border border-gray-100">
+                <div className="bg-gray-200 rounded-2xl px-4 py-2.5 border border-gray-100">
                     <div className="flex items-center justify-between mb-1">
                         <span className="font-semibold text-xs sm:text-sm text-gray-900 cursor-pointer" onClick={() => navigate(`/profile/${comment?.user.id}/${comment?.user.username}`)}>{comment.user.name}</span>
                         <span className="text-[12px] text-gray-400">{moment(comment.created_at).fromNow()}</span>

@@ -13,6 +13,7 @@ class GetUser extends Controller
     public function index($id = null)
     {
         try {
+            $authenticated_user = Auth::id();
             $user_id = $id ?? Auth::id();
             $user = User::withCount(['followers', 'followings'])->findOrFail($user_id);
             $posts = Post::where('user_id', $user_id)->count();
@@ -34,11 +35,13 @@ class GetUser extends Controller
                     'is_following' => Follow::where('follower_id', $user_id)->where('following_id', $following->id)->exists()
                 ];
             });
-            $posts_list = Post::select('id', 'user_id', 'content', 'media_url', 'created_at', 'visibility')->withCount(['likes', 'comments'])->with(['user:id,name,username,avatar_url'])->where('user_id', $user->id)->withExists(['likes as is_liked' => function ($query) use ($user_id) {
+            $posts_list = Post::select('id', 'user_id', 'content', 'media_url', 'created_at', 'visibility', 'schedule_time')->withCount(['likes', 'comments'])->with(['user:id,name,username,avatar_url'])->where('user_id', $user->id)->withExists(['likes as is_liked' => function ($query) use ($user_id) {
                 $query->where('user_id', $user_id);
             }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
-            }])->whereNull('postable_id')->latest()->get();
+            }])->whereNull('postable_id')->when(!empty($id) && $id != $authenticated_user, function ($q) {
+                $q->whereNull('schedule_time');
+            })->latest()->get();
             if (!$user) return response()->json(['success' => false, 'message' => 'User not found', 401]);
             return response()->json([
                 'success' => true,
@@ -60,7 +63,7 @@ class GetUser extends Controller
         }
     }
 
-    public function getPosts(string $id=null)
+    public function getPosts(string $id = null)
     {
         if (!$id) {
             $user = Auth::user();
@@ -81,7 +84,11 @@ class GetUser extends Controller
         try {
             $posts = Post::with(['user:id,name,username,avatar_url', 'postable:id,name,logo_url'])->withCount(['likes', 'comments'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
-            }])->where('user_id', $user_id)->latest()->paginate(10);
+            }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            }])->where('user_id', $user_id)->whereNull('postable_id')->when(!empty($id), function ($q) {
+                $q->whereNull('schedule_time');
+            })->latest()->paginate(10);
             return response()->json([
                 'success' => true,
                 'posts' => $posts

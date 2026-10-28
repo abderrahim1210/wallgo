@@ -178,11 +178,6 @@ export const Home = () => {
                     <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm space-y-2">
                       <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 px-4 mb-2">Discover</h3>
 
-                      <button onClick={() => navigate('/myposts')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
-                        <Pencil className="w-5 h-5 text-blue-500" />
-                        <span>My Posts</span>
-                      </button>
-
                       <button onClick={() => navigate('/pages')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
                         <Layers className="w-5 h-5 text-emerald-500" />
                         <span>Pages</span>

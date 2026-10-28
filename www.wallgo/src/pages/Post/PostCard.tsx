@@ -1,4 +1,4 @@
-import { Bookmark, Edit3, Flag, Globe, Heart, Link, Lock, MessageCircle, MoreHorizontal, Share2, Trash2, X } from 'lucide-react';
+import { Bookmark, CalendarClock, Edit3, Flag, Globe, Heart, Link, Lock, MessageCircle, MoreHorizontal, Share2, Sparkles, Timer, Trash2, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
 import { useModal } from '../../hooks/ModalProvider';
@@ -17,6 +17,7 @@ import { api_url } from '../Auth/getUser';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
+import TimeCapsuleLocked from '../../Icons/TimeCapsule';
 interface PostCardProps {
     post: Post;
 }
@@ -143,7 +144,8 @@ export const PostCard: React.FC<PostCardProps> = ({
         }
     }
 
-    const loacation = useLocation();
+    const location = useLocation();
+    const isLocked = post?.unlock_time && moment(post?.unlock_time).isAfter(moment());
     return (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
             <div className="flex items-center justify-between p-4 pb-3 hover:bg-gray-200 transition-all rounded-t-2xl">
@@ -188,7 +190,11 @@ export const PostCard: React.FC<PostCardProps> = ({
                             <span>•</span>
                             <span>{moment(post?.created_at).fromNow()}</span>
                             <span>•</span>
-                            {post?.visibility === 'public' ? <Globe className='w-3.5 h-3.5' /> : <Lock className='w-3.5 h-3.5' />}
+                            {
+                                post?.unlock_time ? (
+                                    <Timer className='w-3.5 h-3.5' />
+                                ) : post?.schedule_time ? <CalendarClock className='w-3.5 h-3.5' /> : post?.visibility === 'public' ? <Globe className='w-3.5 h-3.5' /> : <Lock className='w-3.5 h-3.5' />
+                            }
                         </div>
                     </div>
                 </div>
@@ -203,15 +209,23 @@ export const PostCard: React.FC<PostCardProps> = ({
 
             </div>
 
-            <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
-                {post?.content}
-            </div>
+            {
+                isLocked ? (
+                    <TimeCapsuleLocked unlockTime={post?.unlock_time} createdAt={post?.created_at} />
+                ) : (
+                    <>
+                        <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+                            {post?.content}
+                        </div>
 
-            {post?.media_url && (
-                <div className="w-full bg-gray-50 max-h-[500px] overflow-hidden flex items-center justify-center">
-                    <img src={post?.media_url} alt="Post content" className="w-full h-auto object-cover max-h-[500px]" onClick={() => setSelectedPost(post)} />
-                </div>
-            )}
+                        {post?.media_url && (
+                            <div className="w-full bg-gray-50 max-h-[500px] overflow-hidden flex items-center justify-center">
+                                <img src={post?.media_url} alt="Post content" className="w-full h-auto object-cover max-h-[500px]" onClick={() => setSelectedPost(post)} />
+                            </div>
+                        )}
+                    </>
+                )
+            }
 
             {
                 (show === `comments-${post?.id}-post`) && (location.pathname !== `/post/${post?.id}`) && (

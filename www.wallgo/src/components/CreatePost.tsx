@@ -405,6 +405,8 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                             )
                         }
 
+
+
                         <div className="p-4 border-t border-gray-200 bg-gray-50/50 flex justify-end">
                             <LoadingButton loading={loading} type="submit">
                                 <Send className="w-4 h-4" />
@@ -428,6 +430,13 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                                 </div>
                             )
                         }
+
+                        <div className="mt-3 p-3 bg-purple-50/50 rounded-2xl border border-purple-100 space-y-3">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Schedule Time (Optional)</label>
+                                <input onChange={handleChange} value={post?.schedule_time} type="datetime-local" name="schedule_time" className="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs bg-white outline-none" />
+                            </div>
+                        </div>
 
                         {
                             type === 'page' && (
