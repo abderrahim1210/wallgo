@@ -36,7 +36,7 @@ class SearchController extends Controller
 
             $response = ['success' => true];
             if (in_array($type, ['all', 'posts'])) {
-                $posts = Post::with(['user:id,username,name,avatar_url'])->select('id', 'content', 'user_id', 'media_url', 'schedule_time', 'created_at', 'visibility')->withCount(['likes', 'comments'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
+                $posts = Post::with(['user:id,username,name,avatar_url', 'postable:id,name,logo_url'])->withCount(['likes', 'comments'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
                     $q->where('user_id', $user_id);
                 }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
                     $q->where('user_id', $user_id);
