@@ -18,6 +18,7 @@ import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
 import TimeCapsuleLocked from '../../Icons/TimeCapsule';
+import { Tooltip } from '../../templates/Tooltip';
 interface PostCardProps {
     post: Post;
 }
@@ -167,23 +168,25 @@ export const PostCard: React.FC<PostCardProps> = ({
                         )
                     }
                     <div>
-                        <h4 className="font-semibold text-sm text-gray-900 leading-tight">
-                            {
-                                post?.postable_type?.includes('Page') ? (
-                                    <LinkR to={`/pages/${post?.postable?.id}`}>
-                                        {post?.postable?.name}
-                                    </LinkR>
-                                ) : post?.postable_type?.includes('Group') ? (
-                                    <LinkR to={`/groups/${post?.postable?.id}`}>
-                                        {post?.postable?.name}
-                                    </LinkR>
-                                ) : (
-                                    <LinkR to={`/profile/${post?.user.id}/${post?.user.username}`}>
-                                        {post?.user.name}
-                                    </LinkR>
-                                )
-                            }
-                        </h4>
+                        <Tooltip label='Show profile'>
+                            <h4 className="font-semibold text-sm text-gray-900 leading-tight">
+                                {
+                                    post?.postable_type?.includes('Page') ? (
+                                        <LinkR to={`/pages/${post?.postable?.id}`}>
+                                            {post?.postable?.name}
+                                        </LinkR>
+                                    ) : post?.postable_type?.includes('Group') ? (
+                                        <LinkR to={`/groups/${post?.postable?.id}`}>
+                                            {post?.postable?.name}
+                                        </LinkR>
+                                    ) : (
+                                        <LinkR to={`/profile/${post?.user.id}/${post?.user.username}`}>
+                                            {post?.user.name}
+                                        </LinkR>
+                                    )
+                                }
+                            </h4>
+                        </Tooltip>
                         <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
                             {!post?.postable && (
                                 <span>@{post?.user.username}</span>
@@ -193,21 +196,23 @@ export const PostCard: React.FC<PostCardProps> = ({
                             <span>•</span>
                             {
                                 post?.unlock_time ? (
-                                    <Timer className='w-3.5 h-3.5' />
-                                ) : post?.schedule_time ? <CalendarClock className='w-3.5 h-3.5' /> : post?.visibility === 'public' ? <Globe className='w-3.5 h-3.5' /> : <Lock className='w-3.5 h-3.5' />
+                                    <Tooltip label={`Unlocks ${moment(post?.unlock_time).calendar()} ${moment(post?.unlock_time).format('MMM D, YYYY [at] h:mm A')}`}><Timer className='w-3.5 h-3.5' /></Tooltip>
+                                ) : post?.schedule_time ? <Tooltip label={`Scheduled to post ${moment(post?.schedule_time).calendar()} ${moment(post?.schedule_time).format('MMM D, YYYY [at] h:mm A')}`}><CalendarClock className='w-3.5 h-3.5' /></Tooltip> : post?.visibility === 'public' ? <Tooltip label='Public post'><Globe className='w-3.5 h-3.5' /></Tooltip> : <Tooltip label='Private post'><Lock className='w-3.5 h-3.5' /></Tooltip>
                             }
                         </div>
                     </div>
                 </div>
-                <DropdownMenu
-                    trigger={
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors">
-                            <MoreHorizontal className="w-5 h-5" />
-                        </button>
-                    }
-                    items={postMenuItems}
-                />
+                <Tooltip label='More options'>
+                    <DropdownMenu
+                        trigger={
+                            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors">
+                                <MoreHorizontal className="w-5 h-5" />
+                            </button>
+                        }
+                        items={postMenuItems}
+                    />
 
+                </Tooltip>
             </div>
 
             {
@@ -215,7 +220,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                     <TimeCapsuleLocked unlockTime={post?.unlock_time} createdAt={post?.created_at} />
                 ) : (
                     <>
-                        <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed hover:bg-gray-200 cursor-pointer"  onClick={() => navigate(`/post/${post?.id}`)}>
+                        <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed hover:bg-gray-200 cursor-pointer" onClick={() => navigate(`/post/${post?.id}`)}>
                             {post?.content}
                         </div>
 
@@ -262,34 +267,42 @@ export const PostCard: React.FC<PostCardProps> = ({
 
             <div className="px-4 py-3 flex items-center justify-between border-t border-gray-50 mt-1">
                 <div className="flex items-center space-x-6">
-                    <button
-                        onClick={handleLike}
-                        className="flex items-center space-x-2 text-gray-600 hover:text-red-500 transition-colors group cursor-pointer"
-                    >
-                        <Heart
-                            className={`w-6 h-6 transition-transform active:scale-125 ${liked ? 'text-red-500 fill-red-500' : 'group-hover:scale-110'
-                                }`}
-                        />
-                        <span className="text-xs font-semibold text-gray-700">{likes || post?.likes_count}</span>
-                    </button>
+                    <Tooltip label='Like'>
+                        <button
+                            onClick={handleLike}
+                            className="flex items-center space-x-2 text-gray-600 hover:text-red-500 transition-colors group cursor-pointer"
+                        >
+                            <Heart
+                                className={`w-6 h-6 transition-transform active:scale-125 ${liked ? 'text-red-500 fill-red-500' : 'group-hover:scale-110'
+                                    }`}
+                            />
+                            <span className="text-xs font-semibold text-gray-700">{likes || post?.likes_count}</span>
+                        </button>
+                    </Tooltip>
 
-                    <button onClick={() => openModal(`comments-${post?.id}-post`)} className="flex items-center space-x-2 text-gray-600 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">
+                   <Tooltip label='Comment'>
+                     <button onClick={() => openModal(`comments-${post?.id}-post`)} className="flex items-center space-x-2 text-gray-600 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">
                         <MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-semibold text-gray-700">{post?.comments_count}</span>
                     </button>
+                   </Tooltip>
 
-                    <button onClick={() => openModal(`share-${post?.id}`)} className="text-gray-600 hover:text-blue-500 transition-colors group cursor-pointer">
+                   <Tooltip label='Share'>
+                     <button onClick={() => openModal(`share-${post?.id}`)} className="text-gray-600 hover:text-blue-500 transition-colors group cursor-pointer">
                         <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
                     </button>
+                   </Tooltip>
                 </div>
 
-                <button
-                    onClick={handleSavePost}
-                    className={`text-gray-600 hover:text-[var(--special-purple)] transition-colors cursor-pointer ${saved ? 'text-[var(--special-purple)]' : ''
-                        }`}
-                >
-                    <Bookmark className={`w-5 h-5 ${saved ? 'fill-[var(--special-purple)]' : ''}`} />
-                </button>
+                <Tooltip label='Save post'>
+                    <button
+                        onClick={handleSavePost}
+                        className={`text-gray-600 hover:text-[var(--special-purple)] transition-colors cursor-pointer ${saved ? 'text-[var(--special-purple)]' : ''
+                            }`}
+                    >
+                        <Bookmark className={`w-5 h-5 ${saved ? 'fill-[var(--special-purple)]' : ''}`} />
+                    </button>
+                </Tooltip>
             </div>
             {selectedPost && (
                 <SelectedPosts post={selectedPost} onClose={() => setSelectedPost(null)} onDelete={deletePost} />
