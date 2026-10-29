@@ -1,80 +1,87 @@
 import React, { useState } from 'react'
 import { MainLayout } from '../MainLayout'
-import { Heart, MessageCircle, Search, X } from 'lucide-react';
+import { FileText, Globe, Hash, Search, User, Users, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { PostGrid } from '../templates/PostGrid';
-import { FaBookmark, FaCompass } from 'react-icons/fa';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { PostGrid, type Post } from '../templates/PostGrid';
+import { api_url } from '../pages/Auth/getUser';
+import Spinner from '../templates/Spinner';
+import { ErrorPage } from './ErrorPage';
+import { EmptyContent } from './EmptyContent';
+import { FollowUser } from './FollowUser';
+import { useFollow } from './useFollow';
+import { PostCard } from '../pages/Post/PostCard';
+import FollowUserCard from './FollowUserCard';
+import type { Page } from './PageProfile';
+import { PageCard } from './PageCard';
+import type { Group } from './Groups';
+import { GroupCard } from './GroupCard';
+
+type User = {
+    id: number;
+    name: string;
+    username: string;
+    avatar_url: string;
+    followers_count?: number;
+}
 
 export const Discover = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedPost, setSelectedPost] = useState<any | null>(null);
-    const explorePosts = [
-        {
-            id: 1,
-            content: 'Working on WallGo social media platform UI/UX today! The glassmorphism design with Tailwind is looking amazing. 🚀🔥',
-            image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
-            likesCount: 1000,
-            commentsCount: 43,
-            // author: { name: 'Abderrahim Khali Ali', username: 'abderrahim', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80' },
-        },
-        {
-            id: 2,
-            content: 'Beautiful sunset captured during my evening walk. Photography is pure therapy! 📸✨',
-            image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80',
-            likesCount: 154,
-            commentsCount: 35,
-            // author: { name: 'Sara Miller', username: 'saramiller', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80' },
-        },
-        {
-            id: 3,
-            content: 'Clean code and dark mode. The ultimate developer setup.',
-            image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80',
-            likesCount: 850,
-            commentsCount: 23,
-            // author: { name: 'Tech Insider', username: 'techinsider', avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&q=80' },
-        },
-        {
-            id: 4,
-            content: 'Building fullstack apps with Laravel and React is such a smooth experience.',
-            image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80',
-            likesCount: 200,
-            commentsCount: 64,
-            // author: { name: 'Code Master', username: 'coder', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80' },
-        },
-        {
-            id: 5,
-            content: 'Late night gaming session setup. RGB lights everywhere!',
-            image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80',
-            likesCount: 940,
-            commentsCount: 31,
-            // author: { name: 'Game Zone', username: 'gamerz', avatar: 'https://images.unsplash.com/photo-1628157582853-a796fa650a6a?auto=format&fit=crop&w=100&q=80' },
-        },
-        {
-            id: 6,
-            content: 'Lost in the mountains. Fresh air and wonderful landscapes.',
-            image: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=600&q=80',
-            likesCount: 500,
-            commentsCount: 210,
-            // author: { name: 'Nature Lover', username: 'nature', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80' },
-        }
-    ];
+    const [activeFilter, setActiveFilter] = useState('all');
 
-    const posts = explorePosts.filter(post =>
-        post.content.toLowerCase().includes(searchQuery.toLowerCase())
-        // ||
-        // post.author.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+
+    const fetchData = async () => {
+        try {
+            const res = await axios.get(`${api_url}/search`, { params: { type: activeFilter, term: searchQuery }, withCredentials: true, withXSRFToken: true });
+            if (res.data.success) {
+                return res.data;
+            };
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
+    const { data: dt, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+        queryKey: ['searchs_posts', activeFilter, searchQuery],
+        queryFn: fetchData,
+        enabled: activeFilter.trim().length > 0,
+        getNextPageParam: (lastPage: any) => {
+            if (lastPage?.current_page < lastPage?.last_page) {
+                return lastPage.current_page + 1;
+            }
+            return undefined;
+        },
+        initialPageParam: 1
+    });
+
+    const firstPage = dt?.pages?.[0] || {};
+
+    const items = activeFilter === 'all'
+        ? firstPage
+        : (firstPage[activeFilter]?.data || firstPage[activeFilter] || []);
+
+    const filters = [
+        { id: 'all', label: 'All', icon: <Globe className="w-4 h-4" /> },
+        { id: 'posts', label: 'Posts', icon: <FileText className="w-4 h-4" /> },
+        { id: 'users', label: 'Users', icon: <User className="w-4 h-4" /> },
+        { id: 'groups', label: 'Groups', icon: <Users className="w-4 h-4" /> },
+        { id: 'pages', label: 'Pages', icon: <Users className="w-4 h-4" /> },
+        { id: 'tags', label: 'Hashtags', icon: <Hash className="w-4 h-4" /> },
+    ];
+    const { add_follow } = useFollow()!;
     return (
         <MainLayout>
             <Helmet>
                 <title>WallGo : Discover</title>
             </Helmet>
-            <div className="min-h-screen bg-gray-50/50 pb-20 md:pb-10">
-                <div className="max-w-7xl mx-auto pt-6 px-4">
-                    <div className='flex justify-start items-center mb-3'>
-                        <h1 className='font-bold text-3xl flex items-center gap-2'><FaCompass className='w-8 h-8 text-[var(--special-purple)]' /> Discover <span className='text-[var(--special-purple)]'>({posts.length})</span></h1>
+            <div className="pb-20 md:pb-10">
+                <div className="max-w-xl mx-auto mt-20 px-4">
+                    <div className='flex justify-center flex-col items-center mb-3'>
+                        <h1 className='font-bold text-4xl flex items-center gap-2'><Search className='w-8 h-8 text-[var(--special-purple)] transition hover:scale-110 hover:-rotate-6' /> Search Wallgo</h1>
+                        <p className="text-sm text-gray-500 mt-1">Find posts, creators, groups, and hashtags</p>
                     </div>
-                    <div className="relative mb-6">
+                    <div className="relative">
 
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <Search className="w-5 h-5 text-gray-400" />
@@ -84,20 +91,127 @@ export const Discover = () => {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search posts, tags, or creators..."
-                            className="w-full bg-white border border-gray-200 rounded-2xl pl-12 pr-4 py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all"
+                            className="w-full bg-white border border-gray-200 rounded-xl pl-12 pr-4 py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all"
                         />
                         {searchQuery && (
                             <button
                                 onClick={() => setSearchQuery('')}
                                 className="absolute inset-y-0 right-0 pr-4 flex items-center text-xs text-gray-400 hover:text-gray-600"
                             >
-                                Clear
+                                <X />
                             </button>
                         )}
+
+
                     </div>
 
-                    <PostGrid posts={posts} />
+                    <div className="flex items-center gap-2 mt-3 flex-wrap md:flex-nowrap justify-center pb-3 mb-6 scrollbar-none">
+                        {filters.map((filter) => (
+                            <button
+                                key={filter.id}
+                                onClick={() => setActiveFilter(filter.id)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${activeFilter === filter.id
+                                    ? 'bg-[var(--special-purple)] text-white shadow-sm'
+                                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                                    }`}
+                            >
+                                {filter.icon}
+                                {filter.label}
+                            </button>
+                        ))}
+                    </div>
 
+                    {!searchQuery.trim() ? (
+                        <EmptyContent text='Type to search' icon={<Search />} />
+                    ) : isLoading ? (
+                        <Spinner type='mini' text={`Fetching ${activeFilter} ...`} />
+                    ) : isError ? (
+                        <ErrorPage codeP='500' />
+                    ) : items.length === 0 ? (
+                        <EmptyContent text={`No ${activeFilter} found!`} icon={<Search />} />
+                    ) : (
+                        <div className="space-y-4">
+                            {
+                                activeFilter === 'posts' && <PostGrid posts={items as Post[]} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} isLoading={isLoading} />
+                            }
+
+                            {
+                                activeFilter === 'users' && items?.map((u: User, index: number) => <FollowUser user={u} key={index} onFollow={add_follow} />)
+                            }
+                            {
+                                activeFilter === 'pages' && items?.map((p: Page, index: number) => <PageCard page={p} key={index} />)
+                            }
+                            {
+                                activeFilter === 'groups' && items?.map((g: Group, index: number) => <GroupCard group={g} key={index} />)
+                            }
+                            {
+                                activeFilter === 'tags' && items?.map((tag: any) => (
+                                    <div
+                                        key={tag.id}
+                                        onClick={() => {
+                                            setSearchQuery(tag.term);
+                                            setActiveFilter('posts');
+                                        }}
+                                        className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl hover:bg-gray-50 transition cursor-pointer shadow-xs"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-[var(--special-purple)] font-bold">
+                                                <Hash className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-sm text-gray-800">#{tag.term}</h4>
+                                                <p className="text-xs text-gray-400">{tag.searchs_count} searches</p>
+                                            </div>
+                                        </div>
+                                        <span className="text-xs font-semibold text-[var(--special-purple)]">Explore</span>
+                                    </div>
+                                ))
+                            }
+                            {
+                                activeFilter === 'all' && (
+                                    <div className="space-y-6">
+                                        {items?.users?.data?.length > 0 && (
+                                            <div>
+                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">Users</h3>
+                                                <div className="space-y-2">
+                                                    {items?.users?.data.map((u: User) => <FollowUser user={u} key={u.id} onFollow={add_follow} />)}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {items?.posts?.data?.length > 0 && (
+                                            <div>
+                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">Posts</h3>
+                                                <PostGrid posts={items?.posts?.data} isFetchingNextPage={isFetchingNextPage} hasNextPage={hasNextPage} fetchNextPage={fetchNextPage} isLoading={isLoading} />
+                                            </div>
+                                        )}
+
+                                        {items?.pages?.data?.length > 0 && (
+                                            <div>
+                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">Pages</h3>
+                                                {
+                                                    items?.pages?.data?.map((p: Page, index: number) => <PageCard page={p} key={index} />)
+                                                }
+                                            </div>
+                                        )}
+
+                                        {items?.groups?.data?.length > 0 && (
+                                            <div>
+                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">Groups</h3>
+                                                {
+                                                    items?.groups?.data?.map((g: Group, index: number) => <GroupCard group={g} key={index} />)
+                                                }
+                                            </div>
+                                        )}
+
+                                        {(!items?.users?.data?.length && !items?.posts?.data?.length && !items?.pages?.data?.length && !items?.groups?.data?.length) && (
+                                            <EmptyContent text={`No results found for "${searchQuery}"`} icon={<Search />} />
+                                        )}
+                                    </div>
+                                )
+                            }
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -111,12 +225,10 @@ export const Discover = () => {
                             <X className="w-5 h-5" />
                         </button>
 
-                        {/* Image side */}
                         <div className="md:w-1/2 bg-black flex items-center justify-center">
                             <img src={selectedPost.image} alt="Detail" className="max-h-[400px] w-full object-contain" />
                         </div>
 
-                        {/* Info side */}
                         <div className="md:w-1/2 p-5 flex flex-col justify-between">
                             <div>
                                 <div className="flex items-center space-x-3 mb-4 pb-3 border-b border-gray-100">

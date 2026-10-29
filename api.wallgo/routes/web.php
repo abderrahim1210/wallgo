@@ -13,6 +13,7 @@ use App\Http\Controllers\Like as ControllersLike;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Post;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Settings;
 use App\Http\Controllers\UpdatePageGroup;
 use App\Models\Group;
@@ -175,6 +176,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/posts/saved', [BookmarkController::class, 'index']);
 
     Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
+
+    Route::get('/search', [SearchController::class, 'search']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);
