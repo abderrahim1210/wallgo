@@ -42,7 +42,7 @@ class CloudinaryActions extends Controller
         }
     }
 
-    public function destroy($url,$pathC)
+    public function destroy($url, $pathC)
     {
         if (str_contains($url, 'https://')) {
             $urlParts = explode('/', $url);

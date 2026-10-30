@@ -3,6 +3,9 @@ import React, { useState } from 'react'
 import { ReelIcon } from '../Icons/ReelIcon';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '../MainLayout';
+import axios from 'axios';
+import { api_url } from '../pages/Auth/getUser';
+import toast from 'react-hot-toast';
 
 type Reel = {
     id: number;
@@ -22,27 +25,13 @@ export const CreateReel = () => {
         audio_name: '',
         visibility: ''
     });
+    const [loading, setLoading] = useState(false);
     const [videoPreview, setVideoPreview] = useState<string | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         setReel(prev => ({ ...prev, [e.target.name]: e.target.value }));
     }
 
-    const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64String = reader.result as string;
-                setVideoPreview(base64String);
-                setReel(prev => ({ ...prev, video_url: base64String }));
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    const isLoading = false;
-    const videoFile = "";
     const navigate = useNavigate();
     const sampleTracks = [
         { id: 1, title: 'Coding Beats - LoFi', artist: 'Lofi Records', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
@@ -54,6 +43,49 @@ export const CreateReel = () => {
     const [selectedTrack, setSelectedTrack] = useState<{ title: string; artist: string; url: string } | null>(null);
     const [isPlayingPreview, setIsPlayingPreview] = useState(false);
     const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+    const [videoFile, setVideoFile] = useState<File | null>(null);
+
+
+    const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setVideoFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const f = reader.result as string;
+                setVideoPreview(f);
+                setReel(prev => ({ ...prev, video_url: f }));
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!videoFile || !reel.video_url) return null;
+        setLoading(true);
+        try {
+            const formData = new FormData();
+            formData.append('video', videoFile);
+            formData.append('caption', reel.caption);
+            formData.append('audio_name', reel.audio_name);
+            formData.append('visibility', reel.visibility);
+            const res = await axios.post(`${api_url}/reels/create`, formData, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) {
+                setLoading(false);
+                toast.success(res.data.message || 'Reel created successfully');
+                setTimeout(() => {
+                    navigate('/reels');
+                }, 1000);
+            } else {
+                setLoading(false);
+                toast.error(res.data.message || 'Failed to create a reel');
+                console.log(res.data.message);
+            }
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
     return (
         <MainLayout>
             <div className="flex items-center justify-center p-4">
@@ -62,7 +94,7 @@ export const CreateReel = () => {
                     <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                         <div className="flex items-center gap-2 text-[var(--special-purple)]">
                             <Clapperboard className='w-5 h-5' />
-                            <h3 className="font-bold text-gray-800 text-base">Create New Reel</h3>
+                            <h3 className="font-bold text-gray-800 text-xl">Create New Reel</h3>
                         </div>
                         <button
                             onClick={() => navigate(-1)}
@@ -72,7 +104,7 @@ export const CreateReel = () => {
                         </button>
                     </div>
 
-                    <form /* onSubmit={handleSubmit} */ className="p-6 space-y-5">
+                    <form onSubmit={handleSubmit} className="p-6 space-y-5">
 
                         {!videoPreview ? (
                             <label className="border-2 border-dashed border-gray-200 hover:border-[var(--special-purple)] rounded-2xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer bg-gray-50/50 hover:bg-purple-50/20 transition group">
@@ -91,7 +123,7 @@ export const CreateReel = () => {
                                 />
                             </label>
                         ) : (
-                            <div className="relative rounded-2xl overflow-hidden bg-black aspect-[9/16] max-h-[300px] flex items-center justify-center border border-gray-200">
+                            <div className="relative rounded-2xl overflow-hidden bg-black aspect-[9/16] max-h-[400px] flex items-center justify-center border border-gray-200">
                                 <video
                                     src={videoPreview}
                                     className="h-full object-contain"
@@ -244,10 +276,10 @@ export const CreateReel = () => {
                             </button>
                             <button
                                 type="submit"
-                                disabled={!videoFile || isLoading}
+                                disabled={!reel.video_url || !reel.caption}
                                 className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-[var(--special-purple)] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-purple-500/20 transition"
                             >
-                                {isLoading ? (
+                                {loading ? (
                                     <>
                                         <Loader2 className="w-4 h-4 animate-spin" />
                                         <span>Posting Reel...</span>

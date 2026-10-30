@@ -12,6 +12,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Like as ControllersLike;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Post;
+use App\Http\Controllers\ReelController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Settings;
@@ -178,6 +179,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
 
     Route::get('/search', [SearchController::class, 'search']);
+
+    Route::post('/reels/create', [ReelController::class, 'create']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);
