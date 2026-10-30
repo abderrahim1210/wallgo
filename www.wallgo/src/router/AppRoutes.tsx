@@ -20,6 +20,7 @@ import { EditPage } from '../components/EditPage'
 import { ErrorPage } from '../components/ErrorPage'
 import { GroupeProfile } from '../components/GroupeProfile'
 import { PostPreview } from '../components/PostPreview'
+import { CreateReel } from '../components/CreateReel'
 
 export const AppRoutes = () => {
     return (
@@ -48,6 +49,7 @@ export const AppRoutes = () => {
             <Route path='/error/:code' element={<ErrorPage />} />
             <Route path='*' element={<ErrorPage />} />
             <Route path='/post/:id' element={<PostPreview />} />
+            <Route path='/create_reel' element={<CreateReel />} />
         </Routes>
     )
 }

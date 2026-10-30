@@ -79,7 +79,7 @@ export const Navbar = () => {
                                 <>
                                     <li className='flex items-center space-x-3'>
                                         <Tooltip label='Create post' position={position}>
-                                            <button className={`${linksClasse} cursor-pointer lg:hidden hover:text-[var(--special-purple)]`} onClick={() => navigate('/create_post')}>
+                                            <button className={`${linksClasse} cursor-pointer ${location.pathname === '/' && 'hidden'} hover:text-[var(--special-purple)]`} onClick={() => navigate('/create_post')}>
                                                 <PlusCircle className='w-7 h-7' />
                                             </button>
                                         </Tooltip>
