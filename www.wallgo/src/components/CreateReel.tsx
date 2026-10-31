@@ -1,5 +1,5 @@
 import { Clapperboard, Disc, Eye, EyeClosed, Loader2, Music, Sparkles, Upload, Video, X } from 'lucide-react';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ReelIcon } from '../Icons/ReelIcon';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '../MainLayout';
@@ -7,15 +7,22 @@ import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
 import toast from 'react-hot-toast';
 
-type Reel = {
+export type Reel = {
     id: number;
     user_id: number;
     video_url: string;
     caption: string;
     audio_name: string;
+    audio_url: string;
     likes_count: number;
     comments_count: number;
     created_at: string;
+    user: {
+        id: number;
+        name: string;
+        username: string;
+        avatar_url: string;
+    }
 }
 
 export const CreateReel = () => {
@@ -23,6 +30,7 @@ export const CreateReel = () => {
         video_url: '',
         caption: '',
         audio_name: '',
+        audio_url: '',
         visibility: ''
     });
     const [loading, setLoading] = useState(false);
@@ -69,6 +77,7 @@ export const CreateReel = () => {
             formData.append('video', videoFile);
             formData.append('caption', reel.caption);
             formData.append('audio_name', reel.audio_name);
+            formData.append('audio_url', reel.audio_url);
             formData.append('visibility', reel.visibility);
             const res = await axios.post(`${api_url}/reels/create`, formData, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
@@ -83,9 +92,19 @@ export const CreateReel = () => {
                 console.log(res.data.message);
             }
         } catch (err: any) {
+            setLoading(false);
             console.error(err?.response.data);
         }
     }
+
+    useEffect(() => {
+        return () => {
+            if (audioElement) {
+                audioElement.pause();
+                audioElement.currentTime = 0;
+            }
+        };
+    }, [audioElement]);
     return (
         <MainLayout>
             <div className="flex items-center justify-center p-4">
@@ -153,21 +172,6 @@ export const CreateReel = () => {
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] outline-none text-sm text-gray-800 resize-none transition"
                             />
                         </div>
-
-                        {/* <div>
-                            <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Audio Track Name</label>
-                            <div className="relative flex items-center">
-                                <Music className="absolute left-3.5 w-4 h-4 text-gray-400" />
-                                <input
-                                    type="text"
-                                    name='audio_name'
-                                    value={reel.audio_name}
-                                    onChange={handleChange}
-                                    placeholder="e.g. Coding Beats - LoFi"
-                                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] outline-none text-sm text-gray-800 transition"
-                                />
-                            </div>
-                        </div> */}
                         <div className="relative">
                             <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Audio Track Name</label>
 
@@ -191,7 +195,7 @@ export const CreateReel = () => {
                                             key={track.id}
                                             onClick={() => {
                                                 setSelectedTrack(track);
-                                                setReel(prev => ({ ...prev, audio_name: track.url }))
+                                                setReel(prev => ({ ...prev, audio_url: track.url, audio_name: `${track.title} - ${track.artist}` }))
                                                 setIsDropdownOpen(false);
 
                                                 if (audioElement) audioElement.pause();

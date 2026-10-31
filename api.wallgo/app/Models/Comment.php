@@ -34,6 +34,11 @@ class Comment extends Model
         return $this->hasMany(Comment::class, 'reply_to')->with(['user', 'replies.user'])->withCount('likes');
     }
 
+    public function reel()
+    {
+        return $this->belongsTo(Reel::class);
+    }
+
     protected static function booted()
     {
         static::deleting(function ($comment) {

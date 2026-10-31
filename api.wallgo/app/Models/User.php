@@ -81,6 +81,11 @@ class User extends Authenticatable
         return $this->morphedByMany(GroupPageFollow::class, 'followable');
     }
 
+    public function reels()
+    {
+        return $this->hasMany(Reel::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

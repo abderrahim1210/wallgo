@@ -11,6 +11,7 @@ class Reel extends Model
         'video_url',
         'caption',
         'audio_name',
+        'audio_url',
         'likes_count',
         'comments_count'
     ];
@@ -23,5 +24,15 @@ class Reel extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function likes()
+    {
+        return $this->morphMany(Like::class, 'liketable');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'post_id');
     }
 }

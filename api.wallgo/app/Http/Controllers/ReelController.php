@@ -4,15 +4,38 @@ namespace App\Http\Controllers;
 
 use App\Models\Reel;
 use Cloudinary\Cloudinary;
-// use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class ReelController extends Controller
 {
+    public function index()
+    {
+        $user_id = Auth::id();
+        if (!$user_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        try {
+            $reels = Reel::with(['user:id,username,name,avatar_url'])->withCount(['likes', 'comments'])->latest()->paginate(10);
+            return response()->json([
+                'success' => true,
+                'reels' => $reels
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
+        }
+    }
     public function create(Request $request)
     {
+        set_time_limit(300);
+        ini_set('max_execution_time', '300');
         $user_id = Auth::id();
         if (!$user_id) return response()->json([
             'success' => false,
@@ -35,25 +58,33 @@ class ReelController extends Controller
             }
 
             $videoFile = $request->file('video');
-            // $check = new \App\Http\Controllers\ValideImage();
-            // $valide = $check->valide($videoFile, 'video');
-            // if ($valide) {
             $cloudinary = new Cloudinary([
                 'cloud' => [
-                    'cloud_name' => config('cloudinary.cloud_name', env('CLOUDINARY_CLOUD_NAME')),
+                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
                     'api_key'    => env('CLOUDINARY_API_KEY'),
                     'api_secret' => env('CLOUDINARY_API_SECRET'),
                 ],
-                'url' => ['secure' => true],
+                'url' => [
+                    'secure' => true
+                ]
             ]);
 
+            $uploadResult = $cloudinary->uploadApi()->upload(
+                $videoFile->getRealPath(),
+                [
+                    'resource_type' => 'video',
+                    'folder' => 'wallgo_reels'
+                ]
+            );
 
-            $result = $cloudinary->uploadApi()->upload($videoFile->getRealPath(), [
-                'resource_type' => 'video',
-                'folder' => 'wallgo_reels_url',
-            ]);
+            if (!isset($uploadResult['secure_url'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cloudinary upload failed to return secure URL'
+                ], 500);
+            }
 
-            $video_url = $result['secure_url'];
+            $video_url = $uploadResult['secure_url'];
             Reel::create([
                 'user_id' => $user_id,
                 'video_url' => $video_url,
@@ -65,14 +96,7 @@ class ReelController extends Controller
                 'success' => true,
                 'message' => 'Reel created successfully'
             ], 201);
-            // } else {
-            //     return response()->json([
-            //         'success' => false,
-            //         'message' => 'Failed to create a reel'
-            //     ], 500);
-            // }
         } catch (\Exception $e) {
-            Log::error($e);
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),

@@ -1,7 +1,7 @@
 import React from 'react'
 
 interface SkeletonProps {
-    type: 'post' | 'profile' | 'pages_groups' | 'bookmark' | 'edit_profile';
+    type: 'post' | 'profile' | 'pages_groups' | 'bookmark' | 'edit_profile' | 'reels';
 }
 export const Skeleton: React.FC<SkeletonProps> = ({ type }) => {
     return type === 'post' ? (
@@ -253,6 +253,64 @@ export const Skeleton: React.FC<SkeletonProps> = ({ type }) => {
                 </div>
 
             </div>
+        </div>
+    ) : type === 'reels' ? (
+        <div className="relative w-full max-w-sm mx-auto h-[80vh] bg-gray-900 rounded-3xl overflow-hidden shadow-xl animate-pulse flex flex-col justify-between p-4">
+
+            {/* Top Bar / Header Skeleton */}
+            <div className="flex items-center justify-between z-10">
+                <div className="flex items-center gap-3">
+                    {/* Avatar Circle */}
+                    <div className="w-10 h-10 rounded-full bg-gray-700/60"></div>
+                    {/* Username & Time */}
+                    <div className="space-y-1.5">
+                        <div className="w-24 h-3 bg-gray-700/60 rounded-md"></div>
+                        <div className="w-16 h-2.5 bg-gray-700/40 rounded-md"></div>
+                    </div>
+                </div>
+                {/* Follow / Options Button */}
+                <div className="w-16 h-6 bg-gray-700/50 rounded-full"></div>
+            </div>
+
+            {/* Center Content / Video Area Placeholder */}
+            <div className="absolute inset-0 flex items-center justify-center">
+                {/* Optional subtle loader icon or pulse effect */}
+                <div className="w-12 h-12 rounded-full bg-gray-800/40 flex items-center justify-center">
+                    <div className="w-6 h-6 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin"></div>
+                </div>
+            </div>
+
+            {/* Right Side Action Buttons (Like, Comments, Share) */}
+            <div className="absolute right-4 bottom-24 flex flex-col items-center gap-5 z-10">
+                <div className="flex flex-col items-center gap-1">
+                    <div className="w-10 h-10 rounded-full bg-gray-700/60"></div>
+                    <div className="w-6 h-2.5 bg-gray-700/40 rounded-md"></div>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                    <div className="w-10 h-10 rounded-full bg-gray-700/60"></div>
+                    <div className="w-6 h-2.5 bg-gray-700/40 rounded-md"></div>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                    <div className="w-10 h-10 rounded-full bg-gray-700/60"></div>
+                    <div className="w-6 h-2.5 bg-gray-700/40 rounded-md"></div>
+                </div>
+            </div>
+
+            {/* Bottom Info Area (Caption & Audio Track) */}
+            <div className="space-y-3 z-10 pr-12">
+                {/* Caption Lines */}
+                <div className="space-y-2">
+                    <div className="w-full h-3 bg-gray-700/60 rounded-md"></div>
+                    <div className="w-3/4 h-3 bg-gray-700/50 rounded-md"></div>
+                </div>
+
+                {/* Audio Track Badge */}
+                <div className="flex items-center gap-2 pt-1">
+                    <div className="w-4 h-4 rounded-full bg-gray-700/60"></div>
+                    <div className="w-32 h-2.5 bg-gray-700/40 rounded-md"></div>
+                </div>
+            </div>
+
         </div>
     ) : (
         <div className="max-w-4xl mx-auto px-4 py-6 animate-pulse">

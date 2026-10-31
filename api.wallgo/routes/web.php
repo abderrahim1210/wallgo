@@ -181,6 +181,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/search', [SearchController::class, 'search']);
 
     Route::post('/reels/create', [ReelController::class, 'create']);
+
+    Route::get('/reels', [ReelController::class, 'index']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);
