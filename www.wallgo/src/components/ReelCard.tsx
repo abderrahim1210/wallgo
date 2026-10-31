@@ -21,15 +21,9 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
 
         const handleIntersect: IntersectionObserverCallback = (entries) => {
             entries.forEach((entry) => {
-                // const id = Number(entry.target.getAttribute('data-reel-id'));
-                // const videoElement = videoRefs.current[id];
-
                 if (entry.isIntersecting) {
                     setPlayingVideoId(reel.id);
                     setIsPlaying(true);
-                    // if (videoElement) {
-                    //     videoElement.play().catch(() => { });
-                    // }
 
                     if (videoRef.current) {
                         videoRef.current.play().catch(() => { });
