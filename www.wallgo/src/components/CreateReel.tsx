@@ -18,6 +18,8 @@ export type Reel = {
     comments_count: number;
     created_at: string;
     is_owner: boolean;
+    is_followed: boolean;
+    is_liked: boolean;
     user: {
         id: number;
         name: string;

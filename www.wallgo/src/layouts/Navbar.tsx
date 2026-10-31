@@ -1,4 +1,4 @@
-import { Bookmark, Clapperboard, Compass, Flame, Heart, Home, Menu, MessagesCircle, Plus, PlusCircle, PlusSquare, Search, UserCircle } from 'lucide-react'
+import { Bookmark, Clapperboard, Compass, Flame, Heart, Home, Menu, MessagesCircle, Plus, PlusCircle, PlusIcon, PlusSquare, Search, UserCircle, VideoIcon } from 'lucide-react'
 import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Tooltip } from '../templates/Tooltip'
@@ -6,6 +6,7 @@ import { Notifications } from '../components/Notifications'
 import { useAuth } from '../hooks/AuthProvider'
 import { Offcanvas } from '../templates/Offcanvas'
 import AnimatedMenuIcon from '../Icons/AnimatedMenuIcon'
+import { DropdownMenu } from '../templates/DropdownMenu'
 
 export const Navbar = () => {
     const linksClasse = "text-gray-700 hover:text-[var(--special-purple)] transition duration-150";
@@ -21,6 +22,18 @@ export const Navbar = () => {
     const [notifOpen, setNotifOpen] = useState(false);
     const { user } = useAuth()!;
     const [showMenu, setShowMenu] = useState(false);
+    const createOptions = [
+        {
+            label: 'Create Post',
+            icon: <PlusIcon className="w-4 h-4 text-[var(--special-purple)]" />,
+            onClick: () => { navigate('/create_post') },
+        },
+        {
+            label: 'Create Reel',
+            icon: <Clapperboard className="w-4 h-4 text-[var(--special-purple)]" />,
+            onClick: () => { navigate('/create_reel') },
+        },
+    ]
     return (
         <>
             <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 px-6 py-2 shadow-sm">
@@ -79,9 +92,16 @@ export const Navbar = () => {
                                 <>
                                     <li className='flex items-center space-x-3'>
                                         <Tooltip label='Create post' position={position}>
-                                            <button className={`${linksClasse} cursor-pointer ${location.pathname === '/' && 'hidden'} hover:text-[var(--special-purple)]`} onClick={() => navigate('/create_post')}>
-                                                <PlusCircle className='w-7 h-7' />
-                                            </button>
+                                            <div className='relative inline-flex items-center m-0'>
+                                                <DropdownMenu
+                                                    trigger={
+                                                        <button className={`${linksClasse} cursor-pointer hover:text-[var(--special-purple)]`} /* onClick={} */>
+                                                            <PlusCircle className='w-7 h-7' />
+                                                        </button>
+                                                    }
+                                                    items={createOptions}
+                                                />
+                                            </div>
                                         </Tooltip>
                                         <Tooltip label='Notifications' position={position}>
                                             <button className={`${linksClasse} cursor-pointer hover:text-[var(--special-red)]`} onClick={() => setNotifOpen(prev => !prev)}>

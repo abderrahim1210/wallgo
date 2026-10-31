@@ -13,35 +13,6 @@ import { ErrorPage } from './ErrorPage';
 import { ReelGrid } from '../templates/ReelGrid';
 
 export const Reels = () => {
-    
-    // const reels = [
-    //     {
-    //         id: 1,
-    //         videoUrl: 'https://www.pexels.com/download/video/39657557/',
-    //         caption: 'Testing the new WallGo Reels architecture! Clean UI and smooth playback. 🚀✨ #WallGo #Dev',
-    //         likes: '14.2k',
-    //         comments: '382',
-    //         author: {
-    //             name: 'Abderrahim Khali Ali',
-    //             username: 'abderrahim',
-    //             avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
-    //         },
-    //         audioName: 'Original Audio - WallGo Official',
-    //     },
-    //     {
-    //         id: 2,
-    //         videoUrl: 'https://www.pexels.com/download/video/39654276/',
-    //         caption: 'Exploring modern fullstack features with React and Tailwind CSS. 💻🔥',
-    //         likes: '28.5k',
-    //         comments: '941',
-    //         author: {
-    //             name: 'Sara Miller',
-    //             username: 'saramiller',
-    //             avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
-    //         },
-    //         audioName: 'Coding Beats - LoFi',
-    //     },
-    // ];
     const fetchReels = async () => {
         try {
             const res = await axios.get(`${api_url}/reels`, { withCredentials: true, withXSRFToken: true });

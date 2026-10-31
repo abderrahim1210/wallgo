@@ -86,7 +86,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
     }, [isOpen]);
 
     return (
-        <div className="relative inline-block text-left" ref={containerRef}>
+        <div className="relative inline-flex text-left" ref={containerRef}>
             <div onClick={handleToggle} className="cursor-pointer inline-flex items-center select-none">
                 {trigger}
             </div>

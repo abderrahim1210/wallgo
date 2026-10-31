@@ -2,6 +2,11 @@ import React, { useEffect, useRef, useState } from 'react'
 import type { Reel } from './CreateReel';
 import { Heart, MessageCircle, MoreVertical, Music, Pause, Send, Volume2, VolumeX } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useFollow } from './useFollow';
+import { useAuth } from '../hooks/AuthProvider';
+import { useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { api_url } from '../pages/Auth/getUser';
 
 interface ReelCardProps {
     reel: Reel;
@@ -10,134 +15,77 @@ interface ReelCardProps {
 export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
     const [isMuted, setIsMuted] = useState(false);
     const [playingVideoId, setPlayingVideoId] = useState<number | null>(1);
-    const [isPlaying, setIsPlaying] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(true);
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
-    // useEffect(() => {
-    //     const observerOptions = {
-    //         root: null,
-    //         rootMargin: '0px',
-    //         threshold: 0.6,
-    //     };
-
-    //     const handleIntersect: IntersectionObserverCallback = (entries) => {
-    //         entries.forEach((entry) => {
-    //             if (entry.isIntersecting) {
-    //                 setPlayingVideoId(reel.id);
-    //                 setIsPlaying(true);
-
-    //                 if (videoRef.current) {
-    //                     videoRef.current.play().catch(() => { });
-    //                 }
-    //                 if (audioRef.current) {
-    //                     audioRef.current.play().catch(() => { });
-    //                 }
-    //             } else {
-    //                 if (videoRef.current) {
-    //                     videoRef.current.pause();
-    //                 }
-    //                 if (audioRef.current) {
-    //                     audioRef.current.pause();
-    //                 }
-    //             }
-    //         });
-    //     };
-
-    //     const observer = new IntersectionObserver(handleIntersect, observerOptions);
-    //     const container = videoRef.current?.closest('.reel-container') || videoRef.current?.parentElement;
-
-    //     if (container) {
-    //         observer.observe(container);
-    //     }
-
-    //     return () => observer.disconnect();
-    // }, [reel.id]);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
                     const video = videoRef.current;
+                    const audio = audioRef.current;
                     if (!video) return;
 
                     if (entry.isIntersecting) {
                         setPlayingVideoId(reel.id);
+                        setIsPlaying(true);
                         video.play().catch(() => { });
+                        if (audio) {
+                            audio.currentTime = 0;
+                            audio.play().catch(() => { });
+                        }
                     } else {
                         video.pause();
+                        if (audio) audio.pause();
+                        setIsPlaying(false);
                     }
                 });
             },
             { root: null, rootMargin: '0px', threshold: 0.6 }
         );
 
-        const container =
-            videoRef.current?.closest('.reel-container') || videoRef.current?.parentElement;
+        const container = videoRef.current?.closest('.reel-container') || videoRef.current?.parentElement;
         if (container) observer.observe(container);
 
         return () => observer.disconnect();
     }, [reel.id]);
 
-    useEffect(() => {
+    const togglePlayPause = () => {
         const video = videoRef.current;
         const audio = audioRef.current;
-        if (!video || !audio) return;
-
-        const onPlay = () => {
-            audio.currentTime = video.currentTime;
-            audio.play().catch(() => { });
-            setIsPlaying(true);
-        };
-        const onPause = () => {
-            audio.pause();
-            setIsPlaying(false);
-        };
-        const onSeeked = () => {
-            audio.currentTime = video.currentTime;
-        };
-        const onTimeUpdate = () => {
-            // Ila video 3awd mn l'bdaya (loop) wla f drift kbir, 3awd sync
-            if (Math.abs(audio.currentTime - video.currentTime) > 0.3) {
-                audio.currentTime = video.currentTime;
-            }
-        };
-        const onWaiting = () => audio.pause();
-        const onPlaying = () => {
-            if (!video.paused) audio.play().catch(() => { });
-        };
-
-        video.addEventListener('play', onPlay);
-        video.addEventListener('pause', onPause);
-        video.addEventListener('seeked', onSeeked);
-        video.addEventListener('timeupdate', onTimeUpdate);
-        video.addEventListener('waiting', onWaiting);
-        video.addEventListener('playing', onPlaying);
-
-        return () => {
-            video.removeEventListener('play', onPlay);
-            video.removeEventListener('pause', onPause);
-            video.removeEventListener('seeked', onSeeked);
-            video.removeEventListener('timeupdate', onTimeUpdate);
-            video.removeEventListener('waiting', onWaiting);
-            video.removeEventListener('playing', onPlaying);
-        };
-    }, [reel.audio_url])
-
-
-    const togglePlayPause = () => {
-        if (!videoRef.current) return;
+        if (!video) return;
 
         if (isPlaying) {
-            videoRef.current.pause();
-            audioRef.current?.pause();
+            video.pause();
+            audio?.pause();
             setIsPlaying(false);
         } else {
-            videoRef.current.play();
-            audioRef.current?.play().catch(() => { });
+            video.play();
+            audio?.play().catch(() => { });
             setIsPlaying(true);
         }
     };
     const navigate = useNavigate();
+    const [followed, setFollowed] = useState(reel?.is_followed);
+    const { add_follow } = useFollow();
+    const handleFollow = () => {
+        setFollowed(prev => !prev);
+        add_follow(reel?.user?.id);
+    }
+    const [liked,setLiked] = useState(reel?.is_liked);
+    const queryClient = useQueryClient();
+    const handleLike = async () => {
+        try {
+            const res = await axios.post(`${api_url}/add_like`, { type: 'reel', reel_id: reel?.id }, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) {
+                setLiked(prev => !prev);
+                queryClient.invalidateQueries({ queryKey: ['reels'] });
+            }
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
     return (
         <div
             key={reel.id}
@@ -149,10 +97,18 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                 src={reel.video_url}
                 className="absolute inset-0 w-full h-full object-cover cursor-pointer"
                 loop
-                muted={isMuted || !!reel.audio_url}
+                muted={isMuted}
                 playsInline
                 onClick={togglePlayPause}
-                
+                onTimeUpdate={() => {
+                    if (videoRef.current && audioRef.current) {
+                        if (videoRef.current.currentTime < 0.3 && audioRef.current.currentTime > 1) {
+                            audioRef.current.currentTime = 0;
+                            audioRef.current.play().catch(() => { });
+                        }
+                    }
+                }}
+
             />
             {!isPlaying && playingVideoId === reel.id && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none z-10">
@@ -172,9 +128,9 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
             </button>
 
             <div className="absolute right-4 bottom-20 z-20 flex flex-col items-center space-y-5 text-white">
-                <button className="flex flex-col items-center space-y-1 group cursor-pointer">
+                <button className="flex flex-col items-center space-y-1 group cursor-pointer" onClick={handleLike}>
                     <div className="p-3 bg-white/10 backdrop-blur-md rounded-full group-hover:bg-white/20 transition-colors">
-                        <Heart className="w-6 h-6 text-white hover:text-red-500 transition-colors" />
+                        <Heart className={`w-6 h-6 ${liked ? 'text-red-500 fill-red-500' : 'text-white'} hover:text-red-500 transition-colors`} />
                     </div>
                     <span className="text-xs font-semibold">{reel.likes_count}</span>
                 </button>
@@ -204,8 +160,8 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                     </div>
                     {
                         !reel.is_owner && (
-                            <button className="ml-2 px-3 py-1 bg-white/20 backdrop-blur-md hover:bg-white/30 text-xs font-semibold rounded-full transition-colors cursor-pointer">
-                                Follow
+                            <button className="ml-2 px-3 py-1 bg-white/20 backdrop-blur-md hover:bg-white/30 text-xs font-semibold rounded-full transition-colors cursor-pointer" onClick={handleFollow}>
+                                {followed ? 'Followed' : 'Follow'}
                             </button>
                         )
                     }
@@ -221,11 +177,6 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                         src={reel.audio_url}
                         muted={isMuted}
                         preload="auto"
-                        onEnded={() => {
-                            if (audioRef.current) {
-                                audioRef.current.pause();
-                            }
-                        }}
                     />
                 )}
 
