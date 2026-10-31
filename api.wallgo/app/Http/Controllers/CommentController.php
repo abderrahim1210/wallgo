@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Reel;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -77,10 +78,15 @@ class CommentController extends Controller
         }
     }
 
-    public function index($post_id)
+    public function index($post_id, $type)
     {
-        $post = Post::find($post_id);
-        if (!$post) return response()->json(['success' => false, 'message' => 'Post by this id not found']);
+        $obj = null;
+        if ($type === 'reel'){
+            $obj = Reel::find($post_id);
+        }else{
+            $obj = Post::find($post_id);
+        }
+        if (!$obj) return response()->json(['success' => false, 'message' => 'Post by this id not found']);
 
         try {
             $comments = Comment::with(['user', 'replies.user'])->withCount(['likes'])->withExists(['likes as is_liked' => function ($q) use ($post_id) {

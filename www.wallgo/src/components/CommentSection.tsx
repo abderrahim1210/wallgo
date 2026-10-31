@@ -16,12 +16,13 @@ import LoadingButton from '../Icons/LoadingButton';
 
 interface CommentSectionProps {
     postId: number;
+    type?:string;
     setOpenModal: (isopen: boolean) => void;
 }
-export const CommentSection: React.FC<CommentSectionProps> = ({ postId, setOpenModal }) => {
+export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type='post',setOpenModal }) => {
     const fetchComments = async ({ pageParam = 1 }) => {
         try {
-            const res = await axios.get(`${api_url}/comments/${postId}?page=${pageParam}`, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.get(`${api_url}/comments/${type}/${postId}?page=${pageParam}`, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) return res.data.comments || null;
         } catch (err: any) {
             console.error(err?.response.data);

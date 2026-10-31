@@ -95,7 +95,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/add_like', [ControllersLike::class, 'create']);
 
-    Route::get('/comments/{post_id}', [CommentController::class, 'index']);
+    Route::get('/comments/{type?}/{post_id}', [CommentController::class, 'index']);
 
     Route::post('/comments/create', [CommentController::class, 'create']);
 

@@ -7,6 +7,9 @@ import { useAuth } from '../hooks/AuthProvider';
 import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
+import { useModal } from '../hooks/ModalProvider';
+import ModalTemplate from '../templates/ModalTemplate';
+import { CommentSection } from './CommentSection';
 
 interface ReelCardProps {
     reel: Reel;
@@ -73,7 +76,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
         setFollowed(prev => !prev);
         add_follow(reel?.user?.id);
     }
-    const [liked,setLiked] = useState(reel?.is_liked);
+    const [liked, setLiked] = useState(reel?.is_liked);
     const queryClient = useQueryClient();
     const handleLike = async () => {
         try {
@@ -86,6 +89,10 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
             console.error(err?.response.data);
         }
     }
+
+    const { show, openModal, closeModal } = useModal()!;
+    const [openReport, setOpenReport] = useState(false);
+    
     return (
         <div
             key={reel.id}
@@ -135,7 +142,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                     <span className="text-xs font-semibold">{reel.likes_count}</span>
                 </button>
 
-                <button className="flex flex-col items-center space-y-1 group cursor-pointer">
+                <button className="flex flex-col items-center space-y-1 group cursor-pointer" onClick={() => openModal(`comments-reel-${reel?.id}`)}>
                     <div className="p-3 bg-white/10 backdrop-blur-md rounded-full group-hover:bg-white/20 transition-colors">
                         <MessageCircle className="w-6 h-6 text-white" />
                     </div>
@@ -185,6 +192,14 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                     <span className="truncate">{reel.audio_name}</span>
                 </div>
             </div>
+
+            {
+                show === `comments-reel-${reel?.id}` && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <CommentSection postId={reel?.id} type='reel' setOpenModal={setOpenReport} />
+                    </ModalTemplate>
+                )
+            }
 
         </div>
     )
