@@ -20,7 +20,9 @@ class ReelController extends Controller
         }
 
         try {
-            $reels = Reel::with(['user:id,username,name,avatar_url'])->withCount(['likes', 'comments'])->latest()->paginate(10);
+            $reels = Reel::with(['user:id,username,name,avatar_url'])->withCount(['likes', 'comments'])->withExists(['user as is_owner' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            }])->latest()->paginate(10);
             return response()->json([
                 'success' => true,
                 'reels' => $reels
@@ -46,6 +48,7 @@ class ReelController extends Controller
             'video' => ['required', 'file', 'mimes:mp4,mov,webm', 'max:51200'],
             'caption' => ['nullable', 'string', 'max:355'],
             'audio_name' => ['nullable', 'string'],
+            'audio_url' => ['nullable', 'string'],
             'visibility' => ['nullable', 'string', 'in:public,private']
         ]);
 
@@ -90,6 +93,7 @@ class ReelController extends Controller
                 'video_url' => $video_url,
                 'caption' => $request->caption ?? null,
                 'audio_name' => $request->audio_name ?? null,
+                'audio_url' => $request->audio_url ?? null,
                 'visibility' => $request->visibility ?? 'public'
             ]);
             return response()->json([
