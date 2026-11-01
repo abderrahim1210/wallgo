@@ -14,7 +14,8 @@ class CommentController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'post_id' => ['integer', 'required', 'exists:posts,id'],
+            'type' => ['string', 'required', 'in:post,reel'],
+            'id' => ['integer', 'required'],
             'content' => ['string', 'required', 'max:255'],
             'reply_to' => ['nullable', 'integer', 'exists:comments,id'],
             'comment_id' => ['nullable', 'integer', 'exists:comments,id']
@@ -22,8 +23,14 @@ class CommentController extends Controller
         $user = Auth::user();
         if (!$user) return response()->json(['success' => false, 'message' => 'User not found'], 401);
         $user_id = $user->id;
-        $post = Post::find($request->post_id);
-        if (!$post) return response()->json(['success' => false, 'message' => 'Post not found']);
+        $obj = null;
+        $type = $request->type;
+        if ($type === 'post') {
+            $obj = Post::find($request->id);
+        } else {
+            $obj = Reel::find($request->id);
+        }
+        if (!$obj) return response()->json(['success' => false, 'message' => "$type not found"]);
         if ($request->reply_to) {
             $comment = Comment::find($request->reply_to);
             if (!$comment) return response()->json(['success' => false, 'message' => 'Comment by id not found']);
@@ -62,9 +69,10 @@ class CommentController extends Controller
 
             Comment::create([
                 'user_id' => $user_id,
-                'post_id' => $request->post_id,
                 'content' => $request->content,
-                'reply_to' => $request->reply_to
+                'reply_to' => $request->reply_to,
+                'commentable_id' => $obj->id,
+                'commentable_type' => get_class($obj),
             ]);
             return response()->json([
                 'success' => true,
@@ -78,20 +86,20 @@ class CommentController extends Controller
         }
     }
 
-    public function index($post_id, $type)
+    public function index($type, $id)
     {
         $obj = null;
-        if ($type === 'reel'){
-            $obj = Reel::find($post_id);
-        }else{
-            $obj = Post::find($post_id);
+        if ($type === 'reel') {
+            $obj = Reel::find($id);
+        } else {
+            $obj = Post::find($id);
         }
         if (!$obj) return response()->json(['success' => false, 'message' => 'Post by this id not found']);
 
         try {
-            $comments = Comment::with(['user', 'replies.user'])->withCount(['likes'])->withExists(['likes as is_liked' => function ($q) use ($post_id) {
-                $q->where('post_id', $post_id);
-            }])->where('post_id', $post_id)->whereNull('reply_to')->latest()->paginate(10);
+            $comments = Comment::with(['user', 'replies.user'])->withCount(['likes'])->withExists(['likes as is_liked' => function ($q) use ($id) {
+                $q->where('commentable_id', $id);
+            }])->where('commentable_id', $id)->where('commentable_type', get_class($obj))->whereNull('reply_to')->latest()->paginate(10);
             return response()->json(['success' => true, 'comments' => $comments]);
         } catch (\Exception $e) {
             return response()->json([

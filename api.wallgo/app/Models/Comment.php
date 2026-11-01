@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Comment extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'content', 'post_id', 'reply_to'];
-    public function post()
+    protected $fillable = ['user_id', 'content', 'post_id', 'reply_to', 'commentable_id', 'commentable_type'];
+    public function commentable()
     {
-        return $this->belongsTo(Post::class);
+        return $this->morphTo();
     }
 
     public function reports()
@@ -32,11 +32,6 @@ class Comment extends Model
     public function replies()
     {
         return $this->hasMany(Comment::class, 'reply_to')->with(['user', 'replies.user'])->withCount('likes');
-    }
-
-    public function reel()
-    {
-        return $this->belongsTo(Reel::class);
     }
 
     protected static function booted()

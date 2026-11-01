@@ -5,9 +5,8 @@ import toast from 'react-hot-toast'
 import LoadingButton from '../Icons/LoadingButton';
 import { useModal } from '../hooks/ModalProvider';
 
-
 interface ReportProps {
-    type: 'post' | 'page' | 'user' | 'group' | 'comment';
+    type: 'post' | 'page' | 'user' | 'group' | 'comment' | 'reel';
     id: number,
 }
 export const Report: React.FC<ReportProps> = ({ type, id }) => {
@@ -32,15 +31,17 @@ export const Report: React.FC<ReportProps> = ({ type, id }) => {
             if (res.data.success) {
                 setLoading(false);
                 toast.success(res.data.message || 'Report added successfully');
+
                 setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
+                    closeModal?.();
+                }, 200);
             } else {
                 setLoading(false);
                 toast.error(res.data.message || 'Report failed to send');
                 console.error(res.data.message);
             }
         } catch (err: any) {
+            setLoading(false);
             console.error(err?.response?.data);
         }
     }

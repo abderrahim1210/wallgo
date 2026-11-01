@@ -6,6 +6,7 @@ use App\Models\Comment;
 use App\Models\Group;
 use App\Models\Page;
 use App\Models\Post;
+use App\Models\Reel;
 use App\Models\Report;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -43,6 +44,10 @@ class ReportController extends Controller
                 case 'comment':
                     $reportable = Comment::select('id')->find($request->reportable_id);
                     if (!$reportable) return response()->json(['success' => false, 'message' => "Comment by id $request->reportable_id not found"]);
+                    break;
+                case 'reel':
+                    $reportable = Reel::select('id')->find($request->reportable_id);
+                    if (!$reportable) return response()->json(['success' => false, 'message' => "Reel by id $request->reportable_id not found"]);
                     break;
             }
 

@@ -1,5 +1,5 @@
-import { Clapperboard, Disc, Eye, EyeClosed, Loader2, Music, Sparkles, Upload, Video, X } from 'lucide-react';
-import React, { useEffect, useState } from 'react'
+import { Clapperboard, Disc, Eye, EyeClosed, Loader2, Music, Play, Sparkles, Upload, Video, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react'
 import { ReelIcon } from '../Icons/ReelIcon';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '../MainLayout';
@@ -108,6 +108,20 @@ export const CreateReel = () => {
             }
         };
     }, [audioElement]);
+
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const [isPlaying, setIsPlaying] = useState(true);
+
+    const togglePlay = () => {
+        if (!videoRef.current) return;
+        if (isPlaying) {
+            videoRef.current.pause();
+            setIsPlaying(false);
+        } else {
+            videoRef.current.play();
+            setIsPlaying(true);
+        }
+    };
     return (
         <MainLayout>
             <div className="flex items-center justify-center p-4">
@@ -149,8 +163,18 @@ export const CreateReel = () => {
                                 <video
                                     src={videoPreview}
                                     className="h-full object-contain"
-                                    controls
+                                    loop
+                                    autoPlay
+                                    playsInline
+                                    onClick={togglePlay}
                                 />
+                                {!isPlaying && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none z-10">
+                                        <div className="p-3 bg-black/60 backdrop-blur-md rounded-full text-white">
+                                            <Play className="w-6 h-6" />
+                                        </div>
+                                    </div>
+                                )}
                                 <button
                                     type="button"
                                     onClick={() => {

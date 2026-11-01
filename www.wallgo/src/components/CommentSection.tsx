@@ -16,10 +16,10 @@ import LoadingButton from '../Icons/LoadingButton';
 
 interface CommentSectionProps {
     postId: number;
-    type?:string;
+    type: 'post' | 'reel';
     setOpenModal: (isopen: boolean) => void;
 }
-export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type='post',setOpenModal }) => {
+export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type, setOpenModal }) => {
     const fetchComments = async ({ pageParam = 1 }) => {
         try {
             const res = await axios.get(`${api_url}/comments/${type}/${postId}?page=${pageParam}`, { withCredentials: true, withXSRFToken: true });
@@ -33,7 +33,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type='po
         queryKey: ['comments', postId],
         queryFn: fetchComments,
         getNextPageParam: (lastPage: any) => {
-            if (lastPage.current_page < lastPage.last_page) {
+            if (lastPage?.current_page < lastPage?.last_page) {
                 return lastPage.current_page + 1;
             }
             return undefined;
@@ -74,7 +74,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type='po
         if (!newComment.trim()) return;
         setLoading(true);
         try {
-            const res = await axios.post(`${api_url}/comments/create`, { post_id: postId, content: newComment }, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.post(`${api_url}/comments/create`, { type: type, id: postId, content: newComment }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 setLoading(false);
                 toast.success(res.data.message || 'Comment added successfully');
@@ -100,7 +100,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type='po
             <div className="overflow-y-auto p-4 space-y-4 divide-y divide-gray-50">
                 {isLoading ? (<Spinner text='Wait few seconds to get comments ...' type='mini' />) : isError ? (<ErrorPage codeP='500' />) : comments?.length > 0 ? (
                     comments.map((comment: Comment, index: number) => (
-                        <CommentItem comment={comment} postId={postId} key={index} openReport={setOpenModal} />
+                        <CommentItem comment={comment} type={type} postId={postId} key={index} openReport={setOpenModal} />
                     ))
                 ) : (
                     <div className="py-8 text-center">

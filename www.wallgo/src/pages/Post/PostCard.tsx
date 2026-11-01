@@ -236,7 +236,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             {
                 (show === `comments-${post?.id}-post`) && (location.pathname !== `/post/${post?.id}`) && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <CommentSection key={post?.id} postId={post?.id} setOpenModal={setOpenReport} />
+                        <CommentSection key={post?.id} postId={post?.id} type='post' setOpenModal={setOpenReport} />
                     </ModalTemplate>
                 )
             }

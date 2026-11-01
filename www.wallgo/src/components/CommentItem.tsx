@@ -39,10 +39,11 @@ export interface Comment {
 interface CommentItemProps {
     comment: Comment;
     postId?: number;
+    type:'post' | 'reel';
     openReport: (isopen: boolean) => void;
 }
 
-export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, openReport }) => {
+export const CommentItem: React.FC<CommentItemProps> = ({ comment,type, postId, openReport }) => {
     const navigate = useNavigate();
     const [addReplay, setAddReplay] = useState(false);
     const [replyContent, setReplyContent] = useState('');
@@ -77,7 +78,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, openR
         if (!replyContent) return null;
         try {
             const cmnt_id = comment?.reply_to ? comment.reply_to : comment?.id;
-            const res = await axios.post(`${api_url}/comments/create`, { content: `@${comment.user.username} ${replyContent}`, post_id: postId, reply_to: cmnt_id }, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.post(`${api_url}/comments/create`, { type:type, content: `@${comment.user.username} ${replyContent}`, id: postId, reply_to: cmnt_id }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 setAddReplay(false);
                 queryClient.invalidateQueries({ queryKey: ['comments'] });
@@ -93,7 +94,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, openR
     const editComment = async () => {
         if (!newContent) return null;
         try {
-            const res = await axios.post(`${api_url}/comments/create`, { content: newContent, post_id: postId, comment_id: comment?.id }, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.post(`${api_url}/comments/create`, { type:type, content: newContent, id: postId, comment_id: comment?.id }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 setEdit(false);
                 setNewContent('');
@@ -242,7 +243,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, openR
                         {comment?.replies && comment.replies.length > 0 && (
                             <div className="pl-4 mt-3 border-l-2 border-gray-100 space-y-3">
                                 {comment.replies.map((reply: Comment) => (
-                                    <CommentItem key={reply.id} comment={reply} postId={postId} openReport={openReport} />
+                                    <CommentItem key={reply.id} comment={reply} type={type} postId={postId} openReport={openReport} />
                                 ))}
                             </div>
                         )}

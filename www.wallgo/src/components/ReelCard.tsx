@@ -10,6 +10,7 @@ import { api_url } from '../pages/Auth/getUser';
 import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
 import { CommentSection } from './CommentSection';
+import { Report } from './Report';
 
 interface ReelCardProps {
     reel: Reel;
@@ -92,7 +93,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
 
     const { show, openModal, closeModal } = useModal()!;
     const [openReport, setOpenReport] = useState(false);
-    
+
     return (
         <div
             key={reel.id}
@@ -197,6 +198,14 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                 show === `comments-reel-${reel?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
                         <CommentSection postId={reel?.id} type='reel' setOpenModal={setOpenReport} />
+                    </ModalTemplate>
+                )
+            }
+
+            {
+                openReport && (
+                    <ModalTemplate show={openReport} closeModal={() => setOpenReport(false)}>
+                        <Report id={reel?.id} type='reel' />
                     </ModalTemplate>
                 )
             }
