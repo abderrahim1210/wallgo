@@ -20,11 +20,20 @@ class BookmarkController extends Controller
             ], 401);
         }
 
-        if (empty($request->post_id)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Id required for save post'
-            ], 401);
+        if ($request->type === 'post') {
+            if (empty($request->post_id)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Id required for save post'
+                ], 401);
+            }
+        } else {
+            if (empty($request->reel_id)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Id required for save post'
+                ], 401);
+            }
         }
 
         try {
@@ -40,15 +49,25 @@ class BookmarkController extends Controller
                     break;
             }
 
-            Bookmark::create([
-                'user_id' => $user_id,
-                'booktable_id' => $booktable->id,
-                'booktable_type' => $booktable ? get_class($booktable) : null
-            ]);
+            $saved = Bookmark::where('user_id', $user_id)->where('booktable_id', $booktable->id)->where('booktable_type', get_class($booktable))->first();
 
-            return response()->json([
-                'success' => true,
-            ], 200);
+            if ($saved) {
+                $saved->delete();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Post unsaved'
+                ], 200);
+            } else {
+                Bookmark::create([
+                    'user_id' => $user_id,
+                    'booktable_id' => $booktable->id,
+                    'booktable_type' => $booktable ? get_class($booktable) : null
+                ]);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Post saved'
+                ], 200);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -66,8 +85,8 @@ class BookmarkController extends Controller
         ], 401);
 
         try {
-            $posts = Post::whereHas('bookmarks', function($q) use ($user_id){
-                $q->where('user_id',$user_id);
+            $posts = Post::whereHas('bookmarks', function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
             })->withCount(['likes', 'comments'])->with(['user:id,name,username,avatar_url', 'postable:id,name,logo_url'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
             }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {

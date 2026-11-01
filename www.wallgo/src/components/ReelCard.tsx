@@ -11,6 +11,8 @@ import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
 import { CommentSection } from './CommentSection';
 import { Report } from './Report';
+import ShareDropdown from './ShareDropdown';
+import { ReelOptions } from './ReelOptions';
 
 interface ReelCardProps {
     reel: Reel;
@@ -93,6 +95,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
 
     const { show, openModal, closeModal } = useModal()!;
     const [openReport, setOpenReport] = useState(false);
+    const [openReportReel,setOpenReportReel] = useState(false);
     const [commentId, setCommentId] = useState<number | null>(null)
     return (
         <div
@@ -135,7 +138,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                 {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
             </button>
 
-            <div className="absolute right-4 bottom-20 z-20 flex flex-col items-center space-y-5 text-white">
+            <div className="absolute right-4 bottom-20 z-30 flex flex-col items-center space-y-5 text-white">
                 <button className="flex flex-col items-center space-y-1 group cursor-pointer" onClick={handleLike}>
                     <div className="p-3 bg-white/10 backdrop-blur-md rounded-full group-hover:bg-white/20 transition-colors">
                         <Heart className={`w-6 h-6 ${liked ? 'text-red-500 fill-red-500' : 'text-white'} hover:text-red-500 transition-colors`} />
@@ -150,11 +153,11 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                     <span className="text-xs font-semibold">{reel.comments_count}</span>
                 </button>
 
-                <button className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer">
+                <button className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer" onClick={() => openModal(`share-${reel?.id}`)}>
                     <Send className="w-6 h-6 text-white" />
                 </button>
 
-                <button className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer">
+                <button className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer" onClick={() => openModal(`options-reel-${reel?.id}`)}>
                     <MoreVertical className="w-6 h-6 text-white" />
                 </button>
             </div>
@@ -206,6 +209,30 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                 (openReport && commentId) && (
                     <ModalTemplate show={openReport} closeModal={() => setOpenReport(false)}>
                         <Report id={commentId} type='comment' onClose={() => setOpenReport(false)} />
+                    </ModalTemplate>
+                )
+            }
+
+            {
+                show === `share-${reel?.id}` && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <ShareDropdown url={window.location.href} />
+                    </ModalTemplate>
+                )
+            }
+
+            {
+                show === `options-reel-${reel?.id}` && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <ReelOptions setOpenReport={setOpenReportReel} reel_id={reel?.id} is_owner={reel?.is_owner} is_saved={reel?.is_saved} />
+                    </ModalTemplate>
+                )
+            }
+
+            {
+                openReportReel && (
+                    <ModalTemplate show={openReportReel} closeModal={() => setOpenReportReel(false)}>
+                        <Report id={reel?.id} type='reel' onClose={() => setOpenReportReel(false)} />
                     </ModalTemplate>
                 )
             }

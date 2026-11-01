@@ -36,7 +36,7 @@ export const MobileCellNavbar = () => {
                 </Link>
             </div> */}
 
-            <Tooltip label='Messages' position={position}>
+            <Tooltip label='Reels' position={position}>
                 <Link to="/reels" className={getLinkClass('/reels')}>
                     <Clapperboard className="w-6 h-6" />
                 </Link>

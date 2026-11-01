@@ -33,10 +33,8 @@ export const Report: React.FC<ReportProps> = ({ type, id, onClose }) => {
                 setLoading(false);
                 toast.success(res.data.message || 'Report added successfully');
 
-                // setTimeout(() => {
                 closeModal?.();
                 if (onClose) onClose();
-                // }, 200);
             } else {
                 setLoading(false);
                 toast.error(res.data.message || 'Report failed to send');

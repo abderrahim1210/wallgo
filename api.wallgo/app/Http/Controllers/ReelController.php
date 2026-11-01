@@ -28,7 +28,9 @@ class ReelController extends Controller
                 });
             }])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
-            }])->latest()->paginate(10);
+            }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
+                    $q->where('user_id', $user_id);
+                }])->latest()->paginate(10);
             return response()->json([
                 'success' => true,
                 'reels' => $reels

@@ -20,6 +20,7 @@ export type Reel = {
     is_owner: boolean;
     is_followed: boolean;
     is_liked: boolean;
+    is_saved: boolean;
     user: {
         id: number;
         name: string;
