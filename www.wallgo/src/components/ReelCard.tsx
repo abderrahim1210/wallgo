@@ -93,7 +93,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
 
     const { show, openModal, closeModal } = useModal()!;
     const [openReport, setOpenReport] = useState(false);
-
+    const [commentId, setCommentId] = useState<number | null>(null)
     return (
         <div
             key={reel.id}
@@ -197,15 +197,15 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
             {
                 show === `comments-reel-${reel?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <CommentSection postId={reel?.id} type='reel' setOpenModal={setOpenReport} />
+                        <CommentSection postId={reel?.id} type='reel' setOpenModal={setOpenReport} setCommentId={setCommentId} />
                     </ModalTemplate>
                 )
             }
 
             {
-                openReport && (
+                (openReport && commentId) && (
                     <ModalTemplate show={openReport} closeModal={() => setOpenReport(false)}>
-                        <Report id={reel?.id} type='reel' />
+                        <Report id={commentId} type='comment' onClose={() => setOpenReport(false)} />
                     </ModalTemplate>
                 )
             }

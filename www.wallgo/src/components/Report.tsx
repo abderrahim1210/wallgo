@@ -8,8 +8,9 @@ import { useModal } from '../hooks/ModalProvider';
 interface ReportProps {
     type: 'post' | 'page' | 'user' | 'group' | 'comment' | 'reel';
     id: number,
+    onClose?: () => void;
 }
-export const Report: React.FC<ReportProps> = ({ type, id }) => {
+export const Report: React.FC<ReportProps> = ({ type, id, onClose }) => {
     const [data, setData] = useState({
         reportable_id: id,
         reportable_type: type,
@@ -32,9 +33,10 @@ export const Report: React.FC<ReportProps> = ({ type, id }) => {
                 setLoading(false);
                 toast.success(res.data.message || 'Report added successfully');
 
-                setTimeout(() => {
-                    closeModal?.();
-                }, 200);
+                // setTimeout(() => {
+                closeModal?.();
+                if (onClose) onClose();
+                // }, 200);
             } else {
                 setLoading(false);
                 toast.error(res.data.message || 'Report failed to send');

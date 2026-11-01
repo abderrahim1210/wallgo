@@ -148,6 +148,7 @@ export const PostCard: React.FC<PostCardProps> = ({
 
     const location = useLocation();
     const isLocked = post?.unlock_time && moment(post?.unlock_time).isAfter(moment());
+    const [commentId, setCommentId] = useState<number | null>(null);
     return (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
             <div className="flex items-center justify-between p-4 pb-3 transition-all rounded-t-2xl">
@@ -236,7 +237,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             {
                 (show === `comments-${post?.id}-post`) && (location.pathname !== `/post/${post?.id}`) && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <CommentSection key={post?.id} postId={post?.id} type='post' setOpenModal={setOpenReport} />
+                        <CommentSection key={post?.id} postId={post?.id} type='post' setOpenModal={setOpenReport} setCommentId={setCommentId} />
                     </ModalTemplate>
                 )
             }
@@ -258,9 +259,9 @@ export const PostCard: React.FC<PostCardProps> = ({
             }
 
             {
-                openReport && (
+                (openReport && commentId) && (
                     <ModalTemplate show={openReport} closeModal={() => setOpenReport(false)}>
-                        <Report id={post?.id} type='comment' />
+                        <Report id={commentId} type='comment' onClose={() => setOpenReport(false)} />
                     </ModalTemplate>
                 )
             }
@@ -280,18 +281,18 @@ export const PostCard: React.FC<PostCardProps> = ({
                         </button>
                     </Tooltip>
 
-                   <Tooltip label='Comment'>
-                     <button onClick={() => openModal(`comments-${post?.id}-post`)} className="flex items-center space-x-2 text-gray-600 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">
-                        <MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-semibold text-gray-700">{post?.comments_count}</span>
-                    </button>
-                   </Tooltip>
+                    <Tooltip label='Comment'>
+                        <button onClick={() => openModal(`comments-${post?.id}-post`)} className="flex items-center space-x-2 text-gray-600 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">
+                            <MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                            <span className="text-xs font-semibold text-gray-700">{post?.comments_count}</span>
+                        </button>
+                    </Tooltip>
 
-                   <Tooltip label='Share'>
-                     <button onClick={() => openModal(`share-${post?.id}`)} className="text-gray-600 hover:text-blue-500 transition-colors group cursor-pointer">
-                        <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    </button>
-                   </Tooltip>
+                    <Tooltip label='Share'>
+                        <button onClick={() => openModal(`share-${post?.id}`)} className="text-gray-600 hover:text-blue-500 transition-colors group cursor-pointer">
+                            <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                        </button>
+                    </Tooltip>
                 </div>
 
                 <Tooltip label='Save post'>

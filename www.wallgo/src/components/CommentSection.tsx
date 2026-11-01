@@ -18,8 +18,9 @@ interface CommentSectionProps {
     postId: number;
     type: 'post' | 'reel';
     setOpenModal: (isopen: boolean) => void;
+    setCommentId?: (id:number) => void;
 }
-export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type, setOpenModal }) => {
+export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type,setCommentId, setOpenModal }) => {
     const fetchComments = async ({ pageParam = 1 }) => {
         try {
             const res = await axios.get(`${api_url}/comments/${type}/${postId}?page=${pageParam}`, { withCredentials: true, withXSRFToken: true });
@@ -100,7 +101,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type, se
             <div className="overflow-y-auto p-4 space-y-4 divide-y divide-gray-50">
                 {isLoading ? (<Spinner text='Wait few seconds to get comments ...' type='mini' />) : isError ? (<ErrorPage codeP='500' />) : comments?.length > 0 ? (
                     comments.map((comment: Comment, index: number) => (
-                        <CommentItem comment={comment} type={type} postId={postId} key={index} openReport={setOpenModal} />
+                        <CommentItem comment={comment} type={type} postId={postId} key={index} openReport={setOpenModal} setCommentId={setCommentId} />
                     ))
                 ) : (
                     <div className="py-8 text-center">

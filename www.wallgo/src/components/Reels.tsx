@@ -11,6 +11,7 @@ import type { Reel } from './CreateReel';
 import Spinner from '../templates/Spinner';
 import { ErrorPage } from './ErrorPage';
 import { ReelGrid } from '../templates/ReelGrid';
+import { Toaster } from 'react-hot-toast';
 
 export const Reels = () => {
     const fetchReels = async () => {
@@ -44,6 +45,7 @@ export const Reels = () => {
                 <title>WallGo : Reels</title>
             </Helmet>
             <Navbar />
+            <Toaster position='top-right' />
             {
                 isLoading ? (
                     <Spinner type='large' text='Fetching reel ...' />
