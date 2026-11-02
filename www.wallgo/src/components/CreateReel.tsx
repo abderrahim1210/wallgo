@@ -1,7 +1,7 @@
 import { Clapperboard, Disc, Eye, EyeClosed, Loader2, Music, Play, Sparkles, Upload, Video, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react'
 import { ReelIcon } from '../Icons/ReelIcon';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { MainLayout } from '../MainLayout';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
@@ -29,7 +29,9 @@ export type Reel = {
     }
 }
 
+
 export const CreateReel = () => {
+    const { reel_id } = useParams();
     const [reel, setReel] = useState({
         video_url: '',
         caption: '',
@@ -37,6 +39,18 @@ export const CreateReel = () => {
         audio_url: '',
         visibility: ''
     });
+    useEffect(() => {
+        if (reel_id) {
+            axios.get(`${api_url}/reels/${reel_id}`, { withCredentials: true, withXSRFToken: true }).then(res => {
+                if (res.data.success) {
+                    setReel(res.data.reel);
+                }
+            }).catch((err: any) => {
+                console.error(err?.response.data);
+            });
+        }
+    }, [reel_id]);
+
     const [loading, setLoading] = useState(false);
     const [videoPreview, setVideoPreview] = useState<string | null>(null);
 

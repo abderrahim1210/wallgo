@@ -29,8 +29,8 @@ class ReelController extends Controller
             }])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
             }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
-                    $q->where('user_id', $user_id);
-                }])->latest()->paginate(10);
+                $q->where('user_id', $user_id);
+            }])->latest()->paginate(10);
             return response()->json([
                 'success' => true,
                 'reels' => $reels
@@ -114,6 +114,44 @@ class ReelController extends Controller
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
+            ], 500);
+        }
+    }
+
+    public function show(string $id)
+    {
+        if (!$id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Id required'
+            ]);
+        }
+
+        $user_id = Auth::id();
+        if (!$user_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User id not found'
+            ], 401);
+        }
+
+        try {
+            $reel = Reel::find($id);
+            if (!$reel){
+                return response()->json([
+                    'success' => false,
+                    'message' =>  'Reel not exist'
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'reel' => $reel
+            ],200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
             ], 500);
         }
     }

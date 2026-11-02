@@ -50,6 +50,7 @@ export const AppRoutes = () => {
             <Route path='*' element={<ErrorPage />} />
             <Route path='/post/:id' element={<PostPreview />} />
             <Route path='/create_reel' element={<CreateReel />} />
+            <Route path='/reel/:reel_id/edit' element={<CreateReel />} />
         </Routes>
     )
 }

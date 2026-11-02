@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import type { Reel } from './CreateReel';
-import { Heart, MessageCircle, MoreVertical, Music, Pause, Send, Volume2, VolumeX } from 'lucide-react';
+import { Bookmark, Heart, MessageCircle, MoreVertical, Music, Pause, Send, Volume2, VolumeX } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFollow } from './useFollow';
 import { useAuth } from '../hooks/AuthProvider';
@@ -13,6 +13,7 @@ import { CommentSection } from './CommentSection';
 import { Report } from './Report';
 import ShareDropdown from './ShareDropdown';
 import { ReelOptions } from './ReelOptions';
+import toast from 'react-hot-toast';
 
 interface ReelCardProps {
     reel: Reel;
@@ -95,8 +96,22 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
 
     const { show, openModal, closeModal } = useModal()!;
     const [openReport, setOpenReport] = useState(false);
-    const [openReportReel,setOpenReportReel] = useState(false);
-    const [commentId, setCommentId] = useState<number | null>(null)
+    const [openReportReel, setOpenReportReel] = useState(false);
+    const [commentId, setCommentId] = useState<number | null>(null);
+    const [saved, setSaved] = useState<boolean>(Boolean(reel?.is_saved));
+    const handleSavePost = async () => {
+        if (!reel?.id) return null;
+        setSaved(prev => !prev);
+        try {
+            await axios.post(`${api_url}/post/save`, { reel_id: reel.id, type: 'reel' }, { withCredentials: true, withXSRFToken: true }).then(res => {
+                if (res.data.success) {
+                    toast.success(res.data.message);
+                }
+            });
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
     return (
         <div
             key={reel.id}
@@ -155,6 +170,9 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
 
                 <button className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer" onClick={() => openModal(`share-${reel?.id}`)}>
                     <Send className="w-6 h-6 text-white" />
+                </button>
+                <button className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer" onClick={handleSavePost}>
+                    <Bookmark className={`w-6 h-6 text-white ${saved ? 'fill-white' : ''}`} />
                 </button>
 
                 <button className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer" onClick={() => openModal(`options-reel-${reel?.id}`)}>
@@ -224,7 +242,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
             {
                 show === `options-reel-${reel?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <ReelOptions setOpenReport={setOpenReportReel} reel_id={reel?.id} is_owner={reel?.is_owner} is_saved={reel?.is_saved} />
+                        <ReelOptions setOpenReport={setOpenReportReel} reel_id={reel?.id} is_owner={reel?.is_owner} is_saved={reel?.is_saved} setSaved={setSaved} saved={saved} handleSavePost={handleSavePost} />
                     </ModalTemplate>
                 )
             }

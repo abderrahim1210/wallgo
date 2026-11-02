@@ -1,33 +1,24 @@
 import { BookmarkPlus, Copy, Edit3, EyeOff, Flag, X } from 'lucide-react';
-import React, { useState } from 'react'
+import React, { useState, type Dispatch, type SetStateAction } from 'react'
 import toast from 'react-hot-toast';
 import { useModal } from '../hooks/ModalProvider';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
+import { useNavigate } from 'react-router-dom';
 
 interface ReelOptionsProps {
     reel_id: number;
     is_owner: boolean;
     is_saved: boolean;
     setOpenReport: (isopen: boolean) => void;
+    saved: boolean;
+    setSaved: Dispatch<SetStateAction<boolean>>;
+    handleSavePost: () => void
 }
 
-export const ReelOptions: React.FC<ReelOptionsProps> = ({ setOpenReport, reel_id, is_owner, is_saved }) => {
+export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport, saved, setSaved, handleSavePost, is_owner, is_saved }) => {
     const { closeModal } = useModal()!;
-    const [saved, setSaved] = useState<boolean>(Boolean(is_saved));
-    const handleSavePost = async () => {
-        if (!reel_id) return null;
-        setSaved(prev => !prev);
-        try {
-            await axios.post(`${api_url}/post/save`, { reel_id: reel_id, type: 'reel' }, { withCredentials: true, withXSRFToken: true }).then(res => {
-                if (res.data.success) {
-                    toast.success(res.data.message);
-                }
-            });
-        } catch (err: any) {
-            console.error(err?.response.data);
-        }
-    }
+    const navigate = useNavigate();
     return (
         <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-3 w-full border border-gray-100 transform transition-all animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-3 px-3 border-b border-gray-100">
@@ -39,7 +30,7 @@ export const ReelOptions: React.FC<ReelOptionsProps> = ({ setOpenReport, reel_id
                     is_owner && (
                         <button
                             onClick={() => {
-                                // navigate(`/reel/${reel?.id}/edit`, { state: { reelToEdit: reel } });
+                                navigate(`/reel/${reel_id}/edit`);
                             }}
                             className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-[var(--special-purple)] transition-all cursor-pointer group"
                         >
@@ -52,7 +43,7 @@ export const ReelOptions: React.FC<ReelOptionsProps> = ({ setOpenReport, reel_id
                 }
                 <button
                     onClick={() => {
-                        navigator.clipboard.writeText(`${window.location.origin}/reels`); // Wla l-link li bghiti
+                        navigator.clipboard.writeText(`${window.location.origin}/reels`);
                         toast.success('Link copied successfully!');
                     }}
                     className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-[var(--special-purple)] transition-all cursor-pointer group"
