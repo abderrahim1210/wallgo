@@ -13,7 +13,8 @@ class Reel extends Model
         'audio_name',
         'audio_url',
         'likes_count',
-        'comments_count'
+        'comments_count',
+        'public_id'
     ];
 
     public function reports()

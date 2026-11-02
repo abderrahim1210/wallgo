@@ -21,6 +21,7 @@ export type Reel = {
     is_followed: boolean;
     is_liked: boolean;
     is_saved: boolean;
+    public_id: number;
     user: {
         id: number;
         name: string;
@@ -32,22 +33,59 @@ export type Reel = {
 
 export const CreateReel = () => {
     const { reel_id } = useParams();
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [selectedTrack, setSelectedTrack] = useState<{ title: string; artist: string; url: string } | null>(null);
+    const [isPlayingPreview, setIsPlayingPreview] = useState(false);
+    const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+    const [videoFile, setVideoFile] = useState<File | null>(null);
+    const [edit, setEdit] = useState(false);
+
     const [reel, setReel] = useState({
         video_url: '',
         caption: '',
         audio_name: '',
         audio_url: '',
-        visibility: ''
+        visibility: '',
+        public_id: '',
     });
     useEffect(() => {
         if (reel_id) {
             axios.get(`${api_url}/reels/${reel_id}`, { withCredentials: true, withXSRFToken: true }).then(res => {
                 if (res.data.success) {
-                    setReel(res.data.reel);
+                    setEdit(true);
+                    const fetchedReel = res.data.reel;
+                    setReel({
+                        video_url: fetchedReel.video_url || '',
+                        caption: fetchedReel.caption || '',
+                        audio_name: fetchedReel.audio_name || '',
+                        audio_url: fetchedReel.audio_url || '',
+                        visibility: fetchedReel.visibility || '',
+                        public_id: fetchedReel.public_id || ''
+                    });
+                    setVideoPreview(fetchedReel?.video_url || null);
+                    if (fetchedReel.audio_name && fetchedReel.audio_url) {
+                        setSelectedTrack({
+                            title: fetchedReel.audio_name.split(' - ')[0] || fetchedReel.audio_name,
+                            artist: fetchedReel.audio_name.split(' - ')[1] || 'Unknown',
+                            url: fetchedReel.audio_url
+                        });
+                    }
                 }
             }).catch((err: any) => {
                 console.error(err?.response.data);
             });
+        } else {
+            setEdit(false);
+            setReel({
+                video_url: '',
+                caption: '',
+                audio_name: '',
+                audio_url: '',
+                visibility: '',
+                public_id: '',
+            });
+            setVideoPreview(null);
+            setSelectedTrack(null);
         }
     }, [reel_id]);
 
@@ -65,11 +103,6 @@ export const CreateReel = () => {
         { id: 3, title: 'Energetic Workout', artist: 'BeatMaker', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
     ];
 
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [selectedTrack, setSelectedTrack] = useState<{ title: string; artist: string; url: string } | null>(null);
-    const [isPlayingPreview, setIsPlayingPreview] = useState(false);
-    const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
-    const [videoFile, setVideoFile] = useState<File | null>(null);
 
 
     const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,16 +121,40 @@ export const CreateReel = () => {
 
     const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!videoFile || !reel.video_url) return null;
+        if (!videoFile && !edit) return null;
         setLoading(true);
         try {
+            let video_url = reel.video_url;
+            let public_id = reel.public_id || '';
+            if (videoFile) {
+                const cloudinaryFormData = new FormData();
+                cloudinaryFormData.append('file', videoFile);
+                cloudinaryFormData.append('upload_preset', 'wallgo_reel_presets');
+                cloudinaryFormData.append('resource_type', 'video');
+
+                const cloudName = "dhysaozog";
+                const resCloud = await axios.post(
+                    `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`,
+                    cloudinaryFormData
+                );
+
+                video_url = resCloud.data.secure_url;
+                public_id = resCloud.data.public_id;
+            }
+           
+            const method = edit ? 'put' : 'post';
+            const url = edit ? `${api_url}/reels/${reel_id}/edit` : `${api_url}/reels/create`;
             const formData = new FormData();
-            formData.append('video', videoFile);
+             if (edit) {
+                formData.append('_method', 'PUT');
+            }
+            formData.append('video', video_url);
+            formData.append('public_id', public_id);
             formData.append('caption', reel.caption);
             formData.append('audio_name', reel.audio_name);
             formData.append('audio_url', reel.audio_url);
             formData.append('visibility', reel.visibility);
-            const res = await axios.post(`${api_url}/reels/create`, formData, { withCredentials: true, withXSRFToken: true });
+            const res = await axios[method](url, formData, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 setLoading(false);
                 toast.success(res.data.message || 'Reel created successfully');
@@ -190,16 +247,20 @@ export const CreateReel = () => {
                                         </div>
                                     </div>
                                 )}
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setReel(prev => ({ ...prev, video_url: '' }));
-                                        setVideoPreview(null);
-                                    }}
-                                    className="absolute top-3 right-3 cursor-pointer bg-black/60 hover:bg-black text-white p-2 rounded-full backdrop-blur-xs transition"
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
+                                {
+                                    !edit && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setReel(prev => ({ ...prev, video_url: '' }));
+                                                setVideoPreview(null);
+                                            }}
+                                            className="absolute top-3 right-3 cursor-pointer bg-black/60 hover:bg-black text-white p-2 rounded-full backdrop-blur-xs transition"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    )
+                                }
                             </div>
                         )}
 
@@ -333,7 +394,7 @@ export const CreateReel = () => {
                                 ) : (
                                     <>
                                         <Video className="w-4 h-4" />
-                                        <span>Share Reel</span>
+                                        <span>{edit ? 'Edit Reel' : 'Share Reel'}</span>
                                     </>
                                 )}
                             </button>

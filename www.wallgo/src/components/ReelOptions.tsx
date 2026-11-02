@@ -31,6 +31,7 @@ export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport
                         <button
                             onClick={() => {
                                 navigate(`/reel/${reel_id}/edit`);
+                                closeModal?.();
                             }}
                             className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-[var(--special-purple)] transition-all cursor-pointer group"
                         >

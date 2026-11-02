@@ -182,6 +182,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/reels/create', [ReelController::class, 'create']);
 
+    Route::put('/reels/{id}/edit', [ReelController::class, 'update']);
+
     Route::get('/reels', [ReelController::class, 'index']);
 
     Route::get('/reels/{id}', [ReelController::class, 'show']);

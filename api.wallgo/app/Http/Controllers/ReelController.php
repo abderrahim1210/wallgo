@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reel;
+use App\Models\User;
 use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,7 +54,7 @@ class ReelController extends Controller
         ], 401);
 
         $request->validate([
-            'video' => ['required', 'file', 'mimes:mp4,mov,webm', 'max:51200'],
+            // 'video' => ['required', 'file', 'mimes:mp4,mov,webm', 'max:51200'],
             'caption' => ['nullable', 'string', 'max:355'],
             'audio_name' => ['nullable', 'string'],
             'audio_url' => ['nullable', 'string'],
@@ -61,48 +62,50 @@ class ReelController extends Controller
         ]);
 
         try {
-            if (!$request->hasFile('video')) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No video file provided'
-                ], 422);
-            }
+            // if (!$request->hasFile('video')) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'No video file provided'
+            //     ], 422);
+            // }
 
-            $videoFile = $request->file('video');
-            $cloudinary = new Cloudinary([
-                'cloud' => [
-                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
-                    'api_key'    => env('CLOUDINARY_API_KEY'),
-                    'api_secret' => env('CLOUDINARY_API_SECRET'),
-                ],
-                'url' => [
-                    'secure' => true
-                ]
-            ]);
+            // $videoFile = $request->file('video');
+            // $cloudinary = new Cloudinary([
+            //     'cloud' => [
+            //         'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+            //         'api_key'    => env('CLOUDINARY_API_KEY'),
+            //         'api_secret' => env('CLOUDINARY_API_SECRET'),
+            //     ],
+            //     'url' => [
+            //         'secure' => true
+            //     ]
+            // ]);
 
-            $uploadResult = $cloudinary->uploadApi()->upload(
-                $videoFile->getRealPath(),
-                [
-                    'resource_type' => 'video',
-                    'folder' => 'wallgo_reels'
-                ]
-            );
+            // $uploadResult = $cloudinary->uploadApi()->upload(
+            //     $videoFile->getRealPath(),
+            //     [
+            //         'resource_type' => 'video',
+            //         'folder' => 'wallgo_reels'
+            //     ]
+            // );
 
-            if (!isset($uploadResult['secure_url'])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Cloudinary upload failed to return secure URL'
-                ], 500);
-            }
+            // if (!isset($uploadResult['secure_url'])) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Cloudinary upload failed to return secure URL'
+            //     ], 500);
+            // }
 
-            $video_url = $uploadResult['secure_url'];
+            // $video_url = $uploadResult['secure_url'];
+            // $public_id = $uploadResult['public_id'];
             Reel::create([
                 'user_id' => $user_id,
-                'video_url' => $video_url,
+                'video_url' => $request->video,
                 'caption' => $request->caption ?? null,
                 'audio_name' => $request->audio_name ?? null,
                 'audio_url' => $request->audio_url ?? null,
-                'visibility' => $request->visibility ?? 'public'
+                'visibility' => $request->visibility ?? 'public',
+                'public_id' => $request->public_id
             ]);
             return response()->json([
                 'success' => true,
@@ -137,7 +140,7 @@ class ReelController extends Controller
 
         try {
             $reel = Reel::find($id);
-            if (!$reel){
+            if (!$reel) {
                 return response()->json([
                     'success' => false,
                     'message' =>  'Reel not exist'
@@ -147,12 +150,39 @@ class ReelController extends Controller
             return response()->json([
                 'success' => true,
                 'reel' => $reel
-            ],200);
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed : ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $user = User::findOrFail(Auth::id());
+        if (!$user) return response()->json(['success' => false, 'message' => 'User not found'], 401);
+        $reel = Reel::where('id', $id)->where('user_id', $user->id)->first();
+        if (!$reel) return response()->json(['success' => false, 'message' => 'Reel not found', 404]);
+        $data = $request->all();
+        try {
+            if ($reel->user_id !== $data['user_id']){
+                return response()->json([
+                    'success' => false,
+                    'message' => "You don't have permission for edit this reel"
+                ]);
+            }
+            $reel->update($data);
+            return response()->json([
+                'success' => true,
+                'message' => 'Post updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : '  . $e->getMessage()
+            ]);
         }
     }
 }
