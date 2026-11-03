@@ -25,7 +25,7 @@ class Post extends Controller
             'media_url' => ['nullable', 'string'],
             'postable_id' => ['nullable', 'integer'],
             'postable_type' => ['nullable', 'string', 'in:page,group'],
-            'visibility' => ['nullable','string','in:public,private']
+            'visibility' => ['nullable', 'string', 'in:public,private']
         ]);
 
         $data = $request->all();
@@ -116,7 +116,7 @@ class Post extends Controller
                     $q->where('id', $user_id);
                 }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
                     $q->where('user_id', $user_id);
-                }])->where('visibility','public')->whereNull('schedule_time')->latest()->paginate(10);
+                }])->where('visibility', 'public')->whereNull('schedule_time')->latest()->paginate(10);
                 return response()->json([
                     'success' => true,
                     'posts' => $posts
@@ -187,7 +187,7 @@ class Post extends Controller
 
             $post->likes()->delete();
             $post->comments()->delete();
-
+            $post->reports()->delete();
             $post->delete();
 
             return response()->json([

@@ -14,6 +14,7 @@ import { Report } from './Report';
 import ShareDropdown from './ShareDropdown';
 import { ReelOptions } from './ReelOptions';
 import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface ReelCardProps {
     reel: Reel;
@@ -111,6 +112,36 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
         } catch (err: any) {
             console.error(err?.response.data);
         }
+    }
+
+    const handleDelete = async () => {
+        if (!reel?.id) return null;
+        Swal.fire({
+            title: "Delete Reel",
+            text: `Are you sure for delete this reel ?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes , delete it',
+            confirmButtonColor: '#7371FC',
+            cancelButtonText: 'Cancel'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const res = await axios.delete(`${api_url}/reels/${reel?.id}`, { withCredentials: true, withXSRFToken: true });
+                    if (res.data.success) {
+                        toast.success(res.data.message || 'Reel deleted successfully');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        toast.error(res.data.message || 'Failed to delete this reel');
+                        console.log(res.data.message);
+                    }
+                } catch (err: any) {
+                    console.error(err?.response.data);
+                }
+            }
+        })
     }
     return (
         <div
@@ -242,7 +273,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
             {
                 show === `options-reel-${reel?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <ReelOptions setOpenReport={setOpenReportReel} reel_id={reel?.id} is_owner={reel?.is_owner} is_saved={reel?.is_saved} setSaved={setSaved} saved={saved} handleSavePost={handleSavePost} />
+                        <ReelOptions setOpenReport={setOpenReportReel} reel_id={reel?.id} is_owner={reel?.is_owner} is_saved={reel?.is_saved} setSaved={setSaved} saved={saved} handleSavePost={handleSavePost} handleDeleteReel={handleDelete} />
                     </ModalTemplate>
                 )
             }

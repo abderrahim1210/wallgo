@@ -1,4 +1,4 @@
-import { BookmarkPlus, Copy, Edit3, EyeOff, Flag, X } from 'lucide-react';
+import { BookmarkPlus, Copy, Edit3, EyeOff, Flag, Trash2, X } from 'lucide-react';
 import React, { useState, type Dispatch, type SetStateAction } from 'react'
 import toast from 'react-hot-toast';
 import { useModal } from '../hooks/ModalProvider';
@@ -13,10 +13,11 @@ interface ReelOptionsProps {
     setOpenReport: (isopen: boolean) => void;
     saved: boolean;
     setSaved: Dispatch<SetStateAction<boolean>>;
-    handleSavePost: () => void
+    handleSavePost: () => void;
+    handleDeleteReel: () => void;
 }
 
-export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport, saved, setSaved, handleSavePost, is_owner, is_saved }) => {
+export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport, saved, setSaved, handleSavePost, is_owner, is_saved, handleDeleteReel }) => {
     const { closeModal } = useModal()!;
     const navigate = useNavigate();
     return (
@@ -77,18 +78,36 @@ export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport
                     <span>Not interested</span>
                 </button>
 
-                <button
-                    onClick={() => {
-                        closeModal?.();
-                        setOpenReport(true);
-                    }}
-                    className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition-all cursor-pointer group"
-                >
-                    <div className="p-2 rounded-lg bg-red-50 group-hover:bg-red-100 transition-colors">
-                        <Flag className="w-4 h-4 text-red-500" />
-                    </div>
-                    <span>Report Reel</span>
-                </button>
+                {
+                    !is_owner && (
+                        <button
+                            onClick={() => {
+                                closeModal?.();
+                                setOpenReport(true);
+                            }}
+                            className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition-all cursor-pointer group"
+                        >
+                            <div className="p-2 rounded-lg bg-red-50 group-hover:bg-red-100 transition-colors">
+                                <Flag className="w-4 h-4 text-red-500" />
+                            </div>
+                            <span>Report Reel</span>
+                        </button>
+                    )
+                }
+
+                {
+                    is_owner && (
+                        <button
+                            onClick={handleDeleteReel}
+                            className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-red-600 hover:bg-purple-50 hover:text-[var(--special-purple)] transition-all cursor-pointer group"
+                        >
+                            <div className="p-2 rounded-lg bg-gray-50 group-hover:bg-purple-100 transition-colors">
+                                <Trash2 className="w-4 h-4 text-red-500" />
+                            </div>
+                            <span>Delete Reel</span>
+                        </button>
+                    )
+                }
             </div>
         </div>
     )

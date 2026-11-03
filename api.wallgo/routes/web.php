@@ -187,6 +187,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/reels', [ReelController::class, 'index']);
 
     Route::get('/reels/{id}', [ReelController::class, 'show']);
+
+    Route::delete('/reels/{id}', [ReelController::class, 'destroy']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);

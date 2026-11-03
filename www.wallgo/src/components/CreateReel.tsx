@@ -30,6 +30,7 @@ export type Reel = {
     }
 }
 
+export const cloudName = "dhysaozog";
 
 export const CreateReel = () => {
     const { reel_id } = useParams();
@@ -50,9 +51,9 @@ export const CreateReel = () => {
     });
     useEffect(() => {
         if (reel_id) {
+            setEdit(true);
             axios.get(`${api_url}/reels/${reel_id}`, { withCredentials: true, withXSRFToken: true }).then(res => {
                 if (res.data.success) {
-                    setEdit(true);
                     const fetchedReel = res.data.reel;
                     setReel({
                         video_url: fetchedReel.video_url || '',
@@ -132,7 +133,6 @@ export const CreateReel = () => {
                 cloudinaryFormData.append('upload_preset', 'wallgo_reel_presets');
                 cloudinaryFormData.append('resource_type', 'video');
 
-                const cloudName = "dhysaozog";
                 const resCloud = await axios.post(
                     `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`,
                     cloudinaryFormData
