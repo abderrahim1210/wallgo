@@ -122,6 +122,47 @@ class ReelController extends Controller
         }
     }
 
+    public function preview(string $id)
+    {
+        if (!$id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Id reel required'
+            ]);
+        }
+
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+
+        $user_id = Auth::id();
+        try {
+            $reel = Reel::with(['user:id,username,name,avatar_url', 'comments'])->withCount(['likes', 'comments'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            }])->withExists(['user as is_owner' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            }])->withExists(['user as is_followed' => function ($q) use ($user_id) {
+                $q->whereHas('followers', function ($query) use ($user_id) {
+                    $query->where('follower_id', $user_id);
+                });
+            }])->where('id', $id)->first();
+            return response()->json([
+                'success' => true,
+                'reel' => $reel
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function update(Request $request, string $id)
     {
         $user = User::findOrFail(Auth::id());

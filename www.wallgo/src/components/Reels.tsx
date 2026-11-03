@@ -37,8 +37,6 @@ export const Reels = () => {
 
     const reels: Reel[] = rl?.pages.flatMap((page: any) => page?.data || []) || [];
 
-
-    
     return (
         <>
             <Helmet>

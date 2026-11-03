@@ -188,6 +188,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/reels/{id}', [ReelController::class, 'show']);
 
+    Route::get('/reels/{id}/preview', [ReelController::class, 'preview']);
+
     Route::delete('/reels/{id}', [ReelController::class, 'destroy']);
 });
 
