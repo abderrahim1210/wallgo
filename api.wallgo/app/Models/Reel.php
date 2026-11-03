@@ -41,4 +41,9 @@ class Reel extends Model
     {
         return $this->morphMany(Bookmark::class, 'booktable');
     }
+
+    public function reelViews()
+    {
+        return $this->hasMany(ReelViews::class);
+    }
 }

@@ -250,4 +250,24 @@ class ReelController extends Controller
             }
         }
     }
+
+    public function incrementViews($id, Request $request)
+    {
+        $user_id = Auth::id();
+        if (!$user_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+        $reel = Reel::find($id);
+        if (!$reel){
+            return response()->json([
+                'success' => false,
+                'message' => 'Reel not exist'
+            ]);
+        }
+
+        
+    }
 }
