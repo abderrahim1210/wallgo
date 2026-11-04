@@ -1,30 +1,50 @@
 import { Helmet } from 'react-helmet-async';
 import { MainLayout } from '../MainLayout';
-import { PostGrid } from '../templates/PostGrid';
+import { PostGrid, type Post } from '../templates/PostGrid';
 import { Bookmark } from 'lucide-react';
 import { FaBookmark } from 'react-icons/fa';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { Skeleton } from '../templates/Skeleton';
 import { ErrorPage } from './ErrorPage';
+import { useState } from 'react';
+import { ReelGrid } from '../templates/ReelGrid';
+import { useNavigate } from 'react-router-dom';
+import PostsGrid from '../templates/PostsGrid';
 
 const SavedPosts = () => {
-    const fetchPosts = async () => {
+    const [activeTab, setActiveTab] = useState<'reels' | 'posts'>('posts');
+    const fetchPosts = async ({ pageParam = 1 }) => {
         try {
-            const res = await axios.get(`${api_url}/posts/saved`, { withCredentials: true, withXSRFToken: true });
-            if (res.data.success) return res.data.posts;
+            const res = await axios.get(`${api_url}/posts/saved?page=${pageParam}`, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) {
+                if (activeTab === 'posts') {
+                    return res.data.posts;
+                }
+                if (activeTab === 'reels') {
+                    return res.data.reels;
+                }
+            }
         } catch (err: any) {
             console.error(err?.response.data);
         }
     }
 
-    const { data: posts = [], isLoading, isError } = useQuery({
-        queryKey: ['posts_saved'],
+    const { data: ps, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+        queryKey: ['posts_saved', activeTab],
         queryFn: fetchPosts,
-        staleTime: 1000 * 60 * 5
+        getNextPageParam: (lastPage: any) => {
+            if (lastPage.current_page < lastPage.last_page) {
+                return lastPage.current_page + 1;
+            }
+            return undefined;
+        },
+        initialPageParam: 1,
     });
 
+    const posts = ps?.pages.flatMap((page: any) => page?.data || []) || [];
+    const navigate = useNavigate();
     return (
         <MainLayout>
             <Helmet>
@@ -43,10 +63,29 @@ const SavedPosts = () => {
                     <div className='max-w-2xl mx-auto px-4 py-6'>
                         <div className='flex justify-start items-center'>
                             <h1 className='font-bold text-3xl flex items-center gap-2'><FaBookmark className='w-8 h-8 text-[var(--special-purple)]' /> Saved Posts <span className='text-[var(--special-purple)]'>({posts.length})</span></h1>
-
+                        </div>
+                        <div className='flex space-x-2 border-b border-gray-100 pb-3 mb-3 mt-3'>
+                            <button
+                                onClick={() => setActiveTab('posts')}
+                                className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'posts' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                            >
+                                Posts
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('reels')}
+                                className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'reels' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                            >
+                                Reels
+                            </button>
                         </div>
                         <div className='mt-3'>
-                            <PostGrid posts={posts} />
+                            {
+                                activeTab === 'posts' ? (
+                                    <PostGrid posts={posts} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} isLoading={isLoading} />
+                                ) : (
+                                    <PostsGrid data={posts} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} isLoading={isLoading} />
+                                )
+                            }
                         </div>
                     </div>
                 )

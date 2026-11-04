@@ -1,8 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { MainLayout } from '../MainLayout';
-import { Heart, MessageCircle, MoreVertical, Music, Pause, Send, Volume2, VolumeX } from 'lucide-react';
 import { Navbar } from '../layouts/Navbar';
-import { MobileCellNavbar } from '../layouts/MobileCellNavbar';
 import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
@@ -14,9 +11,9 @@ import { ReelGrid } from '../templates/ReelGrid';
 import { Toaster } from 'react-hot-toast';
 
 export const Reels = () => {
-    const fetchReels = async () => {
+    const fetchReels = async ({pageParam=1}) => {
         try {
-            const res = await axios.get(`${api_url}/reels`, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.get(`${api_url}/reels?page=${pageParam}`, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) return res.data.reels || [];
         } catch (err: any) {
             console.error(err?.response.data);

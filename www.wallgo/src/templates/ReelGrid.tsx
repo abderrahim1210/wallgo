@@ -41,7 +41,7 @@ export const ReelGrid: React.FC<ReelGridProps> = ({ reels, isLoading, fetchNextP
         };
     }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
     return (
-        <div className='h-[calc(100vh-55px)] w-full bg-black overflow-y-scroll snap-y snap-mandatory scrollbar-none flex flex-col items-center'>
+        <div className='h-[calc(100vh-55px)] w-full overflow-y-scroll snap-y snap-mandatory scrollbar-none flex flex-col items-center'>
             {
                 isLoading ? Array(4).fill(0).map((_, i) => <Skeleton type='reels' key={i} />) :
                     reels.map((reel, index:number) => (

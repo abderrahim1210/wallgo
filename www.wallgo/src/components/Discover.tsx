@@ -32,9 +32,9 @@ export const Discover = () => {
     const [activeFilter, setActiveFilter] = useState('all');
 
 
-    const fetchData = async () => {
+    const fetchData = async ({pageParam=1}) => {
         try {
-            const res = await axios.get(`${api_url}/search`, { params: { type: activeFilter, term: searchQuery }, withCredentials: true, withXSRFToken: true });
+            const res = await axios.get(`${api_url}/search?page=${pageParam}`, { params: { type: activeFilter, term: searchQuery }, withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 return res.data;
             };
