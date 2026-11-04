@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reel;
+use App\Models\ReelViews;
 use App\Models\User;
 use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
@@ -261,13 +262,33 @@ class ReelController extends Controller
             ], 401);
         }
         $reel = Reel::find($id);
-        if (!$reel){
+        if (!$reel) {
             return response()->json([
                 'success' => false,
                 'message' => 'Reel not exist'
             ]);
         }
 
-        
+        try {
+            $existingView = ReelViews::where('reel_id', $reel->id)->where('user_id', $user_id)->first();
+            if (!$existingView){
+                ReelViews::create([
+                    'user_id' => $user_id,
+                    'reel_id' => $reel->id
+                ]);
+                $reel->increment('views_count');
+            }
+
+
+            return response()->json([
+                'success' => true,
+                'views_count' => $reel->fresh()->views_count
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error : ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

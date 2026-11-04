@@ -22,6 +22,7 @@ export type Reel = {
     is_liked: boolean;
     is_saved: boolean;
     public_id: number;
+    views_count:number;
     user: {
         id: number;
         name: string;

@@ -180,17 +180,22 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/search', [SearchController::class, 'search']);
 
-    Route::post('/reels/create', [ReelController::class, 'create']);
+    Route::prefix('/reels')->group(function () {
 
-    Route::put('/reels/{id}/edit', [ReelController::class, 'update']);
+        Route::post('/create', [ReelController::class, 'create']);
 
-    Route::get('/reels', [ReelController::class, 'index']);
+        Route::put('/{id}/edit', [ReelController::class, 'update']);
 
-    Route::get('/reels/{id}', [ReelController::class, 'show']);
+        Route::get('/', [ReelController::class, 'index']);
 
-    Route::get('/reels/{id}/preview', [ReelController::class, 'preview']);
+        Route::get('/{id}', [ReelController::class, 'show']);
 
-    Route::delete('/reels/{id}', [ReelController::class, 'destroy']);
+        Route::get('/{id}/preview', [ReelController::class, 'preview']);
+
+        Route::delete('/{id}', [ReelController::class, 'destroy']);
+
+        Route::post('/{id}/view', [ReelController::class, 'incrementViews']);
+    });
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);

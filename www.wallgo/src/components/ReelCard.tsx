@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import type { Reel } from './CreateReel';
-import { Bookmark, Heart, MessageCircle, MoreVertical, Music, Pause, Send, Volume2, VolumeX } from 'lucide-react';
+import { Bookmark, Eye, Heart, MessageCircle, MoreVertical, Music, Pause, Send, Volume2, VolumeX } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFollow } from './useFollow';
 import { useAuth } from '../hooks/AuthProvider';
@@ -143,6 +143,14 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
             }
         })
     }
+
+    const handleVideoPlay = async () => {
+        try {
+            await axios.post(`${api_url}/reels/${reel?.id}/view`, {}, { withCredentials: true, withXSRFToken: true });
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
     return (
         <div
             key={reel.id}
@@ -155,6 +163,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                 className="absolute inset-0 w-full h-full object-cover cursor-pointer"
                 loop
                 muted={isMuted}
+                onPlay={handleVideoPlay}
                 playsInline
                 onClick={togglePlayPause}
                 onTimeUpdate={() => {
@@ -273,7 +282,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
             {
                 show === `options-reel-${reel?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <ReelOptions setOpenReport={setOpenReportReel} reel_id={reel?.id} is_owner={reel?.is_owner} is_saved={reel?.is_saved} setSaved={setSaved} saved={saved} handleSavePost={handleSavePost} handleDeleteReel={handleDelete} />
+                        <ReelOptions setOpenReport={setOpenReportReel} reel_id={reel?.id} is_owner={reel?.is_owner} is_saved={reel?.is_saved} setSaved={setSaved} saved={saved} handleSavePost={handleSavePost} handleDeleteReel={handleDelete} reel_views={reel?.views_count} likes_count={reel?.likes_count} comments_count={reel?.comments_count} />
                     </ModalTemplate>
                 )
             }

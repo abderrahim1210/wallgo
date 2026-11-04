@@ -1,15 +1,19 @@
-import { BookmarkPlus, Copy, Edit3, EyeOff, Flag, Trash2, X } from 'lucide-react';
+import { BookmarkPlus, Copy, Edit3, Eye, EyeOff, Flag, Heart, Trash2, MessageCircle } from 'lucide-react';
 import React, { useState, type Dispatch, type SetStateAction } from 'react'
 import toast from 'react-hot-toast';
 import { useModal } from '../hooks/ModalProvider';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
 import { useNavigate } from 'react-router-dom';
+import { BiComment } from 'react-icons/bi';
 
 interface ReelOptionsProps {
     reel_id: number;
     is_owner: boolean;
     is_saved: boolean;
+    reel_views: number;
+    likes_count: number;
+    comments_count: number;
     setOpenReport: (isopen: boolean) => void;
     saved: boolean;
     setSaved: Dispatch<SetStateAction<boolean>>;
@@ -17,13 +21,27 @@ interface ReelOptionsProps {
     handleDeleteReel: () => void;
 }
 
-export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport, saved, setSaved, handleSavePost, is_owner, is_saved, handleDeleteReel }) => {
+export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport, saved, reel_views, likes_count, comments_count, setSaved, handleSavePost, is_owner, is_saved, handleDeleteReel }) => {
     const { closeModal } = useModal()!;
     const navigate = useNavigate();
     return (
         <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-3 w-full border border-gray-100 transform transition-all animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-3 px-3 border-b border-gray-100">
                 <h3 className="font-bold text-[20px] text-gray-900 tracking-wide">Reel Options</h3>
+                <div className="flex items-center justify-between px-4 py-3 gap-5 border-b border-gray-100 text-sm text-gray-600">
+                    <div className="flex items-center space-x-2">
+                        <Eye className="w-4 h-4 text-gray-500" />
+                        <span>{reel_views || 0} Views</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <Heart className="w-4 h-4 text-gray-500" />
+                        <span>{likes_count || 0} Likes</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <MessageCircle className="w-4 h-4 text-gray-500" />
+                        <span>{comments_count || 0} Comments</span>
+                    </div>
+                </div>
             </div>
 
             <div className="py-2 space-y-1">
