@@ -20,6 +20,7 @@ use App\Http\Controllers\UpdatePageGroup;
 use App\Models\Group;
 use App\Models\Page;
 use App\Models\Post as ModelsPost;
+use App\Models\Search;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -195,6 +196,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [ReelController::class, 'destroy']);
 
         Route::post('/{id}/view', [ReelController::class, 'incrementViews']);
+    });
+
+    Route::get('/searches', function () {
+        $results = Search::where('searchs_count','>=',50)->limit(3)->get();
+        return response()->json([
+            'success' => true,
+            'searches' => $results
+        ]);
     });
 });
 

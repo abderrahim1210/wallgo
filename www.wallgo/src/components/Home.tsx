@@ -24,7 +24,7 @@ export type User = {
 export const Home = () => {
   const api_url = 'https://api.wallgo.test';
 
-  const fetchPosts = async ({pageParam=1}): Promise<Post[]> => {
+  const fetchPosts = async ({ pageParam = 1 }): Promise<Post[]> => {
     try {
       const res = await axios.get(`${api_url}/posts?page=${pageParam}`, { withCredentials: true, withXSRFToken: true });
       return res.data.success ? res.data.posts : [];
@@ -34,16 +34,16 @@ export const Home = () => {
     }
   }
 
-  const { data:ps, isLoading:postsLoading, isError:postsError, fetchNextPage,hasNextPage,isFetchingNextPage } = useInfiniteQuery({
+  const { data: ps, isLoading: postsLoading, isError: postsError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['posts'],
     queryFn: fetchPosts,
-    getNextPageParam:(lastPage:any) => {
-      if (lastPage.current_page < lastPage.last_page){
+    getNextPageParam: (lastPage: any) => {
+      if (lastPage.current_page < lastPage.last_page) {
         return lastPage.current_page + 1;
       }
       return undefined;
     },
-    initialPageParam:1
+    initialPageParam: 1
   });
   const posts: Post[] = ps?.pages.flatMap((page: any) => page?.data || []) || [];
 
@@ -78,6 +78,20 @@ export const Home = () => {
     queryFn: fetchInfos,
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
+  });
+
+
+  const fetchSearches = async () => {
+    try {
+      const res = await axios.get(`${api_url}/searches`, { withCredentials: true, withXSRFToken: true });
+      if (res.data.success) return res.data.searches;
+    } catch (err: any) {
+      console.error(err?.response.data);
+    }
+  }
+  const { data: searches = [] } = useQuery({
+    queryKey: ['searches'],
+    queryFn: fetchSearches
   });
 
   const profile = data?.user || null;
@@ -326,16 +340,15 @@ export const Home = () => {
                   <span>Trending for you</span>
                 </div>
                 <div className="space-y-3">
-                  <div className="cursor-pointer group">
-                    <p className="text-xs text-gray-400">Technology • Trending</p>
-                    <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[var(--special-purple)] transition-colors">#TailwindCSS</h4>
-                    <p className="text-xs text-gray-500">14.2k Posts</p>
-                  </div>
-                  <div className="cursor-pointer group">
-                    <p className="text-xs text-gray-400">Web Development • Trending</p>
-                    <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[var(--special-purple)] transition-colors">#LaravelPHP</h4>
-                    <p className="text-xs text-gray-500">8.9k Posts</p>
-                  </div>
+                  {
+                    searches && searches?.map((item: any, index: number) => (
+                      <div className="cursor-pointer group">
+                        {/* <p className="text-xs text-gray-400">Web Development • Trending</p> */}
+                        <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[var(--special-purple)] transition-colors">#{item.term}</h4>
+                        <p className="text-xs text-gray-500">{item.searchs_count} searches</p>
+                      </div>
+                    ))
+                  }
                 </div>
               </div>
 
