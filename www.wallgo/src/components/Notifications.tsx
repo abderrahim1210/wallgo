@@ -2,19 +2,24 @@ import axios from 'axios';
 import React from 'react'
 import { FiCheck, FiHeart, FiMessageSquare, FiUserPlus } from 'react-icons/fi';
 import { api_url } from '../pages/Auth/getUser';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import moment from 'moment';
+import { useNavigate } from 'react-router-dom';
 
 interface Notification {
     id: string;
     type: string;
     read_at: string;
     data: {
-        sender_id: number;
-        sender_name: string;
-        sender_avatar:string;
-        post_id:number;
+        user_id: number;
+        user_name: string;
+        user_avatar: string;
+        post_id: number;
         type: string;
-        message:string;
+        message: string;
+        link: string;
+        followig_id?: number;
+        comment_content?:string;
     }
     created_at: string;
 }
@@ -29,18 +34,43 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
     const fetchNotifications = async () => {
         try {
             const res = await axios.get(`${api_url}/notifications`, { withCredentials: true, withXSRFToken: true });
-            if (res.data.succes) return res.data;
+            if (res.data && res.data.success) {
+                return res.data.notifications;
+            }
+            return [];
+        } catch (err: any) {
+            console.error(err?.response.data);
+            return [];
+        }
+    }
+
+    const { data: notifications = [] } = useQuery<Notification[]>({
+        queryKey: ['notifications'],
+        queryFn: fetchNotifications
+    });
+
+    const navigate = useNavigate();
+    const handleRead = async (id: string) => {
+        if (!id) return null;
+        try {
+            await axios.post(`${api_url}/notifications/is_read`, { notification_id: id }, { withCredentials: true, withXSRFToken: true });
         } catch (err: any) {
             console.error(err?.response.data);
         }
     }
 
-    const { data } = useQuery({
-        queryKey: ['notifications'],
-        queryFn: fetchNotifications
-    });
-
-    const notifications : Notification[] = data?.notifications || [];
+    const queryClient = useQueryClient();
+    const handleReadAll = async () => {
+        try {
+            await axios.post(`${api_url}/notifications/is_read/all`, {}, { withCredentials: true, withXSRFToken: true }).then(res => {
+                if (res.data.success){
+                    queryClient.invalidateQueries({queryKey:['notifications']})
+                }
+            });
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
     return (
         <>
             <div className="fixed inset-0 z-40" onClick={(e) => {
@@ -48,11 +78,11 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
                 onClose();
             }} />
 
-            <div className="absolute right-0 mt-5 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden transform transition-all animate-in fade-in slide-in-from-top-2">
+            <div className="absolute right-0 top-0 mt-5 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden transform transition-all animate-in fade-in slide-in-from-top-2">
 
                 <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
                     <h3 className="font-bold text-base text-gray-800">Notifications</h3>
-                    <button className="text-xs text-[var(--special-purple)] hover:underline font-medium flex items-center gap-1">
+                    <button onClick={handleReadAll} className="text-xs text-[var(--special-purple)] hover:underline font-medium flex items-center gap-1">
                         <FiCheck className="w-3.5 h-3.5" /> Mark all as read
                     </button>
                 </div>
@@ -62,13 +92,17 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
                         notifications.map((notif) => (
                             <div
                                 key={notif.id}
+                                onClick={() => {
+                                    navigate(notif.data.link);
+                                    handleRead(notif.id);
+                                }}
                                 className={`p-3.5 flex items-start gap-3 transition-colors hover:bg-gray-50 cursor-pointer ${!notif.read_at ? 'bg-purple-50/50' : 'bg-white'
                                     }`}
                             >
                                 <div className="relative shrink-0">
                                     <img
-                                        src={notif.data.sender_avatar}
-                                        alt={notif.data.sender_name}
+                                        src={notif.data.user_avatar}
+                                        alt={notif.data.user_name}
                                         className="w-10 h-10 rounded-full object-cover"
                                     />
                                     <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[10px] text-white ${notif.type === 'like' ? 'bg-rose-500' :
@@ -82,9 +116,9 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
 
                                 <div className="flex-1 min-w-0">
                                     <p className="text-xs sm:text-sm text-gray-800 leading-snug">
-                                        <span className="font-semibold">{notif.data.sender_name}</span> {notif.data.message}
+                                        <span className="font-semibold">{notif.data.user_name}</span> {notif.data.message} "{notif?.data?.comment_content && notif.data.comment_content}"
                                     </p>
-                                    <span className="text-[11px] text-gray-400 mt-1 block">{notif.created_at}</span>
+                                    <span className="text-[11px] text-gray-400 mt-1 block">{moment(notif.created_at).fromNow()}</span>
                                 </div>
 
                                 {!notif.read_at && (

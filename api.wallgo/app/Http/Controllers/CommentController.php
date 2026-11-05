@@ -6,6 +6,7 @@ use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Reel;
 use App\Models\User;
+use App\Notifications\CommentNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,7 +21,7 @@ class CommentController extends Controller
             'reply_to' => ['nullable', 'integer', 'exists:comments,id'],
             'comment_id' => ['nullable', 'integer', 'exists:comments,id']
         ]);
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         if (!$user) return response()->json(['success' => false, 'message' => 'User not found'], 401);
         $user_id = $user->id;
         $obj = null;
@@ -67,13 +68,19 @@ class CommentController extends Controller
                 }
             }
 
-            Comment::create([
+            $comment = Comment::create([
                 'user_id' => $user_id,
                 'content' => $request->content,
                 'reply_to' => $request->reply_to,
                 'commentable_id' => $obj->id,
                 'commentable_type' => get_class($obj),
             ]);
+
+            $commentOwner = $obj->user;
+
+            if ($commentOwner && $commentOwner->id !== $user->id) {
+                $commentOwner->notify(new CommentNotification($comment, Auth::user(), $obj));
+            }
             return response()->json([
                 'success' => true,
                 'message' => 'Comment added successfully'

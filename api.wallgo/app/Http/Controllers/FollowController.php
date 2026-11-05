@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Follow;
 use App\Models\User;
+use App\Notifications\FollowUserNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +13,7 @@ class FollowController extends Controller
 
     public function add_follow(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         if (!$user) return response()->json(['success' => false, 'message' => 'User not found'], 401);
         $following_id = $request->following_id;
         if (!$following_id) return response()->json(['success' => false, 'message' => 'Target user id is required'], 400);
@@ -26,6 +27,7 @@ class FollowController extends Controller
                     'following_id' => $following_id
                 ]);
                 $newStatus = true;
+                $following->notify(new FollowUserNotification($user, $following));
             } else {
                 $newStatus = false;
                 $follow->delete();

@@ -52,7 +52,7 @@ export const AppRoutes = () => {
             <Route path='/post/:id' element={<PostPreview />} />
             <Route path='/create_reel' element={<CreateReel />} />
             <Route path='/reel/:reel_id/edit' element={<CreateReel />} />
-            <Route path='/reels/:id' element={<ReelPreview />} />
+            <Route path='/reel/:id' element={<ReelPreview />} />
         </Routes>
     )
 }

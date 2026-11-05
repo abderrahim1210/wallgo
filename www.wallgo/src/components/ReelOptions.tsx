@@ -63,7 +63,7 @@ export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport
                 }
                 <button
                     onClick={() => {
-                        navigator.clipboard.writeText(`${window.location.origin}/reels`);
+                        navigator.clipboard.writeText(`${window.location.origin}/reel/${reel_id}`);
                         toast.success('Link copied successfully!');
                     }}
                     className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-[var(--special-purple)] transition-all cursor-pointer group"

@@ -51,7 +51,7 @@ class Like extends Controller
                 $liketable->likes()->create([
                     'user_id' => $user_id,
                 ]);
-                $liketable->user->notify(new PostLikedNotification($owner, $liketable));
+                $liketable->user->notify(new PostLikedNotification($owner, $liketable, $type));
                 return response()->json([
                     'success' => true,
                     'message' => 'Like added successfully',

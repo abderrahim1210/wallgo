@@ -13,13 +13,15 @@ class PostLikedNotification extends Notification
 
     public $sender;
     public $post;
+    public $type;
     /**
      * Create a new notification instance.
      */
-    public function __construct($sender, $post)
+    public function __construct($sender, $post, $type)
     {
         $this->sender = $sender;
         $this->post = $post;
+        $this->type = $type;
     }
 
     /**
@@ -40,12 +42,13 @@ class PostLikedNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'sender_id' => $this->sender->id,
-            'sender_name' => $this->sender->name,
-            'sender_avatar' => $this->sender->avatar_url,
+            'user_id' => $this->sender->id,
+            'user_name' => $this->sender->name,
+            'user_avatar' => $this->sender->avatar_url,
             'type' => 'like',
-            'message' => 'liked your post.',
-            'post_id' => $this->post->id
+            'message' => "liked your $this->type.",
+            'post_id' => $this->post->id,
+            'link' => "/" . $this->type . "/" . $this->post->id
         ];
     }
 }

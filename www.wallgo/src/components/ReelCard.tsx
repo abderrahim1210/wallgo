@@ -274,7 +274,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
             {
                 show === `share-${reel?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <ShareDropdown url={`https://www.wallgo.test/reels/${reel.id}`} />
+                        <ShareDropdown url={`https://www.wallgo.test/reel/${reel.id}`} />
                     </ModalTemplate>
                 )
             }
