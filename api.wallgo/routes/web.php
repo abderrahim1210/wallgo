@@ -10,6 +10,7 @@ use App\Http\Controllers\GetUser;
 use App\Http\Controllers\GetUsers;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Like as ControllersLike;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Post;
 use App\Http\Controllers\ReelController;
@@ -199,12 +200,14 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('/searches', function () {
-        $results = Search::where('searchs_count','>=',50)->limit(3)->get();
+        $results = Search::where('searchs_count', '>=', 100)->limit(3)->get();
         return response()->json([
             'success' => true,
             'searches' => $results
         ]);
     });
+
+    Route::get('/notifications', [NotificationController::class, 'index']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);

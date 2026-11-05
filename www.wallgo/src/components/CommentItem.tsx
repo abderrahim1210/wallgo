@@ -64,7 +64,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
     const queryClient = useQueryClient();
     const handleLike = async () => {
         try {
-            const res = await axios.post(`${api_url}/add_like`, { type: 'comment', comment_id: comment?.id }, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.post(`${api_url}/add_like`, { type: 'comment', comment_id: comment?.id, owner_id: comment?.user.id }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 setLiked(prev => !prev);
                 queryClient.invalidateQueries({ queryKey: ['comments'] });

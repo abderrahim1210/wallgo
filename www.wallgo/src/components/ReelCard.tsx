@@ -85,7 +85,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
     const queryClient = useQueryClient();
     const handleLike = async () => {
         try {
-            const res = await axios.post(`${api_url}/add_like`, { type: 'reel', reel_id: reel?.id }, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.post(`${api_url}/add_like`, { type: 'reel', reel_id: reel?.id, owner_id: reel?.user.id }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 setLiked(prev => !prev);
                 queryClient.invalidateQueries({ queryKey: ['reels'] });

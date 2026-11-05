@@ -334,23 +334,27 @@ export const Home = () => {
           <aside className="hidden xl:block w-80 shrink-0 space-y-6">
             <div className="sticky top-20 space-y-4">
 
-              <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
-                <div className="flex items-center space-x-2 mb-4 text-gray-900 font-bold text-sm">
-                  <TrendingUp className="w-4 h-4 text-[var(--special-purple)]" />
-                  <span>Trending for you</span>
-                </div>
-                <div className="space-y-3">
-                  {
-                    searches && searches?.map((item: any, index: number) => (
-                      <div className="cursor-pointer group">
-                        {/* <p className="text-xs text-gray-400">Web Development • Trending</p> */}
-                        <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[var(--special-purple)] transition-colors">#{item.term}</h4>
-                        <p className="text-xs text-gray-500">{item.searchs_count} searches</p>
-                      </div>
-                    ))
-                  }
-                </div>
-              </div>
+              {
+                searches.length > 0 && (
+                  <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+                    <div className="flex items-center space-x-2 mb-4 text-gray-900 font-bold text-sm">
+                      <TrendingUp className="w-4 h-4 text-[var(--special-purple)]" />
+                      <span>Trending for you</span>
+                    </div>
+                    <div className="space-y-3">
+                      {
+                        searches?.map((item: any, index: number) => (
+                          <div className="cursor-pointer group">
+                            {/* <p className="text-xs text-gray-400">Web Development • Trending</p> */}
+                            <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[var(--special-purple)] transition-colors">#{item.term}</h4>
+                            <p className="text-xs text-gray-500">{item.searchs_count} searches</p>
+                          </div>
+                        ))
+                      }
+                    </div>
+                  </div>
+                )
+              }
 
               {
                 users?.length > 0 && (

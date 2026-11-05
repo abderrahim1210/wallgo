@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Comment extends Model
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
     protected $fillable = ['user_id', 'content', 'post_id', 'reply_to', 'commentable_id', 'commentable_type'];
     public function commentable()
     {
@@ -32,6 +33,11 @@ class Comment extends Model
     public function replies()
     {
         return $this->hasMany(Comment::class, 'reply_to')->with(['user', 'replies.user'])->withCount('likes');
+    }
+
+    public function notifications()
+    {
+        return $this->morphMany(Notification::class, 'notifiable');
     }
 
     protected static function booted()

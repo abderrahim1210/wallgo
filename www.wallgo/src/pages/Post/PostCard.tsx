@@ -45,7 +45,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         setLiked(newLikedState);
         setLikes(newLikedState ? previousLikes + 1 : Math.max(0, previousLikes - 1));
         try {
-            const res = await axios.post(`${api_url}/add_like`, { post_id: post?.id, type: 'post' }, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.post(`${api_url}/add_like`, { post_id: post?.id, type: 'post', 'owner_id' : post.user?.id}, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 if (typeof res.data.is_liked === 'boolean') {
                     setLiked(res.data.is_liked);

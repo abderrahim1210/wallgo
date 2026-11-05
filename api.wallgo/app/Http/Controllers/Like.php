@@ -6,6 +6,8 @@ use App\Models\Comment;
 use App\Models\Like as ModelsLike;
 use App\Models\Post;
 use App\Models\Reel;
+use App\Models\User;
+use App\Notifications\PostLikedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,6 +18,8 @@ class Like extends Controller
         $user_id = Auth::id();
         if (!$user_id) return response()->json(['success' => false, 'message' => 'User not found'], 401);
         $type = $request->type;
+        $owner_id = $request->owner_id;
+        $owner = User::where('id', $owner_id)->first();
         if (!$type) {
             return response()->json(['success' => false, 'message' => 'Type id not found']);
         }
@@ -35,7 +39,7 @@ class Like extends Controller
                 break;
         }
         try {
-            $existingLike = ModelsLike::where('user_id', $user_id)->where('liketable_id', $liketable->id)->where('liketable_type',get_class($liketable))->first();
+            $existingLike = ModelsLike::where('user_id', $user_id)->where('liketable_id', $liketable->id)->where('liketable_type', get_class($liketable))->first();
             if ($existingLike) {
                 $existingLike->delete();
                 return response()->json([
@@ -47,6 +51,7 @@ class Like extends Controller
                 $liketable->likes()->create([
                     'user_id' => $user_id,
                 ]);
+                $liketable->user->notify(new PostLikedNotification($owner, $liketable));
                 return response()->json([
                     'success' => true,
                     'message' => 'Like added successfully',

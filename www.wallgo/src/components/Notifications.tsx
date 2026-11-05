@@ -1,16 +1,22 @@
+import axios from 'axios';
 import React from 'react'
 import { FiCheck, FiHeart, FiMessageSquare, FiUserPlus } from 'react-icons/fi';
+import { api_url } from '../pages/Auth/getUser';
+import { useQuery } from '@tanstack/react-query';
 
 interface Notification {
-    id: number;
-    type: 'like' | 'follow' | 'comment';
-    user: {
-        name: string;
-        avatar: string;
-    };
-    content: string;
-    time: string;
-    read: boolean;
+    id: string;
+    type: string;
+    read_at: string;
+    data: {
+        sender_id: number;
+        sender_name: string;
+        sender_avatar:string;
+        post_id:number;
+        type: string;
+        message:string;
+    }
+    created_at: string;
 }
 
 interface NotificationsProps {
@@ -20,41 +26,21 @@ interface NotificationsProps {
 
 export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
-    const notifications: Notification[] = [
-        {
-            id: 1,
-            type: 'like',
-            user: {
-                name: 'Sara Miller',
-                avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
-            },
-            content: 'liked your post.',
-            time: '10m ago',
-            read: false,
-        },
-        {
-            id: 2,
-            type: 'follow',
-            user: {
-                name: 'John Doe',
-                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
-            },
-            content: 'started following you.',
-            time: '1h ago',
-            read: false,
-        },
-        {
-            id: 3,
-            type: 'comment',
-            user: {
-                name: 'Amina Alaoui',
-                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80',
-            },
-            content: 'commented: "Amazing work! 🔥"',
-            time: '3h ago',
-            read: true,
-        },
-    ];
+    const fetchNotifications = async () => {
+        try {
+            const res = await axios.get(`${api_url}/notifications`, { withCredentials: true, withXSRFToken: true });
+            if (res.data.succes) return res.data;
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
+
+    const { data } = useQuery({
+        queryKey: ['notifications'],
+        queryFn: fetchNotifications
+    });
+
+    const notifications : Notification[] = data?.notifications || [];
     return (
         <>
             <div className="fixed inset-0 z-40" onClick={(e) => {
@@ -76,13 +62,13 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
                         notifications.map((notif) => (
                             <div
                                 key={notif.id}
-                                className={`p-3.5 flex items-start gap-3 transition-colors hover:bg-gray-50 cursor-pointer ${!notif.read ? 'bg-purple-50/50' : 'bg-white'
+                                className={`p-3.5 flex items-start gap-3 transition-colors hover:bg-gray-50 cursor-pointer ${!notif.read_at ? 'bg-purple-50/50' : 'bg-white'
                                     }`}
                             >
                                 <div className="relative shrink-0">
                                     <img
-                                        src={notif.user.avatar}
-                                        alt={notif.user.name}
+                                        src={notif.data.sender_avatar}
+                                        alt={notif.data.sender_name}
                                         className="w-10 h-10 rounded-full object-cover"
                                     />
                                     <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[10px] text-white ${notif.type === 'like' ? 'bg-rose-500' :
@@ -96,12 +82,12 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
 
                                 <div className="flex-1 min-w-0">
                                     <p className="text-xs sm:text-sm text-gray-800 leading-snug">
-                                        <span className="font-semibold">{notif.user.name}</span> {notif.content}
+                                        <span className="font-semibold">{notif.data.sender_name}</span> {notif.data.message}
                                     </p>
-                                    <span className="text-[11px] text-gray-400 mt-1 block">{notif.time}</span>
+                                    <span className="text-[11px] text-gray-400 mt-1 block">{notif.created_at}</span>
                                 </div>
 
-                                {!notif.read && (
+                                {!notif.read_at && (
                                     <span className="w-2 h-2 rounded-full bg-[var(--special-purple)] self-center shrink-0"></span>
                                 )}
                             </div>
