@@ -8,7 +8,7 @@ import { MainLayout } from '../MainLayout';
 import { Helmet } from 'react-helmet-async';
 import { PostGrid, type Post } from '../templates/PostGrid';
 import { EmptyContent } from './EmptyContent';
-import { Check, Flag, MoreHorizontal, Pencil, PlusSquare, Settings, Share2, Users } from 'lucide-react';
+import { Check, Flag, Lock, MoreHorizontal, Pencil, PlusSquare, Settings, Share2, Users } from 'lucide-react';
 import { FaGlobe, FaLock, FaRegNewspaper } from 'react-icons/fa';
 import { useFollowPG } from './useFollowPG';
 import { useModal } from '../hooks/ModalProvider';
@@ -19,6 +19,8 @@ import ShareDropdown from './ShareDropdown';
 import { Report } from './Report';
 import { Skeleton } from '../templates/Skeleton';
 import { ErrorPage } from './ErrorPage';
+import toast from 'react-hot-toast';
+import LoadingButton from '../Icons/LoadingButton';
 
 export const GroupeProfile = () => {
     const { id } = useParams();
@@ -62,6 +64,7 @@ export const GroupeProfile = () => {
     });
 
     const group = data?.group || null;
+    const isJoined = data?.is_joined;
     const posts: Post[] = ps?.pages.flatMap((page: any) => page?.data || []) || [];
 
     const [followed, setFollowed] = useState<boolean>(false);
@@ -96,10 +99,39 @@ export const GroupeProfile = () => {
             onClick: () => openModal(`report-${group?.id}`),
         },
     ]
+
+    const [write, isWrite] = useState(false);
+    const [content, setContent] = useState('');
+
+    const checkWrite = (e: React.ChangeEvent<HTMLInputElement>) => {
+        isWrite(e.target.value.trim().length > 0);
+        setContent(e.target.value);
+    }
+
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async () => {
+        if (content === '') return toast.error('Type a text for add a post');
+        setLoading(true);
+        try {
+            const res = await axios.post(`${api_url}/posts/create`, { content: content, postable_type: 'group', postable_id: group?.id }, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) {
+                setLoading(false);
+                toast.success(res.data.message || 'Post uploaded successfully');
+            } else {
+                setLoading(false);
+                toast.error(res.data.message || 'Failed to upload the post');
+                console.error(res.data.message);
+            }
+        } catch (err: any) {
+            console.log(err?.response?.data);
+        }
+    }
+
     return (
         <MainLayout>
             <Helmet>
-                <title>WallGo : Group</title>
+                <title>{`WallGo : Group ${group?.name}`}</title>
             </Helmet>
 
             {
@@ -225,12 +257,44 @@ export const GroupeProfile = () => {
                         </div>
 
                         <div className="mt-6">
+                            {
+                                isJoined && (
+                                    <div className='flex items-center space-x-3 flex-1 min-w-0 mt-3 m-3'>
+                                        <img
+                                            src={user?.avatar_url ?? '/icons/avatar1.svg'}
+                                            alt="Profile"
+                                            className="w-10 h-10 rounded-full object-cover shrink-0"
+                                        />
+                                        <div className="relative flex-1 flex items-center space-x-2 min-w-0">
+                                            <input
+                                                name='content'
+                                                value={content}
+                                                type="text"
+                                                placeholder={`What's on your mind, ${user?.username ?? ''}?`}
+                                                onChange={checkWrite}
+                                                className="w-full bg-gray-100/80 hover:bg-gray-100 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all rounded-full px-4 py-2.5 text-sm text-gray-800 outline-none border border-gray-200"
+                                            />
+                                            {
+                                                write && (
+                                                    <LoadingButton loading={loading} className='px-5 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-full hover:opacity-90 transition-all shadow-sm cursor-pointer animate-fadeIn font-semibold shrink-0' onClick={handleSubmit}>
+                                                        Post
+                                                    </LoadingButton>
+                                                )
+                                            }
+                                        </div>
+                                    </div>
+                                )
+                            }
                             <h2 className="text-xl font-bold text-gray-900 mb-4">Group Posts</h2>
-                            {posts && posts.length > 0 ? (
-                                <PostGrid posts={posts} isFetchingNextPage={isFetchingNextPage} hasNextPage={hasNextPage} isLoading={isLoading} fetchNextPage={fetchNextPage} />
-                            ) : (
-                                <EmptyContent text=" This group hasn't posted anything yet." icon={<FaRegNewspaper />} />
-                            )}
+                            {
+                                !isJoined ? (
+                                    <EmptyContent text='This group is private' icon={<Lock />} />
+                                ) : posts && posts.length > 0 ? (
+                                    <PostGrid posts={posts} isFetchingNextPage={isFetchingNextPage} hasNextPage={hasNextPage} isLoading={isLoading} fetchNextPage={fetchNextPage} />
+                                ) : (
+                                    <EmptyContent text=" This group hasn't posted anything yet." icon={<FaRegNewspaper />} />
+                                )
+                            }
                         </div>
                     </div>
                 )

@@ -94,7 +94,7 @@ class GroupController extends Controller
     {
         if (!$id) {
             return response()->json([
-                'success' => false,
+            !    'success' => false,
                 'message' => 'Id is required for show page'
             ]);
         }
@@ -106,26 +106,30 @@ class GroupController extends Controller
             }])->find($id);
             if (!$group) return response()->json(['success' => false, 'message' => "Group by id $id not found"], 404);
             $isJoined = false;
-            if ($user_id !== $group->owner_id){
-                $joined = GroupPageFollow::where('user_id',$user_id)->where('followable_id',$group->id)->first();
+            if ($user_id !== $group->owner_id) {
+                $joined = GroupPageFollow::where('user_id', $user_id)->where('followable_id', $group->id)->first();
                 if ($joined) $isJoined = true;
+            } else {
+                $isJoined = true;
             }
-            $posts = Post::withCount(['likes', 'comments'])->with(['user:id,name,username,avatar_url', 'postable:id,name,logo_url'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
-                $q->where('user_id', $user_id);
-            }])->withExists(['user as is_owner' => function ($q) use ($user_id) {
-                $q->where('id', $user_id);
-            }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
-                $q->where('user_id', $user_id);
-            }])->where('postable_id', $group->id)->when($user_id !== $group->owner_id, function ($q) {
-                $q->where(function ($subQuery) {
-                    $subQuery->whereNull('schedule_time')->orWhere('schedule_time', '<=', now());
-                });
-            })->get();
+            // $posts = Post::withCount(['likes', 'comments'])->with(['user:id,name,username,avatar_url', 'postable:id,name,logo_url'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
+            //     $q->where('user_id', $user_id);
+            // }])->withExists(['user as is_owner' => function ($q) use ($user_id) {
+            //     $q->where('id', $user_id);
+            // }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
+            //     $q->where('user_id', $user_id);
+            // }])->withExists(['user as is_group_admin' => function ($q) use ($group) {
+            //     $q->where('id', $group->owner_id);
+            // }])->where('postable_id', $group->id)->when($user_id !== $group->owner_id, function ($q) {
+            //     $q->where(function ($subQuery) {
+            //         $subQuery->whereNull('schedule_time')->orWhere('schedule_time', '<=', now());
+            //     });
+            // })->get();
             return response()->json([
                 'success' => true,
                 'group' => $group,
                 'is_joined' => $isJoined,
-                'posts' => $posts
+                // 'posts' => $posts
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -155,6 +159,8 @@ class GroupController extends Controller
                 $q->where('id', $user_id);
             }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
+            }])->withExists(['user as is_group_admin' => function ($q) use ($group) {
+                $q->where('id', $group->owner_id);
             }])->where('postable_id', $group->id)->when($user_id !== $group->owner_id, function ($q) {
                 $q->where(function ($subQuery) {
                     $subQuery->whereNull('schedule_time')->orWhere('schedule_time', '<=', now());

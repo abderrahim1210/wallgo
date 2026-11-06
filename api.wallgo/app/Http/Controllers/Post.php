@@ -85,7 +85,7 @@ class Post extends Controller
                 'unlock_time' => $data['unlock_time'] ?? null,
                 'capsule_status' => $data['capsule_status'] ?? null,
                 'media_url' => $data['media_url'] ?? null,
-                'visibility' => $data['visibility'],
+                'visibility' => $data['visibility'] ?? 'public',
                 'post_type' => $data['post_type'] ?? 'regular',
                 'postable_id' => $postable->id ?? null,
                 'postable_type' => $postable ? get_class($postable) : null

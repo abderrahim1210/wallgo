@@ -345,7 +345,6 @@ export const Home = () => {
                       {
                         searches?.map((item: any, index: number) => (
                           <div className="cursor-pointer group">
-                            {/* <p className="text-xs text-gray-400">Web Development • Trending</p> */}
                             <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[var(--special-purple)] transition-colors">#{item.term}</h4>
                             <p className="text-xs text-gray-500">{item.searchs_count} searches</p>
                           </div>

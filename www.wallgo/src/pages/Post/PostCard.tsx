@@ -1,4 +1,4 @@
-import { Bookmark, CalendarClock, Edit3, Flag, Globe, Heart, Link, Lock, MessageCircle, MoreHorizontal, Share2, Sparkles, Timer, Trash2, X } from 'lucide-react';
+import { Bookmark, CalendarClock, Crown, Edit3, Flag, Globe, Heart, Link, Lock, MessageCircle, MoreHorizontal, Share2, Sparkles, Timer, Trash2, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
 import { useModal } from '../../hooks/ModalProvider';
@@ -15,7 +15,6 @@ import { Link as LinkR } from 'react-router-dom'
 import axios from 'axios';
 import { api_url } from '../Auth/getUser';
 import toast from 'react-hot-toast';
-import { useQueryClient } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
 import TimeCapsuleLocked from '../../Icons/TimeCapsule';
 import { Tooltip } from '../../templates/Tooltip';
@@ -45,7 +44,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         setLiked(newLikedState);
         setLikes(newLikedState ? previousLikes + 1 : Math.max(0, previousLikes - 1));
         try {
-            const res = await axios.post(`${api_url}/add_like`, { post_id: post?.id, type: 'post', 'owner_id' : post.user?.id}, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.post(`${api_url}/add_like`, { post_id: post?.id, type: 'post', 'owner_id': post.user?.id }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 if (typeof res.data.is_liked === 'boolean') {
                     setLiked(res.data.is_liked);
@@ -154,30 +153,32 @@ export const PostCard: React.FC<PostCardProps> = ({
             <div className="flex items-center justify-between p-4 pb-3 transition-all rounded-t-2xl">
                 <div className="flex items-center space-x-3">
                     {
-                        post?.postable ? (
+                        post?.postable && post?.postable_type?.includes('Group') ? (
+                            <img
+                                src={post?.user?.avatar_url || '/icons/avatar1.svg'}
+                                alt='avatar'
+                                className="w-10 h-10 rounded-full object-cover border border-purple-100"
+                            />
+                        ) : post?.postable_type?.includes('Page') ? (
                             <img
                                 src={post?.postable?.logo_url || '/icons/users.svg'}
-                                alt={post?.user.name}
+                                alt='avatar'
                                 className="w-10 h-10 rounded-full object-cover border border-purple-100"
                             />
                         ) : (
                             <img
                                 src={post?.user?.avatar_url || '/icons/avatar1.svg'}
-                                alt={post?.user.name}
+                                alt='avatar'
                                 className="w-10 h-10 rounded-full object-cover border border-purple-100"
                             />
                         )
                     }
                     <div>
-                        <Tooltip label='Show profile'>
-                            <h4 className="font-semibold text-sm text-gray-900 leading-tight">
+                        {/* <Tooltip label='Show profile'> */}
+                            <h4 className="flex gap-1 items-center font-semibold text-sm text-gray-900 leading-tight">
                                 {
                                     post?.postable_type?.includes('Page') ? (
                                         <LinkR to={`/pages/${post?.postable?.id}`}>
-                                            {post?.postable?.name}
-                                        </LinkR>
-                                    ) : post?.postable_type?.includes('Group') ? (
-                                        <LinkR to={`/groups/${post?.postable?.id}`}>
                                             {post?.postable?.name}
                                         </LinkR>
                                     ) : (
@@ -186,11 +187,18 @@ export const PostCard: React.FC<PostCardProps> = ({
                                         </LinkR>
                                     )
                                 }
+                                {
+                                    post?.is_group_admin && (
+                                        <Tooltip label='Admin'>
+                                            <Crown className='w-3.5 h-3.5 text-[var(--special-purple)]' />
+                                        </Tooltip>
+                                    )
+                                }
                             </h4>
-                        </Tooltip>
+                        {/* </Tooltip> */}
                         <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
-                            {!post?.postable && (
-                                <span>@{post?.user.username}</span>
+                            {(!post?.postable || post?.postable_type?.includes('Group')) && (
+                                <span>@{post?.user.username} {(post?.postable_type?.includes('Group')) && <LinkR className='underline' to={'/'}>on {post?.postable?.name}</LinkR>}</span>
                             )}
                             <span>•</span>
                             <span>{moment(post?.created_at).fromNow()}</span>
