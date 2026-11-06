@@ -1,7 +1,7 @@
 # WallGo 🚀
 
 <p align="center">
-  <img src="./www.wallgo/public/backgrounds/background.webp" alt="Pixora Logo" width="500" />
+  <img src="./www.wallgo/public/backgrounds/background.webp" alt="Pixora Logo" width="800" />
   <br />
   <b>A modern full-stack web application for sharing moments, preserving time capsules, and connecting in real-time.</b>
 </p>
