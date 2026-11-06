@@ -208,6 +208,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('/notifications', [NotificationController::class, 'index']);
+    
+    Route::get('/notifications/all', [NotificationController::class, 'all']);
 
     Route::post('/notifications/is_read/{type?}', [NotificationController::class, 'mark_as_read']);
 });

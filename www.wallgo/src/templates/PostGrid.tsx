@@ -38,7 +38,7 @@ export interface Post {
     postable_type: string;
     is_saved: boolean;
     visibility: 'private' | 'public';
-    is_group_admin?: boolean;
+    is_group_owner?: boolean;
 };
 
 interface PostGridProps {

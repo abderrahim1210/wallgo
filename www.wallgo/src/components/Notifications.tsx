@@ -5,8 +5,9 @@ import { api_url } from '../pages/Auth/getUser';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
+import { NotificationCard } from './NotificationCard';
 
-interface Notification {
+export interface Notification {
     id: string;
     type: string;
     read_at: string;
@@ -49,15 +50,6 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
         queryFn: fetchNotifications
     });
 
-    const navigate = useNavigate();
-    const handleRead = async (id: string) => {
-        if (!id) return null;
-        try {
-            await axios.post(`${api_url}/notifications/is_read`, { notification_id: id }, { withCredentials: true, withXSRFToken: true });
-        } catch (err: any) {
-            console.error(err?.response.data);
-        }
-    }
 
     const queryClient = useQueryClient();
     const handleReadAll = async () => {
@@ -71,6 +63,7 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
             console.error(err?.response.data);
         }
     }
+    const navigate = useNavigate();
     return (
         <>
             <div className="fixed inset-0 z-40" onClick={(e) => {
@@ -90,41 +83,7 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
                 <div className="max-h-[380px] overflow-y-auto divide-y divide-gray-50">
                     {notifications.length > 0 ? (
                         notifications.map((notif) => (
-                            <div
-                                key={notif.id}
-                                onClick={() => {
-                                    navigate(notif.data.link);
-                                    handleRead(notif.id);
-                                }}
-                                className={`p-3.5 flex items-start gap-3 transition-colors hover:bg-gray-50 cursor-pointer ${!notif.read_at ? 'bg-purple-50/50' : 'bg-white'
-                                    }`}
-                            >
-                                <div className="relative shrink-0">
-                                    <img
-                                        src={notif.data.user_avatar}
-                                        alt={notif.data.user_name}
-                                        className="w-10 h-10 rounded-full object-cover"
-                                    />
-                                    <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[10px] text-white ${notif.type === 'like' ? 'bg-rose-500' :
-                                        notif.type === 'follow' ? 'bg-purple-600' : 'bg-blue-500'
-                                        }`}>
-                                        {notif.type === 'like' && <FiHeart className="w-2.5 h-2.5" />}
-                                        {notif.type === 'follow' && <FiUserPlus className="w-2.5 h-2.5" />}
-                                        {notif.type === 'comment' && <FiMessageSquare className="w-2.5 h-2.5" />}
-                                    </span>
-                                </div>
-
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-xs sm:text-sm text-gray-800 leading-snug">
-                                        <span className="font-semibold">{notif.data.user_name}</span> {notif.data.message} "{notif?.data?.comment_content && notif.data.comment_content}"
-                                    </p>
-                                    <span className="text-[11px] text-gray-400 mt-1 block">{moment(notif.created_at).fromNow()}</span>
-                                </div>
-
-                                {!notif.read_at && (
-                                    <span className="w-2 h-2 rounded-full bg-[var(--special-purple)] self-center shrink-0"></span>
-                                )}
-                            </div>
+                            <NotificationCard notif={notif} />
                         ))
                     ) : (
                         <div className="py-8 text-center text-gray-400 text-sm">
@@ -134,7 +93,7 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
                 </div>
 
                 <div className="p-2.5 border-t border-gray-100 text-center bg-gray-50">
-                    <button className="text-xs font-semibold text-gray-600 hover:text-[var(--special-purple)] transition-colors">
+                    <button onClick={() => navigate('/notifications/all')} className="cursor-pointer text-xs font-semibold text-gray-600 hover:text-[var(--special-purple)] transition-colors">
                         View All Notifications
                     </button>
                 </div>

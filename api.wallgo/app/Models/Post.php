@@ -25,7 +25,7 @@ class Post extends Model
         'visibility'
     ];
 
-    protected $appends = ['is_owner'];
+    protected $appends = ['is_owner', 'is_group_owner'];
 
     public function getIsOwnerAttribute()
     {
@@ -66,5 +66,15 @@ class Post extends Model
     public function bookmarks()
     {
         return $this->morphMany(Bookmark::class, 'booktable');
+    }
+
+    
+    public function getIsGroupOwnerAttribute()
+    {
+        if ($this->postable_type === \App\Models\Group::class && $this->relationLoaded('postable')) {
+            return $this->postable && $this->postable->owner_id === $this->user_id;
+        }
+
+        return false;
     }
 }

@@ -50,7 +50,7 @@ class CommentNotification extends Notification
             'comment_id' => $this->comment->id,
             'comment_content' => $this->comment->content,
             'post_id' => $this->post->id,
-            'link' => "/posts/" . $this->post->id
+            'link' => "/post/" . $this->post->id
         ];
     }
 }

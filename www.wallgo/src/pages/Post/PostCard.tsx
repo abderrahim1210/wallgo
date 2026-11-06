@@ -174,28 +174,26 @@ export const PostCard: React.FC<PostCardProps> = ({
                         )
                     }
                     <div>
-                        {/* <Tooltip label='Show profile'> */}
-                            <h4 className="flex gap-1 items-center font-semibold text-sm text-gray-900 leading-tight">
-                                {
-                                    post?.postable_type?.includes('Page') ? (
-                                        <LinkR to={`/pages/${post?.postable?.id}`}>
-                                            {post?.postable?.name}
-                                        </LinkR>
-                                    ) : (
-                                        <LinkR to={`/profile/${post?.user.id}/${post?.user.username}`}>
-                                            {post?.user.name}
-                                        </LinkR>
-                                    )
-                                }
-                                {
-                                    post?.is_group_admin && (
-                                        <Tooltip label='Admin'>
-                                            <Crown className='w-3.5 h-3.5 text-[var(--special-purple)]' />
-                                        </Tooltip>
-                                    )
-                                }
-                            </h4>
-                        {/* </Tooltip> */}
+                        <h4 className="flex gap-1 items-center font-semibold text-sm text-gray-900 leading-tight">
+                            {
+                                post?.postable_type?.includes('Page') ? (
+                                    <LinkR to={`/pages/${post?.postable?.id}`}>
+                                        {post?.postable?.name}
+                                    </LinkR>
+                                ) : (
+                                    <LinkR to={`/profile/${post?.user.id}/${post?.user.username}`}>
+                                        {post?.user.name}
+                                    </LinkR>
+                                )
+                            }
+                            {
+                                post?.is_group_owner && (
+                                    <Tooltip label={`Admin of ${post?.postable?.name}`}>
+                                        <Crown className='w-3.5 h-3.5 text-[var(--special-purple)]' />
+                                    </Tooltip>
+                                )
+                            }
+                        </h4>
                         <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
                             {(!post?.postable || post?.postable_type?.includes('Group')) && (
                                 <span>@{post?.user.username} {(post?.postable_type?.includes('Group')) && <LinkR className='underline' to={'/'}>on {post?.postable?.name}</LinkR>}</span>

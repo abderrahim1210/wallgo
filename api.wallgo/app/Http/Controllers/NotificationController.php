@@ -26,7 +26,24 @@ class NotificationController extends Controller
         ], 200);
     }
 
-    public function mark_as_read(Request $request, string $type)
+    public function all()
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+        $user_id = Auth::id();
+        $user = User::find($user_id);
+        $notifications = $user->notifications()->latest()->paginate(10);
+        return response()->json([
+            'success' => true,
+            'notifications' => $notifications
+        ], 200);
+    }
+
+    public function mark_as_read(Request $request, $type=null)
     {
         if (!Auth::check()) {
             return response()->json([
@@ -45,7 +62,7 @@ class NotificationController extends Controller
             }
             return response()->json([
                 'success' => true
-            ],200);
+            ], 200);
         }
 
         $notification_id = $request->notification_id;
