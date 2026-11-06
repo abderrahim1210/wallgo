@@ -64,6 +64,7 @@ export const GroupeProfile = () => {
     });
 
     const group = data?.group || null;
+    const question = data?.question?.question || '';
     const isJoined = data?.is_joined;
     const posts: Post[] = ps?.pages.flatMap((page: any) => page?.data || []) || [];
 
@@ -77,9 +78,12 @@ export const GroupeProfile = () => {
 
     const { user } = useAuth()!;
 
+    const [answer, setAnswer] = useState('');
+
+
     const { handleFollow } = useFollowPG();
     const follow = () => {
-        handleFollow(group?.id, 'group');
+        handleFollow(group?.id, 'group', answer, group?.id, group?.owner_id);
         setFollowed(prev => !prev);
     }
 
@@ -128,6 +132,19 @@ export const GroupeProfile = () => {
         }
     }
 
+    const fetchStatus = async () => {
+        try {
+            const res = await axios.get(`${api_url}/check_follow_group`, {params:{group_id:group?.id}, withCredentials:true,withXSRFToken:true});
+            if (res.data.success) return res.data.status;
+        } catch (err:any) {
+            console.error(err?.response.data);
+        }
+    }
+
+    const {data:status=''} = useQuery({
+        queryKey:['status_group'],
+        queryFn:fetchStatus
+    });
     return (
         <MainLayout>
             <Helmet>
@@ -154,6 +171,76 @@ export const GroupeProfile = () => {
                 show === `report-${group?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
                         <Report id={group?.id} type='group' />
+                    </ModalTemplate>
+                )
+            }
+
+            {
+                show === `join-${group?.id}` && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <div className='mt-5 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm'>
+                            <div className='flex items-center gap-2 mb-2'>
+                                <span className='px-2.5 py-1 text-xs font-semibold text-[var(--special-purple)] bg-indigo-50 rounded-lg'>
+                                    Group Question
+                                </span>
+                            </div>
+
+                            <h4 className='font-semibold text-gray-900 text-[18px] mb-1'>
+                                Answer the question to join <span className='text-[var(--special-purple)]'>{group?.name}</span>
+                            </h4>
+                            <p className='text-gray-600 text-sm mb-4 bg-gray-50 p-3 rounded-xl border border-gray-100'>
+                                {question}
+                            </p>
+
+                            <div className='space-y-3 mb-5'>
+                                <label className='flex items-center justify-between p-3.5 rounded-xl border-2 border-gray-100 hover:border-indigo-500 hover:bg-indigo-50/30 transition-all cursor-pointer group'>
+                                    <div className='flex items-center gap-3'>
+                                        <div className='w-5 h-5 rounded-full border-2 border-gray-300 group-hover:border-[var(--special-purple)] flex items-center justify-center transition-colors'>
+                                            <input
+                                                name='answer'
+                                                type="radio"
+                                                value="Yes"
+                                                onChange={(e) => setAnswer(e.target.value)}
+                                                className='peer sr-only'
+                                            />
+                                            <div className='w-2.5 h-2.5 rounded-full bg-[var(--special-purple)] opacity-0 peer-checked:opacity-100 transition-opacity'></div>
+                                        </div>
+                                        <span className='font-medium text-gray-800 text-sm'>Yes, I agree</span>
+                                    </div>
+                                </label>
+
+                                <label className='flex items-center justify-between p-3.5 rounded-xl border-2 border-gray-100 hover:border-[var(--special-purple)] hover:bg-indigo-50/30 transition-all cursor-pointer group'>
+                                    <div className='flex items-center gap-3'>
+                                        <div className='w-5 h-5 rounded-full border-2 border-gray-300 group-hover:border-[var(--special-purple)] flex items-center justify-center transition-colors'>
+                                            <input
+                                                name='answer'
+                                                type="radio"
+                                                value="No"
+                                                onChange={(e) => setAnswer(e.target.value)}
+                                                className='peer sr-only'
+                                            />
+                                            <div className='w-2.5 h-2.5 rounded-full bg-indigo-600 opacity-0 peer-checked:opacity-100 transition-opacity'></div>
+                                        </div>
+                                        <span className='font-medium text-gray-800 text-sm'>No</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div className='flex justify-end gap-3'>
+                                <LoadingButton
+                                    type="button"
+                                    onClick={() => {
+                                        follow();
+                                        setTimeout(() => {
+                                            closeModal?.();
+                                        },1000);
+                                    }}
+                                    className='px-5 py-2.5 rounded-xl font-semibold text-sm bg-[var(--sepcial-purple)] text-white shadow-sm shadow-indigo-200 transition-all active:scale-95'
+                                >
+                                    Submit Answer & Join
+                                </LoadingButton>
+                            </div>
+                        </div>
                     </ModalTemplate>
                 )
             }
@@ -212,13 +299,19 @@ export const GroupeProfile = () => {
                                         ) : (
                                             <div className='flex items-center gap-3'>
                                                 <button
-                                                    onClick={follow}
+                                                    onClick={() => {
+                                                        if (isJoined){
+                                                            follow()
+                                                        }else{
+                                                            openModal(`join-${group?.id}`)
+                                                        }
+                                                    }}
                                                     className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${followed
                                                         ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                                         : 'bg-[var(--special-purple)] text-white hover:opacity-90'
                                                         }`}
                                                 >
-                                                    {followed ? <><Check className="w-4 h-4" /> Joined</> : 'Join Group'}
+                                                    {followed ? <><Check className="w-4 h-4" /> {status} Request</> : 'Join Group'}
                                                 </button>
                                                 <DropdownMenu
                                                     trigger={
@@ -287,7 +380,7 @@ export const GroupeProfile = () => {
                             }
                             <h2 className="text-xl font-bold text-gray-900 mb-4">Group Posts</h2>
                             {
-                                !isJoined ? (
+                                (!isJoined && group?.visibility === 'private') ? (
                                     <EmptyContent text='This group is private' icon={<Lock />} />
                                 ) : posts && posts.length > 0 ? (
                                     <PostGrid posts={posts} isFetchingNextPage={isFetchingNextPage} hasNextPage={hasNextPage} isLoading={isLoading} fetchNextPage={fetchNextPage} />

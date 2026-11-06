@@ -6,6 +6,7 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { api_url } from '../pages/Auth/getUser'
 import toast from 'react-hot-toast'
+import LoadingButton from '../Icons/LoadingButton'
 
 export const CreatePage = () => {
     const { branch } = useParams<{ branch: 'page' | 'group' }>();
@@ -22,7 +23,8 @@ export const CreatePage = () => {
         logo_url: '',
         banner_url: '',
         category: '',
-        type: ''
+        visibility: '',
+        question:'',
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -46,22 +48,27 @@ export const CreatePage = () => {
         e.target.value = "";
     }
 
+    const [loading, setLoading] = useState(false);
+
     const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!data.name) return null;
+        setLoading(true);
         try {
             const url = `${api_url}/${currentBranch === 'Page' ? 'pages' : 'groups'}/create`;
             const res = await axios.post(url, data, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
+                setLoading(false);
                 toast.success(res.data.message || 'Page created successfully');
                 setTimeout(() => {
-                    if (currentBranch === 'Page'){
+                    if (currentBranch === 'Page') {
                         navigate('/pages');
-                    }else{
+                    } else {
                         navigate('/groups');
                     }
                 }, 1000);
             } else {
+                setLoading(false);
                 toast.error(res.data.message || 'Something went wrong');
                 console.error(res.data.message);
                 setError(res.data.message);
@@ -173,8 +180,8 @@ export const CreatePage = () => {
                             <div>
                                 <label className="block text-xs font-semibold text-gray-700 mb-1">Type *</label>
                                 <select
-                                    name='type'
-                                    value={data?.type}
+                                    name='visibility'
+                                    value={data?.visibility}
                                     onChange={handleChange}
                                     className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white transition cursor-pointer"
                                     required
@@ -199,14 +206,24 @@ export const CreatePage = () => {
                         />
                     </div>
 
-                    <button
-                        type="submit"
-                        // disabled={loading}
-                        className="w-full bg-[var(--special-purple)] text-white font-semibold py-3 rounded-xl hover:opacity-90 transition shadow-sm cursor-pointer disabled:opacity-50"
-                    >
-                        {/* {loading ? 'Creating Page...' : 'Create Page'} */}
+                    {
+                        currentBranch === 'Group' && (
+                            <div>
+                                <label className="block text-xs font-semibold text-gray-700 mb-1">Question *</label>
+                                <textarea
+                                    name='question'
+                                    value={data?.question}
+                                    onChange={handleChange}
+                                    rows={3}
+                                    placeholder="Add question to ..."
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white transition resize-none"
+                                />
+                            </div>
+                        )
+                    }
+                    <LoadingButton loading={loading} className="w-full bg-[var(--special-purple)] text-white font-semibold py-3 rounded-xl hover:opacity-90 transition shadow-sm cursor-pointer disabled:opacity-50">
                         Create
-                    </button>
+                    </LoadingButton>
                 </form>
             </div>
         </MainLayout>

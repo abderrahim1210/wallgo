@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\GroupJoinRequest;
 use App\Models\GroupPageFollow;
+use App\Models\GroupQuestion;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,14 +37,6 @@ class GroupController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -53,6 +47,7 @@ class GroupController extends Controller
             'name' => ['string', 'max:155'],
             'description' => ['nullable', 'string', 'max:355'],
             'type' => ['string', 'in:public,private'],
+            'question' => ['nullable', 'string', 'max:355']
         ]);
         try {
             $validator = new \App\Http\Controllers\ValidePageLogoBanner();
@@ -66,14 +61,21 @@ class GroupController extends Controller
                 $banner = $validator->valide($request->banner_url, 'wallgo_groups_banner_url');
             }
 
-            Group::create([
+            $group = Group::create([
                 'owner_id' => $user_id,
                 'name' => $request->name,
                 'description' => $request->description,
                 'logo_url' => $logo,
                 'banner_url' => $banner,
-                'type' => $request->type
+                'visibility' => $request->type
             ]);
+
+            if (!empty($request->question)) {
+                GroupQuestion::create([
+                    'group_id' => $group->id,
+                    'question' => $request->question
+                ]);
+            }
 
             return response()->json([
                 'success' => true,
@@ -94,7 +96,7 @@ class GroupController extends Controller
     {
         if (!$id) {
             return response()->json([
-            !    'success' => false,
+                ! 'success' => false,
                 'message' => 'Id is required for show page'
             ]);
         }
@@ -112,10 +114,13 @@ class GroupController extends Controller
             } else {
                 $isJoined = true;
             }
+
+            $question = GroupQuestion::select('id', 'group_id', 'question')->where('group_id', $group->id)->first();
             return response()->json([
                 'success' => true,
                 'group' => $group,
                 'is_joined' => $isJoined,
+                'question' => $question
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -212,5 +217,24 @@ class GroupController extends Controller
                 'message' => 'Failed : ' . $e->getMessage()
             ]);
         }
+    }
+
+    public function checkFollow(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+
+        $user_id = Auth::id();
+        $group_id = $request->group_id;
+        $groupExist = Group::findOrFail($group_id);
+        $group = GroupJoinRequest::where('user_id',$user_id)->where('group_id',$group_id)->select('id','user_id','group_id','status')->first();
+        return response()->json([
+            'success' => true,
+            'status' => $group->status
+        ]);
     }
 }

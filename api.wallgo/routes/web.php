@@ -212,6 +212,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications/all', [NotificationController::class, 'all']);
 
     Route::post('/notifications/is_read/{type?}', [NotificationController::class, 'mark_as_read']);
+
+    Route::get('/check_follow_group', [GroupController::class, 'checkFollow']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);

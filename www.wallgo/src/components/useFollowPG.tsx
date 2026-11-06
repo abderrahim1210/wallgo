@@ -7,9 +7,9 @@ interface useFollowPG {
 }
 
 export const useFollowPG = ({ setFollowed }: useFollowPG = {}) => {
-    const handleFollow = async (id: number, type: 'page' | 'group' | string) => {
+    const handleFollow = async (id: number, type: 'page' | 'group' | string, answer:string, group_id:number, user_id:number) => {
         try {
-            const res = await axios.post(`${api_url}/pages/follow`, { type: type, entity_id: id }, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.post(`${api_url}/pages/follow`, { type: type, entity_id: id, answer:answer, group_id:group_id, user_id:user_id }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 if (setFollowed) {
                     setFollowed(prev => !prev);
