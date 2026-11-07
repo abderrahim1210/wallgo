@@ -218,6 +218,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/send_request', [GroupController::class, 'send_req']);
 
     Route::get('/groups/requests', [GroupController::class, 'requests']);
+
+    Route::post('/request/change_status', [GroupController::class, 'changeStatus']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);

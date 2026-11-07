@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api_url } from '../pages/Auth/getUser';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/AuthProvider';
 import { MainLayout } from '../MainLayout';
 import { Helmet } from 'react-helmet-async';
@@ -25,8 +25,7 @@ import LoadingButton from '../Icons/LoadingButton';
 export const GroupeProfile = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    if (!id) return <p>Id not found</p>
-
+    const queryClient = useQueryClient();
     const fetchGroup = async () => {
         try {
             const res = await axios.get(`${api_url}/groups/${id}`, { withCredentials: true, withXSRFToken: true });
@@ -46,7 +45,7 @@ export const GroupeProfile = () => {
     }
 
     const { data, isLoading, isError } = useQuery({
-        queryKey: ['groups', id],
+        queryKey: ['group', id],
         queryFn: fetchGroup
     });
 
@@ -79,16 +78,14 @@ export const GroupeProfile = () => {
     const { user } = useAuth()!;
 
     const [answer, setAnswer] = useState('');
-
-
     const { handleFollow } = useFollowPG();
+
     const send_request = async () => {
-        // handleFollow(group?.id, 'group', answer, group?.id, group?.owner_id);
-        // setFollowed(prev => !prev);
         if (answer === '') return null;
         try {
             const res = await axios.post(`${api_url}/send_request`, { answer: answer, group_id: group?.id }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
+                queryClient.invalidateQueries({queryKey:['status_group', group?.id]});
                 toast.success(res.data.message || 'Request sent successfully');
                 setTimeout(() => {
                     closeModal?.();
@@ -125,6 +122,12 @@ export const GroupeProfile = () => {
     }
 
     const [loading, setLoading] = useState(false);
+
+    const follow = () => {
+        handleFollow(group?.id, 'group');
+        queryClient.invalidateQueries({ queryKey: ['group', id] });
+        setFollowed(prev => !prev);
+    }
 
     const handleSubmit = async () => {
         if (content === '') return toast.error('Type a text for add a post');
@@ -242,7 +245,6 @@ export const GroupeProfile = () => {
                                 <LoadingButton
                                     type="button"
                                     onClick={() => {
-                                        // follow();
                                         send_request();
                                         setTimeout(() => {
                                             closeModal?.();
@@ -312,32 +314,32 @@ export const GroupeProfile = () => {
                                         ) : (
                                             <div className='flex items-center gap-3'>
                                                 {
-                                                    status ? (
+                                                    (status && status !== 'accepted') ? (
                                                         <button
                                                             onClick={() => {
                                                                 if (!status) {
                                                                     openModal(`join-${group?.id}`)
                                                                 }
                                                             }}
-                                                            className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${status === 'pending' ? 'bg-amber-300' : status === 'accepted' ? 'bg-green-300' : 'bg-red-400'}`}
+                                                            className={`px-6 py-2.5 rounded-xl font-semibold capitalize text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${status === 'pending' ? 'bg-amber-300' : status === 'accepted' ? 'bg-green-300' : 'bg-red-400'}`}
                                                         >
-                                                            {status === 'pending' ? <Timer className="w-4 h-4" /> : status === 'accepted' ? <Check className='w-4 h-4' /> : <X className='w-4 h-4' />} {status} Request
+                                                            {status === 'pending' ? <Timer className="w-4 h-4" /> : <X className='w-4 h-4' />} {status} Request
                                                         </button>
                                                     ) : (
                                                         <button
                                                             onClick={() => {
-                                                                // if (isJoined) {
-                                                                //     follow()
-                                                                // } else {
-                                                                openModal(`join-${group?.id}`)
-                                                                // }
+                                                                if (isJoined) {
+                                                                    follow();
+                                                                } else {
+                                                                    openModal(`join-${group?.id}`)
+                                                                }
                                                             }}
                                                             className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${followed
                                                                 ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                                                 : 'bg-[var(--special-purple)] text-white hover:opacity-90'
                                                                 }`}
                                                         >
-                                                            {followed ? 'Joined' : 'Join Group'}
+                                                            {(followed) ? 'Joined' : 'Join Group'}
                                                         </button>
                                                     )
                                                 }

@@ -98,7 +98,7 @@ class GroupController extends Controller
     {
         if (!$id) {
             return response()->json([
-                ! 'success' => false,
+                'success' => false,
                 'message' => 'Id is required for show page'
             ]);
         }
@@ -297,6 +297,60 @@ class GroupController extends Controller
                 'success' => true,
                 'requests' => $requests
             ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function changeStatus(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+
+        $user_id = Auth::id();
+        $request->validate([
+            'group_id' => ['required', 'integer', 'exists:groups,id'],
+            'request_id' => ['required', 'integer', 'exists:groups_join_requests,id'],
+            'status' => ['required', 'string', 'in:accepted,rejected'],
+            'user_id' => ['required', 'integer', 'exists:users,id']
+        ]);
+
+        $group = Group::where('owner_id', $user_id)->where('id', $request->group_id)->first();
+        if (!$group) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Group not exist or you dont have permission for manage requests to this group.'
+            ]);
+        }
+
+        try {
+            $joinRequest = GroupJoinRequest::where('id', $request->request_id)->where('user_id', $request->user_id)->where('group_id', $request->group_id)->first();
+            $joinRequest->update([
+                'status' => $request->status
+            ]);
+            $requester = User::find($joinRequest->user_id);
+
+            if ($request->status === 'accepted') {
+                GroupPageFollow::firstOrCreate([
+                    'user_id'         => $request->user_id,
+                    'followable_id'   => $group->id,
+                    'followable_type' => Group::class,
+                ]);
+
+                $joinRequest->delete();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status changed successfully'
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
