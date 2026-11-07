@@ -46,6 +46,7 @@ class FollowPageGroup extends Notification
             'type' => 'request',
             'message' => "{$this->user->name} has requested to join your group {$this->group->name}.",
             'group_id' => $this->group->id,
+            'link' => "/groups_requests"
         ];
     }
 }

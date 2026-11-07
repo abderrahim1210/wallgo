@@ -292,10 +292,6 @@ class PageController extends Controller
         $user_id = Auth::id();
         $user = User::find($user_id);
         $type = $request->type;
-        $answer = $request->answer;
-        $group_id = $request->group_id;
-        $owner_id = $request->user_id;
-        $owner = User::where('id',$owner_id)->first();
         $followable = null;
 
         switch ($type) {
@@ -323,15 +319,7 @@ class PageController extends Controller
                     'followable_id' => $followable->id,
                     'followable_type' => get_class($followable)
                 ]);
-                if ($type === 'group') {
-                    GroupJoinRequest::create([
-                        'group_id' => $group_id,
-                        'user_id' => $user_id,
-                        'answer' => $answer
-                    ]);
-                    $owner->notify(new FollowPageGroup($user, $followable));
-                }
-
+                
                 return response()->json([
                     'success' => true,
                     'message' => 'Follow added successfully',

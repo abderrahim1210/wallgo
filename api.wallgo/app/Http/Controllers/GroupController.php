@@ -7,6 +7,8 @@ use App\Models\GroupJoinRequest;
 use App\Models\GroupPageFollow;
 use App\Models\GroupQuestion;
 use App\Models\Post;
+use App\Models\User;
+use App\Notifications\FollowPageGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -231,10 +233,75 @@ class GroupController extends Controller
         $user_id = Auth::id();
         $group_id = $request->group_id;
         $groupExist = Group::findOrFail($group_id);
-        $group = GroupJoinRequest::where('user_id',$user_id)->where('group_id',$group_id)->select('id','user_id','group_id','status')->first();
+        $group = GroupJoinRequest::where('user_id', $user_id)->where('group_id', $group_id)->select('id', 'user_id', 'group_id', 'status')->first();
         return response()->json([
             'success' => true,
             'status' => $group->status
         ]);
+    }
+
+    public function send_req(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User Unauthorized'
+            ], 401);
+        }
+
+        $user_id = Auth::id();
+        $request->validate([
+            'answer' => ['string', 'required'],
+            'group_id' => ['integer', 'required', 'exists:groups,id']
+        ]);
+
+        $group = Group::find($request->group_id);
+        $owner = User::find($group->owner_id);
+        $user = User::find($user_id);
+        try {
+            GroupJoinRequest::create([
+                'user_id' => $user_id,
+                'group_id' => $request->group_id,
+                'answer' => $request->answer
+            ]);
+
+
+            $owner->notify(new FollowPageGroup($user, $group));
+            return response()->json([
+                'success' => true,
+                'message' => 'Request sent successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function requests()
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ]);
+        }
+
+        $user_id = Auth::id();
+        try {
+            $requests = GroupJoinRequest::with(['group:id,owner_id,name,logo_url', 'user:id,username,avatar_url'])->whereHas('group', function ($q) use ($user_id) {
+                $q->where('owner_id', $user_id);
+            })->where('status', 'pending')->latest('created_at')->paginate(10);
+            return response()->json([
+                'success' => true,
+                'requests' => $requests
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

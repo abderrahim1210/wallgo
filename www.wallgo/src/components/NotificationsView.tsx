@@ -101,6 +101,7 @@ const NotificationsView = ({ pageParam = 1 }) => {
                                 </div>
                             )}
                         </div>
+                        <div ref={observerRef} className="h-10"></div>
                     </div>
                 )
             }

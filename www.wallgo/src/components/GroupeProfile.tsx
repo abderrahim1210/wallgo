@@ -8,7 +8,7 @@ import { MainLayout } from '../MainLayout';
 import { Helmet } from 'react-helmet-async';
 import { PostGrid, type Post } from '../templates/PostGrid';
 import { EmptyContent } from './EmptyContent';
-import { Check, Flag, Lock, MoreHorizontal, Pencil, PlusSquare, Settings, Share2, Users } from 'lucide-react';
+import { Check, Flag, Lock, MoreHorizontal, Pencil, PlusSquare, Settings, Share2, Timer, Users, X } from 'lucide-react';
 import { FaGlobe, FaLock, FaRegNewspaper } from 'react-icons/fa';
 import { useFollowPG } from './useFollowPG';
 import { useModal } from '../hooks/ModalProvider';
@@ -82,9 +82,21 @@ export const GroupeProfile = () => {
 
 
     const { handleFollow } = useFollowPG();
-    const follow = () => {
-        handleFollow(group?.id, 'group', answer, group?.id, group?.owner_id);
-        setFollowed(prev => !prev);
+    const send_request = async () => {
+        // handleFollow(group?.id, 'group', answer, group?.id, group?.owner_id);
+        // setFollowed(prev => !prev);
+        if (answer === '') return null;
+        try {
+            const res = await axios.post(`${api_url}/send_request`, { answer: answer, group_id: group?.id }, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) {
+                toast.success(res.data.message || 'Request sent successfully');
+                setTimeout(() => {
+                    closeModal?.();
+                }, 1000);
+            }
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
     }
 
     const { show, openModal, closeModal } = useModal()!;
@@ -134,16 +146,16 @@ export const GroupeProfile = () => {
 
     const fetchStatus = async () => {
         try {
-            const res = await axios.get(`${api_url}/check_follow_group`, {params:{group_id:group?.id}, withCredentials:true,withXSRFToken:true});
+            const res = await axios.get(`${api_url}/check_follow_group`, { params: { group_id: group?.id }, withCredentials: true, withXSRFToken: true });
             if (res.data.success) return res.data.status;
-        } catch (err:any) {
+        } catch (err: any) {
             console.error(err?.response.data);
         }
     }
 
-    const {data:status=''} = useQuery({
-        queryKey:['status_group'],
-        queryFn:fetchStatus
+    const { data: status } = useQuery({
+        queryKey: ['status_group', group?.id],
+        queryFn: fetchStatus
     });
     return (
         <MainLayout>
@@ -230,10 +242,11 @@ export const GroupeProfile = () => {
                                 <LoadingButton
                                     type="button"
                                     onClick={() => {
-                                        follow();
+                                        // follow();
+                                        send_request();
                                         setTimeout(() => {
                                             closeModal?.();
-                                        },1000);
+                                        }, 1000);
                                     }}
                                     className='px-5 py-2.5 rounded-xl font-semibold text-sm bg-[var(--sepcial-purple)] text-white shadow-sm shadow-indigo-200 transition-all active:scale-95'
                                 >
@@ -298,21 +311,36 @@ export const GroupeProfile = () => {
                                             </div>
                                         ) : (
                                             <div className='flex items-center gap-3'>
-                                                <button
-                                                    onClick={() => {
-                                                        if (isJoined){
-                                                            follow()
-                                                        }else{
-                                                            openModal(`join-${group?.id}`)
-                                                        }
-                                                    }}
-                                                    className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${followed
-                                                        ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                        : 'bg-[var(--special-purple)] text-white hover:opacity-90'
-                                                        }`}
-                                                >
-                                                    {followed ? <><Check className="w-4 h-4" /> {status} Request</> : 'Join Group'}
-                                                </button>
+                                                {
+                                                    status ? (
+                                                        <button
+                                                            onClick={() => {
+                                                                if (!status) {
+                                                                    openModal(`join-${group?.id}`)
+                                                                }
+                                                            }}
+                                                            className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${status === 'pending' ? 'bg-amber-300' : status === 'accepted' ? 'bg-green-300' : 'bg-red-400'}`}
+                                                        >
+                                                            {status === 'pending' ? <Timer className="w-4 h-4" /> : status === 'accepted' ? <Check className='w-4 h-4' /> : <X className='w-4 h-4' />} {status} Request
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            onClick={() => {
+                                                                // if (isJoined) {
+                                                                //     follow()
+                                                                // } else {
+                                                                openModal(`join-${group?.id}`)
+                                                                // }
+                                                            }}
+                                                            className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${followed
+                                                                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                                : 'bg-[var(--special-purple)] text-white hover:opacity-90'
+                                                                }`}
+                                                        >
+                                                            {followed ? 'Joined' : 'Join Group'}
+                                                        </button>
+                                                    )
+                                                }
                                                 <DropdownMenu
                                                     trigger={
                                                         <button className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center">
