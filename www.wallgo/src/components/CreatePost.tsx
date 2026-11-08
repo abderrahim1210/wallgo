@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { MobileCellNavbar } from '../layouts/MobileCellNavbar';
 import { Clock, Flag, Globe, Image, Lock, Send, Smile, Sparkles, User, Users, Video, X } from 'lucide-react';
 import { Navbar } from '../layouts/Navbar';
@@ -24,13 +24,13 @@ interface Post {
     visibility: string;
 }
 
-interface CreatePostProps {
-    id?: number;
-}
 
-const CreatePost: React.FC<CreatePostProps> = () => {
+const CreatePost = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+    const location = useLocation();
+    const groupId = location.state?.groupId;
+    const contentGroup = location.state?.contentGroup;
     const isEditMode = Boolean(id);
     const [content, setContent] = useState('');
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -145,6 +145,13 @@ const CreatePost: React.FC<CreatePostProps> = () => {
     }, [data]);
 
     useEffect(() => {
+        if (groupId && contentGroup) {
+            setPost(prev => ({ ...prev, content: contentGroup, postable_id: groupId, postable_type: 'group' }));
+            setContent(contentGroup);
+        }
+    }, [groupId, contentGroup]);
+
+    useEffect(() => {
         setPost(prev => ({ ...prev, visibility: visibility }));
     }, [visibility]);
 
@@ -196,7 +203,7 @@ const CreatePost: React.FC<CreatePostProps> = () => {
     const [showCapsuleOptions, setShowCapsuleOptions] = useState(false);
 
     useEffect(() => {
-        if (!id) {
+        if (!id && !groupId) {
             setPost({
                 content: '',
                 post_type: 'regular',
@@ -213,7 +220,7 @@ const CreatePost: React.FC<CreatePostProps> = () => {
 
     useEffect(() => {
         setPost(prev => ({ ...prev, postable_type: type === 'page' ? 'page' : type === 'group' ? 'group' : '' }));
-    }, [type])
+    }, [type]);
     return (
         <>
             <Helmet>
@@ -286,28 +293,32 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                                             </>
                                         )}
                                     </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setType(type === 'normal' ? 'page' : type === 'page' ? 'group' : 'normal')}
-                                        className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
-                                    >
-                                        {type === 'normal' ? (
-                                            <>
-                                                <User className="w-3 h-3 text-blue-600" />
-                                                <span>Normal</span>
-                                            </>
-                                        ) : type === 'page' ? (
-                                            <>
-                                                <Flag className="w-3 h-3 text-gray-600" />
-                                                <span>Pages</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Users className="w-3 h-3 text-gray-600" />
-                                                <span>Groups</span>
-                                            </>
-                                        )}
-                                    </button>
+                                    {
+                                        !groupId && (
+                                            <button
+                                                type="button"
+                                                onClick={() => setType(type === 'normal' ? 'page' : type === 'page' ? 'group' : 'normal')}
+                                                className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                                            >
+                                                {type === 'normal' ? (
+                                                    <>
+                                                        <User className="w-3 h-3 text-blue-600" />
+                                                        <span>Normal</span>
+                                                    </>
+                                                ) : type === 'page' ? (
+                                                    <>
+                                                        <Flag className="w-3 h-3 text-gray-600" />
+                                                        <span>Pages</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Users className="w-3 h-3 text-gray-600" />
+                                                        <span>Groups</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                        )
+                                    }
                                 </div>
                             </div>
                         </div>

@@ -344,9 +344,8 @@ class GroupController extends Controller
                     'followable_id'   => $group->id,
                     'followable_type' => Group::class,
                 ]);
-
-                $joinRequest->delete();
             }
+            $joinRequest->delete();
             $requester = User::findOrFail($joinRequest->user_id);
 
             $requester->notify(new ChangeStatusRequest($group, $request->status));
@@ -384,7 +383,7 @@ class GroupController extends Controller
     }
 
 
-    public function removeMember($group_id,$user_id)
+    public function removeMember($group_id, $user_id)
     {
         if (!Auth::check()) {
             return response()->json([
@@ -394,7 +393,6 @@ class GroupController extends Controller
         }
         $current_user_id = Auth::id();
 
-        // $user_id = $member_id;:
         if (!User::find($user_id)) {
             return response()->json([
                 'success' => false,
@@ -403,7 +401,7 @@ class GroupController extends Controller
         }
 
         // $group_id = $group_id;
-        $group = Group::where('id',$group_id)->where('owner_id',$current_user_id)->first();
+        $group = Group::where('id', $group_id)->where('owner_id', $current_user_id)->first();
         if (!$group) {
             return response()->json([
                 'success' => false,
@@ -412,8 +410,8 @@ class GroupController extends Controller
         }
 
         try {
-            $follow = GroupPageFollow::where('user_id',$user_id)->where('followable_id',$group_id)->where('followable_type',\App\Models\Group::class)->first();
-            if ($follow){
+            $follow = GroupPageFollow::where('user_id', $user_id)->where('followable_id', $group_id)->where('followable_type', \App\Models\Group::class)->first();
+            if ($follow) {
                 $follow->delete();
 
                 return response()->json([

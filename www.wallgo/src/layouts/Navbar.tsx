@@ -48,7 +48,7 @@ export const Navbar = () => {
     }
 
     const { data } = useQuery({
-        queryKey: ['notifications'],
+        queryKey: ['notifications_navbar', user?.id],
         queryFn: fetchNotifications,
     });
 

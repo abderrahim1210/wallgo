@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { api_url } from '../pages/Auth/getUser';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/AuthProvider';
@@ -130,24 +130,6 @@ export const GroupeProfile = () => {
         handleFollow(group?.id, 'group');
         queryClient.invalidateQueries({ queryKey: ['group', id] });
         setFollowed(prev => !prev);
-    }
-
-    const handleSubmit = async () => {
-        if (content === '') return toast.error('Type a text for add a post');
-        setLoading(true);
-        try {
-            const res = await axios.post(`${api_url}/posts/create`, { content: content, postable_type: 'group', postable_id: group?.id }, { withCredentials: true, withXSRFToken: true });
-            if (res.data.success) {
-                setLoading(false);
-                toast.success(res.data.message || 'Post uploaded successfully');
-            } else {
-                setLoading(false);
-                toast.error(res.data.message || 'Failed to upload the post');
-                console.error(res.data.message);
-            }
-        } catch (err: any) {
-            console.log(err?.response?.data);
-        }
     }
 
     const fetchStatus = async () => {
@@ -480,7 +462,7 @@ export const GroupeProfile = () => {
                                             />
                                             {
                                                 write && (
-                                                    <LoadingButton loading={loading} className='px-5 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-full hover:opacity-90 transition-all shadow-sm cursor-pointer animate-fadeIn font-semibold shrink-0' onClick={handleSubmit}>
+                                                    <LoadingButton loading={loading} className='px-5 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-full hover:opacity-90 transition-all shadow-sm cursor-pointer animate-fadeIn font-semibold shrink-0' onClick={() => navigate('/create_post', {state:{groupId:group?.id, contentGroup:content}})}>
                                                         Post
                                                     </LoadingButton>
                                                 )
