@@ -219,7 +219,9 @@ const CreatePost = () => {
     const [type, setType] = useState<'normal' | 'page' | 'group'>('normal');
 
     useEffect(() => {
-        setPost(prev => ({ ...prev, postable_type: type === 'page' ? 'page' : type === 'group' ? 'group' : '' }));
+        if (!groupId) {
+            setPost(prev => ({ ...prev, postable_type: type === 'page' ? 'page' : type === 'group' ? 'group' : '' }));
+        }
     }, [type]);
     return (
         <>

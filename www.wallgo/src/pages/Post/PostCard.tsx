@@ -199,7 +199,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                         </h4>
                         <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
                             {(!post?.postable || post?.postable_type?.includes('Group')) && (
-                                <span>@{post?.user.username} {(post?.postable_type?.includes('Group')) && <LinkR className='underline' to={'/'}>on {post?.postable?.name}</LinkR>}</span>
+                                <span>@{post?.user.username} {(post?.postable_type?.includes('Group')) && <LinkR className='underline' to={`/groups/${post?.postable?.id}`}>on {post?.postable?.name}</LinkR>}</span>
                             )}
                             <span>•</span>
                             <span>{moment(post?.created_at).fromNow()}</span>
