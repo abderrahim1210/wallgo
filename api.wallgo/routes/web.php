@@ -237,6 +237,11 @@ Route::middleware('auth:sanctum')->group(function () {
             'notifications' => $notifications
         ]);
     });
+
+    Route::delete('/groups/{group_id}/remove_member/{user_id}', [GroupController::class, 'removeMember']);
+    
+    Route::get('/groups/{group_id}/followers', [GroupController::class, 'followers']);
+
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);

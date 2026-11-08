@@ -8,7 +8,7 @@ import { MainLayout } from '../MainLayout';
 import { Helmet } from 'react-helmet-async';
 import { PostGrid, type Post } from '../templates/PostGrid';
 import { EmptyContent } from './EmptyContent';
-import { Check, Flag, Lock, MoreHorizontal, Pencil, PlusSquare, Settings, Share2, Timer, Users, X } from 'lucide-react';
+import { Check, Flag, Lock, MoreHorizontal, Pencil, PlusSquare, Settings, Share2, Timer, User, Users, X } from 'lucide-react';
 import { FaGlobe, FaLock, FaRegNewspaper } from 'react-icons/fa';
 import { useFollowPG } from './useFollowPG';
 import { useModal } from '../hooks/ModalProvider';
@@ -21,6 +21,9 @@ import { Skeleton } from '../templates/Skeleton';
 import { ErrorPage } from './ErrorPage';
 import toast from 'react-hot-toast';
 import LoadingButton from '../Icons/LoadingButton';
+import FollowUserCard from './FollowUserCard';
+import { FollowUser } from './FollowUser';
+// import type { User } from './Home';
 
 export const GroupeProfile = () => {
     const { id } = useParams();
@@ -85,7 +88,7 @@ export const GroupeProfile = () => {
         try {
             const res = await axios.post(`${api_url}/send_request`, { answer: answer, group_id: group?.id }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
-                queryClient.invalidateQueries({queryKey:['status_group', group?.id]});
+                queryClient.invalidateQueries({ queryKey: ['status_group', group?.id] });
                 toast.success(res.data.message || 'Request sent successfully');
                 setTimeout(() => {
                     closeModal?.();
@@ -160,6 +163,40 @@ export const GroupeProfile = () => {
         queryKey: ['status_group', group?.id],
         queryFn: fetchStatus
     });
+
+    const fetchFollowers = async () => {
+        try {
+            const res = await axios.get(`${api_url}/groups/${group?.id}/followers`, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) return res.data.followers;
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
+
+    const { data: followersList } = useQuery({
+        queryKey: ['groups-followers', group?.id],
+        queryFn: fetchFollowers
+    });
+
+    const removeMember = async (id: number) => {
+        if (!id) return null;
+        setLoading(true);
+        try {
+            const res = await axios.delete(`${api_url}/groups/${group?.id}/remove_member/${id}`, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) {
+                setLoading(false);
+                toast.success(res.data.message || 'Member removed successfully');
+                queryClient.invalidateQueries({ queryKey: ['groups-followers', group?.id] });
+            } else {
+                setLoading(false);
+                toast.error(res.data.message || 'Something went wrong');
+                console.log(res.data.message);
+            }
+        } catch (err: any) {
+            setLoading(false);
+            console.error(err?.response.data);
+        }
+    }
     return (
         <MainLayout>
             <Helmet>
@@ -255,6 +292,50 @@ export const GroupeProfile = () => {
                                     Submit Answer & Join
                                 </LoadingButton>
                             </div>
+                        </div>
+                    </ModalTemplate>
+                )
+            }
+
+            {
+                show === `followers-group-${group?.id}` && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <div>
+                            {
+                                followersList?.length > 0 ? followersList.map((user: { id: number; username: string; name: string; avatar_url: string; }) => (
+                                    <div className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <img
+                                                src={user?.avatar_url || '/icons/avatar1.svg'}
+                                                alt={user?.name}
+                                                className="w-12 h-12 rounded-full object-cover border border-gray-100 flex-shrink-0"
+                                            />
+                                            <div className="flex flex-col min-w-0">
+                                                <h4 className="text-sm font-bold text-gray-900 truncate hover:underline cursor-pointer" onClick={() => null}>
+                                                    {user?.name}
+                                                </h4>
+                                                <span className="text-xs font-medium text-gray-500 truncate">
+                                                    @{user?.username}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {
+                                            user?.id !== group?.owner_id && (
+                                                <button
+                                                    disabled={loading}
+                                                    onClick={() => removeMember(user.id)}
+                                                    className="px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
+                                                >
+                                                    {loading ? 'Removing ...' : 'Remove'}
+                                                </button>
+                                            )
+                                        }
+                                    </div>
+                                )) : (
+                                    <EmptyContent text='No followers yet!' icon={<User />} />
+                                )
+                            }
                         </div>
                     </ModalTemplate>
                 )
@@ -371,7 +452,7 @@ export const GroupeProfile = () => {
                                 </div>
 
                                 <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100 text-sm text-gray-600">
-                                    <span className="flex items-center gap-1.5 font-medium">
+                                    <span className="flex items-center gap-1.5 font-medium cursor-pointer" onClick={() => openModal(`followers-group-${group?.id}`)}>
                                         <Users className="w-4 h-4 text-[var(--special-purple)]" />
                                         {group?.followers_count} Followers
                                     </span>

@@ -362,4 +362,70 @@ class GroupController extends Controller
             ], 500);
         }
     }
+
+    public function followers($group_id)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+
+        $user_id = Auth::id();
+
+        $group = Group::where('owner_id', $user_id)->findOrFail($group_id);
+        $followers = $group->followers()->get();
+
+        return response()->json([
+            'success' => true,
+            'followers' => $followers
+        ]);
+    }
+
+
+    public function removeMember($group_id,$user_id)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+        $current_user_id = Auth::id();
+
+        // $user_id = $member_id;:
+        if (!User::find($user_id)) {
+            return response()->json([
+                'success' => false,
+                'message' => "User by id $user_id not found"
+            ], 404);
+        }
+
+        // $group_id = $group_id;
+        $group = Group::where('id',$group_id)->where('owner_id',$current_user_id)->first();
+        if (!$group) {
+            return response()->json([
+                'success' => false,
+                'message' => "Group by id $group_id not found"
+            ], 404);
+        }
+
+        try {
+            $follow = GroupPageFollow::where('user_id',$user_id)->where('followable_id',$group_id)->where('followable_type',\App\Models\Group::class)->first();
+            if ($follow){
+                $follow->delete();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Member deleted successfully'
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => "Failed : " . $e->getMessage()
+            ], 500);
+        }
+    }
 }
