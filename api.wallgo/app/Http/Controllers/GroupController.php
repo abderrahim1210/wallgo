@@ -7,6 +7,7 @@ use App\Models\GroupJoinRequest;
 use App\Models\GroupPageFollow;
 use App\Models\GroupQuestion;
 use App\Models\Post;
+use App\Models\Reel;
 use App\Models\User;
 use App\Notifications\ChangeStatusRequest;
 use App\Notifications\FollowPageGroup;
@@ -158,9 +159,44 @@ class GroupController extends Controller
                     $subQuery->whereNull('schedule_time')->orWhere('schedule_time', '<=', now());
                 });
             })->latest()->paginate(10);
+
+            $reels = Reel::with(['user:id,username,name,avatar_url'])->withCount(['likes', 'comments'])->withExists(['user as is_owner' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            }])->where('reelable_id', $group->id)->latest()->paginate(10);
             return response()->json([
                 'success' => true,
-                'posts' => $posts
+                'posts' => $posts,
+                'reels' => $reels
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function reels(string $id)
+    {
+        if (!$id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Id is required for show page'
+            ]);
+        }
+
+        $user_id = Auth::id();
+
+        try {
+            $group = Group::find($id);
+            if (!$group) return response()->json(['success' => false, 'message' => "Group by id $id not found"], 404);
+
+            $reels = Reel::with(['user:id,username,name,avatar_url'])->withCount(['likes', 'comments'])->withExists(['user as is_owner' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            }])->where('reelable_id', $group->id)->latest()->paginate(10);
+            return response()->json([
+                'success' => true,
+                'reels' => $reels
             ]);
         } catch (\Exception $e) {
             return response()->json([

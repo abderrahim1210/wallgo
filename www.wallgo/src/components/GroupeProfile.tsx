@@ -23,6 +23,9 @@ import toast from 'react-hot-toast';
 import LoadingButton from '../Icons/LoadingButton';
 import FollowUserCard from './FollowUserCard';
 import { FollowUser } from './FollowUser';
+import { ReelGrid } from '../templates/ReelGrid';
+import type { Reel } from './CreateReel';
+import PostsGrid from '../templates/PostsGrid';
 // import type { User } from './Home';
 
 export const GroupeProfile = () => {
@@ -47,6 +50,15 @@ export const GroupeProfile = () => {
         }
     }
 
+    const fetchReels = async () => {
+        try {
+            const res = await axios.get(`${api_url}/groups/${id}/reels`, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) return res.data.reels;
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
+
     const { data, isLoading, isError } = useQuery({
         queryKey: ['group', id],
         queryFn: fetchGroup
@@ -64,11 +76,24 @@ export const GroupeProfile = () => {
         },
         initialPageParam: 1
     });
+    
+    const { data: rls, isLoading:reelsLoading, hasNextPage:hasNextPageReels, fetchNextPage:fetchNextPageReels, isFetchingNextPage:isFetchingNextPageReels } = useInfiniteQuery({
+        queryKey: ['groups_reels', id],
+        queryFn: fetchReels,
+        getNextPageParam: (lastPage: any) => {
+            if (lastPage.current_page < lastPage.last_page) {
+                return lastPage.current_page + 1;
+            }
+            return undefined;
+        },
+        initialPageParam: 1
+    });
 
     const group = data?.group || null;
     const question = data?.question?.question || '';
     const isJoined = data?.is_joined;
     const posts: Post[] = ps?.pages.flatMap((page: any) => page?.data || []) || [];
+    const reels: Reel[] = rls?.pages.flatMap((page: any) => page?.data || []) || [];
 
     const [followed, setFollowed] = useState<boolean>(false);
 
@@ -191,7 +216,8 @@ export const GroupeProfile = () => {
             icon: <Clapperboard className="w-4 h-4 text-[var(--special-purple)]" />,
             onClick: () => { navigate('/create_reel', { state: { groupId: group?.id, groupName: group?.name } }) },
         },
-    ]
+    ];
+    const [activeTab, setActiveTab] = useState('posts');
     return (
         <MainLayout>
             <Helmet>
@@ -503,12 +529,33 @@ export const GroupeProfile = () => {
                             {
                                 (!isJoined && group?.visibility === 'private') ? (
                                     <EmptyContent text='This group is private' icon={<Lock />} />
-                                ) : posts && posts.length > 0 ? (
-                                    <PostGrid posts={posts} isFetchingNextPage={isFetchingNextPage} hasNextPage={hasNextPage} isLoading={isLoading} fetchNextPage={fetchNextPage} />
                                 ) : (
-                                    <EmptyContent text=" This group hasn't posted anything yet." icon={<FaRegNewspaper />} />
-                                )
-                            }
+                                    <>
+                                        <div className='flex space-x-2 border-b border-gray-100 pb-3 mb-3 mt-3'>
+                                            <button
+                                                onClick={() => setActiveTab('posts')}
+                                                className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'posts' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                            >
+                                                Posts
+                                            </button>
+                                            <button
+                                                onClick={() => setActiveTab('reels')}
+                                                className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'reels' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                            >
+                                                Reels
+                                            </button>
+                                        </div>
+                                        <div className='mt-3'>
+                                            {
+                                                activeTab === 'posts' ? (
+                                                    <PostGrid posts={posts} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} isLoading={isLoading} />
+                                                ) : (
+                                                    <PostsGrid data={reels} fetchNextPage={fetchNextPageReels} hasNextPage={hasNextPageReels} isFetchingNextPage={isFetchingNextPageReels} isLoading={reelsLoading} />
+                                                )
+                                            }
+                                        </div>
+                                    </>
+                                )}
                         </div>
                     </div>
                 )

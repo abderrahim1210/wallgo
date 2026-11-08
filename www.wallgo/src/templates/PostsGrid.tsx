@@ -39,7 +39,7 @@ const PostsGrid: React.FC<PostsGridProps> = ({ data, isLoading, isFetchingNextPa
 
             <div className='grid grid-cols-3 gap-1.5'>
                 {data?.length > 0 ? data?.map((item) => (
-                    <div key={item?.id} className='relative aspect-square bg-gray-100 dark:bg-zinc-900 overflow-hidden group cursor-pointer' onClick={() => navigate(`/reels/${item.id}`)}>
+                    <div key={item?.id} className='relative aspect-square bg-gray-100 dark:bg-zinc-900 overflow-hidden group cursor-pointer' onClick={() => navigate(`/reel/${item.id}`)}>
 
                         <video
                             src={item.video_url}
