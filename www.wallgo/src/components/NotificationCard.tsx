@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { api_url } from '../pages/Auth/getUser'
 import moment from 'moment'
+import { Check, Heart, MessageSquare, UserCheck, UserPlus, X } from 'lucide-react'
 
 interface NotificationCardProps {
     notif: Notification
@@ -36,12 +37,15 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({ notif }) => 
                     alt={notif.data.user_name}
                     className="w-10 h-10 rounded-full object-cover"
                 />
-                <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[10px] text-white ${notif.type === 'like' ? 'bg-rose-500' :
-                    notif.type === 'follow' ? 'bg-purple-600' : 'bg-blue-500'
+                <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[10px] text-white ${notif.data.type === 'like' ? 'bg-[var(--special-red)]' :
+                    notif.data.type === 'follow' ? 'bg-[var(--special-purple)]' : (notif?.data.type === 'status' && notif?.data?.message.includes('accepted')) ? 'bg-green-500' : (notif?.data.type === 'status' && notif?.data?.message.includes('rejected')) ? 'bg-red-500' :'bg-blue-500'
                     }`}>
-                    {notif.type === 'like' && <FiHeart className="w-2.5 h-2.5" />}
-                    {notif.type === 'follow' && <FiUserPlus className="w-2.5 h-2.5" />}
-                    {notif.type === 'comment' && <FiMessageSquare className="w-2.5 h-2.5" />}
+                    {notif.data.type === 'like' && <Heart className="w-2.5 h-2.5" />}
+                    {notif.data.type === 'follow' && <UserPlus className="w-2.5 h-2.5" />}
+                    {notif.data.type === 'comment' && <MessageSquare className="w-2.5 h-2.5" />}
+                    {notif.data.type === 'request' && <UserCheck className="w-2.5 h-2.5" />}
+                    {(notif?.data.type === 'status' && notif?.data?.message.includes('accepted')) && <Check className="w-2.5 h-2.5" />}
+                    {(notif?.data.type === 'status' && notif?.data?.message.includes('rejected')) && <X className="w-2.5 h-2.5" />}
                 </span>
             </div>
 

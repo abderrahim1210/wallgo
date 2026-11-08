@@ -38,8 +38,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
                     ) : (
                         <button onClick={
                             () => {
-                                setFollowed(prev => !prev);
-                                handleFollow(group?.id, 'group')
+                                navigate(`/groups/${group?.id}`);
                             }} className={`cursor-pointer w-full py-2 ${followed ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300' : 'bg-[var(--special-purple)] text-white hover:opacity-90'} hover:opacity-90 rounded-xl text-xs font-semibold transition shadow-sm`}>
                             {followed ? 'Joined' : 'Join Group'}
                         </button>

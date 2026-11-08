@@ -335,7 +335,7 @@ export const GroupeProfile = () => {
                                                                 }
                                                             }}
                                                             className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${followed
-                                                                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                                ? 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
                                                                 : 'bg-[var(--special-purple)] text-white hover:opacity-90'
                                                                 }`}
                                                         >

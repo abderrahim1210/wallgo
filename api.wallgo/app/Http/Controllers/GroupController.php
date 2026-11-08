@@ -8,6 +8,7 @@ use App\Models\GroupPageFollow;
 use App\Models\GroupQuestion;
 use App\Models\Post;
 use App\Models\User;
+use App\Notifications\ChangeStatusRequest;
 use App\Notifications\FollowPageGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -336,6 +337,7 @@ class GroupController extends Controller
                 'status' => $request->status
             ]);
 
+
             if ($request->status === 'accepted') {
                 GroupPageFollow::firstOrCreate([
                     'user_id'         => $request->user_id,
@@ -345,6 +347,9 @@ class GroupController extends Controller
 
                 $joinRequest->delete();
             }
+            $requester = User::findOrFail($joinRequest->user_id);
+
+            $requester->notify(new ChangeStatusRequest($group, $request->status));
 
             return response()->json([
                 'success' => true,

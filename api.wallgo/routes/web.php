@@ -19,6 +19,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Settings;
 use App\Http\Controllers\UpdatePageGroup;
 use App\Models\Group;
+use App\Models\Notification;
 use App\Models\Page;
 use App\Models\Post as ModelsPost;
 use App\Models\Search;
@@ -220,6 +221,22 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/groups/requests', [GroupController::class, 'requests']);
 
     Route::post('/request/change_status', [GroupController::class, 'changeStatus']);
+
+    Route::get('/notifications/not_read', function () {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+
+        $user_id = Auth::id();
+        $notifications = Notification::where('notifiable_id', $user_id)->whereNull('read_at')->count();
+        return response()->json([
+            'success' => true,
+            'notifications' => $notifications
+        ]);
+    });
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);

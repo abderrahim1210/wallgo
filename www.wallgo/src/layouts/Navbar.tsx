@@ -7,6 +7,9 @@ import { useAuth } from '../hooks/AuthProvider'
 import { Offcanvas } from '../templates/Offcanvas'
 import AnimatedMenuIcon from '../Icons/AnimatedMenuIcon'
 import { DropdownMenu } from '../templates/DropdownMenu'
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
+import { api_url } from '../pages/Auth/getUser'
 
 export const Navbar = () => {
     const linksClasse = "text-gray-700 hover:text-[var(--special-purple)] transition duration-150";
@@ -34,6 +37,22 @@ export const Navbar = () => {
             onClick: () => { navigate('/create_reel') },
         },
     ]
+
+    const fetchNotifications = async () => {
+        try {
+            const res = await axios.get(`${api_url}/notifications/not_read`, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) return res.data;
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
+
+    const { data } = useQuery({
+        queryKey: ['notifications'],
+        queryFn: fetchNotifications,
+    });
+
+    const notifications = data?.notifications;
     return (
         <>
             <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 px-6 py-2 shadow-sm">
@@ -106,6 +125,10 @@ export const Navbar = () => {
                                         <Tooltip label='Notifications' position={position}>
                                             <button className={`${linksClasse} cursor-pointer hover:text-[var(--special-red)]`} onClick={() => setNotifOpen(prev => !prev)}>
                                                 <Heart className='w-7 h-7' />
+
+                                                {notifications > 0 && (
+                                                    <span className="absolute top-6.5 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />
+                                                )}
                                             </button>
                                         </Tooltip>
                                         <Notifications isOpen={notifOpen} onClose={() => setNotifOpen(false)} />

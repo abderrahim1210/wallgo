@@ -34,6 +34,7 @@ export interface Post {
         id?: number;
         name?: string;
         logo_url?: string;
+        owner_id?:number;
     };
     postable_type: string;
     is_saved: boolean;

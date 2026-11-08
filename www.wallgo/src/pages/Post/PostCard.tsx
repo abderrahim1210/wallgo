@@ -99,6 +99,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         }
     }
 
+    const isAuthorGroupOwner = post?.user.id === post?.postable?.owner_id;
     const postMenuItems: DropdownItem[] = [
         {
             label: 'Copy link',
@@ -189,7 +190,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                                 )
                             }
                             {
-                                post?.is_group_owner && (
+                                isAuthorGroupOwner && (
                                     <Tooltip label={`Admin of ${post?.postable?.name}`}>
                                         <Crown className='w-3.5 h-3.5 text-[var(--special-purple)]' />
                                     </Tooltip>
@@ -214,7 +215,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 <Tooltip label='More options'>
                     <DropdownMenu
                         trigger={
-                            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors">
+                            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors cursor-pointer">
                                 <MoreHorizontal className="w-5 h-5" />
                             </button>
                         }
