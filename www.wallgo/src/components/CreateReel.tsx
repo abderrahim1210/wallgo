@@ -1,7 +1,7 @@
 import { Clapperboard, Disc, Eye, EyeClosed, Loader2, Music, Play, Sparkles, Upload, Video, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react'
 import { ReelIcon } from '../Icons/ReelIcon';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { MainLayout } from '../MainLayout';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
@@ -22,7 +22,7 @@ export type Reel = {
     is_liked: boolean;
     is_saved: boolean;
     public_id: number;
-    views_count:number;
+    views_count: number;
     user: {
         id: number;
         name: string;
@@ -35,6 +35,9 @@ export const cloudName = "dhysaozog";
 
 export const CreateReel = () => {
     const { reel_id } = useParams();
+    const location = useLocation();
+    const groupId = location.state?.groupId;
+    const groupName = location.state?.groupName;
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedTrack, setSelectedTrack] = useState<{ title: string; artist: string; url: string } | null>(null);
     const [isPlayingPreview, setIsPlayingPreview] = useState(false);
@@ -49,9 +52,18 @@ export const CreateReel = () => {
         audio_url: '',
         visibility: '',
         public_id: '',
+        reelable_id: '',
+        reelable_type: ''
     });
+
     useEffect(() => {
-        if (reel_id) {
+        if (groupId) {
+            setReel(prev => ({ ...prev, reelable_id: groupId, reelable_type: 'group' }));
+        }
+    }, [groupId]);
+
+    useEffect(() => {
+        if (reel_id || !groupId) {
             setEdit(true);
             axios.get(`${api_url}/reels/${reel_id}`, { withCredentials: true, withXSRFToken: true }).then(res => {
                 if (res.data.success) {
@@ -62,7 +74,9 @@ export const CreateReel = () => {
                         audio_name: fetchedReel.audio_name || '',
                         audio_url: fetchedReel.audio_url || '',
                         visibility: fetchedReel.visibility || '',
-                        public_id: fetchedReel.public_id || ''
+                        public_id: fetchedReel.public_id || '',
+                        reelable_id: fetchedReel.reelable_id || '',
+                        reelable_type: fetchedReel.reelable_type || ''
                     });
                     setVideoPreview(fetchedReel?.video_url || null);
                     if (fetchedReel.audio_name && fetchedReel.audio_url) {
@@ -85,6 +99,8 @@ export const CreateReel = () => {
                 audio_url: '',
                 visibility: '',
                 public_id: '',
+                reelable_id: '',
+                reelable_type: ''
             });
             setVideoPreview(null);
             setSelectedTrack(null);
@@ -142,11 +158,11 @@ export const CreateReel = () => {
                 video_url = resCloud.data.secure_url;
                 public_id = resCloud.data.public_id;
             }
-           
+
             const method = edit ? 'put' : 'post';
             const url = edit ? `${api_url}/reels/${reel_id}/edit` : `${api_url}/reels/create`;
             const formData = new FormData();
-             if (edit) {
+            if (edit) {
                 formData.append('_method', 'PUT');
             }
             formData.append('video', video_url);
@@ -155,6 +171,8 @@ export const CreateReel = () => {
             formData.append('audio_name', reel.audio_name);
             formData.append('audio_url', reel.audio_url);
             formData.append('visibility', reel.visibility);
+            formData.append('reelable_id', groupId);
+            formData.append('reelable_type', 'group');
             const res = await axios[method](url, formData, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 setLoading(false);
@@ -203,7 +221,7 @@ export const CreateReel = () => {
                     <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                         <div className="flex items-center gap-2 text-[var(--special-purple)]">
                             <Clapperboard className='w-5 h-5' />
-                            <h3 className="font-bold text-gray-800 text-xl">Create New Reel</h3>
+                            <h3 className="font-bold text-gray-800 text-xl">Create New Reel {groupName && `to ${groupName} group`}</h3>
                         </div>
                         <button
                             onClick={() => navigate(-1)}

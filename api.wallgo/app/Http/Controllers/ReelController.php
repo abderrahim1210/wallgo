@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
 use App\Models\Reel;
 use App\Models\ReelViews;
 use App\Models\User;
@@ -58,8 +59,12 @@ class ReelController extends Controller
             'caption' => ['nullable', 'string', 'max:355'],
             'audio_name' => ['nullable', 'string'],
             'audio_url' => ['nullable', 'string'],
-            'visibility' => ['nullable', 'string', 'in:public,private']
+            'visibility' => ['nullable', 'string', 'in:public,private'],
+            'reelable_id' => ['nullable', 'integer', 'exists:groups,id'],
+            'reelable_type' => ['nullable', 'string', 'in:group']
         ]);
+
+        $group = Group::find($request->reelable_id);
 
         try {
             Reel::create([
@@ -69,7 +74,9 @@ class ReelController extends Controller
                 'audio_name' => $request->audio_name ?? null,
                 'audio_url' => $request->audio_url ?? null,
                 'visibility' => $request->visibility ?? 'public',
-                'public_id' => $request->public_id
+                'public_id' => $request->public_id,
+                'reelable_id' => $request->reelable_id ?? null,
+                'reelable_type' => get_class($group) ?? null
             ]);
             return response()->json([
                 'success' => true,
@@ -271,7 +278,7 @@ class ReelController extends Controller
 
         try {
             $existingView = ReelViews::where('reel_id', $reel->id)->where('user_id', $user_id)->first();
-            if (!$existingView){
+            if (!$existingView) {
                 ReelViews::create([
                     'user_id' => $user_id,
                     'reel_id' => $reel->id

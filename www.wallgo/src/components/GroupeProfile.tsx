@@ -8,7 +8,7 @@ import { MainLayout } from '../MainLayout';
 import { Helmet } from 'react-helmet-async';
 import { PostGrid, type Post } from '../templates/PostGrid';
 import { EmptyContent } from './EmptyContent';
-import { Check, Flag, Lock, MoreHorizontal, Pencil, PlusSquare, Settings, Share2, Timer, User, Users, X } from 'lucide-react';
+import { Check, Clapperboard, Flag, Lock, MoreHorizontal, Pencil, PlusIcon, PlusSquare, Settings, Share2, Timer, User, Users, X } from 'lucide-react';
 import { FaGlobe, FaLock, FaRegNewspaper } from 'react-icons/fa';
 import { useFollowPG } from './useFollowPG';
 import { useModal } from '../hooks/ModalProvider';
@@ -179,6 +179,19 @@ export const GroupeProfile = () => {
             console.error(err?.response.data);
         }
     }
+
+    const createOptions = [
+        {
+            label: 'Create Post',
+            icon: <PlusIcon className="w-4 h-4 text-[var(--special-purple)]" />,
+            onClick: () => { navigate('/create_post', { state: { groupId: group?.id, contentGroup: '' } }) },
+        },
+        {
+            label: 'Create Reel',
+            icon: <Clapperboard className="w-4 h-4 text-[var(--special-purple)]" />,
+            onClick: () => { navigate('/create_reel', { state: { groupId: group?.id, groupName: group?.name } }) },
+        },
+    ]
     return (
         <MainLayout>
             <Helmet>
@@ -351,7 +364,7 @@ export const GroupeProfile = () => {
 
                                     {
                                         user?.id === group?.owner.id ? (
-                                            <div className='gap-1 flex  '>
+                                            <div className='gap-1 flex'>
                                                 <button
                                                     onClick={() => navigate('/create_post')}
                                                     className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
@@ -376,6 +389,21 @@ export const GroupeProfile = () => {
                                             </div>
                                         ) : (
                                             <div className='flex items-center gap-3'>
+                                                {
+                                                    isJoined && (
+                                                        <DropdownMenu
+                                                            trigger={
+                                                                <button
+                                                                    className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                                                    title='Create post for this page'
+                                                                >
+                                                                    <PlusSquare className='w-5 h-5 text-indigo-600' />
+                                                                </button>
+                                                            }
+                                                            items={createOptions}
+                                                        />
+                                                    )
+                                                }
                                                 {
                                                     (status && status !== 'accepted') ? (
                                                         <button
@@ -462,7 +490,7 @@ export const GroupeProfile = () => {
                                             />
                                             {
                                                 write && (
-                                                    <LoadingButton loading={loading} className='px-5 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-full hover:opacity-90 transition-all shadow-sm cursor-pointer animate-fadeIn font-semibold shrink-0' onClick={() => navigate('/create_post', {state:{groupId:group?.id, contentGroup:content}})}>
+                                                    <LoadingButton loading={loading} className='px-5 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-full hover:opacity-90 transition-all shadow-sm cursor-pointer animate-fadeIn font-semibold shrink-0' onClick={() => navigate('/create_post', { state: { groupId: group?.id, contentGroup: content } })}>
                                                         Post
                                                     </LoadingButton>
                                                 )

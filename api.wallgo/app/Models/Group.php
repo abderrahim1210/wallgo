@@ -35,6 +35,11 @@ class Group extends Model
         return $this->morphMany(Post::class, 'postable');
     }
 
+    public function reels()
+    {
+        return $this->morphMany(Reel::class, 'reelable');
+    }
+
     protected static function booted()
     {
         static::deleting(function ($page) {

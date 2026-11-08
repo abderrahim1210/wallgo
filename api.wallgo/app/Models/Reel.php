@@ -14,8 +14,15 @@ class Reel extends Model
         'audio_url',
         'likes_count',
         'comments_count',
-        'public_id'
+        'public_id',
+        'reelable_id',
+        'reelable_type'
     ];
+
+    public function reelable()
+    {
+        return $this->morphTo();
+    }
 
     public function reports()
     {
