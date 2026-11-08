@@ -68,13 +68,12 @@ class Post extends Model
         return $this->morphMany(Bookmark::class, 'booktable');
     }
 
-    
+
     public function getIsGroupOwnerAttribute()
     {
         if ($this->postable_type === \App\Models\Group::class && $this->relationLoaded('postable')) {
-            return $this->postable && $this->postable->owner_id === $this->user_id;
+            return $this->postable && $this->postable->owner_id === Auth::id();
         }
-
         return false;
     }
 }

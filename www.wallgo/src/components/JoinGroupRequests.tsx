@@ -7,7 +7,8 @@ import { Helmet } from 'react-helmet-async';
 import Spinner from '../templates/Spinner';
 import { ErrorPage } from './ErrorPage';
 import { RequestCard } from './RequestCard';
-import { UserCheck } from 'lucide-react';
+import { UserCheck, UserCheck2 } from 'lucide-react';
+import { EmptyContent } from './EmptyContent';
 
 export type Request = {
     id: number;
@@ -87,9 +88,11 @@ const JoinGroupRequests = () => {
                         <div className='flex justify-start items-center mb-3'>
                             <h1 className='font-bold text-3xl flex items-center gap-2'><UserCheck className='w-8 h-8 text-[var(--special-purple)]' /> Requests <span className='text-[var(--special-purple)]'>({requests.length ?? 0})</span></h1>
                         </div>
-                        {requests?.map((request, index: number) => (
+                        {requests?.length > 0 ? requests?.map((request, index: number) => (
                             <RequestCard request={request} key={index} />
-                        ))}
+                        )) : (
+                            <EmptyContent text='You dont have any request !' icon={<UserCheck2 />} />
+                        )}
                     </div>
                 )
             }

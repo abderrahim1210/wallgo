@@ -109,12 +109,14 @@ export const PostCard: React.FC<PostCardProps> = ({
             }
         },
 
-        ...(isOwner ? [
+        ...((isOwner) ? [
             {
                 label: 'Edit Post',
                 icon: <Edit3 className="w-4 h-4 text-emerald-500" />,
                 onClick: () => navigate(`/post/${post?.id}/edit`, { state: { postToEdit: { content: post?.content, media_url: post?.media_url, created_at: post?.created_at }, id: post?.id } }),
             },
+        ] : []),
+        ...((isOwner || post?.is_group_owner) ? [
             {
                 label: 'Delete Post',
                 icon: <Trash2 className="w-4 h-4 text-red-500" />,

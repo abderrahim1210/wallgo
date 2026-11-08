@@ -335,7 +335,6 @@ class GroupController extends Controller
             $joinRequest->update([
                 'status' => $request->status
             ]);
-            $requester = User::find($joinRequest->user_id);
 
             if ($request->status === 'accepted') {
                 GroupPageFollow::firstOrCreate([
