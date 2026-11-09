@@ -67,7 +67,9 @@ export const PostCard: React.FC<PostCardProps> = ({
     const isOwner = currentUser?.id === post?.user?.id;
 
     const navigate = useNavigate();
-
+    const { user } = useAuth()!;
+    const isAuthorGroupOwner = post?.user?.id === post?.postable?.owner_id;
+    const isGroupOwner = user?.id === post?.postable?.owner_id;
     const deletePost = async (id: number) => {
         if (!id) return toast.error('Post ID not found');
         try {
@@ -82,7 +84,8 @@ export const PostCard: React.FC<PostCardProps> = ({
                 showCancelButton: true
             }).then(async (result) => {
                 if (result.isConfirmed) {
-                    const res = await axios.delete(`${api_url}/posts/${id}`, { withCredentials: true, withXSRFToken: true });
+                    const url = isGroupOwner ? `${api_url}/groups/${post?.postable?.id}/${post?.id}` : `${api_url}/posts/${id}`;
+                    const res = await axios.delete(url, { withCredentials: true, withXSRFToken: true });
                     if (res.data.success) {
                         toast.success('Post deleted !');
                         setTimeout(() => {
@@ -99,7 +102,6 @@ export const PostCard: React.FC<PostCardProps> = ({
         }
     }
 
-    const isAuthorGroupOwner = post?.user.id === post?.postable?.owner_id;
     const postMenuItems: DropdownItem[] = [
         {
             label: 'Copy link',
@@ -156,13 +158,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             <div className="flex items-center justify-between p-4 pb-3 transition-all rounded-t-2xl">
                 <div className="flex items-center space-x-3">
                     {
-                        post?.postable && post?.postable_type?.includes('Group') ? (
-                            <img
-                                src={post?.user?.avatar_url || '/icons/avatar1.svg'}
-                                alt='avatar'
-                                className="w-10 h-10 rounded-full object-cover border border-purple-100"
-                            />
-                        ) : post?.postable_type?.includes('Page') ? (
+                        post?.postable_type?.includes('Page') || post?.postable_type?.includes('Group') ? (
                             <img
                                 src={post?.postable?.logo_url || '/icons/users.svg'}
                                 alt='avatar'
@@ -179,15 +175,20 @@ export const PostCard: React.FC<PostCardProps> = ({
                     <div>
                         <h4 className="flex gap-1 items-center font-semibold text-sm text-gray-900 leading-tight">
                             {
-                                post?.postable_type?.includes('Page') ? (
+                                (post?.postable_type?.includes('Page')) ? (
                                     <LinkR to={`/pages/${post?.postable?.id}`}>
                                         {post?.postable?.name}
                                     </LinkR>
-                                ) : (
-                                    <LinkR to={`/profile/${post?.user.id}/${post?.user.username}`}>
-                                        {post?.user.name}
-                                    </LinkR>
-                                )
+                                ) : post?.postable_type?.includes('Group') ?
+                                    (
+                                        <LinkR to={`/groups/${post?.postable?.id}`}>
+                                            {post?.user.name} on {post?.postable?.name}
+                                        </LinkR>
+                                    ) : (
+                                        <LinkR to={`/profile/${post?.user.id}/${post?.user.username}`}>
+                                            {post?.user.name}
+                                        </LinkR>
+                                    )
                             }
                             {
                                 isAuthorGroupOwner && (
@@ -198,10 +199,12 @@ export const PostCard: React.FC<PostCardProps> = ({
                             }
                         </h4>
                         <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
-                            {(!post?.postable || post?.postable_type?.includes('Group')) && (
-                                <span>@{post?.user.username} {(post?.postable_type?.includes('Group')) && <LinkR className='underline' to={`/groups/${post?.postable?.id}`}>on {post?.postable?.name}</LinkR>}</span>
+                            {!post?.postable && (
+                                <>
+                                    <span>@{post?.user.username}</span>
+                                    <span>•</span>
+                                </>
                             )}
-                            <span>•</span>
                             <span>{moment(post?.created_at).fromNow()}</span>
                             <span>•</span>
                             {

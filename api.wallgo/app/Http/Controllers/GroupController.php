@@ -13,6 +13,7 @@ use App\Notifications\ChangeStatusRequest;
 use App\Notifications\FollowPageGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\AlertDeletePostFromOwner;
 
 class GroupController extends Controller
 {
@@ -459,6 +460,51 @@ class GroupController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => "Failed : " . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deletePost($group_id, $post_id)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+        $user_id = Auth::id();
+        $group = Group::findOrFail($group_id);
+        $post = Post::findOrFail($post_id);
+        if ($group->owner_id !== $user_id) {
+            return response()->json([
+                'success' => false,
+                'message' => "You dont have permission for delete this post"
+            ]);
+        }
+        try {
+            if ($post->media_url) {
+                $cloudinary = new \App\Http\Controllers\CloudinaryActions();
+                $cloudinary->destroy($post->media_url, 'wallgo_medias/');
+            }
+
+            $user = User::find($post->user_id);
+            $content = $post->content;
+
+            $post->likes()->delete();
+            $post->comments()->delete();
+            $post->reports()->delete();
+            $post->delete();
+
+            $user->notify(new AlertDeletePostFromOwner($group, $content));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
             ], 500);
         }
     }
