@@ -6,7 +6,7 @@ import { Check, Flag, MoreHorizontal, Pencil, PlusSquare, Settings, Share2, User
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { EmptyContent } from './EmptyContent';
 import { FaRegNewspaper } from 'react-icons/fa';
 import { useAuth } from '../hooks/AuthProvider';
@@ -47,27 +47,47 @@ export const PageProfile = () => {
     const fetchPage = async () => {
         try {
             const res = await axios.get(`${api_url}/pages/${id}`, { withCredentials: true });
-            if (res.data.success) return res.data;
+            if (res.data.success) return res.data.page;
         } catch (err: any) {
             console.error(err?.response.data);
         }
     }
 
-    const { data, isLoading, isError } = useQuery({
+    const fetchPosts = async ({ pageParam = 1 }) => {
+        try {
+            const res = await axios.get(`${api_url}/pages/${id}/posts?page=${pageParam}`, { withCredentials: true });
+            if (res.data.success) return res.data.posts;
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
+
+    const { data: page, isLoading: pageLoading, isError: pageError, } = useQuery({
         queryKey: ['page', id],
-        queryFn: fetchPage
+        queryFn: fetchPage,
     });
 
-    const page = data?.page || null;
-    const posts = data?.posts || [];
+    const { data: ps, isLoading: postsLoading, isError: postsErrors, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
+        queryKey: ['posts_pages', id],
+        queryFn: fetchPosts,
+        getNextPageParam: (lastPage: any) => {
+            if (lastPage?.current_page < lastPage?.last_page) {
+                return lastPage.current_page + 1;
+            }
+            return undefined;
+        },
+        initialPageParam: 1
+    });
+
+    const posts: Post[] = ps?.pages.flatMap((page: any) => page?.data || []) || [];
 
     const [followed, setFollowed] = useState<boolean>(false);
 
     useEffect(() => {
-        if (data) {
-            setFollowed(data?.page?.is_followed);
+        if (page?.is_followed) {
+            setFollowed(page.is_followed);
         }
-    }, [data]);
+    }, [page?.id]);
 
     const { user } = useAuth()!;
 
@@ -124,9 +144,9 @@ export const PageProfile = () => {
             }
 
             {
-                isLoading ? (
+                pageLoading ? (
                     <Skeleton type='profile' />
-                ) : isError ? (
+                ) : pageError ? (
                     <div className='mt-10'>
                         <ErrorPage codeP='500' />
                     </div>
@@ -155,7 +175,7 @@ export const PageProfile = () => {
                                         user?.id === page?.owner.id ? (
                                             <div className='gap-1 flex  '>
                                                 <button
-                                                    onClick={() => navigate('/create_post')}
+                                                    onClick={() => navigate('/create_post', { state: { pageId: page?.id, pageName: page?.name } })}
                                                     className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
                                                     title='Create post for this page'
                                                 >
@@ -217,7 +237,7 @@ export const PageProfile = () => {
                         <div className="mt-6">
                             <h2 className="text-xl font-bold text-gray-900 mb-4">Page Posts</h2>
                             {posts && posts.length > 0 ? (
-                                <PostGrid posts={posts} />
+                                <PostGrid posts={posts} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} isLoading={postsLoading} />
                             ) : (
                                 <EmptyContent text=" This page hasn't posted anything yet." icon={<FaRegNewspaper />} />
                             )}

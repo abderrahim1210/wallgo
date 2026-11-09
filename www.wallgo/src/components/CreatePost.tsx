@@ -30,6 +30,9 @@ const CreatePost = () => {
     const { id } = useParams();
     const location = useLocation();
     const groupId = location.state?.groupId;
+    const pageId = location.state?.pageId;
+    const groupName = location.state?.groupName;
+    const pageName = location.state?.pageName;
     const contentGroup = location.state?.contentGroup;
     const isEditMode = Boolean(id);
     const [content, setContent] = useState('');
@@ -152,6 +155,12 @@ const CreatePost = () => {
     }, [groupId, contentGroup]);
 
     useEffect(() => {
+        if (pageId) {
+            setPost(prev => ({ ...prev, postable_id: pageId, postable_type: 'page' }));
+        }
+    }, [pageId]);
+
+    useEffect(() => {
         setPost(prev => ({ ...prev, visibility: visibility }));
     }, [visibility]);
 
@@ -203,7 +212,7 @@ const CreatePost = () => {
     const [showCapsuleOptions, setShowCapsuleOptions] = useState(false);
 
     useEffect(() => {
-        if (!id && !groupId) {
+        if (!id && !groupId && !pageId) {
             setPost({
                 content: '',
                 post_type: 'regular',
@@ -219,7 +228,7 @@ const CreatePost = () => {
     const [type, setType] = useState<'normal' | 'page' | 'group'>('normal');
 
     useEffect(() => {
-        if (!groupId) {
+        if (!groupId && !pageId) {
             setPost(prev => ({ ...prev, postable_type: type === 'page' ? 'page' : type === 'group' ? 'group' : '' }));
         }
     }, [type]);
@@ -241,7 +250,7 @@ const CreatePost = () => {
                     <div className="p-4 border-b border-gray-200 flex items-center justify-between">
                         <h2 className="text-gray-900 font-bold text-base flex items-center space-x-2">
                             <Sparkles className="w-5 h-5 text-blue-600" />
-                            <span>Create New Post</span>
+                            <span>Create New Post {groupName ?? pageName ?? ''}</span>
                         </h2>
                         <button
                             onClick={() => navigate(-1)}
@@ -296,7 +305,7 @@ const CreatePost = () => {
                                         )}
                                     </button>
                                     {
-                                        !groupId && (
+                                        (!groupId && !pageId) && (
                                             <button
                                                 type="button"
                                                 onClick={() => setType(type === 'normal' ? 'page' : type === 'page' ? 'group' : 'normal')}

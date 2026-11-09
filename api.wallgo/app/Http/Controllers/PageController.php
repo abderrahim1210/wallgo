@@ -110,6 +110,30 @@ class PageController extends Controller
                 $q->where('user_id', $user_id);
             }])->find($id);
             if (!$page) return response()->json(['success' => false, 'message' => "Page by id $id not found"], 404);
+
+            return response()->json([
+                'success' => true,
+                'page' => $page,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function posts(string $id)
+    {
+        if (!$id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Id is required for show page'
+            ]);
+        }
+        $user_id = Auth::id();
+        $page = Page::findOrFail($id);
+        try {
             $posts = Post::withCount(['likes', 'comments'])->with(['user:id,name,username,avatar_url', 'postable:id,name,logo_url'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
             }])->withExists(['user as is_owner' => function ($q) use ($user_id) {
@@ -120,17 +144,17 @@ class PageController extends Controller
                 $q->where(function ($subQuery) {
                     $subQuery->whereNull('schedule_time')->orWhere('schedule_time', '<=', now());
                 });
-            })->get();
+            })->paginate(10);
+
             return response()->json([
                 'success' => true,
-                'page' => $page,
                 'posts' => $posts
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed : ' . $e->getMessage()
-            ]);
+            ], 500);
         }
     }
 
@@ -317,7 +341,7 @@ class PageController extends Controller
                     'followable_id' => $followable->id,
                     'followable_type' => get_class($followable)
                 ]);
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Follow added successfully',

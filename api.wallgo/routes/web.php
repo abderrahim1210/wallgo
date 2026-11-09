@@ -253,6 +253,8 @@ Route::get('/groups/{id}', [GroupController::class, 'show']);
 
 Route::get('/groups/{id}/posts', [GroupController::class, 'posts']);
 
+Route::get('/pages/{id}/posts', [PageController::class, 'posts']);
+
 Route::get('/groups/{id}/reels', [GroupController::class, 'reels']);
 
 require __DIR__ . '/auth.php';

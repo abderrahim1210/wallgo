@@ -209,7 +209,7 @@ export const GroupeProfile = () => {
         {
             label: 'Create Post',
             icon: <PlusIcon className="w-4 h-4 text-[var(--special-purple)]" />,
-            onClick: () => { navigate('/create_post', { state: { groupId: group?.id, contentGroup: '' } }) },
+            onClick: () => { navigate('/create_post', { state: { groupId: group?.id, contentGroup: '', groupName:group?.name } }) },
         },
         {
             label: 'Create Reel',
