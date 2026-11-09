@@ -11,8 +11,8 @@ import { Bell } from 'lucide-react'
 import { NotificationCard } from './NotificationCard'
 import { FiCheck } from 'react-icons/fi'
 
-const NotificationsView = ({ pageParam = 1 }) => {
-    const fetchNotifications = async () => {
+const NotificationsView = () => {
+    const fetchNotifications = async ({ pageParam = 1 }) => {
         try {
             const res = await axios.get(`${api_url}/notifications/all?page=${pageParam}`, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) return res.data.notifications;
@@ -85,7 +85,6 @@ const NotificationsView = ({ pageParam = 1 }) => {
                         </div>
 
                         <div className="px-4 py-3 border-b border-gray-100 flex items-center bg-white">
-                            {/* <h3 className="font-bold text-base text-gray-800">Notifications</h3> */}
                             <button onClick={handleReadAll} className="text-sm text-[var(--special-purple)] hover:underline font-medium flex items-center gap-1">
                                 <FiCheck className="w-3.5 h-3.5" /> Mark all as read
                             </button>

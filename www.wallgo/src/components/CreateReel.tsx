@@ -28,6 +28,12 @@ export type Reel = {
         name: string;
         username: string;
         avatar_url: string;
+    };
+    reelable: {
+        id: number;
+        name: string;
+        owner_id: number;
+        logo_url: string;
     }
 }
 

@@ -56,7 +56,7 @@ export const PostPreview = () => {
                         </button>
 
                         <PostCard post={post} />
-                        <CommentSection postId={post?.id} setOpenModal={() => {}} />
+                        <CommentSection type='post' postId={post?.id} setOpenModal={() => {}} />
                     </div>
                 )
             }

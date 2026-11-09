@@ -222,9 +222,9 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
 
             <div className="relative z-20 p-4 text-white space-y-2.5 pb-6">
                 <div className="flex items-center space-x-3">
-                    <img src={reel.user.avatar_url} alt="Avatar" className="w-9 h-9 rounded-full object-cover border border-white/20" />
+                    <img src={reel?.reelable?.logo_url || reel?.user?.avatar_url} alt="Avatar" className="w-9 h-9 rounded-full object-cover border border-white/20" />
                     <div>
-                        <h4 className="font-semibold text-sm cursor-pointer hover:underline" onClick={() => navigate(`${reel?.is_owner ? '/account/profile' : `/profile/${reel.user.id}/${reel.user.username}`}`)}>{reel.user.name}</h4>
+                        <h4 className="font-semibold text-sm cursor-pointer hover:underline" onClick={() => navigate(`${reel?.is_owner ? '/account/profile' : `/profile/${reel.user.id}/${reel.user.username}`}`)}>{reel?.reelable?.name ? `${reel?.user?.name} on ${reel?.reelable?.name}`: reel.user.name}</h4>
                         <p className="text-xs text-gray-300">@{reel.user.username}</p>
                     </div>
                     {

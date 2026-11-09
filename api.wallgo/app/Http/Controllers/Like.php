@@ -18,8 +18,7 @@ class Like extends Controller
         $user_id = Auth::id();
         if (!$user_id) return response()->json(['success' => false, 'message' => 'User not found'], 401);
         $type = $request->type;
-        $owner_id = $request->owner_id;
-        $owner = User::where('id', $owner_id)->first();
+        $user = User::findOrFail($user_id);
         if (!$type) {
             return response()->json(['success' => false, 'message' => 'Type id not found']);
         }
@@ -37,6 +36,8 @@ class Like extends Controller
                 $liketable = Reel::find($request->reel_id);
                 if (!$liketable) return response()->json(['success' => false, 'message' => 'Reel by id is not exist']);
                 break;
+            default:
+                return response()->json(['success' => false, 'message' => 'Invalid type provided'], 422);
         }
         try {
             $existingLike = ModelsLike::where('user_id', $user_id)->where('liketable_id', $liketable->id)->where('liketable_type', get_class($liketable))->first();
@@ -51,7 +52,9 @@ class Like extends Controller
                 $liketable->likes()->create([
                     'user_id' => $user_id,
                 ]);
-                $liketable->user->notify(new PostLikedNotification($owner, $liketable, $type));
+                if ($liketable->user && $liketable->user->id !== $user_id) {
+                    $liketable->user->notify(new PostLikedNotification($user, $liketable, $type));
+                }
                 return response()->json([
                     'success' => true,
                     'message' => 'Like added successfully',
