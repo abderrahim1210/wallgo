@@ -6,6 +6,7 @@ import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
 import { useNavigate } from 'react-router-dom';
 import { BiComment } from 'react-icons/bi';
+import { useAuth } from '../hooks/AuthProvider';
 
 interface ReelOptionsProps {
     reel_id: number;
@@ -19,11 +20,18 @@ interface ReelOptionsProps {
     setSaved: Dispatch<SetStateAction<boolean>>;
     handleSavePost: () => void;
     handleDeleteReel: () => void;
+    reelable: {
+        id: number;
+        name: string;
+        owner_id: number;
+    }
 }
 
-export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport, saved, reel_views, likes_count, comments_count, setSaved, handleSavePost, is_owner, is_saved, handleDeleteReel }) => {
+export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport, saved, reel_views, likes_count, comments_count, setSaved, handleSavePost, is_owner, is_saved, handleDeleteReel, reelable }) => {
     const { closeModal } = useModal()!;
     const navigate = useNavigate();
+    const { user } = useAuth()!;
+    const isAuthorGroup = user?.id === reelable?.owner_id;
     return (
         <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-3 w-full border border-gray-100 transform transition-all animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-3 px-3 border-b border-gray-100">
@@ -114,7 +122,7 @@ export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport
                 }
 
                 {
-                    is_owner && (
+                    (is_owner || isAuthorGroup) && (
                         <button
                             onClick={handleDeleteReel}
                             className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-red-600 hover:bg-purple-50 hover:text-[var(--special-purple)] transition-all cursor-pointer group"

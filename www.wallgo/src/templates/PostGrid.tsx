@@ -40,6 +40,7 @@ export interface Post {
     is_saved: boolean;
     visibility: 'private' | 'public';
     is_group_owner?: boolean;
+    is_page_owner?:boolean;
 };
 
 interface PostGridProps {

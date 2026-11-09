@@ -14,6 +14,7 @@ use App\Notifications\FollowPageGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\AlertDeletePostFromOwner;
+use Cloudinary\Cloudinary;
 
 class GroupController extends Controller
 {
@@ -155,7 +156,7 @@ class GroupController extends Controller
                 $q->where('id', $user_id);
             }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
-            }])->where('postable_id', $group->id)->when($user_id !== $group->owner_id, function ($q) {
+            }])->where('postable_id', $group->id)->where('postable_type', \App\Models\Group::class)->when($user_id !== $group->owner_id, function ($q) {
                 $q->where(function ($subQuery) {
                     $subQuery->whereNull('schedule_time')->orWhere('schedule_time', '<=', now());
                 });
@@ -437,7 +438,6 @@ class GroupController extends Controller
             ], 404);
         }
 
-        // $group_id = $group_id;
         $group = Group::where('id', $group_id)->where('owner_id', $current_user_id)->first();
         if (!$group) {
             return response()->json([
@@ -506,6 +506,65 @@ class GroupController extends Controller
                 'success' => false,
                 'message' => 'Failed : ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function deleteReel($group_id, $reel_id)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+
+        $user_id = Auth::id();
+        $group = Group::findOrFail($group_id);
+        $reel = Reel::findOrFail($reel_id);
+        if ($group->owner_id !== $user_id) {
+            return response()->json([
+                'success' => false,
+                'message' => "You dont have permission for delete this post"
+            ]);
+        }
+
+        if ($reel->public_id) {
+            try {
+                $cloudinary = new Cloudinary([
+                    'cloud' => [
+                        'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                        'api_key'    => env('CLOUDINARY_API_KEY'),
+                        'api_secret' => env('CLOUDINARY_API_SECRET'),
+                    ],
+                    'url' => [
+                        'secure' => true
+                    ]
+                ]);
+
+                $cloudinary->uploadApi()->destroy($reel->public_id, [
+                    'resource_type' => 'video'
+                ]);
+
+                $content = $reel->caption;
+                $user = User::find($reel->user_id);
+                $reel->likes()->delete();
+                $reel->comments()->delete();
+                $reel->bookmarks()->delete();
+                $reel->reports()->delete();
+                $reel->delete();
+
+                $user->notify(new AlertDeletePostFromOwner($group, $content));
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Reel deleted successfully'
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed : ' . $e->getMessage()
+                ], 500);
+            }
         }
     }
 }

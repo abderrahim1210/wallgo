@@ -219,8 +219,6 @@ class PageController extends Controller
             if ($request->filled('category')) {
                 $page->category = $request->category;
             }
-            // $page->logo_url = $logo ?? $page->logo_url;
-            // $page->banner_url = $banner ?? $page->banner_url;
 
             if ($page->isDirty()) {
                 $page->save();

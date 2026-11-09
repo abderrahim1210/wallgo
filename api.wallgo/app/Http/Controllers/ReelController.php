@@ -148,7 +148,7 @@ class ReelController extends Controller
 
         $user_id = Auth::id();
         try {
-            $reel = Reel::with(['user:id,username,name,avatar_url', 'comments'])->withCount(['likes', 'comments'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
+            $reel = Reel::with(['user:id,username,name,avatar_url', 'comments', 'reelable:id,name,owner_id,logo_url'])->withCount(['likes', 'comments'])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
             }])->withExists(['user as is_owner' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);

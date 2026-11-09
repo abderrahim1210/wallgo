@@ -35,8 +35,7 @@ const PostsGrid: React.FC<PostsGridProps> = ({ data, isLoading, isFetchingNextPa
     }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
     const navigate = useNavigate();
     return (
-        <div>
-
+        <>
             <div className='grid grid-cols-3 gap-1.5'>
                 {data?.length > 0 ? data?.map((item) => (
                     <div key={item?.id} className='relative aspect-square bg-gray-100 dark:bg-zinc-900 overflow-hidden group cursor-pointer' onClick={() => navigate(`/reel/${item.id}`)}>
@@ -55,11 +54,17 @@ const PostsGrid: React.FC<PostsGridProps> = ({ data, isLoading, isFetchingNextPa
                         </div>
                     </div>
                 )) : (
-                    <EmptyContent text='No reels saved - start to save !' icon={<Video />}/>
+                    <EmptyContent text='No reels saved - start to save !' icon={<Video />} />
                 )}
             </div>
             <div ref={observerRef} className="h-10"></div>
-        </div>
+
+            {!hasNextPage && data.length > 0 && (
+                <div className="text-center py-6 text-xs text-gray-400 font-medium uppercase tracking-wider">
+                    You've reached the end!
+                </div>
+            )}
+        </>
     )
 }
 

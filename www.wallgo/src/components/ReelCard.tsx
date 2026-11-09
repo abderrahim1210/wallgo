@@ -114,6 +114,9 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
         }
     }
 
+    const { user } = useAuth()!;
+    const isAuthorGroup = user?.id === reel?.reelable?.owner_id;
+
     const handleDelete = async () => {
         if (!reel?.id) return null;
         Swal.fire({
@@ -127,7 +130,8 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const res = await axios.delete(`${api_url}/reels/${reel?.id}`, { withCredentials: true, withXSRFToken: true });
+                    const url = isAuthorGroup ? `${api_url}/groups/delete_reel/${reel?.reelable.id}/${reel?.id}` : `${api_url}/reels/${reel?.id}`;
+                    const res = await axios.delete(url, { withCredentials: true, withXSRFToken: true });
                     if (res.data.success) {
                         toast.success(res.data.message || 'Reel deleted successfully');
                         setTimeout(() => {
@@ -224,7 +228,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                 <div className="flex items-center space-x-3">
                     <img src={reel?.reelable?.logo_url || reel?.user?.avatar_url} alt="Avatar" className="w-9 h-9 rounded-full object-cover border border-white/20" />
                     <div>
-                        <h4 className="font-semibold text-sm cursor-pointer hover:underline" onClick={() => navigate(`${reel?.is_owner ? '/account/profile' : `/profile/${reel.user.id}/${reel.user.username}`}`)}>{reel?.reelable?.name ? `${reel?.user?.name} on ${reel?.reelable?.name}`: reel.user.name}</h4>
+                        <h4 className="font-semibold text-sm cursor-pointer hover:underline w-[150px]" onClick={() => navigate(`${reel?.is_owner ? '/account/profile' : `/profile/${reel.user.id}/${reel.user.username}`}`)}>{reel?.reelable?.name ? `${reel?.user?.name} on ${reel?.reelable?.name}` : reel.user.name}</h4>
                         <p className="text-xs text-gray-300">@{reel.user.username}</p>
                     </div>
                     {
@@ -282,7 +286,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
             {
                 show === `options-reel-${reel?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <ReelOptions setOpenReport={setOpenReportReel} reel_id={reel?.id} is_owner={reel?.is_owner} is_saved={reel?.is_saved} setSaved={setSaved} saved={saved} handleSavePost={handleSavePost} handleDeleteReel={handleDelete} reel_views={reel?.views_count} likes_count={reel?.likes_count} comments_count={reel?.comments_count} />
+                        <ReelOptions setOpenReport={setOpenReportReel} reel_id={reel?.id} is_owner={reel?.is_owner} is_saved={reel?.is_saved} setSaved={setSaved} saved={saved} handleSavePost={handleSavePost} handleDeleteReel={handleDelete} reel_views={reel?.views_count} likes_count={reel?.likes_count} comments_count={reel?.comments_count} reelable={reel?.reelable} />
                     </ModalTemplate>
                 )
             }
