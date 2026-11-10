@@ -107,6 +107,36 @@ class CommentController extends Controller
             $comments = Comment::with(['user', 'replies.user'])->withCount(['likes'])->withExists(['likes as is_liked' => function ($q) use ($id) {
                 $q->where('commentable_id', $id);
             }])->where('commentable_id', $id)->where('commentable_type', get_class($obj))->whereNull('reply_to')->latest()->paginate(10);
+
+            $postPage = null;
+            if ($obj->postable_type && str_contains($obj->postable_type, 'Page')) {
+                $postPage = $obj->postable;
+            }
+
+            $authId = (int) Auth::id();
+            $pageOwnerId = $postPage ? (int) $postPage->owner_id : null;
+
+            $decorate = function ($comment) use ($postPage, $authId, $pageOwnerId) {
+                $isPageAuthor = $postPage && (int) $comment->user_id === $pageOwnerId;
+
+                $comment->is_page_author = $isPageAuthor;
+                $comment->page_info = $isPageAuthor ? [
+                    'id' => $postPage->id,
+                    'name' => $postPage->name,
+                    'logo_url' => $postPage->logo_url,
+                    'owner_id' => $postPage->owner_id
+                ] : null;
+
+                $comment->can_delete =
+                    (int) $comment->user_id === $authId ||
+                    ($pageOwnerId !== null && $pageOwnerId === $authId);
+            };
+
+            $comments->getCollection()->transform(function ($comment) use ($decorate) {
+                $decorate($comment);
+                $comment->replies->each($decorate);
+                return $comment;
+            });
             return response()->json(['success' => true, 'comments' => $comments]);
         } catch (\Exception $e) {
             return response()->json([

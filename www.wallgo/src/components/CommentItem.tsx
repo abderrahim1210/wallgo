@@ -29,7 +29,15 @@ export interface Comment {
         name: string;
         username: string;
         avatar_url: string;
-    }
+    };
+    is_page_author: boolean;
+    can_delete:boolean;
+    page_info: {
+        id: number;
+        name: string;
+        logo_url: string;
+        owner_id: number;
+    };
     replies?: Comment[],
     fetchNextPage: () => void;
     hasNextPage: boolean;
@@ -106,7 +114,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
         }
     }
 
-    const isOwner = user?.id === comment?.user.id;
+    const isOwner = Number(user?.id) === Number(comment?.user?.id);
     const handleDelete = async () => {
         Swal.fire({
             title: "Delete comment",
@@ -149,6 +157,8 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
                 icon: <Edit3 className="w-4 h-4 text-emerald-500" />,
                 onClick: () => { setEdit(prev => !prev) },
             },
+        ] : []),
+        ...(comment?.can_delete ? [
             {
                 label: 'Delete Comment',
                 icon: <Trash2 className="w-4 h-4 text-red-500" />,
@@ -174,15 +184,15 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
     return (
         <div key={comment?.id} className="pt-3 first:pt-0 flex items-start gap-3">
             <img
-                src={comment?.user.avatar_url ?? "/icons/avatar1.svg"}
+                src={comment?.page_info?.logo_url ?? comment?.user.avatar_url ?? "/icons/avatar1.svg"}
                 alt={comment?.user.name}
                 className="w-9 h-9 rounded-full object-cover shrink-0"
             />
             <div className="flex-1 min-w-0">
                 <div className="bg-gray-200 rounded-2xl px-4 py-2.5 border border-gray-100">
                     <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-xs sm:text-sm text-gray-900 cursor-pointer" onClick={() => navigate(`/profile/${comment?.user.id}/${comment?.user.username}`)}>{comment.user.name}</span>
-                        <span className="text-[12px] text-gray-400">{moment(comment.created_at).fromNow()}</span>
+                        <span className="font-semibold text-xs sm:text-sm text-gray-900 cursor-pointer" onClick={() => navigate(comment?.page_info?.id ? `/pages/${comment?.page_info?.id}` : `/profile/${comment?.user.id}/${comment?.user.username}`)}>{comment?.page_info?.name ?? comment?.user?.name}</span>
+                        <span className="text-[12px] text-gray-400">{moment(comment?.created_at).fromNow()}</span>
                     </div>
                     {
                         edit ? (
@@ -204,7 +214,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
                             </div>
                         ) : (
                             <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">
-                                {comment.content}
+                                {comment?.content}
                             </p>
                         )
                     }
@@ -214,7 +224,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
                     <button onClick={handleLike} className="hover:text-[var(--special-red)] cursor-pointer transition flex justify-center gap-1">
                         <Heart className={`w-4 h-4 ${liked ? 'text-red-500 fill-red-500' : ''}`} /> {comment?.likes_count}
                     </button>
-                    <button onClick={() => setAddReplay(prev => !prev)} className="hover:text-[var(--special-purple)] cursor-pointer transition">{addReplay ? 'Cancel' : `Reply ${comment.replies ? `(${comment.replies?.length})` : ''}`}</button>
+                    <button onClick={() => setAddReplay(prev => !prev)} className="hover:text-[var(--special-purple)] cursor-pointer transition">{addReplay ? 'Cancel' : `Reply ${comment?.replies ? `(${comment?.replies?.length})` : ''}`}</button>
                     <DropdownMenu
                         trigger={
                             <button className="p-2 text-gray-400 hover:text-gray-600 hover:text-[var(--special-purple)] rounded-full transition-colors cursor-pointer">
@@ -231,7 +241,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
                                 type="text"
                                 value={replyContent}
                                 onChange={(e) => setReplyContent(e.target.value)}
-                                placeholder={`Reply to @${comment.user.username}...`}
+                                placeholder={`Reply to @${comment?.user.username}...`}
                                 className="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-[var(--special-purple)] transition shadow-sm"
                                 autoFocus
                             />
@@ -242,7 +252,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
                                 <FiSend className="w-3.5 h-3.5" />
                             </button>
                         </form>
-                        {comment?.replies && comment.replies.length > 0 && (
+                        {comment?.replies && comment?.replies.length > 0 && (
                             <div className="pl-4 mt-3 border-l-2 border-gray-100 space-y-3">
                                 {comment.replies.map((reply: Comment) => (
                                     <CommentItem key={reply.id} comment={reply} type={type} postId={postId} setCommentId={setCommentId} openReport={openReport} />

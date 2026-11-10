@@ -13,14 +13,16 @@ import ModalTemplate from '../templates/ModalTemplate';
 import { Report } from './Report';
 import { ErrorPage } from './ErrorPage';
 import LoadingButton from '../Icons/LoadingButton';
+import { useAuth } from '../hooks/AuthProvider';
 
 interface CommentSectionProps {
     postId: number;
     type: 'post' | 'reel';
+    ownerPageId?: number;
     setOpenModal: (isopen: boolean) => void;
-    setCommentId?: (id:number) => void;
+    setCommentId?: (id: number) => void;
 }
-export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type,setCommentId, setOpenModal }) => {
+export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type, setCommentId, setOpenModal, ownerPageId }) => {
     const fetchComments = async ({ pageParam = 1 }) => {
         try {
             const res = await axios.get(`${api_url}/comments/${type}/${postId}?page=${pageParam}`, { withCredentials: true, withXSRFToken: true });
@@ -70,6 +72,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type,set
     const [newComment, setNewComment] = useState('');
     const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
+    
     const handleAddComment = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newComment.trim()) return;
@@ -92,8 +95,6 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type,set
     };
     return (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col w-full mx-auto">
-
-
             <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h3 className="font-bold text-gray-800 text-base">Comments ({comments?.length})</h3>
             </div>
