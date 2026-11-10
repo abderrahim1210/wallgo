@@ -127,6 +127,18 @@ export const Login = () => {
                             Don't have an account ?
                         </button>
                     </div>
+                    
+                    <div className="mt-4">
+                        <button
+                            type="button"
+                            onClick={() => navigate('/forgot_password')}
+                            className="w-full py-3 px-4 bg-[#1a1a24]/60 hover:bg-[#1a1a24] border border-white/5 hover:border-white/10 text-slate-300 hover:text-white font-medium text-sm rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer"
+                        >
+                            Forgot Password
+                        </button>
+                    </div>
+
+                   
                 </div>
             </div>
             <Footer />

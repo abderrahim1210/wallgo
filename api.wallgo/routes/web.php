@@ -6,6 +6,7 @@ use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\EditProfile;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\ForgotPassword;
 use App\Http\Controllers\GetUser;
 use App\Http\Controllers\GetUsers;
 use App\Http\Controllers\GroupController;
@@ -251,6 +252,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/last_searches', [SearchController::class, 'get_searches']);
 
     Route::delete('/searches/{id}', [SearchController::class, 'deleteTerm']);
+
+    Route::post('/send_link_email', [ForgotPassword::class, 'send_link']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);
@@ -262,5 +265,9 @@ Route::get('/groups/{id}/posts', [GroupController::class, 'posts']);
 Route::get('/pages/{id}/posts', [PageController::class, 'posts']);
 
 Route::get('/groups/{id}/reels', [GroupController::class, 'reels']);
+
+Route::get('/test', function () {
+    return view('vendor.emails.ResetYourPassword');
+});
 
 require __DIR__ . '/auth.php';

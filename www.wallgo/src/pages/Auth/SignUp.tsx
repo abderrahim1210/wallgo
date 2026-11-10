@@ -228,7 +228,7 @@ export const SignUp = () => {
                         </div>
 
                         <LoadingButton
-                            // loading={}
+                            loading={loading}
                             type='submit'
                             className='w-full mt-2 py-3 px-4 bg-[var(--special-purple)] hover:bg-opacity-95 text-white font-medium rounded-xl shadow-lg transition-all flex items-center justify-center space-x-2 group cursor-pointer'
                         >

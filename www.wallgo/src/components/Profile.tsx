@@ -46,6 +46,7 @@ export const Profile = () => {
     const navigate = useNavigate();
     const { show, openModal, closeModal } = useModal()!;
     const { user } = useAuth()!;
+    if (!user) return <Navigate to={'/account/login'} replace />
     const [follow, setFollow] = useState(false);
 
     useEffect(() => {
