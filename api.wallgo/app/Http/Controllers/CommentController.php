@@ -120,6 +120,7 @@ class CommentController extends Controller
                 $isPageAuthor = $postPage && (int) $comment->user_id === $pageOwnerId;
 
                 $comment->is_page_author = $isPageAuthor;
+                $comment->page_id = $postPage->id;
                 $comment->page_info = $isPageAuthor ? [
                     'id' => $postPage->id,
                     'name' => $postPage->name,

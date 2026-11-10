@@ -243,8 +243,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/groups/{group_id}/followers', [GroupController::class, 'followers']);
 
     Route::delete('/groups/{group_id}/{post_id}', [GroupController::class, 'deletePost']);
-    
+
     Route::delete('/groups/delete_reel/{group_id}/{reel_id}', [GroupController::class, 'deleteReel']);
+
+    Route::delete('/pages/delete_comment/{page_id}/{comment_id}', [PageController::class, 'deleteComment']);
 });
 
 Route::get('/pages/{id}', [PageController::class, 'show']);

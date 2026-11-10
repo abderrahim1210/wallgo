@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Group;
 use App\Models\GroupJoinRequest;
 use App\Models\GroupPageFollow;
@@ -11,6 +12,7 @@ use App\Models\User;
 use App\Notifications\FollowPageGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\AlertToDeleteComment;
 
 class PageController extends Controller
 {
@@ -353,6 +355,42 @@ class PageController extends Controller
                 'success' => false,
                 'message' => 'Failed : ' . $e->getMessage()
             ]);
+        }
+    }
+
+    public function deleteComment(string $page_id, string $comment_id)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+
+        $user_id = Auth::id();
+        $comment = Comment::findOrFail($comment_id);
+        $page = Page::findOrFail($page_id);
+        $ownerComment = User::findOrFail($comment->user_id);
+        if ((int)$user_id !== (int)$page->owner_id) {
+            return response()->json([
+                'success' => false,
+                'message' => "You dont have permission for delete this comment"
+            ]);
+        }
+
+        try {
+            $content = $comment->content;
+            $comment->delete();
+            $ownerComment->notify(new AlertToDeleteComment($page, $content));
+            return response()->json([
+                'success' => true,
+                'message' => "Comment deleted successfully"
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
         }
     }
 }

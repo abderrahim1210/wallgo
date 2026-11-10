@@ -31,7 +31,7 @@ export interface Comment {
         avatar_url: string;
     };
     is_page_author: boolean;
-    can_delete:boolean;
+    can_delete: boolean;
     page_info: {
         id: number;
         name: string;
@@ -42,6 +42,7 @@ export interface Comment {
     fetchNextPage: () => void;
     hasNextPage: boolean;
     isFetchingNextPage: boolean;
+    page_id?:number;
 }
 
 interface CommentItemProps {
@@ -127,7 +128,8 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const res = await axios.delete(`${api_url}/comments/${comment?.id}`, { withCredentials: true, withXSRFToken: true });
+                    const url = comment?.can_delete ? `${api_url}/pages/delete_comment/${comment?.page_id}/${comment?.id}` : `${api_url}/comments/${comment?.id}`;
+                    const res = await axios.delete(url, { withCredentials: true, withXSRFToken: true });
                     if (res.data.success) {
                         toast.success(res.data.message || 'Comment deleted successfully');
                         queryClient.invalidateQueries({ queryKey: ['comments'] });

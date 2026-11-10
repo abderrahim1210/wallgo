@@ -38,7 +38,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({ notif }) => 
                     className="w-10 h-10 rounded-full object-cover"
                 />
                 <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[10px] text-white ${notif.data.type === 'like' ? 'bg-[var(--special-red)]' :
-                    notif.data.type === 'follow' ? 'bg-[var(--special-purple)]' : (notif?.data.type === 'status' && notif?.data?.message.includes('accepted')) ? 'bg-green-500' : (notif?.data.type === 'status' && notif?.data?.message.includes('rejected')) ? 'bg-red-500' :'bg-blue-500'
+                    notif.data.type === 'follow' ? 'bg-[var(--special-purple)]' : (notif?.data.type === 'status' && notif?.data?.message.includes('accepted')) ? 'bg-green-500' : (notif?.data.type === 'status' && notif?.data?.message.includes('rejected')) ? 'bg-red-500' : notif?.data?.message?.includes('deleted') ? 'bg-red-500' : 'bg-[var(--special-purple)]'
                     }`}>
                     {notif.data.type === 'like' && <Heart className="w-2.5 h-2.5" />}
                     {notif.data.type === 'follow' && <UserPlus className="w-2.5 h-2.5" />}
@@ -46,6 +46,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({ notif }) => 
                     {notif.data.type === 'request' && <UserCheck className="w-2.5 h-2.5" />}
                     {(notif?.data.type === 'status' && notif?.data?.message.includes('accepted')) && <Check className="w-2.5 h-2.5" />}
                     {(notif?.data.type === 'status' && notif?.data?.message.includes('rejected')) && <X className="w-2.5 h-2.5" />}
+                    {notif?.data?.message?.includes('deleted') && <X className='w-2.5 h-2.5' />}
                 </span>
             </div>
 
