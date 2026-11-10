@@ -4,9 +4,11 @@ import { Footer } from '../../layouts/Footer';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Helmet } from 'react-helmet-async';
+import LoadingButton from '../../Icons/LoadingButton';
 
 export const SignUp = () => {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         username: '',
@@ -26,18 +28,22 @@ export const SignUp = () => {
         if (!formData.email || !formData.password || !formData.name) {
             console.log("Email,password,name is obligatory");
         }
+        setLoading(true);
         try {
             await axios.get(`${url}/sanctum/csrf-cookie`, { withCredentials: true, withXSRFToken: true });
             await axios.post(`${url}/register`, formData, { withCredentials: true, withXSRFToken: true }).then(res => {
                 if (!res.data.success) {
+                    setLoading(false);
                     setError(res.data.message);
                     console.log(res.data.message);
                 } else {
+                    setLoading(false);
                     navigate('/');
                 }
 
             });
         } catch (err: any) {
+            setLoading(false);
             console.error(err?.response?.data?.message);
             setError(err?.response?.data?.message);
         }
@@ -221,13 +227,14 @@ export const SignUp = () => {
                             </p>
                         </div>
 
-                        <button
+                        <LoadingButton
+                            // loading={}
                             type='submit'
                             className='w-full mt-2 py-3 px-4 bg-[var(--special-purple)] hover:bg-opacity-95 text-white font-medium rounded-xl shadow-lg transition-all flex items-center justify-center space-x-2 group cursor-pointer'
                         >
                             <span>Create Account</span>
                             <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
-                        </button>
+                        </LoadingButton>
                     </form>
                     <div className="mt-4">
                         <button

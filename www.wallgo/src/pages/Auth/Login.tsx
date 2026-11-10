@@ -4,6 +4,7 @@ import { Footer } from '../../layouts/Footer';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Helmet } from 'react-helmet-async';
+import LoadingButton from '../../Icons/LoadingButton';
 
 export const Login = () => {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ export const Login = () => {
         password: ''
     });
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
     const api_url = import.meta.env.VITE_API_URL || 'https://api.wallgo.test';
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,16 +25,19 @@ export const Login = () => {
         if (!formData.email || !formData.password) {
             console.log("Email and password is obligatory");
         }
-
+        setLoading(true);
         try {
             await axios.post(`${api_url}/login`, formData, { withCredentials: true, withXSRFToken: true }).then(res => {
                 if (!res.data.success) {
+                    setLoading(false);
                     setError(res.data.message);
                 } else {
+                    setLoading(false);
                     navigate('/');
                 }
             });
         } catch (err: any) {
+            setLoading(false);
             console.error(err?.response?.data?.message);
             setError(err?.response?.data?.message);
         }
@@ -104,13 +109,14 @@ export const Login = () => {
                             )
                         }
 
-                        <button
+                        <LoadingButton
+                            loading={loading}
                             type='submit'
-                            className='w-full mt-2 py-3 px-4 bg-[var(--special-purple)] hover:bg-opacity-95 text-white font-medium rounded-xl shadow-lg transition-all flex items-center justify-center space-x-2 group cursor-pointer'
+                            className='w-full mt-2 py-3 px-4 bg-[var(--special-purple)] hover:bg-opacity-95'
                         >
                             <span>Log In</span>
                             <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
-                        </button>
+                        </LoadingButton>
                     </form>
                     <div className="mt-4">
                         <button
