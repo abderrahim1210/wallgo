@@ -30,7 +30,8 @@ class SearchController extends Controller
                 $searchTypeTerm = str_starts_with($term, '#') ? 'hashtag' : 'keyword';
                 Search::updateOrCreate([
                     'term' => strtolower($term),
-                    'type' => $searchTypeTerm
+                    'type' => $searchTypeTerm,
+                    'user_id' => $user_id
                 ])->increment('searchs_count');
             }
 
@@ -74,6 +75,48 @@ class SearchController extends Controller
             }
 
             return response()->json($response);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function get_searches()
+    {
+        $user_id = Auth::id();
+        $searches = Search::where('user_id', $user_id)->latest()->limit(5)->get();
+        return response()->json([
+            'success' => true,
+            'searches' => $searches
+        ]);
+    }
+
+    public function deleteTerm(int $id)
+    {
+        if (!$id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Id required to delete term'
+            ], 404);
+        }
+
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+
+        $user_id = Auth::id();
+        $search = Search::where('user_id', $user_id)->findOrFail($id);
+        try {
+            $search->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Term deleted successfully'
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

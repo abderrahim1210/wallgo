@@ -9,6 +9,12 @@ class Search extends Model
     protected $fillable = [
         'term',
         'searchs_count',
-        'type'
+        'type',
+        'user_id'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

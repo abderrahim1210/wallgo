@@ -77,7 +77,7 @@ export const Profile = () => {
     }
 
     const { data, isLoading, isError } = useQuery({
-        queryKey: ['user_data'],
+        queryKey: ['user_data', id],
         queryFn: fetchInfos,
     });
 
@@ -100,7 +100,6 @@ export const Profile = () => {
     const stats = data?.stats || [];
     const followers = data?.followers_list || [];
     const followings = data?.followings_list || [];
-    // const posts_list = data?.posts_list || [];
 
     const { add_follow } = useFollow();
     const set_follow = (following_id: number) => {

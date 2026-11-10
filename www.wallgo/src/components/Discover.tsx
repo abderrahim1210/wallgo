@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { MainLayout } from '../MainLayout'
-import { FileText, Globe, Hash, Search, User, Users, X } from 'lucide-react';
+import { Clock, FileText, Globe, Hash, Search, User, Users, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { PostGrid, type Post } from '../templates/PostGrid';
 import { api_url } from '../pages/Auth/getUser';
@@ -26,13 +26,21 @@ type User = {
     followers_count?: number;
 }
 
+type Search = {
+    id: number;
+    term: string;
+    user_id: number;
+    created_at: string;
+    searchs_count: number;
+}
+
 export const Discover = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedPost, setSelectedPost] = useState<any | null>(null);
     const [activeFilter, setActiveFilter] = useState('all');
 
 
-    const fetchData = async ({pageParam=1}) => {
+    const fetchData = async ({ pageParam = 1 }) => {
         try {
             const res = await axios.get(`${api_url}/search?page=${pageParam}`, { params: { type: activeFilter, term: searchQuery }, withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
@@ -70,6 +78,35 @@ export const Discover = () => {
         { id: 'tags', label: 'Hashtags', icon: <Hash className="w-4 h-4" /> },
     ];
     const { add_follow } = useFollow()!;
+
+    const fetchLastSearches = async () => {
+        try {
+            const res = await axios.get(`${api_url}/last_searches`, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) return res.data.searches;
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
+
+    const { data: searches } = useQuery({
+        queryKey: ['last_searches'],
+        queryFn: fetchLastSearches
+    });
+
+    const queryClient = useQueryClient();
+    const deleteTerm = async (id: number) => {
+        if (!id) return null;
+        try {
+            const res = await axios.delete(`${api_url}/searches/${id}`, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) {
+                queryClient.invalidateQueries({ queryKey: ['last_searches'] });
+            } else {
+                console.log(res.data.message);
+            }
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
     return (
         <MainLayout>
             <Helmet>
@@ -122,7 +159,30 @@ export const Discover = () => {
                     </div>
 
                     {!searchQuery.trim() ? (
-                        <EmptyContent text='Type to search' icon={<Search />} />
+                        <>
+                            {
+                                searches?.map((s: Search, index: number) => (
+                                    <div
+                                        key={index}
+                                        className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl hover:bg-gray-50 transition shadow-xs"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-[var(--special-purple)] font-bold">
+                                                <Clock className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-sm text-gray-800 cursor-pointer" onClick={() => setSearchQuery(s?.term)}>#{s.term}</h4>
+                                                <p className="text-xs text-gray-400">{s.searchs_count} searches</p>
+                                            </div>
+                                        </div>
+                                        <button className="text-xs font-semibold text-[var(--special-purple)] cursor-pointer" onClick={() => deleteTerm(s?.id)}>
+                                            <X className='w-5 h-5' />
+                                        </button>
+                                    </div>
+                                ))
+                            }
+                            <EmptyContent text='Type to search' icon={<Search />} />
+                        </>
                     ) : isLoading ? (
                         <Spinner type='mini' text={`Fetching ${activeFilter} ...`} />
                     ) : isError ? (
