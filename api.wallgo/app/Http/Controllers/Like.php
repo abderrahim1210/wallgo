@@ -52,8 +52,10 @@ class Like extends Controller
                 $liketable->likes()->create([
                     'user_id' => $user_id,
                 ]);
-                if ($liketable->user && $liketable->user->id !== $user_id) {
-                    $liketable->user->notify(new PostLikedNotification($user, $liketable, $type));
+                if ($liketable->user->emails_likes_notifications) {
+                    if ($liketable->user && $liketable->user->id !== $user_id) {
+                        $liketable->user->notify(new PostLikedNotification($user, $liketable, $type));
+                    }
                 }
                 return response()->json([
                     'success' => true,

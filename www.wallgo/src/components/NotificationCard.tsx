@@ -33,7 +33,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({ notif }) => 
         >
             <div className="relative shrink-0">
                 <img
-                    src={notif.data.user_avatar}
+                    src={notif.data.user_avatar ?? '/icons/avatar1.svg'}
                     alt={notif.data.user_name}
                     className="w-10 h-10 rounded-full object-cover"
                 />

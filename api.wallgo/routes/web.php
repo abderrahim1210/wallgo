@@ -40,7 +40,9 @@ Route::get('/user', function () {
         'username' => $user->username,
         'name' => $user->name,
         'avatar_url' => $user->avatar_url,
-        'visibility' => $user->visibility
+        'visibility' => $user->visibility,
+        'emails_likes_notifications' => $user->emails_likes_notifications,
+        'new_follower_alerts' => $user->new_follower_alerts
     ]]);
 });
 

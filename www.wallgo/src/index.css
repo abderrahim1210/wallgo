@@ -164,3 +164,8 @@ body {
 .animate-spin-slow {
   animation: spinSlow 4s linear infinite;
 }
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: inline-block;
+}

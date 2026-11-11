@@ -6,37 +6,66 @@ import axios from 'axios'
 import { useAuth } from '../hooks/AuthProvider'
 import toast, { Toaster } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
+import { api_url } from '../pages/Auth/getUser'
+import { useQuery } from '@tanstack/react-query'
+import LoadingButton from '../Icons/LoadingButton'
 
 export const Settings = () => {
   const [activeTab, setActiveTab] = useState('account');
+  const { user } = useAuth()!;
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
-    visibility: '',
+    visibility: 'public',
     currentPassword: '',
-    password: ''
+    password: '',
+    emails_likes_notifications: false,
+    new_follower_alerts: false
   });
 
-  const api_url = 'https://api.wallgo.test';
+  useEffect(() => {
+    if (user) {
+      setData({
+        visibility: user?.visibility,
+        password: '',
+        currentPassword: '',
+        emails_likes_notifications: Boolean(user?.emails_likes_notifications),
+        new_follower_alerts: Boolean(user?.new_follower_alerts)
+      })
+    }
+  }, [user]);
+
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setData(prev => ({ ...prev, [e.target.name]: e.target.value }))
+    const { name, type } = e.target;
+    if (type === 'checkbox') {
+      const { checked } = e.target as HTMLInputElement;
+      setData(prev => ({ ...prev, [name]: checked }));
+    } else {
+      const { value } = e.target;
+      setData(prev => ({ ...prev, [name]: value }));
+    }
   }
 
   const handleSubmit = async () => {
+    setLoading(true);
     try {
       await axios.post(`${api_url}/settings`, data, { withCredentials: true, withXSRFToken: true }).then(res => {
         if (res.data.success) {
+          setLoading(false);
           toast.success(res.data.message || 'Settings updated successfully');
           setTimeout(() => {
             window.location.reload();
           }, 1000);
         }
         else {
+          setLoading(false);
           toast.error(res.data.message || 'Update Failed');
           console.log(res.data.message);
         }
       });
     } catch (err: any) {
+      setLoading(false);
       toast.error(err?.response?.data?.message || 'Updated Failed');
       console.log(err?.response?.data);
     }
@@ -149,11 +178,11 @@ export const Settings = () => {
                 <div className="space-y-4">
                   <label className="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer">
                     <span className="text-sm font-medium text-gray-700">Email Notifications for Likes & Comments</span>
-                    <input type="checkbox" defaultChecked className="w-4 h-4 accent-[var(--special-purple)]" />
+                    <input type="checkbox" name='emails_likes_notifications' checked={data?.emails_likes_notifications} onChange={handleChange} className="w-4 h-4 accent-[var(--special-purple)]" />
                   </label>
                   <label className="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer">
                     <span className="text-sm font-medium text-gray-700">New Follower Alerts</span>
-                    <input type="checkbox" defaultChecked className="w-4 h-4 accent-[var(--special-purple)]" />
+                    <input type="checkbox" name='new_follower_alerts' checked={data?.new_follower_alerts} onChange={handleChange} className="w-4 h-4 accent-[var(--special-purple)]" />
                   </label>
                 </div>
               </div>
@@ -198,9 +227,9 @@ export const Settings = () => {
             )}
 
             <div className="mt-8 pt-4 border-t border-gray-100 flex justify-end">
-              <button className="px-6 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-xl hover:opacity-90 transition cursor-pointer" onClick={handleSubmit}>
+              <LoadingButton loading={loading} className="px-6 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-xl hover:opacity-90 transition cursor-pointer" onClick={handleSubmit}>
                 Save Changes
-              </button>
+              </LoadingButton>
             </div>
 
           </div>

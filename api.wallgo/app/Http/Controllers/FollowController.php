@@ -27,7 +27,9 @@ class FollowController extends Controller
                     'following_id' => $following_id
                 ]);
                 $newStatus = true;
-                $following->notify(new FollowUserNotification($user, $following));
+                if ($following->new_follower_alerts){
+                    $following->notify(new FollowUserNotification($user, $following));
+                }
             } else {
                 $newStatus = false;
                 $follow->delete();
