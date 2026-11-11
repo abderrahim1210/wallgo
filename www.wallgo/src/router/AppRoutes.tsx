@@ -25,6 +25,7 @@ import ReelPreview from '../components/ReelPreview'
 import NotificationsView from '../components/NotificationsView'
 import JoinGroupRequests from '../components/JoinGroupRequests'
 import ForgotPassword from '../pages/Auth/ForgotPassword'
+import ResetPassword from '../components/ResetPassword'
 
 export const AppRoutes = () => {
     return (
@@ -59,6 +60,7 @@ export const AppRoutes = () => {
             <Route path='/notifications/all' element={<NotificationsView />} />
             <Route path='/groups_requests' element={<JoinGroupRequests />} />
             <Route path='/forgot_password' element={<ForgotPassword />} />
+            <Route path='/reset-password' element={<ResetPassword />} />
         </Routes>
     )
 }

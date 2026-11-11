@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\CommentController;
@@ -252,9 +253,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/last_searches', [SearchController::class, 'get_searches']);
 
     Route::delete('/searches/{id}', [SearchController::class, 'deleteTerm']);
-
-    Route::post('/send_link_email', [ForgotPassword::class, 'send_link']);
 });
+Route::post('/send_link_email', [ForgotPassword::class, 'send_link']);
+
+Route::post('/reset_password', [NewPasswordController::class, 'store']);
 
 Route::get('/pages/{id}', [PageController::class, 'show']);
 

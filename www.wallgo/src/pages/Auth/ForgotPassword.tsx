@@ -14,7 +14,8 @@ const ForgotPassword = () => {
     const [error, setError] = useState('');
     const [sent, setSent] = useState(false);
 
-    const sendLinkEmail = async () => {
+    const sendLinkEmail = async (e: React.ChangeEvent<HTMLFormElement>) => {
+        e.preventDefault();
         if (!email) return null;
         setLoading(true);
         try {

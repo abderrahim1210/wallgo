@@ -27,7 +27,7 @@ class ForgotPassword extends Controller
 
         $token = Password::createToken($user);
 
-        $url = "https://www.pixora.test/reset-password?token=" . $token . "&email=" . urlencode($user->email);
+        $url = "https://www.wallgo.test/reset-password?token=" . $token . "&email=" . urlencode($user->email);
 
         Mail::to($user->email)->send(new ResetPasswordMail($url));
 

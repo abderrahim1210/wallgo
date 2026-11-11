@@ -29,15 +29,15 @@
             padding: 40px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
-        .brand-logo {
-            font-size: 28px;
+        .brand-title {
+            font-size: 32px;
             font-weight: 800;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+            letter-spacing: 1.5px;
+            background-color: #7371FC;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-align: center;
-            margin-bottom: 30px;
+            margin: 0 0 35px 0;
         }
         h1 {
             font-size: 22px;
@@ -97,7 +97,7 @@
                 <table class="email-content" border="0" cellpadding="0" cellspacing="0" width="100%">
                     <tr style="display: flex;justify-content:center">
                         <td>
-                            <img src="/mix_logo.webp" width="200" />
+                           <h1 class="brand-title">WALLGO</h1>
                         </td>
                     </tr>
                     

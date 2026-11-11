@@ -38,7 +38,7 @@ class ResetPasswordMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.vendor.emails',
+            view: 'vendor.emails.ResetYourPassword',
             with: [
                 'uri' => $this->uri
             ]
