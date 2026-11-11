@@ -4,6 +4,7 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { api_url } from '../pages/Auth/getUser';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 interface OffcanvasProps {
     onClose: () => void;
@@ -15,11 +16,12 @@ interface OffcanvasProps {
 }
 export const Offcanvas: React.FC<OffcanvasProps> = ({ user, onClose }) => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const handleLogOut = async () => {
         try {
             const res = await axios.delete(`${api_url}/logout`, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
-                toast.success(res.data.message || 'You are logged out successfully');
+                toast.success(res.data.message || t('common.logoutSuccess'));
                 setTimeout(() => {
                     navigate('/account/login');
                 }, 1000);
@@ -67,7 +69,7 @@ export const Offcanvas: React.FC<OffcanvasProps> = ({ user, onClose }) => {
                         className="flex items-center space-x-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 p-3 rounded-xl font-medium transition"
                     >
                         <Layers size={20} className='text-emerald-500' />
-                        <span>Pages</span>
+                        <span>{t('common.pages')}</span>
                     </Link>
 
                     <Link
@@ -76,7 +78,7 @@ export const Offcanvas: React.FC<OffcanvasProps> = ({ user, onClose }) => {
                         className="flex items-center space-x-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 p-3 rounded-xl font-medium transition"
                     >
                         <Users size={20} className='text-[var(--special-red)]' />
-                        <span>Groups</span>
+                        <span>{t('common.groups')}</span>
                     </Link>
 
                     <Link
@@ -85,7 +87,7 @@ export const Offcanvas: React.FC<OffcanvasProps> = ({ user, onClose }) => {
                         className="flex items-center space-x-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 p-3 rounded-xl font-medium transition"
                     >
                         <Bookmark size={20} className='text-purple-500' />
-                        <span>Bookmarks</span>
+                        <span>{t('common.bookmarks')}</span>
                     </Link>
 
                     <Link
@@ -94,7 +96,7 @@ export const Offcanvas: React.FC<OffcanvasProps> = ({ user, onClose }) => {
                         className="flex items-center space-x-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 p-3 rounded-xl font-medium transition"
                     >
                         <Settings size={20} className='text-[var(--special-gray)]' />
-                        <span>Settings</span>
+                        <span>{t('common.settings')}</span>
                     </Link>
                 </div>
 
@@ -104,7 +106,7 @@ export const Offcanvas: React.FC<OffcanvasProps> = ({ user, onClose }) => {
                         className="w-full flex items-center justify-center cursor-pointer space-x-2 py-2.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl font-semibold transition text-sm"
                     >
                         <LogOut size={18} />
-                        <span>Log out</span>
+                        <span>{t('common.logout')}</span>
                     </button>
                 </div>
 

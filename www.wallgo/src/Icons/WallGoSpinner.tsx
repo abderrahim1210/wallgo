@@ -1,9 +1,12 @@
+import { useTranslation } from 'react-i18next';
+
 export default function WallGoSpinner() {
+    const { t } = useTranslation();
     return (
         <svg
             viewBox="0 0 64 64"
             role="status"
-            aria-label="Loading"
+            aria-label={t('common.loading')}
             className="inline-block h-[1em] w-[1em] align-[-0.125em]"
         >
             <style>{`

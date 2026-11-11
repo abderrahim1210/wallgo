@@ -5,8 +5,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Helmet } from 'react-helmet-async';
 import LoadingButton from '../../Icons/LoadingButton';
+import { useTranslation } from 'react-i18next';
 
 export const Login = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
@@ -45,7 +47,7 @@ export const Login = () => {
     return (
         <div className='signup_page min-h-screen flex flex-col justify-between'>
             <Helmet>
-                <title>WallGo : Login</title>
+                <title>{t('auth.signIn')}</title>
             </Helmet>
             <div className='flex-grow flex items-center justify-center p-4 py-10'>
                 <div className='w-full max-w-lg  border rounded-3xl shadow-2xl p-10'>
@@ -55,19 +57,19 @@ export const Login = () => {
                             className="absolute left-0 -top-2 text-slate-400 hover:text-white transition-colors p-2 rounded-xl hover:bg-white/5 flex items-center space-x-1.5 text-xs font-medium group cursor-pointer"
                         >
                             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-                            <span>Back</span>
+                            <span>{t('auth.back')}</span>
                         </button>
                         <img src="/icons/logos/mix_logo.webp" width={150} className='img-fluid' alt="" />
                     </div>
                     <div className='h-8 flex items-center justify-center mt-2 mb-5 overflow-hidden'>
                         <p className={`text-gray-300 text-sm text-center typewriter-text`}>
-                            Welcome back. Jump back into the feed
+                            {t('auth.welcomeBack')}
                         </p>
                     </div>
                     <form className='space-y-5' onSubmit={handleSubmit}>
 
                         <div>
-                            <label className='block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider'>Email Address</label>
+                            <label className='block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider'>{t('auth.emailAddress')}</label>
                             <div className='relative'>
                                 <span className='absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400'>
                                     <Mail className='w-5 h-5' />
@@ -77,7 +79,7 @@ export const Login = () => {
                                     name='email'
                                     value={formData.email}
                                     onChange={handleChange}
-                                    placeholder='name@example.com'
+                                    placeholder={t('auth.emailPlaceholder')}
                                     required
                                     className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
                                 />
@@ -85,7 +87,7 @@ export const Login = () => {
                         </div>
 
                         <div>
-                            <label className='block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider'>Password</label>
+                            <label className='block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider'>{t('auth.password')}</label>
                             <div className='relative'>
                                 <span className='absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400'>
                                     <Lock className='w-5 h-5' />
@@ -114,7 +116,7 @@ export const Login = () => {
                             type='submit'
                             className='w-full mt-2 py-3 px-4 bg-[var(--special-purple)] hover:bg-opacity-95'
                         >
-                            <span>Log In</span>
+                            <span>{t('auth.login')}</span>
                             <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
                         </LoadingButton>
                     </form>
@@ -124,7 +126,7 @@ export const Login = () => {
                             onClick={() => navigate('/account/signup')}
                             className="w-full py-3 px-4 bg-[#1a1a24]/60 hover:bg-[#1a1a24] border border-white/5 hover:border-white/10 text-slate-300 hover:text-white font-medium text-sm rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer"
                         >
-                            Don't have an account ?
+                            {t('auth.noAccount')}
                         </button>
                     </div>
                     
@@ -134,7 +136,7 @@ export const Login = () => {
                             onClick={() => navigate('/forgot_password')}
                             className="w-full py-3 px-4 bg-[#1a1a24]/60 hover:bg-[#1a1a24] border border-white/5 hover:border-white/10 text-slate-300 hover:text-white font-medium text-sm rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer"
                         >
-                            Forgot Password
+                            {t('auth.forgotPassword')}
                         </button>
                     </div>
 

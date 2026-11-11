@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import moment from 'moment'
 import { Lock, Sparkles, Timer } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface TimeCapsuleLockedProps {
     unlockTime: string | Date
@@ -15,6 +16,7 @@ const ROW_START = ROWS.map((_, i) => ROWS.slice(0, i).reduce((a, b) => a + b, 0)
 const pad = (n: number) => String(n).padStart(2, '0')
 
 const TimeCapsuleLocked: React.FC<TimeCapsuleLockedProps> = ({ unlockTime, createdAt, onUnlock }) => {
+    const { i18n, t } = useTranslation();
     const unlockMs = useMemo(() => moment(unlockTime).valueOf(), [unlockTime])
     const createdMs = useMemo(() => (createdAt ? moment(createdAt).valueOf() : null), [createdAt])
 
@@ -42,11 +44,12 @@ const TimeCapsuleLocked: React.FC<TimeCapsuleLockedProps> = ({ unlockTime, creat
     }, [unlockMs])
 
     const d = moment.duration(remaining)
+    const dateText = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'long', timeStyle: 'short' }).format(unlockMs);
     const parts = [
-        { value: String(Math.floor(d.asDays())), label: 'Days' },
-        { value: pad(d.hours()), label: 'Hrs' },
-        { value: pad(d.minutes()), label: 'Min' },
-        { value: pad(d.seconds()), label: 'Sec' },
+        { value: String(Math.floor(d.asDays())), label: t('feed.days') },
+        { value: pad(d.hours()), label: t('feed.hoursShort') },
+        { value: pad(d.minutes()), label: t('feed.minutesShort') },
+        { value: pad(d.seconds()), label: t('feed.secondsShort') },
     ]
 
     const progress = createdMs && unlockMs > createdMs
@@ -57,7 +60,7 @@ const TimeCapsuleLocked: React.FC<TimeCapsuleLockedProps> = ({ unlockTime, creat
     return (
         <div
             role="group"
-            aria-label={`Locked post, opens on ${moment(unlockMs).format('MMMM Do YYYY, h:mm a')}`}
+            aria-label={t('feed.capsuleLocked', { date: dateText })}
             className="relative mx-4 my-2 overflow-hidden rounded-2xl border border-white/10 bg-[var(--special-dark)] text-center text-white shadow-inner"
         >
             <div aria-hidden className="absolute inset-0 flex flex-col justify-between gap-2 p-3">
@@ -89,14 +92,14 @@ const TimeCapsuleLocked: React.FC<TimeCapsuleLockedProps> = ({ unlockTime, creat
 
                 <div className="space-y-1">
                     <h5 className="flex items-center justify-center gap-1.5 text-base font-bold tracking-tight">
-                        Sealed behind the wall <Sparkles className="h-4 w-4 text-[var(--special-purple)]" />
+                        {t('feed.capsuleSealed')} <Sparkles className="h-4 w-4 text-[var(--special-purple)]" />
                     </h5>
-                    <p className="text-xs text-white/60">This time capsule opens on</p>
+                    <p className="text-xs text-white/60">{t('feed.capsuleOpensOn')}</p>
                 </div>
 
                 <div className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold backdrop-blur-md">
                     <Timer className="h-4 w-4 text-[var(--special-purple)]" />
-                    <span>{moment(unlockMs).format('MMMM Do YYYY, h:mm a')}</span>
+                    <span>{dateText}</span>
                 </div>
 
                 <div className="flex items-stretch gap-2">
@@ -110,7 +113,7 @@ const TimeCapsuleLocked: React.FC<TimeCapsuleLockedProps> = ({ unlockTime, creat
 
                 {createdMs && (
                     <p className="text-[11px] italic text-white/40">
-                        The wall is {Math.round(progress * 100)}% down
+                        {t('feed.wallProgress', { percent: Math.round(progress * 100) })}
                     </p>
                 )}
             </div>

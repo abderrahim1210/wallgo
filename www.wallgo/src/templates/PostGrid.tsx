@@ -5,6 +5,7 @@ import { EmptyContent } from '../components/EmptyContent';
 import { PostCard } from '../pages/Post/PostCard';
 import { Skeleton } from './Skeleton';
 import FollowUserCard from '../components/FollowUserCard';
+import { useTranslation } from 'react-i18next';
 
 interface User {
     id: number;
@@ -53,9 +54,10 @@ interface PostGridProps {
 };
 
 export const PostGrid: React.FC<PostGridProps> = ({ posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, suggested_follow }) => {
+    const { t } = useTranslation();
     if (posts?.length === 0) {
         return (
-            <EmptyContent text='No posts found it - try again later !' icon={<Album />} />
+            <EmptyContent text={t('feed.noPostsFound')} icon={<Album />} />
         )
     }
 
@@ -84,12 +86,12 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts, isLoading, fetchNextP
     return (
         <div className="gap-1 md:gap-2">
             {isLoading ? Array(4).fill(0).map((_, i) => <Skeleton type='post' key={i} />) : posts.length > 0 ? posts.map((post, index) => (
-                <React.Fragment>
+                <React.Fragment key={post.id}>
                     <PostCard key={post.id} post={post} />
                     {(index + 1) % 6 === 0 && suggested_follow && suggested_follow.length > 0 && (
                         <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm my-2 lg:hidden">
                             <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">
-                                Suggested for you
+                                {t('feed.suggestedForYou')}
                             </h3>
 
                             <div className="flex overflow-x-auto space-x-3 pb-2 no-scrollbar snap-x">
@@ -102,14 +104,14 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts, isLoading, fetchNextP
                 </React.Fragment>
 
             )) : (
-                <EmptyContent text='No posts yet ' icon={<FileText />} />
+                <EmptyContent text={t('feed.noPostsYet')} icon={<FileText />} />
             )}
 
             <div ref={observerRef} className="h-10"></div>
 
             {!hasNextPage && posts.length > 0 && (
                 <div className="text-center py-6 text-xs text-gray-400 font-medium uppercase tracking-wider">
-                    You've reached the end!
+                    {t('feed.endReached')}
                 </div>
             )}
         </div>

@@ -8,14 +8,25 @@ import { ModalProvider } from './hooks/ModalProvider.tsx'
 import { AuthProvider } from './hooks/AuthProvider.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Spinner from './templates/Spinner.tsx'
+import { useTranslation } from 'react-i18next'
 const queryClient = new QueryClient();
+
+const LoadingFallback = () => {
+  const { t } = useTranslation();
+  return (
+    <div className='flex justify-center items-center min-h-[100vh] w-full'>
+      <Spinner text={t('common.loading')} type='large' />
+    </div>
+  );
+};
+
 createRoot(document.getElementById('root')!).render(
   <>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
           <ModalProvider>
-            <Suspense fallback={<div className='flex justify-center items-center min-h-[100vh] w-full'><Spinner text='Wait a few seconds ...' type='large' /></div>}>
+            <Suspense fallback={<LoadingFallback />}>
               <App />
             </Suspense>
           </ModalProvider>

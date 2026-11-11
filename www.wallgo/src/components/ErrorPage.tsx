@@ -1,43 +1,44 @@
 import { AlertCircle, Home } from 'lucide-react'
 import React from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 const errorMessages: Record<number, { title: string; message: string }> = {
     400: {
-        title: "Bad Request",
-        message: "The request could not be understood by the server due to malformed syntax."
+        title: "errors.badRequestTitle",
+        message: "errors.badRequestMessage"
     },
     401: {
-        title: "Unauthorized",
-        message: "You need to log in to access this page or resource."
+        title: "errors.unauthorizedTitle",
+        message: "errors.unauthorizedMessage"
     },
     403: {
-        title: "Access Forbidden",
-        message: "You don't have permission to access this resource."
+        title: "errors.forbiddenTitle",
+        message: "errors.forbiddenMessage"
     },
     404: {
-        title: "Page Not Found",
-        message: "The page you are looking for might have been removed or is temporarily unavailable."
+        title: "errors.notFoundTitle",
+        message: "errors.notFoundMessage"
     },
     405: {
-        title: "Method Not Allowed",
-        message: "The method specified in the request is not allowed for this resource."
+        title: "errors.methodNotAllowedTitle",
+        message: "errors.methodNotAllowedMessage"
     },
     422: {
-        title: "Unprocessable Content",
-        message: "The request was well-formed but was unable to be followed due to semantic errors."
+        title: "errors.unprocessableTitle",
+        message: "errors.unprocessableMessage"
     },
     500: {
-        title: "Internal Server Error",
-        message: "Oops, something went wrong on our servers. We're working to fix it!"
+        title: "errors.serverErrorTitle",
+        message: "errors.serverErrorMessage"
     },
     502: {
-        title: "Bad Gateway",
-        message: "The server received an invalid response from the upstream server."
+        title: "errors.badGatewayTitle",
+        message: "errors.badGatewayMessage"
     },
     503: {
-        title: "Service Unavailable",
-        message: "The server is currently unable to handle the request. Please try again later."
+        title: "errors.unavailableTitle",
+        message: "errors.unavailableMessage"
     }
 };
 
@@ -46,13 +47,14 @@ interface ErrorPageProps {
 }
 
 export const ErrorPage : React.FC<ErrorPageProps> = ({codeP}) => {
+    const { t } = useTranslation();
     const { code } = useParams<{ code?: string }>();
 
     const errorCode = code ? parseInt(code, 10) : codeP ? parseInt(codeP,10) :  404;
 
     const errorInfo = errorMessages[errorCode] || {
-        title: 'Unexpected Error',
-        message: 'An unexpected error occurred. Please try again later.'
+        title: 'errors.unexpectedTitle',
+        message: 'errors.unexpectedMessage'
     };
 
     return (
@@ -67,11 +69,11 @@ export const ErrorPage : React.FC<ErrorPageProps> = ({codeP}) => {
                 </h1>
 
                 <h2 className="text-xl font-bold mb-3">
-                    {errorInfo.title}
+                    {t(errorInfo.title)}
                 </h2>
 
                 <p className="text-sm mb-8 leading-relaxed">
-                    {errorInfo.message}
+                    {t(errorInfo.message)}
                 </p>
 
                 <Link
@@ -79,7 +81,7 @@ export const ErrorPage : React.FC<ErrorPageProps> = ({codeP}) => {
                     className="inline-flex items-center justify-center space-x-2 w-full py-3 px-4 bg-[var(--special-purple)] hover:opacity-90 text-white font-semibold rounded-xl shadow-md transition duration-200"
                 >
                     <Home size={18} />
-                    <span>Back to Home</span>
+                    <span>{t('errors.backToHome')}</span>
                 </Link>
             </div>
         </div>

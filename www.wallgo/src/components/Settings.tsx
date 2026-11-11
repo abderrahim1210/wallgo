@@ -54,20 +54,20 @@ export const Settings = () => {
       await axios.post(`${api_url}/settings`, data, { withCredentials: true, withXSRFToken: true }).then(res => {
         if (res.data.success) {
           setLoading(false);
-          toast.success(res.data.message || 'Settings updated successfully');
+          toast.success(res.data.message || t('settings.updatedSuccessfully'));
           setTimeout(() => {
             window.location.reload();
           }, 1000);
         }
         else {
           setLoading(false);
-          toast.error(res.data.message || 'Update Failed');
+          toast.error(res.data.message || t('settings.updateFailed'));
           console.log(res.data.message);
         }
       });
     } catch (err: any) {
       setLoading(false);
-      toast.error(err?.response?.data?.message || 'Updated Failed');
+      toast.error(err?.response?.data?.message || t('settings.updateFailed'));
       console.log(err?.response?.data);
     }
   }
@@ -76,13 +76,14 @@ export const Settings = () => {
     try {
       const res = await axios.delete(`${api_url}/logout`, { withCredentials: true, withXSRFToken: true });
       if (res.data.success) {
-        toast.success(res.data.message || 'Logout successfully');
+        toast.success(res.data.message || t('common.logoutSuccess'));
         setTimeout(() => {
           navigate('/account/login');
         }, 1000);
       }
     } catch (err: any) {
       console.error(err?.response?.data);
+      toast.error(t('settings.logoutFailed'));
     }
   }
 
@@ -97,11 +98,11 @@ export const Settings = () => {
   return (
     <MainLayout>
       <Helmet>
-        <title>WallGo : Settings</title>
+        <title>{t('settings.title')}</title>
       </Helmet>
       <div className='px-4 py-6'>
         <div className='flex justify-start items-center'>
-          <h1 className='font-bold text-3xl flex items-center gap-2'><SettingsIcon className='w-8 h-8 text-[var(--special-purple)]' /> {t('settings')}</h1>
+          <h1 className='font-bold text-3xl flex items-center gap-2'><SettingsIcon className='w-8 h-8 text-[var(--special-purple)]' /> {t('settings.title')}</h1>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 mt-5 gap-6">
 
@@ -111,7 +112,7 @@ export const Settings = () => {
               className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'account' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
                 }`}
             >
-              <span className="flex items-center gap-3"><User className="w-4 h-4" /> {t('account')}</span>
+              <span className="flex items-center gap-3"><User className="w-4 h-4" /> {t('common.account')}</span>
               <ChevronRight className="w-4 h-4 opacity-60" />
             </button>
 
@@ -120,7 +121,7 @@ export const Settings = () => {
               className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'notifications' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
                 }`}
             >
-              <span className="flex items-center gap-3"><Bell className="w-4 h-4" /> {t('notifications')}</span>
+              <span className="flex items-center gap-3"><Bell className="w-4 h-4" /> {t('common.notifications')}</span>
               <ChevronRight className="w-4 h-4 opacity-60" />
             </button>
 
@@ -129,7 +130,7 @@ export const Settings = () => {
               className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'security' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
                 }`}
             >
-              <span className="flex items-center gap-3"><Shield className="w-4 h-4" /> {t('security')}</span>
+              <span className="flex items-center gap-3"><Shield className="w-4 h-4" /> {t('common.security')}</span>
               <ChevronRight className="w-4 h-4 opacity-60" />
             </button>
 
@@ -138,7 +139,7 @@ export const Settings = () => {
               className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'appearance' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
                 }`}
             >
-              <span className="flex items-center gap-3"><Moon className="w-4 h-4" /> {t('appearance')}</span>
+              <span className="flex items-center gap-3"><Moon className="w-4 h-4" /> {t('common.appearance')}</span>
               <ChevronRight className="w-4 h-4 opacity-60" />
             </button>
           </div>
@@ -148,29 +149,29 @@ export const Settings = () => {
             {activeTab === 'account' && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900">Account Information</h2>
-                  <p className="text-sm text-gray-500">Update your account details and preferences.</p>
+                  <h2 className="text-lg font-bold text-gray-900">{t('settings.accountInformation')}</h2>
+                  <p className="text-sm text-gray-500">{t('settings.accountInformationDescription')}</p>
                 </div>
                 <hr className="border-gray-100" />
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('common.language')}</label>
                     <select value={i18n.language} onChange={handleChangeLanguages} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] outline-none text-sm bg-gray-50/50">
-                      <option value="en">English</option>
-                      <option value="ar">العربية</option>
+                      <option value="en">{t('common.english')}</option>
+                      <option value="ar">{t('common.arabic')}</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Account Visibility</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.accountVisibility')}</label>
                     <select value={data?.visibility} name='visibility' onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] outline-none text-sm bg-gray-50/50">
-                      <option value="public">Public Account</option>
-                      <option value="private">Private Account</option>
+                      <option value="public">{t('settings.publicAccount')}</option>
+                      <option value="private">{t('settings.privateAccount')}</option>
                     </select>
                   </div>
                   <div>
                     <button onClick={handleLogOut} className="flex items-center gap-3 w-full px-4 py-3 rounded-xl font-semibold text-sm text-red-600 hover:bg-red-50 transition-all duration-200 cursor-pointer">
                       <LogOut className="w-5 h-5 flex-shrink-0" />
-                      <span>Logout</span>
+                      <span>{t('common.logout')}</span>
                     </button>
                   </div>
                 </div>
@@ -180,17 +181,17 @@ export const Settings = () => {
             {activeTab === 'notifications' && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900">Notification Preferences</h2>
-                  <p className="text-sm text-gray-500">Choose what notifications you want to receive.</p>
+                  <h2 className="text-lg font-bold text-gray-900">{t('settings.notificationPreferences')}</h2>
+                  <p className="text-sm text-gray-500">{t('settings.notificationPreferencesDescription')}</p>
                 </div>
                 <hr className="border-gray-100" />
                 <div className="space-y-4">
                   <label className="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer">
-                    <span className="text-sm font-medium text-gray-700">Email Notifications for Likes & Comments</span>
+                    <span className="text-sm font-medium text-gray-700">{t('settings.emailLikesComments')}</span>
                     <input type="checkbox" name='emails_likes_notifications' checked={data?.emails_likes_notifications} onChange={handleChange} className="w-4 h-4 accent-[var(--special-purple)]" />
                   </label>
                   <label className="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer">
-                    <span className="text-sm font-medium text-gray-700">New Follower Alerts</span>
+                    <span className="text-sm font-medium text-gray-700">{t('settings.newFollowerAlerts')}</span>
                     <input type="checkbox" name='new_follower_alerts' checked={data?.new_follower_alerts} onChange={handleChange} className="w-4 h-4 accent-[var(--special-purple)]" />
                   </label>
                 </div>
@@ -200,17 +201,17 @@ export const Settings = () => {
             {activeTab === 'security' && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900">Security Settings</h2>
-                  <p className="text-sm text-gray-500">Manage your password and security credentials.</p>
+                  <h2 className="text-lg font-bold text-gray-900">{t('settings.securitySettings')}</h2>
+                  <p className="text-sm text-gray-500">{t('settings.securitySettingsDescription')}</p>
                 </div>
                 <hr className="border-gray-100" />
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.currentPassword')}</label>
                     <input value={data.currentPassword} name='currentPassword' onChange={handleChange} type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none text-sm bg-gray-50/50" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.newPassword')}</label>
                     <input value={data.password} name='password' onChange={handleChange} type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none text-sm bg-gray-50/50" />
                   </div>
                 </div>
@@ -220,16 +221,16 @@ export const Settings = () => {
             {activeTab === 'appearance' && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900">Appearance</h2>
-                  <p className="text-sm text-gray-500">Customize how WallGo looks on your device.</p>
+                  <h2 className="text-lg font-bold text-gray-900">{t('common.appearance')}</h2>
+                  <p className="text-sm text-gray-500">{t('settings.appearanceDescription')}</p>
                 </div>
                 <hr className="border-gray-100" />
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Theme Mode</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.themeMode')}</label>
                   <select className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none text-sm bg-gray-50/50">
-                    <option value="light">Light Mode</option>
-                    <option value="dark">Dark Mode (Coming soon)</option>
-                    <option value="system">System Default</option>
+                    <option value="light">{t('settings.lightMode')}</option>
+                    <option value="dark">{t('settings.darkModeComingSoon')}</option>
+                    <option value="system">{t('settings.systemDefault')}</option>
                   </select>
                 </div>
               </div>
@@ -237,7 +238,7 @@ export const Settings = () => {
 
             <div className="mt-8 pt-4 border-t border-gray-100 flex justify-end">
               <LoadingButton loading={loading} className="px-6 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-xl hover:opacity-90 transition cursor-pointer" onClick={handleSubmit}>
-                Save Changes
+                {t('settings.saveChanges')}
               </LoadingButton>
             </div>
 

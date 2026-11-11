@@ -13,6 +13,7 @@ import ModalTemplate from '../templates/ModalTemplate';
 import { Report } from './Report';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
+import { useTranslation } from 'react-i18next';
 
 export interface Comment {
     id: number;
@@ -54,6 +55,7 @@ interface CommentItemProps {
 }
 
 export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId, setCommentId, openReport }) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [addReplay, setAddReplay] = useState(false);
     const [replyContent, setReplyContent] = useState('');
@@ -118,23 +120,23 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
     const isOwner = Number(user?.id) === Number(comment?.user?.id);
     const handleDelete = async () => {
         Swal.fire({
-            title: "Delete comment",
-            text: `Are you sure for delete this comment ?`,
+            title: t('feed.deleteComment'),
+            text: t('feed.confirmDeleteComment'),
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Yes , delete it',
+            confirmButtonText: t('feed.yesDelete'),
             confirmButtonColor: '#7371FC',
-            cancelButtonText: 'Cancel'
+            cancelButtonText: t('feed.cancel')
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
                     const url = comment?.can_delete ? `${api_url}/pages/delete_comment/${comment?.page_id}/${comment?.id}` : `${api_url}/comments/${comment?.id}`;
                     const res = await axios.delete(url, { withCredentials: true, withXSRFToken: true });
                     if (res.data.success) {
-                        toast.success(res.data.message || 'Comment deleted successfully');
+                        toast.success(res.data.message || t('feed.commentDeleted'));
                         queryClient.invalidateQueries({ queryKey: ['comments'] });
                     } else {
-                        toast.error(res.data.message || 'Failed to delete comment');
+                        toast.error(res.data.message || t('feed.commentDeleteFailed'));
                         console.log(res.data.message);
                     }
                 } catch (err: any) {
@@ -145,24 +147,24 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
     }
     const commentMenuItems: DropdownItem[] = [
         {
-            label: 'Copy Comment',
+            label: t('feed.copyComment'),
             icon: <Link className="w-4 h-4 text-blue-500" />,
             onClick: () => {
                 navigator.clipboard.writeText(comment?.content);
-                toast.success('Comment copied successfully');
+                toast.success(t('feed.commentCopied'));
             },
         },
 
         ...(isOwner ? [
             {
-                label: `${edit ? 'Cancel Edit' : 'Edit Comment'}`,
+                label: edit ? t('feed.cancelEdit') : t('feed.editComment'),
                 icon: <Edit3 className="w-4 h-4 text-emerald-500" />,
                 onClick: () => { setEdit(prev => !prev) },
             },
         ] : []),
         ...(comment?.can_delete ? [
             {
-                label: 'Delete Comment',
+                label: t('feed.deleteCommentAction'),
                 icon: <Trash2 className="w-4 h-4 text-red-500" />,
                 danger: true,
                 onClick: handleDelete,
@@ -170,7 +172,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
         ] : []),
         ...(!isOwner ? [
             {
-                label: 'Report Comment',
+                label: t('feed.reportComment'),
                 icon: <Flag className="w-4 h-4 text-red-500" />,
                 danger: true,
                 onClick: () => {
@@ -226,7 +228,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
                     <button onClick={handleLike} className="hover:text-[var(--special-red)] cursor-pointer transition flex justify-center gap-1">
                         <Heart className={`w-4 h-4 ${liked ? 'text-red-500 fill-red-500' : ''}`} /> {comment?.likes_count}
                     </button>
-                    <button onClick={() => setAddReplay(prev => !prev)} className="hover:text-[var(--special-purple)] cursor-pointer transition">{addReplay ? 'Cancel' : `Reply ${comment?.replies ? `(${comment?.replies?.length})` : ''}`}</button>
+                    <button onClick={() => setAddReplay(prev => !prev)} className="hover:text-[var(--special-purple)] cursor-pointer transition">{addReplay ? t('feed.cancel') : `${t('feed.reply')} ${comment?.replies ? `(${comment?.replies?.length})` : ''}`}</button>
                     <DropdownMenu
                         trigger={
                             <button className="p-2 text-gray-400 hover:text-gray-600 hover:text-[var(--special-purple)] rounded-full transition-colors cursor-pointer">
@@ -243,7 +245,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
                                 type="text"
                                 value={replyContent}
                                 onChange={(e) => setReplyContent(e.target.value)}
-                                placeholder={`Reply to @${comment?.user.username}...`}
+                                placeholder={t('feed.replyToUser', { username: comment?.user.username })}
                                 className="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-[var(--special-purple)] transition shadow-sm"
                                 autoFocus
                             />

@@ -18,12 +18,14 @@ import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 import TimeCapsuleLocked from '../../Icons/TimeCapsule';
 import { Tooltip } from '../../templates/Tooltip';
+import { useTranslation } from 'react-i18next';
 interface PostCardProps {
     post: Post;
 }
 export const PostCard: React.FC<PostCardProps> = ({
     post,
 }) => {
+    const { t } = useTranslation();
     const [liked, setLiked] = useState<boolean>(post?.is_liked);
     const [likes, setLikes] = useState(Number(post?.likes_count));
     const [saved, setSaved] = useState(Boolean(post?.is_saved));
@@ -71,15 +73,15 @@ export const PostCard: React.FC<PostCardProps> = ({
     const isAuthorGroupOwner = post?.user?.id === post?.postable?.owner_id;
     const isGroupOwner = user?.id === post?.postable?.owner_id;
     const deletePost = async (id: number) => {
-        if (!id) return toast.error('Post ID not found');
+        if (!id) return toast.error(t('feed.postIdNotFound'));
         try {
             Swal.fire({
                 icon: "question",
-                title: "Delete post",
-                text: "Are you sure to delete this post ?",
+                title: t('feed.deletePost'),
+                text: t('feed.confirmDeletePost'),
                 confirmButtonColor: "#DB5461",
-                confirmButtonText: "Yes",
-                cancelButtonText: "No",
+                confirmButtonText: t('feed.yes'),
+                cancelButtonText: t('feed.no'),
                 showConfirmButton: true,
                 showCancelButton: true
             }).then(async (result) => {
@@ -87,12 +89,12 @@ export const PostCard: React.FC<PostCardProps> = ({
                     const url = isGroupOwner ? `${api_url}/groups/${post?.postable?.id}/${post?.id}` : `${api_url}/posts/${id}`;
                     const res = await axios.delete(url, { withCredentials: true, withXSRFToken: true });
                     if (res.data.success) {
-                        toast.success('Post deleted !');
+                        toast.success(t('feed.postDeleted'));
                         setTimeout(() => {
                             navigate('/account/profile');
                         }, 1000);
                     } else {
-                        toast.error('Failed to delete post');
+                        toast.error(t('feed.postDeleteFailed'));
                         console.log(res.data.message);
                     }
                 }
@@ -104,24 +106,24 @@ export const PostCard: React.FC<PostCardProps> = ({
 
     const postMenuItems: DropdownItem[] = [
         {
-            label: 'Copy link',
+            label: t('feed.copyLink'),
             icon: <Link className="w-4 h-4 text-blue-500" />,
             onClick: () => {
                 navigator.clipboard.writeText(`${window.location.href}post/${post?.id}`);
-                toast.success('Copy link')
+                toast.success(t('feed.linkCopied'))
             }
         },
 
         ...((isOwner) ? [
             {
-                label: 'Edit Post',
+                label: t('feed.editPost'),
                 icon: <Edit3 className="w-4 h-4 text-emerald-500" />,
                 onClick: () => navigate(`/post/${post?.id}/edit`, { state: { postToEdit: { content: post?.content, media_url: post?.media_url, created_at: post?.created_at }, id: post?.id } }),
             },
         ] : []),
         ...((isOwner || post?.is_group_owner) ? [
             {
-                label: 'Delete Post',
+                label: t('feed.deletePost'),
                 icon: <Trash2 className="w-4 h-4 text-red-500" />,
                 danger: true,
                 onClick: () => deletePost(post?.id),
@@ -129,7 +131,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         ] : []),
         ...(!isOwner ? [
             {
-                label: 'Report Post',
+                label: t('feed.reportPost'),
                 icon: <Flag className="w-4 h-4 text-red-500" />,
                 danger: true,
                 onClick: () => openModal('report'),
@@ -161,13 +163,13 @@ export const PostCard: React.FC<PostCardProps> = ({
                         post?.postable_type?.includes('Page') || post?.postable_type?.includes('Group') ? (
                             <img
                                 src={post?.postable?.logo_url || '/icons/users.svg'}
-                                alt='avatar'
+                                alt={t('common.profile')}
                                 className="w-10 h-10 rounded-full object-cover border border-purple-100"
                             />
                         ) : (
                             <img
                                 src={post?.user?.avatar_url || '/icons/avatar1.svg'}
-                                alt='avatar'
+                                alt={t('common.profile')}
                                 className="w-10 h-10 rounded-full object-cover border border-purple-100"
                             />
                         )
@@ -182,7 +184,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                                 ) : post?.postable_type?.includes('Group') ?
                                     (
                                         <LinkR to={`/groups/${post?.postable?.id}`}>
-                                            {post?.user.name} on {post?.postable?.name}
+                                            {t('feed.postedInGroup', { username: post?.user.name, group: post?.postable?.name })}
                                         </LinkR>
                                     ) : (
                                         <LinkR to={`/profile/${post?.user.id}/${post?.user.username}`}>
@@ -192,7 +194,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                             }
                             {
                                 isAuthorGroupOwner && (
-                                    <Tooltip label={`Admin of ${post?.postable?.name}`}>
+                                    <Tooltip label={t('feed.adminOf', { name: post?.postable?.name })}>
                                         <Crown className='w-3.5 h-3.5 text-[var(--special-purple)]' />
                                     </Tooltip>
                                 )
@@ -209,13 +211,13 @@ export const PostCard: React.FC<PostCardProps> = ({
                             <span>•</span>
                             {
                                 post?.unlock_time ? (
-                                    <Tooltip label={`Unlocks ${moment(post?.unlock_time).calendar()} ${moment(post?.unlock_time).format('MMM D, YYYY [at] h:mm A')}`}><Timer className='w-3.5 h-3.5' /></Tooltip>
-                                ) : post?.schedule_time ? <Tooltip label={`Scheduled to post ${moment(post?.schedule_time).calendar()} ${moment(post?.schedule_time).format('MMM D, YYYY [at] h:mm A')}`}><CalendarClock className='w-3.5 h-3.5' /></Tooltip> : post?.visibility === 'public' ? <Tooltip label='Public post'><Globe className='w-3.5 h-3.5' /></Tooltip> : <Tooltip label='Private post'><Lock className='w-3.5 h-3.5' /></Tooltip>
+                                    <Tooltip label={t('feed.unlockAt', { date: moment(post?.unlock_time).calendar(), time: moment(post?.unlock_time).format('MMM D, YYYY [at] h:mm A') })}><Timer className='w-3.5 h-3.5' /></Tooltip>
+                                ) : post?.schedule_time ? <Tooltip label={t('feed.scheduledAt', { date: moment(post?.schedule_time).calendar(), time: moment(post?.schedule_time).format('MMM D, YYYY [at] h:mm A') })}><CalendarClock className='w-3.5 h-3.5' /></Tooltip> : post?.visibility === 'public' ? <Tooltip label={t('feed.publicPost')}><Globe className='w-3.5 h-3.5' /></Tooltip> : <Tooltip label={t('feed.privatePost')}><Lock className='w-3.5 h-3.5' /></Tooltip>
                             }
                         </div>
                     </div>
                 </div>
-                <Tooltip label='More options'>
+                <Tooltip label={t('feed.moreOptions')}>
                     <DropdownMenu
                         trigger={
                             <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors cursor-pointer">
@@ -239,7 +241,7 @@ export const PostCard: React.FC<PostCardProps> = ({
 
                         {post?.media_url && (
                             <div className="w-full bg-gray-50 max-h-[500px] overflow-hidden flex items-center justify-center">
-                                <img src={post?.media_url} alt="Post content" className="w-full h-auto object-cover max-h-[500px]" onClick={() => setSelectedPost(post)} />
+                                <img src={post?.media_url} alt={t('feed.postContent')} className="w-full h-auto object-cover max-h-[500px]" onClick={() => setSelectedPost(post)} />
                             </div>
                         )}
                     </>
@@ -280,7 +282,7 @@ export const PostCard: React.FC<PostCardProps> = ({
 
             <div className="px-4 py-3 flex items-center justify-between border-t border-gray-50 mt-1">
                 <div className="flex items-center space-x-6">
-                    <Tooltip label='Like'>
+                    <Tooltip label={t('feed.like')}>
                         <button
                             onClick={handleLike}
                             className="flex items-center space-x-2 text-gray-600 hover:text-red-500 transition-colors group cursor-pointer"
@@ -293,21 +295,21 @@ export const PostCard: React.FC<PostCardProps> = ({
                         </button>
                     </Tooltip>
 
-                    <Tooltip label='Comment'>
+                    <Tooltip label={t('feed.comments', { count: post?.comments_count })}>
                         <button onClick={() => openModal(`comments-${post?.id}-post`)} className="flex items-center space-x-2 text-gray-600 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">
                             <MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform" />
                             <span className="text-xs font-semibold text-gray-700">{post?.comments_count}</span>
                         </button>
                     </Tooltip>
 
-                    <Tooltip label='Share'>
+                    <Tooltip label={t('feed.share')}>
                         <button onClick={() => openModal(`share-${post?.id}`)} className="text-gray-600 hover:text-blue-500 transition-colors group cursor-pointer">
                             <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
                         </button>
                     </Tooltip>
                 </div>
 
-                <Tooltip label='Save post'>
+                <Tooltip label={t('feed.savePost')}>
                     <button
                         onClick={handleSavePost}
                         className={`text-gray-600 hover:text-[var(--special-purple)] transition-colors cursor-pointer ${saved ? 'text-[var(--special-purple)]' : ''

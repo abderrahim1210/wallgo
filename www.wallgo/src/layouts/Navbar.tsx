@@ -10,8 +10,10 @@ import { DropdownMenu } from '../templates/DropdownMenu'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { api_url } from '../pages/Auth/getUser'
+import { useTranslation } from 'react-i18next'
 
 export const Navbar = () => {
+    const { t } = useTranslation();
     const linksClasse = "text-gray-700 hover:text-[var(--special-purple)] transition duration-150";
     const position = "bottom";
     const location = useLocation();
@@ -27,12 +29,12 @@ export const Navbar = () => {
     const [showMenu, setShowMenu] = useState(false);
     const createOptions = [
         {
-            label: 'Create Post',
+            label: t('common.createPost'),
             icon: <PlusIcon className="w-4 h-4 text-[var(--special-purple)]" />,
             onClick: () => { navigate('/create_post') },
         },
         {
-            label: 'Create Reel',
+            label: t('common.createReel'),
             icon: <Clapperboard className="w-4 h-4 text-[var(--special-purple)]" />,
             onClick: () => { navigate('/create_reel') },
         },
@@ -60,43 +62,43 @@ export const Navbar = () => {
 
                     <ul className="flex items-center m-0 p-0 list-none">
                         <li>
-                            <Link to={'/'} title='WallGo' className={`${currendPath === '/' && 'bg-blue'}`}>
-                                <img src="/icons/logos/mix_logo1.webp" alt="WallGo Logo" className="h-10 w-auto object-contain p-1" />
+                            <Link to={'/'} title={t('common.brandName')} className={`${currendPath === '/' && 'bg-blue'}`}>
+                                <img src="/icons/logos/mix_logo1.webp" alt={t('common.brandName')} className="h-10 w-auto object-contain p-1" />
                             </Link>
                         </li>
                     </ul>
 
                     <ul className="hidden md:flex flex-row items-center whitespace-nowrap absolute left-1/2 -translate-x-1/2 space-x-10 m-0 p-0 list-none">
                         <li>
-                            <Tooltip label='Home' position={position}>
+                            <Tooltip label={t('common.home')} position={position}>
                                 <Link to="/" className={getLinkClass('/')}>
                                     <Home className='w-7 h-7' />
                                 </Link>
                             </Tooltip>
                         </li>
                         <li>
-                            <Tooltip label='For you' position={position}>
+                            <Tooltip label={t('common.forYou')} position={position}>
                                 <Link to="/search" className={getLinkClass('/search')}>
                                     <Search className='w-7 h-7' />
                                 </Link>
                             </Tooltip>
                         </li>
                         <li>
-                            <Tooltip label='Create Post' position={position}>
+                            <Tooltip label={t('common.reels')} position={position}>
                                 <Link to="/reels" className={getLinkClass('/reels')}>
                                     <Clapperboard className="w-7 h-7" />
                                 </Link>
                             </Tooltip>
                         </li>
                         <li>
-                            <Tooltip label='Messages' position={position}>
+                            <Tooltip label={t('common.messages')} position={position}>
                                 <Link to="/messenger" className={getLinkClass('/messenger')}>
                                     <MessagesCircle className='w-7 h-7' />
                                 </Link>
                             </Tooltip>
                         </li>
                         <li>
-                            <Tooltip label='Discover' position={position}>
+                            <Tooltip label={t('common.bookmarks')} position={position}>
                                 <Link to="/saved_posts" className={getLinkClass('/saved_posts')}>
                                     <Bookmark className='w-7 h-7' />
                                 </Link>
@@ -110,7 +112,7 @@ export const Navbar = () => {
                             user ? (
                                 <>
                                     <li className='flex items-center space-x-3'>
-                                        <Tooltip label='Create post' position={position}>
+                                        <Tooltip label={t('common.createPost')} position={position}>
                                             <div className='relative inline-flex items-center m-0'>
                                                 <DropdownMenu
                                                     trigger={
@@ -122,7 +124,7 @@ export const Navbar = () => {
                                                 />
                                             </div>
                                         </Tooltip>
-                                        <Tooltip label='Notifications' position={position}>
+                                        <Tooltip label={t('common.notifications')} position={position}>
                                             <button className={`${linksClasse} cursor-pointer hover:text-[var(--special-red)]`} onClick={() => setNotifOpen(prev => !prev)}>
                                                 <Heart className='w-7 h-7' />
 
@@ -134,7 +136,7 @@ export const Navbar = () => {
                                         <Notifications isOpen={notifOpen} onClose={() => setNotifOpen(false)} />
 
 
-                                        <Tooltip label='Account' position={position}>
+                                        <Tooltip label={t('common.account')} position={position}>
                                             <Link to="/account/profile" className={`${getLinkClass('/account/profile')} hidden md:block`}>
                                                 <img src={user?.avatar_url ?? '/icons/avatar1.svg'} alt='avatar' className='w-7 h-7 object-cover rounded-full' />
                                             </Link>
@@ -153,10 +155,10 @@ export const Navbar = () => {
                             ) : (
                                 <li className='flex items-center space-x-3'>
                                     <Link to={'/account/login'} className='font-bold text-gray-700 hover:text-[var(--special-purple)] transition-colors'>
-                                        Login
+                                        {t('common.login')}
                                     </Link>
                                     <Link to={'/account/signup'} className='px-4 py-2 font-bold bg-[var(--special-purple)] rounded-lg text-white hover:bg-opacity-90 transition-all'>
-                                        Sign Up
+                                        {t('common.signUp')}
                                     </Link>
                                 </li>
                             )

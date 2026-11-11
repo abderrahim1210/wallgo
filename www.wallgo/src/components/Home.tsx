@@ -14,6 +14,7 @@ import { useFollow } from './useFollow';
 import { FollowUser } from './FollowUser';
 import Spinner from '../templates/Spinner';
 import { ErrorPage } from './ErrorPage';
+import { useTranslation } from 'react-i18next';
 
 export type User = {
   id: number,
@@ -22,6 +23,7 @@ export type User = {
   avatar_url: string
 }
 export const Home = () => {
+  const { t } = useTranslation();
   const api_url = 'https://api.wallgo.test';
 
   const fetchPosts = async ({ pageParam = 1 }): Promise<Post[]> => {
@@ -97,10 +99,10 @@ export const Home = () => {
   const profile = data?.user || null;
   const stats = data?.stats || [];
   const quotes = [
-    "Share your world on WallGo. 🎈",
-    "Connect, inspire, and grow together. ✨",
-    "Your wall, your community, your voice. 🎤",
-    "Build ideas, spark conversations.",
+    t('feed.quoteOne'),
+    t('feed.quoteTwo'),
+    t('feed.quoteThree'),
+    t('feed.quoteFour'),
   ];
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fade, setFade] = useState(true);
@@ -125,16 +127,16 @@ export const Home = () => {
   }
 
   const handleSubmit = async () => {
-    if (content === '') return toast.error('Type a text for add a post');
+    if (content === '') return toast.error(t('feed.typeTextToPost'));
     try {
       const res = await axios.post(`${api_url}/posts/create`, { content: content }, { withCredentials: true, withXSRFToken: true });
       if (res.data.success) {
-        toast.success(res.data.message || 'Post uploaded successfully');
+        toast.success(res.data.message || t('feed.postUploaded'));
         setTimeout(() => {
           navigate('/account/profile');
         }, 1000);
       } else {
-        toast.error(res.data.message || 'Failed to upload the post');
+        toast.error(res.data.message || t('feed.postUploadFailed'));
         console.error(res.data.message);
       }
     } catch (err: any) {
@@ -163,7 +165,7 @@ export const Home = () => {
                       <div className="flex items-center space-x-3 mb-3 pb-3 border-b border-gray-100">
                         <img
                           src={profile?.avatar_url ?? '/icons/avatar1.svg'}
-                          alt="Abderrahim Khali Ali"
+                          alt={t('common.profile')}
                           className="w-11 h-11 rounded-full object-cover border-2 border-purple-100"
                         />
                         <div className="overflow-hidden">
@@ -174,48 +176,48 @@ export const Home = () => {
                       <div className="flex justify-around text-center py-1 text-xs text-gray-600">
                         <div>
                           <span className="block font-bold text-gray-900 text-sm">{stats?.postsCount}</span>
-                          <span>Posts</span>
+                          <span>{t('feed.posts')}</span>
                         </div>
                         <div className="border-r border-gray-100"></div>
                         <div>
                           <span className="block font-bold text-gray-900 text-sm">{stats?.followers_count}</span>
-                          <span className='cursor-pointer' onClick={() => redirectToProfile()}>Followers</span>
+                          <span className='cursor-pointer' onClick={() => redirectToProfile()}>{t('feed.followers')}</span>
                         </div>
                         <div className="border-r border-gray-100"></div>
                         <div>
                           <span className="block font-bold text-gray-900 text-sm">{stats?.followings_count}</span>
-                          <span className='cursor-pointer' onClick={() => redirectToProfile()}>Following</span>
+                          <span className='cursor-pointer' onClick={() => redirectToProfile()}>{t('feed.following')}</span>
                         </div>
                       </div>
                     </div>
 
                     <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm space-y-2">
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 px-4 mb-2">Discover</h3>
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 px-4 mb-2">{t('common.discover')}</h3>
 
                       <button onClick={() => navigate('/pages')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
                         <Layers className="w-5 h-5 text-emerald-500" />
-                        <span>Pages</span>
+                        <span>{t('common.pages')}</span>
                       </button>
 
                       <button onClick={() => navigate('/groups')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
                         <Users className="w-5 h-5 text-[var(--special-red)]" />
-                        <span>Groups</span>
+                        <span>{t('common.groups')}</span>
                       </button>
 
                       <button onClick={() => navigate('/saved_posts')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
                         <Bookmark className="w-5 h-5 text-purple-500" />
-                        <span>Bookmarks</span>
+                        <span>{t('common.bookmarks')}</span>
                       </button>
 
                       <button onClick={() => navigate('/settings')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 text-sm transition-colors cursor-pointer">
                         <Settings className="w-5 h-5 text-[var(--special-gray)]" />
-                        <span>Settings</span>
+                        <span>{t('common.settings')}</span>
                       </button>
 
                       <div className="pt-3 border-t border-gray-100 mt-3">
                         <button onClick={() => navigate('/create_post')} className="w-full py-3 bg-[var(--special-purple)] text-white font-medium text-sm rounded-xl shadow-md shadow-purple-600/20 flex items-center justify-center space-x-2 transition-all cursor-pointer hover:bg-[var(--special-white)] hover:text-[var(--special-purple)] hover:border hover:border-[var(--special-purple)]">
                           <Plus className="w-5 h-5" />
-                          <span>Create Post</span>
+                          <span>{t('feed.createPost')}</span>
                         </button>
                       </div>
                     </div>
@@ -226,9 +228,9 @@ export const Home = () => {
                       <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
 
                       <div className="space-y-1.5 relative z-10">
-                        <h3 className="font-bold text-base tracking-tight">Join WallGo Today! 🚀</h3>
+                        <h3 className="font-bold text-base tracking-tight">{t('feed.joinTitle')}</h3>
                         <p className="text-xs text-purple-200 leading-relaxed">
-                          Connect with creators, share your favorite wallpapers, and build your community.
+                          {t('feed.joinDescription')}
                         </p>
                       </div>
 
@@ -237,13 +239,13 @@ export const Home = () => {
                           to="/account/login"
                           className="flex-1 py-2.5 px-3 bg-white hover:bg-purple-50 text-purple-900 text-xs font-semibold rounded-xl text-center transition shadow-sm"
                         >
-                          Sign In
+                          {t('feed.signIn')}
                         </Link>
                         <Link
                           to="/account/signup"
                           className="flex-1 py-2.5 px-3 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold rounded-xl text-center transition shadow-sm border border-purple-500/50"
                         >
-                          Sign Up
+                          {t('feed.signUp')}
                         </Link>
                       </div>
                     </div>
@@ -261,9 +263,9 @@ export const Home = () => {
                     <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
 
                     <div className="space-y-1.5 relative z-10">
-                      <h3 className="font-bold text-base tracking-tight">Join WallGo Today! 🚀</h3>
+                      <h3 className="font-bold text-base tracking-tight">{t('feed.joinTitle')}</h3>
                       <p className="text-xs text-purple-200 leading-relaxed">
-                        Connect with creators, share your favorite wallpapers, and build your community.
+                        {t('feed.joinDescription')}
                       </p>
                     </div>
 
@@ -272,13 +274,13 @@ export const Home = () => {
                         to="/account/login"
                         className="flex-1 py-2.5 px-3 bg-white hover:bg-purple-50 text-purple-900 text-xs font-semibold rounded-xl text-center transition shadow-sm"
                       >
-                        Sign In
+                        {t('feed.signIn')}
                       </Link>
                       <Link
                         to="/account/signup"
                         className="flex-1 py-2.5 px-3 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold rounded-xl text-center transition shadow-sm border border-purple-500/50"
                       >
-                        Sign Up
+                        {t('feed.signUp')}
                       </Link>
                     </div>
                   </div>
@@ -295,7 +297,7 @@ export const Home = () => {
               <div className='flex items-center space-x-3 flex-1 min-w-0'>
                 <img
                   src={profile?.avatar_url ?? '/icons/avatar1.svg'}
-                  alt="Profile"
+                  alt={t('common.profile')}
                   className="w-10 h-10 rounded-full object-cover shrink-0"
                 />
                 <div className="relative flex-1 flex items-center space-x-2 min-w-0">
@@ -303,13 +305,15 @@ export const Home = () => {
                     name='content'
                     value={content}
                     type="text"
-                    placeholder={`What's on your mind, ${profile?.username ?? ''}?`}
+                    placeholder={profile?.username
+                      ? t('feed.whatsOnYourMind', { username: profile.username })
+                      : t('feed.whatsOnYourMindNoName')}
                     onChange={checkWrite}
                     className="w-full bg-gray-100/80 hover:bg-gray-100 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all rounded-full px-4 py-2.5 text-sm text-gray-800 outline-none border border-gray-200"
                   />
                   {
                     write && (
-                      <button onClick={handleSubmit} className='px-5 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-full hover:opacity-90 transition-all shadow-sm cursor-pointer animate-fadeIn font-semibold shrink-0'>Post</button>
+                      <button onClick={handleSubmit} className='px-5 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-full hover:opacity-90 transition-all shadow-sm cursor-pointer animate-fadeIn font-semibold shrink-0'>{t('feed.post')}</button>
                     )
                   }
                 </div>
@@ -321,7 +325,7 @@ export const Home = () => {
             <div className="space-y-4">
               {
                 postsLoading ? (
-                  <Spinner text='Fetching posts ...' type='mini' />
+                  <Spinner text={t('feed.fetchingPosts')} type='mini' />
                 ) : postsError ? (
                   <ErrorPage codeP='500' />
                 ) : (
@@ -339,14 +343,14 @@ export const Home = () => {
                   <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
                     <div className="flex items-center space-x-2 mb-4 text-gray-900 font-bold text-sm">
                       <TrendingUp className="w-4 h-4 text-[var(--special-purple)]" />
-                      <span>Trending for you</span>
+                      <span>{t('feed.trendingForYou')}</span>
                     </div>
                     <div className="space-y-3">
                       {
                         searches?.map((item: any, index: number) => (
                           <div className="cursor-pointer group">
                             <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[var(--special-purple)] transition-colors">#{item.term}</h4>
-                            <p className="text-xs text-gray-500">{item.searchs_count} searches</p>
+                            <p className="text-xs text-gray-500">{t('feed.searchCount', { count: item.searchs_count })}</p>
                           </div>
                         ))
                       }
@@ -360,7 +364,7 @@ export const Home = () => {
                   <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
                     <div className="flex items-center space-x-2 mb-4 text-gray-900 font-bold text-sm">
                       <Users className="w-4 h-4 text-[var(--special-purple)]" />
-                      <span>Who to follow</span>
+                      <span>{t('feed.whoToFollow')}</span>
                     </div>
                     {
                       users?.map((u: User, index: number) => (

@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { useQuery } from '@tanstack/react-query';
 import ButtonSpinner from '../Icons/ButtonSpinner';
 import LoadingButton from '../Icons/LoadingButton';
+import { useTranslation } from 'react-i18next';
 
 interface Post {
     content: string;
@@ -26,6 +27,7 @@ interface Post {
 
 
 const CreatePost = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { id } = useParams();
     const location = useLocation();
@@ -99,7 +101,7 @@ const CreatePost = () => {
                 const base64String = reader.result as string;
                 setSelectedImage(base64String);
                 setPost(prev => ({ ...prev, media_url: base64String }));
-                showNotify('Image attached successfully');
+                showNotify(t('feed.imageAttached'));
             };
             reader.readAsDataURL(file);
         }
@@ -175,7 +177,7 @@ const CreatePost = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!post.content.trim() && !selectedImage) {
-            showNotify('Please add some text or an image to post');
+            showNotify(t('feed.invalidPostContent'));
             return;
         }
         setLoading(true);
@@ -185,13 +187,13 @@ const CreatePost = () => {
             await axios[method](url, post, { withCredentials: true, withXSRFToken: true }).then(res => {
                 if (res.data.success) {
                     setLoading(false);
-                    toast.success(res.data.message || 'Post uploaded successfully');
+                    toast.success(res.data.message || t('feed.postUploaded'));
                     setTimeout(() => {
                         navigate('/account/profile')
                     }, 1000);
                 } else {
                     setLoading(false);
-                    toast.error(res.data.message || 'Upload failed');
+                    toast.error(res.data.message || t('feed.postUploadFailed'));
                     console.log(res.data.message);
                 }
             })
@@ -199,11 +201,11 @@ const CreatePost = () => {
             console.error(err?.response?.data);
         }
         if (!content.trim() && !selectedImage) {
-            showNotify('Please add some text or an image to post');
+            showNotify(t('feed.invalidPostContent'));
             return;
         }
 
-        showNotify('Post created successfully! 🚀');
+        showNotify(t('feed.postCreated'));
         setTimeout(() => {
             navigate('/');
         }, 1500);
@@ -235,7 +237,7 @@ const CreatePost = () => {
     return (
         <>
             <Helmet>
-                <title>WallGo : Create Post</title>
+                <title>{t('common.createPost')}</title>
             </Helmet>
             <Navbar />
 
@@ -250,7 +252,7 @@ const CreatePost = () => {
                     <div className="p-4 border-b border-gray-200 flex items-center justify-between">
                         <h2 className="text-gray-900 font-bold text-base flex items-center space-x-2">
                             <Sparkles className="w-5 h-5 text-blue-600" />
-                            <span>Create New Post {groupName ?? pageName ?? ''}</span>
+                            <span>{t('feed.createNewPost')} {groupName ?? pageName ?? ''}</span>
                         </h2>
                         <button
                             onClick={() => navigate(-1)}
@@ -264,7 +266,7 @@ const CreatePost = () => {
                         <div className="p-4 flex items-center space-x-3">
                             <img
                                 src={user?.avatar_url || '/icons/avatar1.svg'}
-                                alt="User Avatar"
+                                alt={t('feed.userAvatar')}
                                 className="w-11 h-11 rounded-full object-cover border border-gray-200"
                             />
                             <div>
@@ -278,12 +280,12 @@ const CreatePost = () => {
                                         {visibility === 'public' ? (
                                             <>
                                                 <Globe className="w-3 h-3 text-blue-600" />
-                                                <span>Public</span>
+                                                <span>{t('feed.public')}</span>
                                             </>
                                         ) : (
                                             <>
                                                 <Lock className="w-3 h-3 text-gray-600" />
-                                                <span>Private</span>
+                                                <span>{t('feed.private')}</span>
                                             </>
                                         )}
                                     </button>
@@ -295,12 +297,12 @@ const CreatePost = () => {
                                         {privacy === 'regular' ? (
                                             <>
                                                 <Globe className="w-3 h-3 text-blue-600" />
-                                                <span>Regular</span>
+                                                <span>{t('feed.regular')}</span>
                                             </>
                                         ) : (
                                             <>
                                                 <Clock className="w-3 h-3 text-gray-600" />
-                                                <span>Time Capsule</span>
+                                                <span>{t('feed.timeCapsule')}</span>
                                             </>
                                         )}
                                     </button>
@@ -314,17 +316,17 @@ const CreatePost = () => {
                                                 {type === 'normal' ? (
                                                     <>
                                                         <User className="w-3 h-3 text-blue-600" />
-                                                        <span>Normal</span>
+                                                        <span>{t('feed.normal')}</span>
                                                     </>
                                                 ) : type === 'page' ? (
                                                     <>
                                                         <Flag className="w-3 h-3 text-gray-600" />
-                                                        <span>Pages</span>
+                                                        <span>{t('common.pages')}</span>
                                                     </>
                                                 ) : (
                                                     <>
                                                         <Users className="w-3 h-3 text-gray-600" />
-                                                        <span>Groups</span>
+                                                        <span>{t('common.groups')}</span>
                                                     </>
                                                 )}
                                             </button>
@@ -339,7 +341,7 @@ const CreatePost = () => {
                                 value={post?.content}
                                 onChange={handleChange}
                                 name='content'
-                                placeholder={`What's on your mind, ${user?.name ?? ''}?`}
+                                placeholder={t('feed.whatsOnYourMind', { username: user?.name ?? '' })}
                                 rows={4}
                                 className="w-full text-gray-900 text-xs md:text-sm placeholder-gray-400 focus:outline-none resize-none"
                             ></textarea>
@@ -348,12 +350,12 @@ const CreatePost = () => {
                         {selectedImage && (
                             <div className="px-4 pb-3 relative">
                                 <div className="relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50 max-h-72 flex justify-center">
-                                    <img src={selectedImage} alt="Preview" className="w-full h-full object-cover max-h-72" />
+                                    <img src={selectedImage} alt={t('feed.imagePreview')} className="w-full h-full object-cover max-h-72" />
                                     <button
                                         type="button"
                                         onClick={() => setSelectedImage(null)}
                                         className="absolute top-2 right-2 p-1.5 bg-gray-900/70 hover:bg-red-600 text-white rounded-full transition-colors cursor-pointer"
-                                        title="Remove image"
+                                        title={t('feed.removeImage')}
                                     >
                                         <X className="w-4 h-4" />
                                     </button>
@@ -379,7 +381,7 @@ const CreatePost = () => {
                         </div>
 
                         <div className="p-3 mx-4 mb-4 border border-gray-200 rounded-xl bg-gray-50 flex items-center justify-between">
-                            <span className="text-xs font-medium text-gray-500 pl-1">Add to your post</span>
+                            <span className="text-xs font-medium text-gray-500 pl-1">{t('feed.addToPost')}</span>
                             <div className="flex items-center space-x-2">
                                 <input
                                     type="file"
@@ -392,15 +394,15 @@ const CreatePost = () => {
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
                                     className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
-                                    title="Photo/Video"
+                                    title={t('feed.photoVideo')}
                                 >
                                     <Image className="w-5 h-5" />
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => showNotify('Video upload feature coming soon!')}
+                                    onClick={() => showNotify(t('feed.videoComingSoon'))}
                                     className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
-                                    title="Video"
+                                    title={t('feed.video')}
                                 >
                                     <Video className="w-5 h-5" />
                                 </button>
@@ -408,7 +410,7 @@ const CreatePost = () => {
                                     type="button"
                                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                                     className="p-2 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer"
-                                    title="Feeling/Activity"
+                                    title={t('feed.feelingActivity')}
                                 >
                                     <Smile className="w-5 h-5" />
                                 </button>
@@ -422,7 +424,7 @@ const CreatePost = () => {
                                     onClick={() => setShowCapsuleOptions(!showCapsuleOptions)}
                                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${showCapsuleOptions ? 'bg-purple-100 text-[var(--special-purple)]' : 'hover:bg-gray-100'}`}
                                 >
-                                    <Clock className="w-4 h-4" /> Time Capsule
+                                    <Clock className="w-4 h-4" /> {t('feed.timeCapsule')}
                                 </button>
                             )
                         }
@@ -432,7 +434,7 @@ const CreatePost = () => {
                         <div className="p-4 border-t border-gray-200 bg-gray-50/50 flex justify-end">
                             <LoadingButton loading={loading} type="submit">
                                 <Send className="w-4 h-4" />
-                                <span>{isEditMode ? 'Update' : 'Post'}</span>
+                                <span>{isEditMode ? t('feed.update') : t('feed.post')}</span>
                             </LoadingButton>
                         </div>
 
@@ -441,11 +443,11 @@ const CreatePost = () => {
                                 <div className="mt-3 p-3 bg-purple-50/50 rounded-2xl border border-purple-100 space-y-3">
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-600 mb-1">Unlock Time</label>
+                                            <label className="block text-xs font-medium text-gray-600 mb-1">{t('feed.unlockTime')}</label>
                                             <input onChange={handleChange} value={post?.unlock_time} type="datetime-local" name="unlock_time" className="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs bg-white outline-none" />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-600 mb-1">Expires At</label>
+                                            <label className="block text-xs font-medium text-gray-600 mb-1">{t('feed.expiresAt')}</label>
                                             <input onChange={handleChange} value={post?.expires_at} type="datetime-local" name="expires_at" className="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs bg-white outline-none" />
                                         </div>
                                     </div>
@@ -455,7 +457,7 @@ const CreatePost = () => {
 
                         <div className="mt-3 p-3 bg-purple-50/50 rounded-2xl border border-purple-100 space-y-3">
                             <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-1">Schedule Time (Optional)</label>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">{t('feed.scheduleTimeOptional')}</label>
                                 <input onChange={handleChange} value={post?.schedule_time} type="datetime-local" name="schedule_time" className="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs bg-white outline-none" />
                             </div>
                         </div>
@@ -469,7 +471,7 @@ const CreatePost = () => {
                                             onChange={handleChange}
                                             className="w-full appearance-none bg-gray-50 border border-gray-200 hover:border-gray-300 text-gray-700 text-xs rounded-xl px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer shadow-sm"
                                         >
-                                            <option value="">Select a page to post as...</option>
+                                            <option value="">{t('feed.selectPage')}</option>
                                             {pages.map((page: any) => (
                                                 <option key={page.id} value={page.id}>
                                                     {page.name}
@@ -495,7 +497,7 @@ const CreatePost = () => {
                                             onChange={handleChange}
                                             className="w-full appearance-none bg-gray-50 border border-gray-200 hover:border-gray-300 text-gray-700 text-xs rounded-xl px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer shadow-sm"
                                         >
-                                            <option value="">Select a group to post as...</option>
+                                            <option value="">{t('feed.selectGroup')}</option>
                                             {groups.map((group: any) => (
                                                 <option key={group} value={group.id}>
                                                     {group.name}
