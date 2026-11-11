@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import { api_url } from '../pages/Auth/getUser'
 import { useQuery } from '@tanstack/react-query'
 import LoadingButton from '../Icons/LoadingButton'
+import { useTranslation } from 'react-i18next'
 
 export const Settings = () => {
   const [activeTab, setActiveTab] = useState('account');
@@ -84,6 +85,15 @@ export const Settings = () => {
       console.error(err?.response?.data);
     }
   }
+
+  const { i18n, t } = useTranslation();
+
+  const handleChangeLanguages = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const lang = e.target.value;
+    i18n.changeLanguage(lang);
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
+  }
   return (
     <MainLayout>
       <Helmet>
@@ -91,7 +101,7 @@ export const Settings = () => {
       </Helmet>
       <div className='px-4 py-6'>
         <div className='flex justify-start items-center'>
-          <h1 className='font-bold text-3xl flex items-center gap-2'><SettingsIcon className='w-8 h-8 text-[var(--special-purple)]' /> Settings</h1>
+          <h1 className='font-bold text-3xl flex items-center gap-2'><SettingsIcon className='w-8 h-8 text-[var(--special-purple)]' /> {t('settings')}</h1>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 mt-5 gap-6">
 
@@ -101,7 +111,7 @@ export const Settings = () => {
               className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'account' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
                 }`}
             >
-              <span className="flex items-center gap-3"><User className="w-4 h-4" /> Account</span>
+              <span className="flex items-center gap-3"><User className="w-4 h-4" /> {t('account')}</span>
               <ChevronRight className="w-4 h-4 opacity-60" />
             </button>
 
@@ -110,7 +120,7 @@ export const Settings = () => {
               className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'notifications' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
                 }`}
             >
-              <span className="flex items-center gap-3"><Bell className="w-4 h-4" /> Notifications</span>
+              <span className="flex items-center gap-3"><Bell className="w-4 h-4" /> {t('notifications')}</span>
               <ChevronRight className="w-4 h-4 opacity-60" />
             </button>
 
@@ -119,7 +129,7 @@ export const Settings = () => {
               className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'security' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
                 }`}
             >
-              <span className="flex items-center gap-3"><Shield className="w-4 h-4" /> Security</span>
+              <span className="flex items-center gap-3"><Shield className="w-4 h-4" /> {t('security')}</span>
               <ChevronRight className="w-4 h-4 opacity-60" />
             </button>
 
@@ -128,7 +138,7 @@ export const Settings = () => {
               className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'appearance' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
                 }`}
             >
-              <span className="flex items-center gap-3"><Moon className="w-4 h-4" /> Appearance</span>
+              <span className="flex items-center gap-3"><Moon className="w-4 h-4" /> {t('appearance')}</span>
               <ChevronRight className="w-4 h-4 opacity-60" />
             </button>
           </div>
@@ -145,9 +155,8 @@ export const Settings = () => {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
-                    <select className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] outline-none text-sm bg-gray-50/50">
+                    <select value={i18n.language} onChange={handleChangeLanguages} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] outline-none text-sm bg-gray-50/50">
                       <option value="en">English</option>
-                      <option value="fr">Français</option>
                       <option value="ar">العربية</option>
                     </select>
                   </div>

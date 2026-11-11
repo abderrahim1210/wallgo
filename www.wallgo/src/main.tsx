@@ -1,8 +1,8 @@
-import React, { StrictMode, Suspense } from 'react'
+import React, { Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
-// import App from './App.tsx'
 const App = React.lazy(() => import('./App.tsx'));
-import './index.css'
+import './index.css';
+import './i8n';
 import { BrowserRouter } from 'react-router-dom'
 import { ModalProvider } from './hooks/ModalProvider.tsx'
 import { AuthProvider } from './hooks/AuthProvider.tsx'
