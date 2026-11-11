@@ -110,13 +110,24 @@ class Post extends Controller
         $user_id = $user->id;
         try {
             if ($user) {
-                $posts = ModelsPost::withCount(['likes', 'comments'])->with(['user:id,username,name,avatar_url', 'postable:id,name,logo_url,owner_id'])->withExists(['likes as is_liked' => function ($query) use ($user_id) {
+                $posts = ModelsPost::withCount(['likes', 'comments'])->with(['user:id,username,name,avatar_url', 'postable:id,name,logo_url,owner_id,visibility'])->withExists(['likes as is_liked' => function ($query) use ($user_id) {
                     $query->where('user_id', $user_id);
                 }])->withExists(['user as is_owner' => function ($q) use ($user_id) {
                     $q->where('id', $user_id);
                 }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
                     $q->where('user_id', $user_id);
-                }])->where('visibility', 'public')->whereNull('schedule_time')->latest()->paginate(10);
+                }])->where('visibility', 'public')->whereNull('schedule_time')->where(function ($query) use ($user_id) {
+                    $query->whereNull('postable_type')->orWhereHasMorph('postable', [\App\Models\Group::class], function ($q) {
+                        $q->where('visibility', 'public');
+                    })->orWhere(function ($subQuery) use ($user_id) {
+                        $subQuery->where('postable_type', \App\Models\Group::class)
+                            ->whereHasMorph('postable', [\App\Models\Group::class], function ($groupQuery) use ($user_id) {
+                                $groupQuery->whereHas('followers', function ($followQuery) use ($user_id) {
+                                    $followQuery->where('user_id', $user_id);
+                                });
+                            });
+                    });
+                })->latest()->paginate(10);
                 return response()->json([
                     'success' => true,
                     'posts' => $posts
