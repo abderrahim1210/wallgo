@@ -45,7 +45,6 @@ class GetUser extends Controller
                 ],
                 'followers_list' => $followers_list,
                 'followings_list' => $followings_list,
-                // 'posts_list' => $posts_list
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -61,16 +60,30 @@ class GetUser extends Controller
         $user_id = empty($id) ? $authenticated_user : $id;
 
         try {
-            $posts = Post::with(['user:id,name,username,avatar_url', 'postable:id,name,logo_url'])->withCount(['likes', 'comments'])
-                ->withExists(['likes as is_liked' => function ($q) use ($authenticated_user) {
-                    $q->where('user_id', $authenticated_user);
-                }])->withExists(['bookmarks as is_saved' => function ($q) use ($authenticated_user) {
-                    $q->where('user_id', $authenticated_user);
-                }])->where('user_id', $user_id)->whereNull('postable_id')->when(!empty($id), function ($q) {
-                    $q->where(function ($subQuery) {
-                        $subQuery->whereNull('schedule_time')->orWhere('schedule_time', '<=', now());
-                    });
-                })->latest()->paginate(10);
+            $getPosts = false;
+            $posts = [];
+            if ($user_id !== Auth::id()) {
+                $existingFollow = Follow::where('following_id', $user_id)->where('follower_id', $authenticated_user)->exists();
+                if ($existingFollow) {
+                    $getPosts = true;
+                }
+            } else {
+                $getPosts = true;
+            }
+            if ($getPosts) {
+                $posts = Post::with(['user:id,name,username,avatar_url', 'postable:id,name,logo_url'])->withCount(['likes', 'comments'])
+                    ->withExists(['likes as is_liked' => function ($q) use ($authenticated_user) {
+                        $q->where('user_id', $authenticated_user);
+                    }])->withExists(['bookmarks as is_saved' => function ($q) use ($authenticated_user) {
+                        $q->where('user_id', $authenticated_user);
+                    }])->where('user_id', $user_id)->whereNull('postable_id')->when(!empty($id), function ($q) {
+                        $q->where(function ($subQuery) {
+                            $subQuery->whereNull('schedule_time')->orWhere('schedule_time', '<=', now());
+                        });
+                    })->latest()->paginate(10);
+            } else {
+                $posts = Post::where('id', 0)->paginate(10);
+            }
             return response()->json([
                 'success' => true,
                 'posts' => $posts

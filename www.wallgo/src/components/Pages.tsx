@@ -56,14 +56,14 @@ export const Pages = () => {
               <span>{t('auth.back')}</span>
             </button>
             <div className='flex justify-start items-center'>
-              <h1 className='font-bold text-3xl flex items-center gap-2'><span className='text-[40px] text-indigo-600'>
+              <h1 className='font-bold text-3xl flex items-center gap-2'><span className='text-[40px] text-indigo-600 dark:text-indigo-400'>
                 <PagesIcon />
               </span> {t('common.pages')}</h1>
 
             </div>
             <div className="mb-10 mt-5">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
-                {t('groupsPages.your_pages')} <button onClick={() => navigate('/page/create')} className='text-[var(--special-white)] bg-[var(--special-purple)] px-4 hover:bg-indigo-100 hover:text-[var(--special-purple)] rounded-full transition-all cursor-pointer flex'>{t('groupsPages.new_page')} <PlusIcon /></button>
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-3">
+                {t('groupsPages.your_pages')} <button onClick={() => navigate('/page/create')} className='text-[var(--special-white)] bg-[var(--special-purple)] px-4 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 hover:text-[var(--special-purple)] rounded-full transition-all cursor-pointer flex'>{t('groupsPages.new_page')} <PlusIcon /></button>
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -73,10 +73,10 @@ export const Pages = () => {
               </div>
             </div>
 
-            <hr className="border-gray-200 my-8" />
+            <hr className="border-gray-200 dark:border-gray-700 my-8" />
 
             <div>
-              <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
                 {t('groupsPages.suggested_pages')}
               </h2>
 

@@ -203,27 +203,27 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
 
             <div className="absolute right-4 bottom-20 z-30 rtl:right-auto rtl:left-4 flex flex-col items-center space-y-5 text-white">
                 <button aria-label={t('feed.like')} className="flex flex-col items-center space-y-1 group cursor-pointer" onClick={handleLike}>
-                    <div className="p-3 bg-white/10 backdrop-blur-md rounded-full group-hover:bg-white/20 transition-colors">
-                        <Heart className={`w-6 h-6 ${liked ? 'text-red-500 fill-red-500' : 'text-white'} hover:text-red-500 transition-colors`} />
+                    <div className="p-3 bg-white/10 backdrop-blur-md rounded-full group-hover:bg-white/20 dark:group-hover:bg-gray-800/20 transition-colors">
+                        <Heart className={`w-6 h-6 ${liked ? 'text-red-500 dark:text-red-400 fill-red-500' : 'text-white'} hover:text-red-500 dark:hover:text-red-400 transition-colors`} />
                     </div>
                     <span className="text-xs font-semibold">{reel.likes_count}</span>
                 </button>
 
                 <button aria-label={t('feed.comments', { count: reel.comments_count })} className="flex flex-col items-center space-y-1 group cursor-pointer" onClick={() => openModal(`comments-reel-${reel?.id}`)}>
-                    <div className="p-3 bg-white/10 backdrop-blur-md rounded-full group-hover:bg-white/20 transition-colors">
+                    <div className="p-3 bg-white/10 backdrop-blur-md rounded-full group-hover:bg-white/20 dark:group-hover:bg-gray-800/20 transition-colors">
                         <MessageCircle className="w-6 h-6 text-white" />
                     </div>
                     <span className="text-xs font-semibold">{reel.comments_count}</span>
                 </button>
 
-                <button aria-label={t('feed.share')} className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer" onClick={() => openModal(`share-${reel?.id}`)}>
+                <button aria-label={t('feed.share')} className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 dark:hover:bg-gray-800/20 transition-colors cursor-pointer" onClick={() => openModal(`share-${reel?.id}`)}>
                     <Send className="w-6 h-6 text-white" />
                 </button>
-                <button aria-label={saved ? t('reelCard.removeSaved') : t('reelCard.save')} className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer" onClick={handleSavePost}>
+                <button aria-label={saved ? t('reelCard.removeSaved') : t('reelCard.save')} className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 dark:hover:bg-gray-800/20 transition-colors cursor-pointer" onClick={handleSavePost}>
                     <Bookmark className={`w-6 h-6 text-white ${saved ? 'fill-white' : ''}`} />
                 </button>
 
-                <button aria-label={t('reelCard.options')} className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer" onClick={() => openModal(`options-reel-${reel?.id}`)}>
+                <button aria-label={t('reelCard.options')} className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 dark:hover:bg-gray-800/20 transition-colors cursor-pointer" onClick={() => openModal(`options-reel-${reel?.id}`)}>
                     <MoreVertical className="w-6 h-6 text-white" />
                 </button>
             </div>
@@ -233,18 +233,18 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                     <img src={reel?.reelable?.logo_url || reel?.user?.avatar_url} alt={t('feed.userAvatar')} className="w-9 h-9 rounded-full object-cover border border-white/20" />
                     <div>
                         <h4 className="font-semibold text-sm cursor-pointer hover:underline w-[150px]" onClick={() => navigate(`${reel?.is_owner ? '/account/profile' : `/profile/${reel.user.id}/${reel.user.username}`}`)}>{reel?.reelable?.name ? t('feed.postedInGroup', { username: reel?.user?.name, group: reel?.reelable?.name }) : reel.user.name}</h4>
-                        <p className="text-xs text-gray-300">@{reel.user.username}</p>
+                        <p className="text-xs text-gray-300 dark:text-gray-400">@{reel.user.username}</p>
                     </div>
                     {
                         !reel.is_owner && (
-                            <button className="ml-2 px-3 py-1 bg-white/20 backdrop-blur-md hover:bg-white/30 text-xs font-semibold rounded-full transition-colors cursor-pointer" onClick={handleFollow}>
+                            <button className="ml-2 px-3 py-1 bg-white/20 dark:bg-gray-800/20 backdrop-blur-md hover:bg-white/30 dark:hover:bg-gray-800/30 text-xs font-semibold rounded-full transition-colors cursor-pointer" onClick={handleFollow}>
                                 {followed ? t('profile.followed') : t('profile.follow')}
                             </button>
                         )
                     }
                 </div>
 
-                <p className="text-xs text-gray-200 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-gray-200 dark:text-gray-300 line-clamp-2 leading-relaxed">
                     {reel.caption}
                 </p>
 
@@ -257,7 +257,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                     />
                 )}
 
-                <div className="flex items-center space-x-2 text-xs text-gray-300">
+                <div className="flex items-center space-x-2 text-xs text-gray-300 dark:text-gray-400">
                     <Music className="w-3.5 h-3.5 animate-spin" />
                     <span className="truncate">{reel.audio_name}</span>
                 </div>

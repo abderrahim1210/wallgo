@@ -131,13 +131,13 @@ export const GroupeProfile = () => {
     const postMenuItems: DropdownItem[] = [
         {
             label: t('profile.share_group'),
-            icon: <Share2 className="w-4 h-4 text-blue-500" />,
+            icon: <Share2 className="w-4 h-4 text-blue-500 dark:text-blue-400" />,
             onClick: () => openModal(`share-${group?.id}`),
         },
 
         {
             label: t('profile.report_group'),
-            icon: <Flag className="w-4 h-4 text-red-500" />,
+            icon: <Flag className="w-4 h-4 text-red-500 dark:text-red-400" />,
             danger: true,
             onClick: () => openModal(`report-${group?.id}`),
         },
@@ -253,24 +253,24 @@ export const GroupeProfile = () => {
             {
                 show === `join-${group?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
-                        <div className='mt-5 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm'>
+                        <div className='mt-5 p-5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm'>
                             <div className='flex items-center gap-2 mb-2'>
-                                <span className='px-2.5 py-1 text-xs font-semibold text-[var(--special-purple)] bg-indigo-50 rounded-lg'>
+                                <span className='px-2.5 py-1 text-xs font-semibold text-[var(--special-purple)] bg-indigo-50 dark:bg-indigo-950/40 rounded-lg'>
                                     {t('profile.group_question')}
                                 </span>
                             </div>
 
-                            <h4 className='font-semibold text-gray-900 text-[18px] mb-1'>
+                            <h4 className='font-semibold text-gray-900 dark:text-gray-100 text-[18px] mb-1'>
                                 {t('profile.answer_join_question', { name: group?.name ?? '' })}
                             </h4>
-                            <p className='text-gray-600 text-sm mb-4 bg-gray-50 p-3 rounded-xl border border-gray-100'>
+                            <p className='text-gray-600 dark:text-gray-400 text-sm mb-4 bg-gray-50 dark:bg-gray-800 p-3 rounded-xl border border-gray-100 dark:border-gray-800'>
                                 {question}
                             </p>
 
                             <div className='space-y-3 mb-5'>
-                                <label className='flex items-center justify-between p-3.5 rounded-xl border-2 border-gray-100 hover:border-indigo-500 hover:bg-indigo-50/30 transition-all cursor-pointer group'>
+                                <label className='flex items-center justify-between p-3.5 rounded-xl border-2 border-gray-100 dark:border-gray-800 hover:border-indigo-500 dark:hover:border-indigo-400 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/30 transition-all cursor-pointer group'>
                                     <div className='flex items-center gap-3'>
-                                        <div className='w-5 h-5 rounded-full border-2 border-gray-300 group-hover:border-[var(--special-purple)] flex items-center justify-center transition-colors'>
+                                        <div className='w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-600 group-hover:border-[var(--special-purple)] flex items-center justify-center transition-colors'>
                                             <input
                                                 name='answer'
                                                 type="radio"
@@ -280,13 +280,13 @@ export const GroupeProfile = () => {
                                             />
                                             <div className='w-2.5 h-2.5 rounded-full bg-[var(--special-purple)] opacity-0 peer-checked:opacity-100 transition-opacity'></div>
                                         </div>
-                                        <span className='font-medium text-gray-800 text-sm'>{t('profile.yes_i_agree')}</span>
+                                        <span className='font-medium text-gray-800 dark:text-gray-200 text-sm'>{t('profile.yes_i_agree')}</span>
                                     </div>
                                 </label>
 
-                                <label className='flex items-center justify-between p-3.5 rounded-xl border-2 border-gray-100 hover:border-[var(--special-purple)] hover:bg-indigo-50/30 transition-all cursor-pointer group'>
+                                <label className='flex items-center justify-between p-3.5 rounded-xl border-2 border-gray-100 dark:border-gray-800 hover:border-[var(--special-purple)] hover:bg-indigo-50/30 dark:hover:bg-indigo-950/30 transition-all cursor-pointer group'>
                                     <div className='flex items-center gap-3'>
-                                        <div className='w-5 h-5 rounded-full border-2 border-gray-300 group-hover:border-[var(--special-purple)] flex items-center justify-center transition-colors'>
+                                        <div className='w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-600 group-hover:border-[var(--special-purple)] flex items-center justify-center transition-colors'>
                                             <input
                                                 name='answer'
                                                 type="radio"
@@ -296,7 +296,7 @@ export const GroupeProfile = () => {
                                             />
                                             <div className='w-2.5 h-2.5 rounded-full bg-indigo-600 opacity-0 peer-checked:opacity-100 transition-opacity'></div>
                                         </div>
-                                        <span className='font-medium text-gray-800 text-sm'>{t('profile.no')}</span>
+                                        <span className='font-medium text-gray-800 dark:text-gray-200 text-sm'>{t('profile.no')}</span>
                                     </div>
                                 </label>
                             </div>
@@ -326,18 +326,18 @@ export const GroupeProfile = () => {
                         <div>
                             {
                                 followersList?.length > 0 ? followersList.map((user: { id: number; username: string; name: string; avatar_url: string; }) => (
-                                    <div className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                                    <div className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">
                                         <div className="flex items-center gap-3 min-w-0">
                                             <img
                                                 src={user?.avatar_url || '/icons/avatar1.svg'}
                                                 alt={user?.name}
-                                                className="w-12 h-12 rounded-full object-cover border border-gray-100 flex-shrink-0"
+                                                className="w-12 h-12 rounded-full object-cover border border-gray-100 dark:border-gray-800 flex-shrink-0"
                                             />
                                             <div className="flex flex-col min-w-0">
-                                                <h4 className="text-sm font-bold text-gray-900 truncate hover:underline cursor-pointer" onClick={() => null}>
+                                                <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate hover:underline cursor-pointer" onClick={() => null}>
                                                     {user?.name}
                                                 </h4>
-                                                <span className="text-xs font-medium text-gray-500 truncate">
+                                                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 truncate">
                                                     @{user?.username}
                                                 </span>
                                             </div>
@@ -348,7 +348,7 @@ export const GroupeProfile = () => {
                                                 <button
                                                     disabled={loading}
                                                     onClick={() => removeMember(user.id)}
-                                                    className="px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
+                                                    className="px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-900/40 rounded-lg transition-colors cursor-pointer"
                                                 >
                                                     {loading ? t('profile.removing_member') : t('profile.remove_member')}
                                                 </button>
@@ -371,8 +371,8 @@ export const GroupeProfile = () => {
                     <ErrorPage codeP='500' />
                 ) : (
                     <div className="max-w-4xl mx-auto px-4 py-6">
-                        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                            <div className="h-48 w-full bg-gray-200 relative">
+                        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+                            <div className="h-48 w-full bg-gray-200 dark:bg-gray-700 relative">
                                 <img
                                     src={group?.banner_url ?? '/backgrounds/users_banner.svg'}
                                     alt={group?.name}
@@ -382,7 +382,7 @@ export const GroupeProfile = () => {
 
                             <div className="px-6 pb-6 relative">
                                 <div className="flex justify-between items-end -mt-12 mb-4">
-                                    <div className="w-24 h-24 rounded-full border-4 border-white overflow-hidden shadow-md bg-white">
+                                    <div className="w-24 h-24 rounded-full border-4 border-white overflow-hidden shadow-md bg-white dark:bg-gray-900">
                                         <img
                                             src={group?.logo_url ?? "/icons/users.svg"}
                                             alt={group?.name}
@@ -395,21 +395,21 @@ export const GroupeProfile = () => {
                                             <div className='gap-1 flex'>
                                                 <button
                                                     onClick={() => navigate('/create_post')}
-                                                    className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                                    className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"
                                                     title={t('profile.create_post_for_group')}
                                                 >
-                                                    <PlusSquare className='w-5 h-5 text-indigo-600' />
+                                                    <PlusSquare className='w-5 h-5 text-indigo-600 dark:text-indigo-400' />
                                                 </button>
                                                 <button
                                                     onClick={() => openModal('groups')}
-                                                    className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                                    className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"
                                                     title={t('profile.settings')}
                                                 >
-                                                    <Settings className='w-5 h-5 text-indigo-600' />
+                                                    <Settings className='w-5 h-5 text-indigo-600 dark:text-indigo-400' />
                                                 </button>
                                                 <button
                                                     onClick={() => navigate(`/groups/${group?.id}/edit`)}
-                                                    className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                                    className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"
                                                     title={t('profile.edit_group')}
                                                 >
                                                     <Pencil className='w-5 h-5 text-[var(--special-purple)]' />
@@ -422,10 +422,10 @@ export const GroupeProfile = () => {
                                                         <DropdownMenu
                                                             trigger={
                                                                 <button
-                                                                    className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                                                    className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"
                                                                     title={t('profile.create_post_for_group')}
                                                                 >
-                                                                    <PlusSquare className='w-5 h-5 text-indigo-600' />
+                                                                    <PlusSquare className='w-5 h-5 text-indigo-600 dark:text-indigo-400' />
                                                                 </button>
                                                             }
                                                             items={createOptions}
@@ -440,7 +440,7 @@ export const GroupeProfile = () => {
                                                                     openModal(`join-${group?.id}`)
                                                                 }
                                                             }}
-                                                            className={`px-6 py-2.5 rounded-xl font-semibold capitalize text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${status === 'pending' ? 'bg-amber-300' : status === 'accepted' ? 'bg-green-300' : 'bg-red-400'}`}
+                                                            className={`px-6 py-2.5 rounded-xl font-semibold capitalize text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${status === 'pending' ? 'bg-amber-300 dark:bg-amber-700' : status === 'accepted' ? 'bg-green-300 dark:bg-green-700' : 'bg-red-400 dark:bg-red-700'}`}
                                                         >
                                                             {status === 'pending' ? <Timer className="w-4 h-4" /> : <X className='w-4 h-4' />} {t('profile.request_status', { status: t(`profile.status.${status}`) })}
                                                         </button>
@@ -454,7 +454,7 @@ export const GroupeProfile = () => {
                                                                 }
                                                             }}
                                                             className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${followed
-                                                                ? 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
+                                                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700'
                                                                 : 'bg-[var(--special-purple)] text-white hover:opacity-90'
                                                                 }`}
                                                         >
@@ -464,8 +464,8 @@ export const GroupeProfile = () => {
                                                 }
                                                 <DropdownMenu
                                                     trigger={
-                                                        <button className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center">
-                                                            <MoreHorizontal className="w-5 h-5 text-indigo-600" />
+                                                        <button className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center">
+                                                            <MoreHorizontal className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                                                         </button>
                                                     }
                                                     items={postMenuItems}
@@ -476,20 +476,20 @@ export const GroupeProfile = () => {
                                 </div>
 
                                 <div>
-                                    <h1 className="text-2xl font-bold text-gray-900">{group?.name}</h1>
+                                    <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{group?.name}</h1>
                                     <div className='flex items-center gap-2 mt-1 mb-1'>
                                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold capitalize ${group?.visibility === 'private'
-                                            ? 'bg-amber-50 text-amber-700 border border-amber-200/60'
-                                            : 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
+                                            ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-700/50'
+                                            : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-700/50'
                                             }`}>
                                             {group?.visibility === 'private' ? <FaLock className="w-3 h-3" /> : <FaGlobe className="w-3 h-3" />}
                                             {t('profile.visibility_group', { visibility: group?.visibility === 'private' ? t('feed.private') : t('feed.public') })}
                                         </span>
                                     </div>
-                                    <p className='text-gray-500'>{group?.description}</p>
+                                    <p className='text-gray-500 dark:text-gray-400'>{group?.description}</p>
                                 </div>
 
-                                <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100 text-sm text-gray-600">
+                                <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 text-sm text-gray-600 dark:text-gray-400">
                                     <span className="flex items-center gap-1.5 font-medium cursor-pointer" onClick={() => openModal(`followers-group-${group?.id}`)}>
                                         <Users className="w-4 h-4 text-[var(--special-purple)]" />
                                         {group?.followers_count} {t('profile.followers')}
@@ -514,7 +514,7 @@ export const GroupeProfile = () => {
                                                 type="text"
                                                 placeholder={t('feed.whatsOnYourMind', { username: user?.username ?? '' })}
                                                 onChange={checkWrite}
-                                                className="w-full bg-gray-100/80 hover:bg-gray-100 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all rounded-full px-4 py-2.5 text-sm text-gray-800 outline-none border border-gray-200"
+                                                className="w-full bg-gray-100/80 dark:bg-gray-800/80 hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all rounded-full px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 outline-none border border-gray-200 dark:border-gray-700"
                                             />
                                             {
                                                 write && (
@@ -527,22 +527,22 @@ export const GroupeProfile = () => {
                                     </div>
                                 )
                             }
-                            <h2 className="text-xl font-bold text-gray-900 mb-4">{t('profile.group_posts')}</h2>
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">{t('profile.group_posts')}</h2>
                             {
                                 (!isJoined && group?.visibility === 'private') ? (
                                     <EmptyContent text={t('profile.private_group')} icon={<Lock />} />
                                 ) : (
                                     <>
-                                        <div className='flex space-x-2 border-b border-gray-100 pb-3 mb-3 mt-3'>
+                                        <div className='flex space-x-2 border-b border-gray-100 dark:border-gray-800 pb-3 mb-3 mt-3'>
                                             <button
                                                 onClick={() => setActiveTab('posts')}
-                                                className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'posts' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                                className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'posts' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
                                             >
                                                 {t('profile.posts')}
                                             </button>
                                             <button
                                                 onClick={() => setActiveTab('reels')}
-                                                className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'reels' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                                className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'reels' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
                                             >
                                                 {t('profile.reels')}
                                             </button>

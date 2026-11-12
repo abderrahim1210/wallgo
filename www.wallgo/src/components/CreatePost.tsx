@@ -241,22 +241,22 @@ const CreatePost = () => {
             </Helmet>
             <Navbar />
 
-            <div className="min-h-[calc(100vh-95px)] bg-gray-50 flex justify-center items-start p-4 pb-24 md:pb-8 relative">
+            <div className="min-h-[calc(100vh-95px)] bg-gray-50 dark:bg-gray-800 flex justify-center items-start p-4 pb-24 md:pb-8 relative">
                 {notification && (
-                    <div className="absolute top-6 z-50 bg-gray-900 text-white text-xs px-4 py-2 rounded-xl shadow-lg transition-all animate-bounce">
+                    <div className="absolute top-6 z-50 bg-gray-900 dark:bg-gray-800 text-white text-xs px-4 py-2 rounded-xl shadow-lg transition-all animate-bounce">
                         {notification}
                     </div>
                 )}
 
-                <div className="w-full max-w-xl bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mt-4">
-                    <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                        <h2 className="text-gray-900 font-bold text-base flex items-center space-x-2">
-                            <Sparkles className="w-5 h-5 text-blue-600" />
+                <div className="w-full max-w-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden mt-4">
+                    <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                        <h2 className="text-gray-900 dark:text-gray-100 font-bold text-base flex items-center space-x-2">
+                            <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                             <span>{t('feed.createNewPost')} {groupName ?? pageName ?? ''}</span>
                         </h2>
                         <button
                             onClick={() => navigate(-1)}
-                            className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors cursor-pointer"
                         >
                             <X className="w-5 h-5" />
                         </button>
@@ -267,24 +267,24 @@ const CreatePost = () => {
                             <img
                                 src={user?.avatar_url || '/icons/avatar1.svg'}
                                 alt={t('feed.userAvatar')}
-                                className="w-11 h-11 rounded-full object-cover border border-gray-200"
+                                className="w-11 h-11 rounded-full object-cover border border-gray-200 dark:border-gray-700"
                             />
                             <div>
-                                <h4 className="text-sm font-semibold text-gray-900">{user?.username}</h4>
+                                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{user?.username}</h4>
                                 <div className="flex items-center space-x-1 mt-0.5">
                                     <button
                                         type="button"
                                         onClick={() => setVisibility(visibility === 'public' ? 'private' : 'public')}
-                                        className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                                        className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
                                     >
                                         {visibility === 'public' ? (
                                             <>
-                                                <Globe className="w-3 h-3 text-blue-600" />
+                                                <Globe className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                                                 <span>{t('feed.public')}</span>
                                             </>
                                         ) : (
                                             <>
-                                                <Lock className="w-3 h-3 text-gray-600" />
+                                                <Lock className="w-3 h-3 text-gray-600 dark:text-gray-400" />
                                                 <span>{t('feed.private')}</span>
                                             </>
                                         )}
@@ -292,16 +292,16 @@ const CreatePost = () => {
                                     <button
                                         type="button"
                                         onClick={() => setPrivacy(privacy === 'regular' ? 'time_capsule' : 'regular')}
-                                        className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                                        className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
                                     >
                                         {privacy === 'regular' ? (
                                             <>
-                                                <Globe className="w-3 h-3 text-blue-600" />
+                                                <Globe className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                                                 <span>{t('feed.regular')}</span>
                                             </>
                                         ) : (
                                             <>
-                                                <Clock className="w-3 h-3 text-gray-600" />
+                                                <Clock className="w-3 h-3 text-gray-600 dark:text-gray-400" />
                                                 <span>{t('feed.timeCapsule')}</span>
                                             </>
                                         )}
@@ -311,21 +311,21 @@ const CreatePost = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => setType(type === 'normal' ? 'page' : type === 'page' ? 'group' : 'normal')}
-                                                className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                                                className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
                                             >
                                                 {type === 'normal' ? (
                                                     <>
-                                                        <User className="w-3 h-3 text-blue-600" />
+                                                        <User className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                                                         <span>{t('feed.normal')}</span>
                                                     </>
                                                 ) : type === 'page' ? (
                                                     <>
-                                                        <Flag className="w-3 h-3 text-gray-600" />
+                                                        <Flag className="w-3 h-3 text-gray-600 dark:text-gray-400" />
                                                         <span>{t('common.pages')}</span>
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <Users className="w-3 h-3 text-gray-600" />
+                                                        <Users className="w-3 h-3 text-gray-600 dark:text-gray-400" />
                                                         <span>{t('common.groups')}</span>
                                                     </>
                                                 )}
@@ -343,13 +343,13 @@ const CreatePost = () => {
                                 name='content'
                                 placeholder={t('feed.whatsOnYourMind', { username: user?.name ?? '' })}
                                 rows={4}
-                                className="w-full text-gray-900 text-xs md:text-sm placeholder-gray-400 focus:outline-none resize-none"
+                                className="w-full text-gray-900 dark:text-gray-100 text-xs md:text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none resize-none"
                             ></textarea>
                         </div>
 
                         {selectedImage && (
                             <div className="px-4 pb-3 relative">
-                                <div className="relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50 max-h-72 flex justify-center">
+                                <div className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 max-h-72 flex justify-center">
                                     <img src={selectedImage} alt={t('feed.imagePreview')} className="w-full h-full object-cover max-h-72" />
                                     <button
                                         type="button"
@@ -365,7 +365,7 @@ const CreatePost = () => {
 
                         <div className="relative px-4">
                             {showEmojiPicker && (
-                                <div className="absolute bottom-2 left-4 bg-white border border-gray-200 p-2.5 rounded-xl shadow-lg grid grid-cols-6 gap-2 z-20">
+                                <div className="absolute bottom-2 left-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-2.5 rounded-xl shadow-lg grid grid-cols-6 gap-2 z-20">
                                     {emojis.map((emoji, index) => (
                                         <button
                                             key={index}
@@ -380,8 +380,8 @@ const CreatePost = () => {
                             )}
                         </div>
 
-                        <div className="p-3 mx-4 mb-4 border border-gray-200 rounded-xl bg-gray-50 flex items-center justify-between">
-                            <span className="text-xs font-medium text-gray-500 pl-1">{t('feed.addToPost')}</span>
+                        <div className="p-3 mx-4 mb-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-between">
+                            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 pl-1">{t('feed.addToPost')}</span>
                             <div className="flex items-center space-x-2">
                                 <input
                                     type="file"
@@ -393,7 +393,7 @@ const CreatePost = () => {
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                                    className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg transition-colors cursor-pointer"
                                     title={t('feed.photoVideo')}
                                 >
                                     <Image className="w-5 h-5" />
@@ -401,7 +401,7 @@ const CreatePost = () => {
                                 <button
                                     type="button"
                                     onClick={() => showNotify(t('feed.videoComingSoon'))}
-                                    className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                    className="p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded-lg transition-colors cursor-pointer"
                                     title={t('feed.video')}
                                 >
                                     <Video className="w-5 h-5" />
@@ -409,7 +409,7 @@ const CreatePost = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                                    className="p-2 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer"
+                                    className="p-2 text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 rounded-lg transition-colors cursor-pointer"
                                     title={t('feed.feelingActivity')}
                                 >
                                     <Smile className="w-5 h-5" />
@@ -422,7 +422,7 @@ const CreatePost = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowCapsuleOptions(!showCapsuleOptions)}
-                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${showCapsuleOptions ? 'bg-purple-100 text-[var(--special-purple)]' : 'hover:bg-gray-100'}`}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${showCapsuleOptions ? 'bg-purple-100 dark:bg-purple-900/40 text-[var(--special-purple)]' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}`}
                                 >
                                     <Clock className="w-4 h-4" /> {t('feed.timeCapsule')}
                                 </button>
@@ -431,7 +431,7 @@ const CreatePost = () => {
 
 
 
-                        <div className="p-4 border-t border-gray-200 bg-gray-50/50 flex justify-end">
+                        <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 flex justify-end">
                             <LoadingButton loading={loading} type="submit">
                                 <Send className="w-4 h-4" />
                                 <span>{isEditMode ? t('feed.update') : t('feed.post')}</span>
@@ -440,25 +440,25 @@ const CreatePost = () => {
 
                         {
                             privacy === "time_capsule" && showCapsuleOptions && (
-                                <div className="mt-3 p-3 bg-purple-50/50 rounded-2xl border border-purple-100 space-y-3">
+                                <div className="mt-3 p-3 bg-purple-50/50 dark:bg-purple-950/35 rounded-2xl border border-purple-100 dark:border-purple-900/60 space-y-3">
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-600 mb-1">{t('feed.unlockTime')}</label>
-                                            <input onChange={handleChange} value={post?.unlock_time} type="datetime-local" name="unlock_time" className="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs bg-white outline-none" />
+                                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{t('feed.unlockTime')}</label>
+                                            <input onChange={handleChange} value={post?.unlock_time} type="datetime-local" name="unlock_time" className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs bg-white dark:bg-gray-900 outline-none" />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-600 mb-1">{t('feed.expiresAt')}</label>
-                                            <input onChange={handleChange} value={post?.expires_at} type="datetime-local" name="expires_at" className="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs bg-white outline-none" />
+                                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{t('feed.expiresAt')}</label>
+                                            <input onChange={handleChange} value={post?.expires_at} type="datetime-local" name="expires_at" className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs bg-white dark:bg-gray-900 outline-none" />
                                         </div>
                                     </div>
                                 </div>
                             )
                         }
 
-                        <div className="mt-3 p-3 bg-purple-50/50 rounded-2xl border border-purple-100 space-y-3">
+                        <div className="mt-3 p-3 bg-purple-50/50 dark:bg-purple-950/35 rounded-2xl border border-purple-100 dark:border-purple-900/60 space-y-3">
                             <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-1">{t('feed.scheduleTimeOptional')}</label>
-                                <input onChange={handleChange} value={post?.schedule_time} type="datetime-local" name="schedule_time" className="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs bg-white outline-none" />
+                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{t('feed.scheduleTimeOptional')}</label>
+                                <input onChange={handleChange} value={post?.schedule_time} type="datetime-local" name="schedule_time" className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs bg-white dark:bg-gray-900 outline-none" />
                             </div>
                         </div>
 
@@ -469,7 +469,7 @@ const CreatePost = () => {
                                         <select
                                             name='postable_id'
                                             onChange={handleChange}
-                                            className="w-full appearance-none bg-gray-50 border border-gray-200 hover:border-gray-300 text-gray-700 text-xs rounded-xl px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer shadow-sm"
+                                            className="w-full appearance-none bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300 text-xs rounded-xl px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 transition-all cursor-pointer shadow-sm"
                                         >
                                             <option value="">{t('feed.selectPage')}</option>
                                             {pages.map((page: any) => (
@@ -478,7 +478,7 @@ const CreatePost = () => {
                                                 </option>
                                             ))}
                                         </select>
-                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500 dark:text-gray-400">
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                                             </svg>
@@ -495,7 +495,7 @@ const CreatePost = () => {
                                         <select
                                             name='postable_id'
                                             onChange={handleChange}
-                                            className="w-full appearance-none bg-gray-50 border border-gray-200 hover:border-gray-300 text-gray-700 text-xs rounded-xl px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer shadow-sm"
+                                            className="w-full appearance-none bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300 text-xs rounded-xl px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 transition-all cursor-pointer shadow-sm"
                                         >
                                             <option value="">{t('feed.selectGroup')}</option>
                                             {groups.map((group: any) => (
@@ -504,7 +504,7 @@ const CreatePost = () => {
                                                 </option>
                                             ))}
                                         </select>
-                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500 dark:text-gray-400">
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                                             </svg>

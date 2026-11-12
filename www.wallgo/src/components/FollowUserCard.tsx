@@ -21,15 +21,15 @@ const FollowUserCard: React.FC<FollowUserCardProps> = ({ user }) => {
     return (
         <div
             key={user.id}
-            className="min-w-[150px] sm:min-w-[170px] md:max-w-[160px] bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col items-center text-center snap-start shrink-0"
+            className="min-w-[150px] sm:min-w-[170px] md:max-w-[160px] bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-800 rounded-xl p-3 flex flex-col items-center text-center snap-start shrink-0"
         >
             <img
                 src={user.avatar_url || 'https://via.placeholder.com/150'}
                 alt={user.name}
                 className="w-12 h-12 rounded-full object-cover mb-2 border border-white shadow-sm"
             />
-            <h4 className="text-xs font-bold text-gray-800 truncate w-full cursor-pointer" onClick={() => navigate(`/profile/${user?.id}/${user?.username}`)}>{user.name}</h4>
-            <span className="text-[10px] text-gray-400 truncate w-full mb-3">@{user.username}</span>
+            <h4 className="text-xs font-bold text-gray-800 dark:text-gray-200 truncate w-full cursor-pointer" onClick={() => navigate(`/profile/${user?.id}/${user?.username}`)}>{user.name}</h4>
+            <span className="text-[10px] text-gray-400 dark:text-gray-500 truncate w-full mb-3">@{user.username}</span>
 
             <button
                 onClick={() => addFollow(user?.id)}

@@ -86,7 +86,7 @@ const NotificationsView = () => {
                             <h1 className='font-bold text-3xl flex items-center gap-2'><Bell className='w-8 h-8 text-[var(--special-purple)]' /> {t('notifications.title')} <span className='text-[var(--special-purple)]'>({notifications.length})</span></h1>
                         </div>
 
-                        <div className="px-4 py-3 border-b border-gray-100 flex items-center bg-white">
+                        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center bg-white dark:bg-gray-900">
                             <button onClick={handleReadAll} className="text-sm text-[var(--special-purple)] hover:underline font-medium flex items-center gap-1">
                                 <FiCheck className="w-3.5 h-3.5" /> {t('notifications.markAllRead')}
                             </button>
@@ -97,7 +97,7 @@ const NotificationsView = () => {
                                     <NotificationCard notif={notif} key={notif.id} />
                                 ))
                             ) : (
-                                <div className="py-8 text-center text-gray-400 text-sm">
+                                <div className="py-8 text-center text-gray-400 dark:text-gray-500 text-sm">
                                     {t('notifications.empty')}
                                 </div>
                             )}

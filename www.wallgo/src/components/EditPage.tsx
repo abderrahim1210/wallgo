@@ -139,23 +139,23 @@ export const EditPage = () => {
 
                         <div className="flex justify-between items-center mb-6">
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-900">{t('pageForm.editTitle', { entity })}</h1>
-                                <p className="text-sm text-gray-500">{t('pageForm.editDescription', { entity })}</p>
+                                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('pageForm.editTitle', { entity })}</h1>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">{t('pageForm.editDescription', { entity })}</p>
                             </div>
                             <Link
                                 to={`/${type}`}
-                                className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-medium transition"
+                                className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium transition"
                             >
                                 <FaTimes className="w-4 h-4" /> {t('common.cancel')}
                             </Link>
                         </div>
 
-                        <div className="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden p-6 md:p-8 space-y-6">
+                        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl shadow-sm overflow-hidden p-6 md:p-8 space-y-6">
 
                             <div className="space-y-4">
-                                <label className="block text-sm font-semibold text-gray-700">{t('pageForm.bannerAndLogo', { entity })}</label>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">{t('pageForm.bannerAndLogo', { entity })}</label>
 
-                                <div className={`relative h-40 md:h-52 w-full rounded-2xl overflow-hidden bg-gray-100 border border-gray-200 group`}>
+                                <div className={`relative h-40 md:h-52 w-full rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 group`}>
                                     <img src={bannerPreview || formData?.banner_url || '/backgrounds/users_banner.svg'} alt={t('pageForm.bannerAlt')} className="w-full h-full object-cover" />
                                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
                                         <button onClick={() => bannerRef.current?.click()} className="flex items-center gap-2 text-white text-sm font-medium bg-black/50 px-4 py-2 rounded-xl backdrop-blur-sm">
@@ -174,7 +174,7 @@ export const EditPage = () => {
                                 </div>
 
                                 <div className="flex items-center gap-4 pt-2">
-                                    <div className="relative w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-md bg-gray-100 group shrink-0">
+                                    <div className="relative w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-md bg-gray-100 dark:bg-gray-800 group shrink-0">
                                         <img src={logoPreview || formData?.logo_url || '/icons/users.svg'} alt={t('pageForm.logoAlt')} className="w-full h-full object-cover" />
                                         <div onClick={() => logoRef.current?.click()} className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
                                             <FaCamera className="text-white w-4 h-4" />
@@ -184,7 +184,7 @@ export const EditPage = () => {
                                         <button type="button" onClick={() => logoRef.current?.click()} className="text-sm font-medium text-[var(--special-purple)] hover:underline">
                                             {t('pageForm.uploadLogo')}
                                         </button>
-                                        <p className="text-xs text-gray-400 mt-0.5">{t('pageForm.imageRequirements')}</p>
+                                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{t('pageForm.imageRequirements')}</p>
                                     </div>
                                     <input
                                         type="file"
@@ -198,41 +198,41 @@ export const EditPage = () => {
                                 </div>
                             </div>
 
-                            <hr className="border-gray-100" />
+                            <hr className="border-gray-100 dark:border-gray-800" />
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
                                 <div className='md:col-span-2'>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('pageForm.name')}</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('pageForm.name')}</label>
                                     <input
                                         type="text"
                                         value={formData?.name}
                                         onChange={handleChange}
                                         name='name'
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 dark:bg-gray-800/50"
                                     />
                                 </div>
 
                                 <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('pageForm.description')}</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('pageForm.description')}</label>
                                     <textarea
                                         rows={3}
                                         value={formData?.description}
                                         onChange={handleChange}
                                         name='description'
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 resize-none"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 dark:bg-gray-800/50 resize-none"
                                     />
                                 </div>
 
                                 {
                                     formData?.category && (
                                         <div className="md:col-span-2">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('pageForm.category')}</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('pageForm.category')}</label>
                                             <select
                                                 value={formData?.category}
                                                 onChange={handleChange}
                                                 name='category'
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 capitalize"
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 dark:bg-gray-800/50 capitalize"
                                             >
                                                 <option value="">{t('pageForm.chooseCategory')}</option>
                                                 <option value="technology">{t('pageForm.categories.technology')}</option>
@@ -249,12 +249,12 @@ export const EditPage = () => {
                                 {
                                     formData?.visibility && (
                                         <div className="md:col-span-2">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('pageForm.visibility')}</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('pageForm.visibility')}</label>
                                             <select
                                                 value={formData?.visibility}
                                                 onChange={handleChange}
                                                 name='visibility'
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 capitalize"
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 dark:bg-gray-800/50 capitalize"
                                             >
                                                 <option value="">{t('pageForm.selectVisibility')}</option>
                                                 <option value="public">{t('pageForm.public')}</option>
@@ -266,10 +266,10 @@ export const EditPage = () => {
 
                             </div>
 
-                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
                                 <Link
                                     to="/account/profile"
-                                    className="px-6 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-700 text-sm font-medium transition"
+                                    className="px-6 py-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium transition"
                                 >
                                     {t('common.cancel')}
                                 </Link>

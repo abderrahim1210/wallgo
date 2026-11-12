@@ -32,20 +32,20 @@ export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport
     const { t } = useTranslation();
     const isAuthorGroup = user?.id === reelable?.owner_id;
     return (
-        <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-3 w-full border border-gray-100 transform transition-all animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between pb-3 px-3 border-b border-gray-100">
-                <h3 className="font-bold text-[20px] text-gray-900 tracking-wide">{t('reelOptions.title')}</h3>
-                <div className="flex items-center justify-between px-4 py-3 gap-5 border-b border-gray-100 text-sm text-gray-600">
+        <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl p-3 w-full border border-gray-100 dark:border-gray-800 transform transition-all animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-3 px-3 border-b border-gray-100 dark:border-gray-800">
+                <h3 className="font-bold text-[20px] text-gray-900 dark:text-gray-100 tracking-wide">{t('reelOptions.title')}</h3>
+                <div className="flex items-center justify-between px-4 py-3 gap-5 border-b border-gray-100 dark:border-gray-800 text-sm text-gray-600 dark:text-gray-400">
                     <div className="flex items-center space-x-2">
-                        <Eye className="w-4 h-4 text-gray-500" />
+                        <Eye className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                         <span>{t('reelOptions.views', { count: reel_views || 0 })}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <Heart className="w-4 h-4 text-gray-500" />
+                        <Heart className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                         <span>{t('reelOptions.likes', { count: likes_count || 0 })}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <MessageCircle className="w-4 h-4 text-gray-500" />
+                        <MessageCircle className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                         <span>{t('reelOptions.comments', { count: comments_count || 0 })}</span>
                     </div>
                 </div>
@@ -59,10 +59,10 @@ export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport
                                 navigate(`/reel/${reel_id}/edit`);
                                 closeModal?.();
                             }}
-                            className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-[var(--special-purple)] transition-all cursor-pointer group"
+                            className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:text-[var(--special-purple)] transition-all cursor-pointer group"
                         >
-                            <div className="p-2 rounded-lg bg-gray-50 group-hover:bg-purple-100 transition-colors">
-                                <Edit3 className="w-4 h-4 text-emerald-500" />
+                            <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/40 transition-colors">
+                                <Edit3 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                             </div>
                             <span>{t('reelOptions.edit')}</span>
                         </button>
@@ -73,20 +73,20 @@ export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport
                         navigator.clipboard.writeText(`${window.location.origin}/reel/${reel_id}`);
                         toast.success(t('feed.linkCopied'));
                     }}
-                    className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-[var(--special-purple)] transition-all cursor-pointer group"
+                    className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:text-[var(--special-purple)] transition-all cursor-pointer group"
                 >
-                    <div className="p-2 rounded-lg bg-gray-50 group-hover:bg-purple-100 transition-colors">
-                        <Copy className="w-4 h-4 text-blue-500" />
+                    <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/40 transition-colors">
+                        <Copy className="w-4 h-4 text-blue-500 dark:text-blue-400" />
                     </div>
                     <span>{t('feed.copyLink')}</span>
                 </button>
 
                 <button
                     onClick={handleSavePost}
-                    className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-[var(--special-purple)] transition-all cursor-pointer group"
+                    className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:text-[var(--special-purple)] transition-all cursor-pointer group"
                 >
-                    <div className="p-2 rounded-lg bg-gray-50 group-hover:bg-purple-100 transition-colors">
-                        <BookmarkPlus className="w-4 h-4 text-amber-500" />
+                    <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/40 transition-colors">
+                        <BookmarkPlus className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                     </div>
                     <span>{saved ? t('reelOptions.removeSaved') : t('reelOptions.save')} {t('common.reels')}</span>
                 </button>
@@ -95,10 +95,10 @@ export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport
                     onClick={() => {
                         toast.success(t('reelOptions.lessLikeThis'));
                     }}
-                    className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-all cursor-pointer group"
+                    className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all cursor-pointer group"
                 >
-                    <div className="p-2 rounded-lg bg-gray-50 group-hover:bg-gray-200 transition-colors">
-                        <EyeOff className="w-4 h-4 text-gray-500" />
+                    <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-gray-200 dark:group-hover:bg-gray-700 transition-colors">
+                        <EyeOff className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                     </div>
                     <span>{t('reelOptions.notInterested')}</span>
                 </button>
@@ -110,10 +110,10 @@ export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport
                                 closeModal?.();
                                 setOpenReport(true);
                             }}
-                            className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition-all cursor-pointer group"
+                            className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-all cursor-pointer group"
                         >
-                            <div className="p-2 rounded-lg bg-red-50 group-hover:bg-red-100 transition-colors">
-                                <Flag className="w-4 h-4 text-red-500" />
+                            <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/40 group-hover:bg-red-100 dark:group-hover:bg-red-900/40 transition-colors">
+                                <Flag className="w-4 h-4 text-red-500 dark:text-red-400" />
                             </div>
                             <span>{t('reelOptions.report')}</span>
                         </button>
@@ -124,10 +124,10 @@ export const ReelOptions: React.FC<ReelOptionsProps> = ({ reel_id, setOpenReport
                     (is_owner || isAuthorGroup) && (
                         <button
                             onClick={handleDeleteReel}
-                            className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-red-600 hover:bg-purple-50 hover:text-[var(--special-purple)] transition-all cursor-pointer group"
+                            className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:text-[var(--special-purple)] transition-all cursor-pointer group"
                         >
-                            <div className="p-2 rounded-lg bg-gray-50 group-hover:bg-purple-100 transition-colors">
-                                <Trash2 className="w-4 h-4 text-red-500" />
+                            <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/40 transition-colors">
+                                <Trash2 className="w-4 h-4 text-red-500 dark:text-red-400" />
                             </div>
                             <span>{t('reelOptions.delete')}</span>
                         </button>

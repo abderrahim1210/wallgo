@@ -28,7 +28,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({ notif }) => 
                 navigate(notif.data.link);
                 handleRead(notif.id);
             }}
-            className={`p-3.5 flex items-start gap-3 transition-colors hover:bg-gray-50 cursor-pointer ${!notif.read_at ? 'bg-purple-50/50' : 'bg-white'
+            className={`p-3.5 flex items-start gap-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer ${!notif.read_at ? 'bg-purple-50/50 dark:bg-purple-950/35' : 'bg-white dark:bg-gray-900'
                 }`}
         >
             <div className="relative shrink-0">
@@ -51,10 +51,10 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({ notif }) => 
             </div>
 
             <div className="flex-1 min-w-0">
-                <p className="text-xs sm:text-sm text-gray-800 leading-snug">
+                <p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 leading-snug">
                     <span className="font-semibold">{notif.data.user_name}</span> {notif.data.message} {notif?.data?.comment_content && `"${notif.data.comment_content}"`}
                 </p>
-                <span className="text-[11px] text-gray-400 mt-1 block">{moment(notif.created_at).fromNow()}</span>
+                <span className="text-[11px] text-gray-400 dark:text-gray-500 mt-1 block">{moment(notif.created_at).fromNow()}</span>
             </div>
 
             {!notif.read_at && (

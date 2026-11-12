@@ -95,11 +95,11 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
                 <div
                     ref={menuRef}
                     style={{ top: `${coords.top}px`, left: `${coords.left}px` }}
-                    className="fixed z-[9999] w-48 bg-white border border-gray-100 rounded-xl shadow-2xl py-1.5"
+                    className="fixed z-[9999] w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-2xl py-1.5"
                 >
                     {items.map((item, index) => (
                         <button key={index} onClick={() => { item.onClick(); setIsOpen(false); }}
-                            className={`w-full cursor-pointer flex items-center space-x-2.5 px-4 py-2.5 text-xs font-medium transition-colors ${item.danger ? 'text-red-600 hover:bg-red-50' : 'text-gray-700 hover:bg-gray-50'}`}>
+                            className={`w-full cursor-pointer flex items-center space-x-2.5 px-4 py-2.5 text-xs font-medium transition-colors ${item.danger ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
                             {item.icon && <span className="w-4 h-4">{item.icon}</span>}
                             <span>{item.label}</span>
                         </button>

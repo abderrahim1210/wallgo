@@ -63,7 +63,7 @@ export const Groups = () => {
                                 <span>{t('auth.back')}</span>
                             </button>
                             <div className='flex justify-start items-center gap-2'>
-                                <h1 className='font-bold text-3xl flex items-center gap-2'><FaUsers className='w-8 h-8 text-[var(--special-purple)]' /> {t('groupsPages.your_groups')} <span className='text-[var(--special-purple)]'>({groups?.length ?? 0})</span></h1><button onClick={() => navigate('/group/create')} className='text-[var(--special-white)] bg-[var(--special-purple)] font-bold px-4 hover:bg-indigo-100 hover:text-[var(--special-purple)] rounded-full transition-all cursor-pointer flex'>{t('groupsPages.new_group')} <PlusIcon /></button>
+                                <h1 className='font-bold text-3xl flex items-center gap-2'><FaUsers className='w-8 h-8 text-[var(--special-purple)]' /> {t('groupsPages.your_groups')} <span className='text-[var(--special-purple)]'>({groups?.length ?? 0})</span></h1><button onClick={() => navigate('/group/create')} className='text-[var(--special-white)] bg-[var(--special-purple)] font-bold px-4 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 hover:text-[var(--special-purple)] rounded-full transition-all cursor-pointer flex'>{t('groupsPages.new_group')} <PlusIcon /></button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-3">
                                 {
@@ -77,7 +77,7 @@ export const Groups = () => {
                                 }
                             </div>
                         </div>
-                        <hr className="border-gray-200 my-8" />
+                        <hr className="border-gray-200 dark:border-gray-700 my-8" />
                         <div className='px-4 py-6'>
                             <div className='flex justify-start items-center'>
                                 <h1 className='font-bold text-3xl flex items-center gap-2'><FaUsers className='w-8 h-8 text-[var(--special-purple)]' /> {t('groupsPages.suggested_groups')} <span className='text-[var(--special-purple)]'>({suggestedGroups?.length ?? 0})</span></h1>

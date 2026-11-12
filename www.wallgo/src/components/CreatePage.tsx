@@ -90,30 +90,30 @@ export const CreatePage = () => {
                 <div className="flex items-center gap-3 mb-6">
                     <button
                         onClick={() => navigate(-1)}
-                        className="p-2 hover:bg-gray-100 rounded-full transition text-gray-600 cursor-pointer"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition text-gray-600 dark:text-gray-400 cursor-pointer"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                         <PlusCircle className="w-7 h-7 text-[var(--special-purple)]" />
                         {t('pageForm.createTitle', { entity })}
                     </h1>
                 </div>
 
-                <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-6">
+                <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 space-y-6">
                     {error && (
-                        <div className="bg-red-50 text-red-600 text-xs sm:text-sm p-3 rounded-xl border border-red-100">
+                        <div className="bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 text-xs sm:text-sm p-3 rounded-xl border border-red-100 dark:border-red-900/60">
                             {error}
                         </div>
                     )}
 
                     <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-2">{t('pageForm.coverPhoto')}</label>
-                        <div className="relative h-40 w-full bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl overflow-hidden flex items-center justify-center hover:border-[var(--special-purple)] transition">
+                        <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('pageForm.coverPhoto')}</label>
+                        <div className="relative h-40 w-full bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden flex items-center justify-center hover:border-[var(--special-purple)] transition">
                             {data?.banner_url ? (
                                 <img src={typeof data.banner_url === 'object' ? URL.createObjectURL(data.banner_url) : data.banner_url} alt={t('pageForm.coverAlt')} className="w-full h-full object-cover" />
                             ) : (
-                                <div className="text-center text-gray-400 flex flex-col items-center gap-1">
+                                <div className="text-center text-gray-400 dark:text-gray-500 flex flex-col items-center gap-1">
                                     <ImageIcon className="w-8 h-8" />
                                     <span className="text-xs">{t('pageForm.clickToUploadCover')}</span>
                                 </div>
@@ -129,12 +129,12 @@ export const CreatePage = () => {
                     </div>
 
                     <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-2">{t('pageForm.pageAvatar')}</label>
-                        <div className="relative w-20 h-20 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl overflow-hidden flex items-center justify-center hover:border-[var(--special-purple)] transition">
+                        <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('pageForm.pageAvatar')}</label>
+                        <div className="relative w-20 h-20 bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden flex items-center justify-center hover:border-[var(--special-purple)] transition">
                             {data?.logo_url ? (
                                 <img src={typeof data.logo_url === 'object' ? URL.createObjectURL(data.logo_url) : data.logo_url} alt={t('pageForm.avatarAlt')} className="w-full h-full object-cover" />
                             ) : (
-                                <Camera className="w-6 h-6 text-gray-400" />
+                                <Camera className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                             )}
                             <input
                                 type="file"
@@ -147,14 +147,14 @@ export const CreatePage = () => {
                     </div>
 
                     <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1">{t('pageForm.nameRequired', { entity })}</label>
+                        <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{t('pageForm.nameRequired', { entity })}</label>
                         <input
                             type="text"
                             name='name'
                             value={data?.name}
                             onChange={handleChange}
                             placeholder={t('pageForm.namePlaceholder')}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white transition"
+                            className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white dark:focus:bg-gray-900 transition"
                             required
                         />
                     </div>
@@ -162,12 +162,12 @@ export const CreatePage = () => {
                     {
                         currentBranch === 'Page' ? (
                             <div>
-                                <label className="block text-xs font-semibold text-gray-700 mb-1">{t('pageForm.category')} *</label>
+                                <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{t('pageForm.category')} *</label>
                                 <select
                                     name='category'
                                     value={data?.category}
                                     onChange={handleChange}
-                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white transition cursor-pointer"
+                                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white dark:focus:bg-gray-900 transition cursor-pointer"
                                     required
                                 >
                                     <option value="">{t('pageForm.chooseCategory')}</option>
@@ -181,12 +181,12 @@ export const CreatePage = () => {
                             </div>
                         ) : (
                             <div>
-                                <label className="block text-xs font-semibold text-gray-700 mb-1">{t('pageForm.type')}</label>
+                                <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{t('pageForm.type')}</label>
                                 <select
                                     name='visibility'
                                     value={data?.visibility}
                                     onChange={handleChange}
-                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white transition cursor-pointer"
+                                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white dark:focus:bg-gray-900 transition cursor-pointer"
                                     required
                                 >
                                     <option value="">{t('pageForm.selectType')}</option>
@@ -198,28 +198,28 @@ export const CreatePage = () => {
                     }
 
                     <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1">{t('pageForm.descriptionOptional')}</label>
+                        <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{t('pageForm.descriptionOptional')}</label>
                         <textarea
                             name='description'
                             value={data?.description}
                             onChange={handleChange}
                             rows={3}
                             placeholder={t('pageForm.descriptionPlaceholder', { entity })}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white transition resize-none"
+                            className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white dark:focus:bg-gray-900 transition resize-none"
                         />
                     </div>
 
                     {
                         currentBranch === 'Group' && (
                             <div>
-                                <label className="block text-xs font-semibold text-gray-700 mb-1">{t('pageForm.question')}</label>
+                                <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{t('pageForm.question')}</label>
                                 <textarea
                                     name='question'
                                     value={data?.question}
                                     onChange={handleChange}
                                     rows={3}
                                     placeholder={t('pageForm.questionPlaceholder')}
-                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white transition resize-none"
+                                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[var(--special-purple)] focus:bg-white dark:focus:bg-gray-900 transition resize-none"
                                 />
                             </div>
                         )

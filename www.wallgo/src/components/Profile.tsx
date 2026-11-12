@@ -4,7 +4,7 @@ import { FaCalendarAlt, FaCamera, FaEnvelope, FaGlobe, FaMapMarkerAlt, FaPhone, 
 import { PostGrid, type Post } from '../templates/PostGrid'
 import { Helmet } from 'react-helmet-async'
 import { FiCalendar, FiHeart, FiMapPin } from 'react-icons/fi'
-import { Edit3, Flag, Link, MoreHorizontal, Pencil, PlusSquare, Settings, Share, Share2, Trash2, Users, VenusAndMars } from 'lucide-react'
+import { Edit3, FileText, Flag, Link, Lock, MoreHorizontal, Pencil, PlusSquare, Settings, Share, Share2, Trash2, Users, VenusAndMars } from 'lucide-react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import ModalTemplate from '../templates/ModalTemplate'
 import { useModal } from '../hooks/ModalProvider'
@@ -37,6 +37,7 @@ interface User {
     gender?: string;
     location?: string;
     is_following?: boolean;
+    visibility: string;
 }
 
 
@@ -118,13 +119,13 @@ export const Profile = () => {
     const postMenuItems: DropdownItem[] = [
         {
             label: t('profile.share_profile'),
-            icon: <Share2 className="w-4 h-4 text-blue-500" />,
+            icon: <Share2 className="w-4 h-4 text-blue-500 dark:text-blue-400" />,
             onClick: () => openModal(`share-${profile?.id}`),
         },
 
         {
             label: t('profile.report_profile'),
-            icon: <Flag className="w-4 h-4 text-red-500" />,
+            icon: <Flag className="w-4 h-4 text-red-500 dark:text-red-400" />,
             danger: true,
             onClick: () => openModal(`report-${profile?.id}`),
         },
@@ -186,9 +187,9 @@ export const Profile = () => {
                     </div>
                 ) : (
                     <div className="max-w-4xl mx-auto px-4 py-8 pb-20">
-                        <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+                        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm">
                             {
-                                <div className="h-48 md:h-60 w-full rounded-xl overflow-hidden relative bg-gray-200">
+                                <div className="h-48 md:h-60 w-full rounded-xl overflow-hidden relative bg-gray-200 dark:bg-gray-700">
                                     <img
                                         src={profile?.banner_url ?? '/backgrounds/user_banner.svg'}
                                         alt={t('common.profileBanner')}
@@ -203,13 +204,13 @@ export const Profile = () => {
                                         <img
                                             src={profile?.avatar_url ?? '/icons/avatar1.svg'}
                                             alt={t('common.avatar')}
-                                            className="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover border-4 border-white shadow-md bg-white"
+                                            className="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover border-4 border-white shadow-md bg-white dark:bg-gray-900"
                                         />
                                         <div className="">
-                                            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                                            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                                                 {profile?.name}
                                             </h1>
-                                            <p className="text-sm font-medium text-gray-500">@{profile?.username}</p>
+                                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">@{profile?.username}</p>
                                         </div>
                                     </div>
                                     {
@@ -217,42 +218,42 @@ export const Profile = () => {
                                             <div className='gap-1 flex  '>
                                                 <button
                                                     onClick={() => navigate('/account/edit')}
-                                                    className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                                    className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"
                                                     title={t('profile.edit_account')}
                                                 >
                                                     <Pencil className='w-5 h-5 text-[var(--special-purple)]' />
                                                 </button>
                                                 <button
                                                     onClick={() => navigate('/create_post')}
-                                                    className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                                    className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"
                                                     title={t('profile.create_post_for_profile')}
                                                 >
-                                                    <PlusSquare className='w-5 h-5 text-indigo-600' />
+                                                    <PlusSquare className='w-5 h-5 text-indigo-600 dark:text-indigo-400' />
                                                 </button>
                                                 <button
                                                     onClick={() => {
                                                         openModal('pages')
                                                         navigate('/settings');
                                                     }}
-                                                    className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                                    className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"
                                                     title={t('profile.settings')}
                                                 >
-                                                    <Settings className='w-5 h-5 text-indigo-600' />
+                                                    <Settings className='w-5 h-5 text-indigo-600 dark:text-indigo-400' />
                                                 </button>
                                             </div>
                                         ) : (
                                             <div className="flex items-center gap-3">
-                                                <button onClick={() => set_follow(Number(id))} className={`flex items-center justify-center gap-2 px-6 py-2.5 ${follow ? 'bg-fuchsia-50 border border-[var(--special-purple)] text-[var(--special-purple)]' : 'bg-[var(--special-purple)] text-white'} hover:opacity-90  rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0`}>
+                                                <button onClick={() => set_follow(Number(id))} className={`flex items-center justify-center gap-2 px-6 py-2.5 ${follow ? 'bg-fuchsia-50 dark:bg-fuchsia-950/40 border border-[var(--special-purple)] text-[var(--special-purple)]' : 'bg-[var(--special-purple)] text-white'} hover:opacity-90  rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0`}>
                                                     <span>{follow ? t('profile.followed') : t('profile.follow')}</span>
                                                 </button>
 
-                                                <button className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0">
+                                                <button className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0">
                                                     <span>{t('profile.message')}</span>
                                                 </button>
                                                 <DropdownMenu
                                                     trigger={
-                                                        <button className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center">
-                                                            <MoreHorizontal className="w-5 h-5 text-indigo-600" />
+                                                        <button className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center">
+                                                            <MoreHorizontal className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                                                         </button>
                                                     }
                                                     items={postMenuItems}
@@ -262,26 +263,26 @@ export const Profile = () => {
 
                                 </div>
 
-                                <p className="text-gray-600 text-sm max-w-2xl mb-6">
+                                <p className="text-gray-600 dark:text-gray-400 text-sm max-w-2xl mb-6">
                                     {profile?.bio}
                                 </p>
 
-                                <div className="flex items-center gap-6 py-4 border-y border-gray-100 mb-6 text-sm">
+                                <div className="flex items-center gap-6 py-4 border-y border-gray-100 dark:border-gray-800 mb-6 text-sm">
                                     <div>
-                                        <span className="font-bold text-gray-900 text-base">{posts_list.length}</span> <span className="text-gray-500">{t('profile.posts')}</span>
+                                        <span className="font-bold text-gray-900 dark:text-gray-100 text-base">{posts_list.length}</span> <span className="text-gray-500 dark:text-gray-400">{t('profile.posts')}</span>
                                     </div>
                                     <div>
-                                        <span className="font-bold text-gray-900 text-base cursor-pointer" onClick={() => openModal('followers')}>{stats?.followers_count} </span><span className="text-gray-500">{t('profile.followers')}</span>
+                                        <span className="font-bold text-gray-900 dark:text-gray-100 text-base cursor-pointer" onClick={() => openModal('followers')}>{stats?.followers_count} </span><span className="text-gray-500 dark:text-gray-400">{t('profile.followers')}</span>
                                     </div>
                                     <div>
-                                        <span className="font-bold text-gray-900 text-base cursor-pointer" onClick={() => openModal('followings')}>{stats?.followings_count} </span> <span className="text-gray-500">{t('profile.following')}</span>
+                                        <span className="font-bold text-gray-900 dark:text-gray-100 text-base cursor-pointer" onClick={() => openModal('followings')}>{stats?.followings_count} </span> <span className="text-gray-500 dark:text-gray-400">{t('profile.following')}</span>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-400">
                                     {
                                         profile?.location && (
-                                            <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                            <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
                                                 <FiMapPin className="text-[var(--special-purple)] w-5 h-5" />
                                                 <span>{profile.location}</span>
                                             </div>
@@ -290,7 +291,7 @@ export const Profile = () => {
 
                                     {
                                         profile?.birth && (
-                                            <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                            <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
                                                 <FiCalendar className="text-[var(--special-purple)] w-5 h-5" />
                                                 <span>{t('profile.born_on', { date: profile.birth })}</span>
                                             </div>
@@ -299,7 +300,7 @@ export const Profile = () => {
 
                                     {
                                         profile?.status && (
-                                            <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                            <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
                                                 <FiHeart className="text-[var(--special-purple)] w-5 h-5" />
                                                 <span className='capitalize'>{t(`editProfile.${profile.status}`)}</span>
                                             </div>
@@ -307,7 +308,7 @@ export const Profile = () => {
                                     }
                                     {
                                         profile?.gender && (
-                                            <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                            <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
                                                 <FaVenusMars className="text-[var(--special-purple)] w-5 h-5" />
                                                 <span className="capitalize">{t(`editProfile.${profile.gender}`)}</span>
                                             </div>
@@ -321,7 +322,13 @@ export const Profile = () => {
                                 !posts_list ? (
                                     <Spinner text={t('profile.wait_for_posts')} type='mini' />
                                 ) : (
-                                    <PostGrid isLoading={postsLoading} posts={posts_list} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} />
+                                    posts_list?.length > 0 ? (
+                                        <PostGrid isLoading={postsLoading} posts={posts_list} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} />
+                                    ) : (profile?.visibility === 'private' && user?.id !== profile?.id) ? (
+                                        <EmptyContent icon={<Lock />} text={t('auth.account_private')} />
+                                    ) : (
+                                        <EmptyContent icon={<FileText />} text={t('feed.noPostsYet')} />
+                                    )
                                 )
                             }
                         </div>

@@ -97,33 +97,33 @@ export const Messenger = () => {
     return (
         <>
             <Navbar />
-            <div className="min-h-[calc(100vh-95px)] bg-gray-50 flex justify-center items-center p-0 md:p-4 pb-10 md:pb-4 relative">
+            <div className="min-h-[calc(100vh-95px)] bg-gray-50 dark:bg-gray-800 flex justify-center items-center p-0 md:p-4 pb-10 md:pb-4 relative">
                 <Helmet>
                     <title>{t('messenger.title')}</title>
                 </Helmet>
 
                 {notification && (
-                    <div className="absolute top-6 z-50 bg-gray-900 text-white text-xs px-4 py-2 rounded-xl shadow-lg transition-all animate-bounce">
+                    <div className="absolute top-6 z-50 bg-gray-900 dark:bg-gray-800 text-white text-xs px-4 py-2 rounded-xl shadow-lg transition-all animate-bounce">
                         {notification}
                     </div>
                 )}
 
-                <div className="w-full max-w-5xl h-full md:h-[90vh] bg-white border border-gray-200 md:rounded-2xl flex overflow-hidden shadow-sm relative">
+                <div className="w-full max-w-5xl h-full md:h-[90vh] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 md:rounded-2xl flex overflow-hidden shadow-sm relative">
 
-                    <div className={`w-full md:w-80 border-r border-gray-200 flex flex-col bg-white ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
-                        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-                            <h2 className="text-gray-900 font-bold text-lg">{t('messenger.title')}</h2>
+                    <div className={`w-full md:w-80 border-r border-gray-200 dark:border-gray-700 flex flex-col bg-white dark:bg-gray-900 ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
+                        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                            <h2 className="text-gray-900 dark:text-gray-100 font-bold text-lg">{t('messenger.title')}</h2>
                         </div>
 
                         <div className="p-3">
                             <div className="relative">
-                                <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                                <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400 dark:text-gray-500" />
                                 <input
                                     type="text"
                                     value={term}
                                     onChange={handleChange}
                                     placeholder={t('messenger.searchPlaceholder')}
-                                    className="w-full bg-gray-100 text-gray-900 text-xs rounded-xl pl-9 pr-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 border border-gray-200"
+                                    className="w-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-xs rounded-xl pl-9 pr-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 border border-gray-200 dark:border-gray-700"
                                 />
                             </div>
                         </div>
@@ -133,7 +133,7 @@ export const Messenger = () => {
                                 <div
                                     key={conv.id}
                                     onClick={() => { setActiveChat(conv); setShowMobileChat(true); }}
-                                    className={`flex items-center space-x-3 p-3.5 cursor-pointer transition-colors border-b border-gray-100 ${activeChat.id === conv.id ? 'bg-blue-50/60' : 'hover:bg-gray-50'
+                                    className={`flex items-center space-x-3 p-3.5 cursor-pointer transition-colors border-b border-gray-100 dark:border-gray-800 ${activeChat.id === conv.id ? 'bg-blue-50/60 dark:bg-blue-950/40' : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                                         }`}
                                 >
                                     <div className="relative">
@@ -144,10 +144,10 @@ export const Messenger = () => {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex justify-between items-baseline">
-                                            <h4 className="text-gray-900 font-semibold text-sm truncate">{conv.name}</h4>
-                                            <span className="text-[10px] text-gray-400">{conv.time === 'yesterday' ? t('messenger.yesterday') : conv.time}</span>
+                                            <h4 className="text-gray-900 dark:text-gray-100 font-semibold text-sm truncate">{conv.name}</h4>
+                                            <span className="text-[10px] text-gray-400 dark:text-gray-500">{conv.time === 'yesterday' ? t('messenger.yesterday') : conv.time}</span>
                                         </div>
-                                        <p className="text-xs text-gray-500 truncate mt-1">{conv.lastMessage}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">{conv.lastMessage}</p>
                                     </div>
                                     {conv.unread > 0 && (
                                         <span className="w-5 h-5 bg-blue-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
@@ -159,56 +159,56 @@ export const Messenger = () => {
                         </div>
                     </div>
 
-                    <div className={`flex-1 flex-col bg-white ${showMobileChat ? 'flex' : 'hidden md:flex'}`}>
-                        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-white relative">
+                    <div className={`flex-1 flex-col bg-white dark:bg-gray-900 ${showMobileChat ? 'flex' : 'hidden md:flex'}`}>
+                        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-900 relative">
                             <div className="flex items-center space-x-3">
                                 <button
                                     onClick={() => setShowMobileChat(false)}
-                                    className="md:hidden text-gray-500 hover:text-gray-900 mr-1 cursor-pointer"
+                                    className="md:hidden text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mr-1 cursor-pointer"
                                     aria-label={t('auth.back')}
                                 >
                                     <ArrowLeft className="w-5 h-5" />
                                 </button>
                                 <img src={activeChat.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
                                 <div>
-                                    <h4 className="text-gray-900 font-semibold text-sm">{activeChat.name}</h4>
-                                    <p className="text-[10px] text-green-600 font-medium">{t('messenger.activeNow')}</p>
+                                    <h4 className="text-gray-900 dark:text-gray-100 font-semibold text-sm">{activeChat.name}</h4>
+                                    <p className="text-[10px] text-green-600 dark:text-green-400 font-medium">{t('messenger.activeNow')}</p>
                                 </div>
                             </div>
 
-                            <div className="flex items-center space-x-4 text-gray-500 relative">
+                            <div className="flex items-center space-x-4 text-gray-500 dark:text-gray-400 relative">
                                 <button
                                     onClick={() => showNotify(t('messenger.startingAudioCall', { name: activeChat.name }))}
-                                    className="hover:text-blue-600 transition-colors cursor-pointer"
+                                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
                                     title={t('messenger.voiceCall')}
                                 >
                                     <Phone className="w-5 h-5" />
                                 </button>
                                 <button
                                     onClick={() => showNotify(t('messenger.startingVideoCall', { name: activeChat.name }))}
-                                    className="hover:text-blue-600 transition-colors cursor-pointer"
+                                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
                                     title={t('messenger.videoCall')}
                                 >
                                     <Video className="w-5 h-5" />
                                 </button>
                                 <button
                                     onClick={() => setShowDropdown(!showDropdown)}
-                                    className="hover:text-gray-900 transition-colors cursor-pointer"
+                                    className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors cursor-pointer"
                                     title={t('messenger.moreOptions')}
                                 >
                                     <MoreVertical className="w-5 h-5" />
                                 </button>
 
                                 {showDropdown && (
-                                    <div className="absolute right-0 top-10 w-40 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-20 text-xs">
-                                        <button onClick={() => { setShowDropdown(false); showNotify(t('messenger.chatMuted')); }} className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700">{t('messenger.muteNotifications')}</button>
-                                        <button onClick={() => { setShowDropdown(false); setMessages([]); showNotify(t('messenger.chatCleared')); }} className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">{t('messenger.clearChat')}</button>
+                                    <div className="absolute right-0 top-10 w-40 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg py-1 z-20 text-xs">
+                                        <button onClick={() => { setShowDropdown(false); showNotify(t('messenger.chatMuted')); }} className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300">{t('messenger.muteNotifications')}</button>
+                                        <button onClick={() => { setShowDropdown(false); setMessages([]); showNotify(t('messenger.chatCleared')); }} className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-red-600 dark:text-red-400">{t('messenger.clearChat')}</button>
                                     </div>
                                 )}
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col justify-end bg-gray-50/50">
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col justify-end bg-gray-50/50 dark:bg-gray-800/50">
                             {messages.map((msg: any) => (
                                 <div
                                     key={msg.id}
@@ -217,7 +217,7 @@ export const Messenger = () => {
                                     <div
                                         className={`max-w-xs md:max-w-md rounded-2xl text-xs leading-relaxed overflow-hidden ${msg.sender === 'me'
                                             ? 'bg-blue-600 text-white rounded-br-none shadow-sm'
-                                            : 'bg-white text-gray-800 rounded-bl-none border border-gray-200 shadow-sm'
+                                            : 'bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 rounded-bl-none border border-gray-200 dark:border-gray-700 shadow-sm'
                                             }`}
                                     >
                                         {msg.image && (
@@ -234,7 +234,7 @@ export const Messenger = () => {
                                             <p className="px-4 py-2.5">{msg.text}</p>
                                         )}
 
-                                        <div className={`flex items-center justify-end space-x-1 px-3 pb-2 text-[9px] ${msg.sender === 'me' ? 'text-blue-100' : 'text-gray-400'}`}>
+                                        <div className={`flex items-center justify-end space-x-1 px-3 pb-2 text-[9px] ${msg.sender === 'me' ? 'text-blue-100 dark:text-blue-200' : 'text-gray-400 dark:text-gray-500'}`}>
                                             <span>{msg.time}</span>
                                             {msg.sender === 'me' && <CheckCheck className="w-3 h-3" />}
                                         </div>
@@ -245,7 +245,7 @@ export const Messenger = () => {
 
                         <div className="relative">
                             {showEmojiPicker && (
-                                <div className="absolute bottom-16 left-3 bg-white border border-gray-200 p-2 rounded-xl shadow-lg flex gap-2 z-20">
+                                <div className="absolute bottom-16 left-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-2 rounded-xl shadow-lg flex gap-2 z-20">
                                     {emojis.map((emoji, index) => (
                                         <button
                                             key={index}
@@ -259,7 +259,7 @@ export const Messenger = () => {
                                 </div>
                             )}
 
-                            <form onSubmit={handleSendMessage} className="p-3 border-t border-gray-200 bg-white flex items-center space-x-3">
+                            <form onSubmit={handleSendMessage} className="p-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex items-center space-x-3">
                                 <input
                                     type="file"
                                     ref={fileInputRef}
@@ -271,7 +271,7 @@ export const Messenger = () => {
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer"
+                                    className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
                                     title={t('messenger.sendImage')}
                                 >
                                     <Image className="w-5 h-5" />
@@ -280,7 +280,7 @@ export const Messenger = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                                    className="text-gray-400 hover:text-amber-500 transition-colors cursor-pointer"
+                                    className="text-gray-400 dark:text-gray-500 hover:text-amber-500 dark:hover:text-amber-400 transition-colors cursor-pointer"
                                     title={t('messenger.addEmoji')}
                                 >
                                     <Smile className="w-5 h-5" />
@@ -291,7 +291,7 @@ export const Messenger = () => {
                                     value={messageInput}
                                     onChange={(e) => setMessageInput(e.target.value)}
                                     placeholder={t('messenger.typeMessage')}
-                                    className="flex-1 bg-gray-100 text-gray-900 text-xs rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-blue-500 border border-gray-200"
+                                    className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-xs rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-blue-500 border border-gray-200 dark:border-gray-700"
                                 />
 
                                 <button

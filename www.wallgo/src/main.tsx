@@ -9,6 +9,7 @@ import { AuthProvider } from './hooks/AuthProvider.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Spinner from './templates/Spinner.tsx'
 import { useTranslation } from 'react-i18next'
+import { ThemeProvider } from './hooks/useDarkMode'
 const queryClient = new QueryClient();
 
 const LoadingFallback = () => {
@@ -22,16 +23,18 @@ const LoadingFallback = () => {
 
 createRoot(document.getElementById('root')!).render(
   <>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <ModalProvider>
-            <Suspense fallback={<LoadingFallback />}>
-              <App />
-            </Suspense>
-          </ModalProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <AuthProvider>
+            <ModalProvider>
+              <Suspense fallback={<LoadingFallback />}>
+                <App />
+              </Suspense>
+            </ModalProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   </>,
 )

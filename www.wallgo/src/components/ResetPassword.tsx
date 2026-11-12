@@ -55,11 +55,11 @@ const ResetPassword = () => {
                 {
                     status === 'success' ? (
                         <div className="success-container animate-in text-center py-4">
-                            <div className="w-16 h-16 bg-purple-600/20 border border-purple-500/30 text-[var(--special-purple)] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                            <div className="w-16 h-16 bg-purple-600/20 dark:bg-purple-400/20 border border-purple-500/30 text-[var(--special-purple)] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
                                 <CheckCircle2 size={32} />
                             </div>
                             <h2 className="text-2xl font-bold tracking-tight mb-2 text-gray-100">{t('auth.resetSuccess')}</h2>
-                            <p className="text-sm text-gray-400 mb-8">
+                            <p className="text-sm text-gray-400 dark:text-gray-500 mb-8">
                                 {t('auth.passwordUpdated')} <strong className="text-white">{t('auth.redirectingToLogin')}</strong>
                             </p>
                         </div>
@@ -77,16 +77,16 @@ const ResetPassword = () => {
                                 <img src="/icons/logos/mix_logo.webp" width={150} className='img-fluid' alt="" />
                             </div>
                             <div className='h-8 flex items-center justify-center mt-2 mb-5 overflow-hidden'>
-                                <p className={`text-gray-300 text-sm text-center typewriter-text`}>
+                                <p className={`text-gray-300 dark:text-gray-400 text-sm text-center typewriter-text`}>
                                     {t('auth.resetInstructions')}
                                 </p>
                             </div>
                             <form className='space-y-5' onSubmit={handleSubmit}>
 
                                 <div>
-                                    <label className='block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider'>{t('auth.newPassword')}</label>
+                                    <label className='block text-xs font-medium text-gray-300 dark:text-gray-400 mb-1.5 uppercase tracking-wider'>{t('auth.newPassword')}</label>
                                     <div className='relative'>
-                                        <span className='absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400'>
+                                        <span className='absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 dark:text-gray-500'>
                                             <Lock className='w-5 h-5' />
                                         </span>
                                         <input
@@ -96,14 +96,14 @@ const ResetPassword = () => {
                                             onChange={handleChange}
                                             placeholder='••••••••'
                                             required
-                                            className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
+                                            className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
                                         />
                                     </div>
                                 </div>
                                 <div>
-                                    <label className='block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider'>{t('auth.confirmPassword')}</label>
+                                    <label className='block text-xs font-medium text-gray-300 dark:text-gray-400 mb-1.5 uppercase tracking-wider'>{t('auth.confirmPassword')}</label>
                                     <div className='relative'>
-                                        <span className='absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400'>
+                                        <span className='absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 dark:text-gray-500'>
                                             <Lock className='w-5 h-5' />
                                         </span>
                                         <input
@@ -113,7 +113,7 @@ const ResetPassword = () => {
                                             onChange={handleChange}
                                             placeholder='••••••••'
                                             required
-                                            className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
+                                            className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
                                         />
                                     </div>
                                 </div>

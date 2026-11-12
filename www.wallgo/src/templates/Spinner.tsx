@@ -17,7 +17,7 @@ const Spinner: React.FC<SpinnetProps> = ({ text, type }) => {
                 <WallGoSpinner />
             </div>
             <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-                <strong className="text-gray-500 font-semibold">WallGo.</strong><br />
+                <strong className="text-gray-500 dark:text-gray-400 font-semibold">WallGo.</strong><br />
                 <span>{displayText}</span>
             </p>
         </div>
@@ -27,7 +27,7 @@ const Spinner: React.FC<SpinnetProps> = ({ text, type }) => {
                 <WallGoSpinner />
             </div>
 
-            <p className='text-sm font-medium text-gray-500 tracking-wide animate-pulse'>
+            <p className='text-sm font-medium text-gray-500 dark:text-gray-400 tracking-wide animate-pulse'>
                 {displayText}
             </p>
         </div>

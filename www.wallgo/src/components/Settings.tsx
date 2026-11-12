@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { MainLayout } from '../MainLayout'
 import { Helmet } from 'react-helmet-async'
-import { Bell, ChevronRight, Info, LogOut, Moon, Settings as SettingsIcon, Shield, User } from 'lucide-react'
+import { Bell, ChevronRight, Info, LogOut, Moon, Settings as SettingsIcon, Shield, Sun, User } from 'lucide-react'
 import axios from 'axios'
 import { useAuth } from '../hooks/AuthProvider'
 import toast, { Toaster } from 'react-hot-toast'
@@ -10,6 +10,7 @@ import { api_url } from '../pages/Auth/getUser'
 import { useQuery } from '@tanstack/react-query'
 import LoadingButton from '../Icons/LoadingButton'
 import { useTranslation } from 'react-i18next'
+import useDarkMode from '../hooks/useDarkMode'
 
 export const Settings = () => {
   const [activeTab, setActiveTab] = useState('account');
@@ -88,6 +89,14 @@ export const Settings = () => {
   }
 
   const { i18n, t } = useTranslation();
+  const { theme, isDarkMode, setTheme, toggleDarkMode } = useDarkMode();
+
+  const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedTheme = e.target.value;
+    if (selectedTheme === 'light' || selectedTheme === 'dark' || selectedTheme === 'system') {
+      setTheme(selectedTheme);
+    }
+  }
 
   const handleChangeLanguages = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const lang = e.target.value;
@@ -109,7 +118,7 @@ export const Settings = () => {
           <div className="md:col-span-1 space-y-1">
             <button
               onClick={() => setActiveTab('account')}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'account' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'account' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
             >
               <span className="flex items-center gap-3"><User className="w-4 h-4" /> {t('common.account')}</span>
@@ -118,7 +127,7 @@ export const Settings = () => {
 
             <button
               onClick={() => setActiveTab('notifications')}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'notifications' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'notifications' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
             >
               <span className="flex items-center gap-3"><Bell className="w-4 h-4" /> {t('common.notifications')}</span>
@@ -127,7 +136,7 @@ export const Settings = () => {
 
             <button
               onClick={() => setActiveTab('security')}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'security' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'security' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
             >
               <span className="flex items-center gap-3"><Shield className="w-4 h-4" /> {t('common.security')}</span>
@@ -136,7 +145,7 @@ export const Settings = () => {
 
             <button
               onClick={() => setActiveTab('appearance')}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'appearance' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition cursor-pointer ${activeTab === 'appearance' ? 'bg-[var(--special-purple)] text-white shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
             >
               <span className="flex items-center gap-3"><Moon className="w-4 h-4" /> {t('common.appearance')}</span>
@@ -144,32 +153,33 @@ export const Settings = () => {
             </button>
           </div>
 
-          <div className="md:col-span-3 bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
+          <div className="md:col-span-3 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl p-6 shadow-sm">
 
             {activeTab === 'account' && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900">{t('settings.accountInformation')}</h2>
-                  <p className="text-sm text-gray-500">{t('settings.accountInformationDescription')}</p>
+                  <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('settings.accountInformation')}</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('settings.accountInformationDescription')}</p>
                 </div>
-                <hr className="border-gray-100" />
+                <hr className="border-gray-100 dark:border-gray-800" />
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('common.language')}</label>
-                    <select value={i18n.language} onChange={handleChangeLanguages} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] outline-none text-sm bg-gray-50/50">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('common.language')}</label>
+                    <select value={i18n.language} onChange={handleChangeLanguages} className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-[var(--special-purple)] outline-none text-sm bg-gray-50/50 dark:bg-gray-800/50">
                       <option value="en">{t('common.english')}</option>
                       <option value="ar">{t('common.arabic')}</option>
                     </select>
                   </div>
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.accountVisibility')}</label>
-                    <select value={data?.visibility} name='visibility' onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] outline-none text-sm bg-gray-50/50">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('settings.accountVisibility')}</label>
+                    <select value={data?.visibility} name='visibility' onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-[var(--special-purple)] outline-none text-sm bg-gray-50/50 dark:bg-gray-800/50">
                       <option value="public">{t('settings.publicAccount')}</option>
                       <option value="private">{t('settings.privateAccount')}</option>
                     </select>
                   </div>
                   <div>
-                    <button onClick={handleLogOut} className="flex items-center gap-3 w-full px-4 py-3 rounded-xl font-semibold text-sm text-red-600 hover:bg-red-50 transition-all duration-200 cursor-pointer">
+                    <button onClick={handleLogOut} className="flex items-center gap-3 w-full px-4 py-3 rounded-xl font-semibold text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-all duration-200 cursor-pointer">
                       <LogOut className="w-5 h-5 flex-shrink-0" />
                       <span>{t('common.logout')}</span>
                     </button>
@@ -181,17 +191,17 @@ export const Settings = () => {
             {activeTab === 'notifications' && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900">{t('settings.notificationPreferences')}</h2>
-                  <p className="text-sm text-gray-500">{t('settings.notificationPreferencesDescription')}</p>
+                  <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('settings.notificationPreferences')}</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('settings.notificationPreferencesDescription')}</p>
                 </div>
-                <hr className="border-gray-100" />
+                <hr className="border-gray-100 dark:border-gray-800" />
                 <div className="space-y-4">
-                  <label className="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer">
-                    <span className="text-sm font-medium text-gray-700">{t('settings.emailLikesComments')}</span>
+                  <label className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-xl cursor-pointer">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('settings.emailLikesComments')}</span>
                     <input type="checkbox" name='emails_likes_notifications' checked={data?.emails_likes_notifications} onChange={handleChange} className="w-4 h-4 accent-[var(--special-purple)]" />
                   </label>
-                  <label className="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer">
-                    <span className="text-sm font-medium text-gray-700">{t('settings.newFollowerAlerts')}</span>
+                  <label className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-xl cursor-pointer">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('settings.newFollowerAlerts')}</span>
                     <input type="checkbox" name='new_follower_alerts' checked={data?.new_follower_alerts} onChange={handleChange} className="w-4 h-4 accent-[var(--special-purple)]" />
                   </label>
                 </div>
@@ -201,18 +211,18 @@ export const Settings = () => {
             {activeTab === 'security' && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900">{t('settings.securitySettings')}</h2>
-                  <p className="text-sm text-gray-500">{t('settings.securitySettingsDescription')}</p>
+                  <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('settings.securitySettings')}</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('settings.securitySettingsDescription')}</p>
                 </div>
-                <hr className="border-gray-100" />
+                <hr className="border-gray-100 dark:border-gray-800" />
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.currentPassword')}</label>
-                    <input value={data.currentPassword} name='currentPassword' onChange={handleChange} type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none text-sm bg-gray-50/50" />
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('settings.currentPassword')}</label>
+                    <input value={data.currentPassword} name='currentPassword' onChange={handleChange} type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 outline-none text-sm bg-gray-50/50 dark:bg-gray-800/50" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.newPassword')}</label>
-                    <input value={data.password} name='password' onChange={handleChange} type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none text-sm bg-gray-50/50" />
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('settings.newPassword')}</label>
+                    <input value={data.password} name='password' onChange={handleChange} type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 outline-none text-sm bg-gray-50/50 dark:bg-gray-800/50" />
                   </div>
                 </div>
               </div>
@@ -221,22 +231,22 @@ export const Settings = () => {
             {activeTab === 'appearance' && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900">{t('common.appearance')}</h2>
-                  <p className="text-sm text-gray-500">{t('settings.appearanceDescription')}</p>
+                  <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('common.appearance')}</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('settings.appearanceDescription')}</p>
                 </div>
-                <hr className="border-gray-100" />
+                <hr className="border-gray-100 dark:border-gray-800" />
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.themeMode')}</label>
-                  <select className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none text-sm bg-gray-50/50">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('settings.themeMode')}</label>
+                  <select value={theme} onChange={handleThemeChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 outline-none text-sm bg-gray-50/50 dark:bg-gray-800/50">
                     <option value="light">{t('settings.lightMode')}</option>
-                    <option value="dark">{t('settings.darkModeComingSoon')}</option>
+                    <option value="dark">{t('settings.darkMode')}</option>
                     <option value="system">{t('settings.systemDefault')}</option>
                   </select>
                 </div>
               </div>
             )}
 
-            <div className="mt-8 pt-4 border-t border-gray-100 flex justify-end">
+            <div className="mt-8 pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
               <LoadingButton loading={loading} className="px-6 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-xl hover:opacity-90 transition cursor-pointer" onClick={handleSubmit}>
                 {t('settings.saveChanges')}
               </LoadingButton>

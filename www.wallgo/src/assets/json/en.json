@@ -83,7 +83,8 @@
     "terms": "Terms",
     "privacyPolicy": "Privacy policy",
     "cookiesPolicy": "Cookies policy",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "account_private":"This profile is private"
   },
   "feed": {
     "posts": "Posts",
@@ -92,7 +93,7 @@
     "discover": "Discover",
     "createPost": "Create post",
     "joinTitle": "Join WallGo today! 🚀",
-    "joinDescription": "Connect with creators, share your favorite wallpapers, and build your community.",
+    "joinDescription": "Connect with creators, share your feeds, and build your community.",
     "signIn": "Sign in",
     "signUp": "Sign up",
     "quoteOne": "Share your world on WallGo. 🎈",
@@ -229,6 +230,7 @@
     "privateAccount": "Private account",
     "themeMode": "Theme mode",
     "lightMode": "Light mode",
+    "darkMode": "Dark mode",
     "darkModeComingSoon": "Dark mode (coming soon)",
     "appearanceDescription": "Customize how WallGo looks on your device.",
     "systemDefault": "System default",

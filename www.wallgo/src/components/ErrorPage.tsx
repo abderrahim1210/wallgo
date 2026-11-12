@@ -58,9 +58,9 @@ export const ErrorPage : React.FC<ErrorPageProps> = ({codeP}) => {
     };
 
     return (
-        <div className="bg-gray-50 flex flex-col items-center justify-center px-4 transition-colors">
+        <div className="bg-gray-50 dark:bg-gray-800 flex flex-col items-center justify-center px-4 transition-colors">
             <div className="text-center max-w-md">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-red-50 text-[var(--special-red,#ef4444)] rounded-full mb-6 shadow-sm">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-red-50 dark:bg-red-950/40 text-[var(--special-red,#ef4444)] rounded-full mb-6 shadow-sm">
                     <AlertCircle size={45} />
                 </div>
 

@@ -148,7 +148,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
     const commentMenuItems: DropdownItem[] = [
         {
             label: t('feed.copyComment'),
-            icon: <Link className="w-4 h-4 text-blue-500" />,
+            icon: <Link className="w-4 h-4 text-blue-500 dark:text-blue-400" />,
             onClick: () => {
                 navigator.clipboard.writeText(comment?.content);
                 toast.success(t('feed.commentCopied'));
@@ -158,14 +158,14 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
         ...(isOwner ? [
             {
                 label: edit ? t('feed.cancelEdit') : t('feed.editComment'),
-                icon: <Edit3 className="w-4 h-4 text-emerald-500" />,
+                icon: <Edit3 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />,
                 onClick: () => { setEdit(prev => !prev) },
             },
         ] : []),
         ...(comment?.can_delete ? [
             {
                 label: t('feed.deleteCommentAction'),
-                icon: <Trash2 className="w-4 h-4 text-red-500" />,
+                icon: <Trash2 className="w-4 h-4 text-red-500 dark:text-red-400" />,
                 danger: true,
                 onClick: handleDelete,
             },
@@ -173,7 +173,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
         ...(!isOwner ? [
             {
                 label: t('feed.reportComment'),
-                icon: <Flag className="w-4 h-4 text-red-500" />,
+                icon: <Flag className="w-4 h-4 text-red-500 dark:text-red-400" />,
                 danger: true,
                 onClick: () => {
                     closeModal?.();
@@ -193,10 +193,10 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
                 className="w-9 h-9 rounded-full object-cover shrink-0"
             />
             <div className="flex-1 min-w-0">
-                <div className="bg-gray-200 rounded-2xl px-4 py-2.5 border border-gray-100">
+                <div className="bg-gray-200 dark:bg-gray-700 rounded-2xl px-4 py-2.5 border border-gray-100 dark:border-gray-800">
                     <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-xs sm:text-sm text-gray-900 cursor-pointer" onClick={() => navigate(comment?.page_info?.id ? `/pages/${comment?.page_info?.id}` : `/profile/${comment?.user.id}/${comment?.user.username}`)}>{comment?.page_info?.name ?? comment?.user?.name}</span>
-                        <span className="text-[12px] text-gray-400">{moment(comment?.created_at).fromNow()}</span>
+                        <span className="font-semibold text-xs sm:text-sm text-gray-900 dark:text-gray-100 cursor-pointer" onClick={() => navigate(comment?.page_info?.id ? `/pages/${comment?.page_info?.id}` : `/profile/${comment?.user.id}/${comment?.user.username}`)}>{comment?.page_info?.name ?? comment?.user?.name}</span>
+                        <span className="text-[12px] text-gray-400 dark:text-gray-500">{moment(comment?.created_at).fromNow()}</span>
                     </div>
                     {
                         edit ? (
@@ -204,7 +204,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
                                 <input type="text"
                                     value={newContent}
                                     onChange={(e) => setNewContent(e.target.value)}
-                                    className="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-[var(--special-purple)] transition shadow-sm"
+                                    className="flex-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[var(--special-purple)] transition shadow-sm"
                                 />
                                 <button className='cursor-pointer' onClick={editComment}>
                                     <Check className='text-[var(--special-purple)]' />
@@ -213,25 +213,25 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
                                     setEdit(false);
                                     setNewContent(comment?.content);
                                 }}>
-                                    <X className='text-red-600' />
+                                    <X className='text-red-600 dark:text-red-400' />
                                 </button>
                             </div>
                         ) : (
-                            <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">
+                            <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm leading-relaxed">
                                 {comment?.content}
                             </p>
                         )
                     }
                 </div>
 
-                <div className="flex items-center gap-4 mt-1.5 ml-3 text-xs text-gray-500 font-medium">
+                <div className="flex items-center gap-4 mt-1.5 ml-3 text-xs text-gray-500 dark:text-gray-400 font-medium">
                     <button onClick={handleLike} className="hover:text-[var(--special-red)] cursor-pointer transition flex justify-center gap-1">
-                        <Heart className={`w-4 h-4 ${liked ? 'text-red-500 fill-red-500' : ''}`} /> {comment?.likes_count}
+                        <Heart className={`w-4 h-4 ${liked ? 'text-red-500 dark:text-red-400 fill-red-500' : ''}`} /> {comment?.likes_count}
                     </button>
                     <button onClick={() => setAddReplay(prev => !prev)} className="hover:text-[var(--special-purple)] cursor-pointer transition">{addReplay ? t('feed.cancel') : `${t('feed.reply')} ${comment?.replies ? `(${comment?.replies?.length})` : ''}`}</button>
                     <DropdownMenu
                         trigger={
-                            <button className="p-2 text-gray-400 hover:text-gray-600 hover:text-[var(--special-purple)] rounded-full transition-colors cursor-pointer">
+                            <button className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 hover:text-[var(--special-purple)] rounded-full transition-colors cursor-pointer">
                                 <MoreHorizontal className="w-5 h-5" />
                             </button>
                         }
@@ -246,7 +246,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
                                 value={replyContent}
                                 onChange={(e) => setReplyContent(e.target.value)}
                                 placeholder={t('feed.replyToUser', { username: comment?.user.username })}
-                                className="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-[var(--special-purple)] transition shadow-sm"
+                                className="flex-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[var(--special-purple)] transition shadow-sm"
                                 autoFocus
                             />
                             <button
@@ -257,7 +257,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
                             </button>
                         </form>
                         {comment?.replies && comment?.replies.length > 0 && (
-                            <div className="pl-4 mt-3 border-l-2 border-gray-100 space-y-3">
+                            <div className="pl-4 mt-3 border-l-2 border-gray-100 dark:border-gray-800 space-y-3">
                                 {comment.replies.map((reply: Comment) => (
                                     <CommentItem key={reply.id} comment={reply} type={type} postId={postId} setCommentId={setCommentId} openReport={openReport} />
                                 ))}

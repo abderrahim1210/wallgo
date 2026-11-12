@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@config "../tailwind.config.js";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @font-face {
   font-family: "Wallgo";
@@ -56,6 +58,11 @@
 body {
   font-family: 'Wallgo','Cairo', 'sans-serif';
   background-color: var(--special-white);
+}
+
+.dark body {
+  background-color: #111827;
+  color: #f3f4f6;
 }
 
 .signup_page {

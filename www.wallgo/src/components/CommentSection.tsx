@@ -96,12 +96,12 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type, se
         setNewComment('');
     };
     return (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col w-full mx-auto">
-            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-                <h3 className="font-bold text-gray-800 text-base">{t('feed.comments', { count: comments?.length })}</h3>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden flex flex-col w-full mx-auto">
+            <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                <h3 className="font-bold text-gray-800 dark:text-gray-200 text-base">{t('feed.comments', { count: comments?.length })}</h3>
             </div>
 
-            <div className="overflow-y-auto p-4 space-y-4 divide-y divide-gray-50">
+            <div className="overflow-y-auto p-4 space-y-4 divide-y divide-gray-50 dark:divide-gray-800">
                 {isLoading ? (<Spinner text={t('common.loading')} type='mini' />) : isError ? (<ErrorPage codeP='500' />) : comments?.length > 0 ? (
                     comments.map((comment: Comment, index: number) => (
                         <CommentItem comment={comment} type={type} postId={postId} key={index} openReport={setOpenModal} setCommentId={setCommentId} />
@@ -115,19 +115,19 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId, type, se
                 <div ref={observerRef} className="h-10"></div>
 
                 {!hasNextPage && comments.length > 0 && (
-                    <div className="text-center text-xs text-gray-400 font-medium uppercase tracking-wider">
+                    <div className="text-center text-xs text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">
                         {t('feed.endReached')}
                     </div>
                 )}
             </div>
 
-            <form onSubmit={handleAddComment} className="p-3 bg-gray-50 border-t border-gray-100 flex items-center gap-2">
+            <form onSubmit={handleAddComment} className="p-3 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-800 flex items-center gap-2">
                 <input
                     type="text"
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder={t('feed.writeComment')}
-                    className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-2.5  text-gray-800 focus:outline-none focus:border-[var(--special-purple)] transition"
+                    className="flex-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5  text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[var(--special-purple)] transition"
                 />
                 <LoadingButton type='submit' loading={loading} className="bg-[var(--special-purple)] text-white p-2.5 rounded-xl hover:opacity-90 transition shadow-sm shrink-0 flex items-center justify-center cursor-pointer">
                     <FiSend className="w-5 h-5" />

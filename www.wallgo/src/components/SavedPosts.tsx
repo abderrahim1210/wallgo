@@ -62,16 +62,16 @@ const SavedPosts = () => {
                         <div className='flex justify-start items-center'>
                             <h1 className='font-bold text-3xl flex items-center gap-2'><FaBookmark className='w-8 h-8 text-[var(--special-purple)]' /> {t('profile.saved_posts')} <span className='text-[var(--special-purple)]'>({posts.length})</span></h1>
                         </div>
-                        <div className='flex space-x-2 border-b border-gray-100 pb-3 mb-3 mt-3'>
+                        <div className='flex space-x-2 border-b border-gray-100 dark:border-gray-800 pb-3 mb-3 mt-3'>
                             <button
                                 onClick={() => setActiveTab('posts')}
-                                className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'posts' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'posts' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
                             >
                                 {t('feed.posts')}
                             </button>
                             <button
                                 onClick={() => setActiveTab('reels')}
-                                className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'reels' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'reels' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
                             >
                                 {t('common.reels')}
                             </button>

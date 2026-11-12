@@ -36,19 +36,19 @@ export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose ,onD
     const postMenuItems: DropdownItem[] = [
         {
             label: t('postDetails.copyLink'),
-            icon: <Link className="w-4 h-4 text-blue-500" />,
+            icon: <Link className="w-4 h-4 text-blue-500 dark:text-blue-400" />,
             onClick: () => toast.success(t('postDetails.linkCopied')),
         },
 
         ...(isOwner ? [
             {
                 label: t('postDetails.edit'),
-                icon: <Edit3 className="w-4 h-4 text-emerald-500" />,
+                icon: <Edit3 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />,
                 onClick: () => navigate(`/post/${post?.id}/edit`, { state: { postToEdit: { content: post?.content, media_url: post?.media_url, created_at: post?.created_at }, id: post?.id } }),
             },
             {
                 label: t('postDetails.delete'),
-                icon: <Trash2 className="w-4 h-4 text-red-500" />,
+                icon: <Trash2 className="w-4 h-4 text-red-500 dark:text-red-400" />,
                 danger: true,
                 onClick: () => onDelete(post?.id),
             },
@@ -56,7 +56,7 @@ export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose ,onD
         ...(!isOwner ? [
             {
                 label: t('postDetails.report'),
-                icon: <Flag className="w-4 h-4 text-red-500" />,
+                icon: <Flag className="w-4 h-4 text-red-500 dark:text-red-400" />,
                 danger: true,
                 onClick: () => console.log('Report clicked'),
             },
@@ -64,7 +64,7 @@ export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose ,onD
     ];
     return (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl relative flex flex-col md:flex-row animate-in zoom-in-95 duration-150">
+            <div className="bg-white dark:bg-gray-900 w-full max-w-2xl rounded-2xl shadow-2xl relative flex flex-col md:flex-row animate-in zoom-in-95 duration-150">
 
                 <button
                     onClick={onClose}
@@ -88,23 +88,23 @@ export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose ,onD
 
                 <div className="md:w-1/2 p-5 flex flex-col justify-between">
                     <div>
-                        <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100 pr-8">
+                        <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100 dark:border-gray-800 pr-8">
                             <div className='flex items-center space-x-3'>
                                 <img src={post?.user.avatar_url} alt={t('common.avatar')} className="w-10 h-10 rounded-full object-cover" />
                                 <div>
-                                    <h4 className="font-semibold text-sm text-gray-900">{post?.user.name}</h4>
-                                    <p className="text-xs text-gray-500">@{post?.user.username}</p>
-                                    <p className="text-xs text-gray-500">{moment(post?.created_at).fromNow()}</p>
+                                    <h4 className="font-semibold text-sm text-gray-900 dark:text-gray-100">{post?.user.name}</h4>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">@{post?.user.username}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{moment(post?.created_at).fromNow()}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <p className="text-sm text-gray-800 leading-relaxed mb-4">{post?.content}</p>
+                        <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed mb-4">{post?.content}</p>
                     </div>
 
-                    <div className="flex items-center space-x-4 pt-3 border-t border-gray-100 text-xs text-gray-500 font-medium">
-                        <span className="flex items-center gap-1 text-red-500"><Heart className='w-4 h-4' /> {t('postDetails.likes', { count: post?.likes_count })}</span>
-                        <span className="flex items-center gap-1 text-purple-500"><MessageCircle className='w-4 h-4' /> {t('postDetails.comments', { count: post?.comments_count })}</span>
+                    <div className="flex items-center space-x-4 pt-3 border-t border-gray-100 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                        <span className="flex items-center gap-1 text-red-500 dark:text-red-400"><Heart className='w-4 h-4' /> {t('postDetails.likes', { count: post?.likes_count })}</span>
+                        <span className="flex items-center gap-1 text-purple-500 dark:text-purple-400"><MessageCircle className='w-4 h-4' /> {t('postDetails.comments', { count: post?.comments_count })}</span>
                     </div>
                 </div>
             </div>

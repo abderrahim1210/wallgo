@@ -104,13 +104,13 @@ export const PageProfile = () => {
     const postMenuItems: DropdownItem[] = [
         {
             label: t('profile.share_page'),
-            icon: <Share2 className="w-4 h-4 text-blue-500" />,
+            icon: <Share2 className="w-4 h-4 text-blue-500 dark:text-blue-400" />,
             onClick: () => openModal(`share-${page?.id}`),
         },
 
         {
             label: t('profile.report_page'),
-            icon: <Flag className="w-4 h-4 text-red-500" />,
+            icon: <Flag className="w-4 h-4 text-red-500 dark:text-red-400" />,
             danger: true,
             onClick: () => openModal(`report-${page?.id}`),
         },
@@ -154,8 +154,8 @@ export const PageProfile = () => {
                     </div>
                 ) : (
                     <div className="max-w-4xl mx-auto px-4 py-6">
-                        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                            <div className="h-48 w-full bg-gray-200 relative">
+                        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+                            <div className="h-48 w-full bg-gray-200 dark:bg-gray-700 relative">
                                 <img
                                     src={page?.banner_url ?? '/backgrounds/users_banner.svg'}
                                     alt={page?.name}
@@ -165,7 +165,7 @@ export const PageProfile = () => {
 
                             <div className="px-6 pb-6 relative">
                                 <div className="flex justify-between items-end -mt-12 mb-4">
-                                    <div className="w-24 h-24 rounded-full border-4 border-white overflow-hidden shadow-md bg-white">
+                                    <div className="w-24 h-24 rounded-full border-4 border-white overflow-hidden shadow-md bg-white dark:bg-gray-900">
                                         <img
                                             src={page?.logo_url ?? "/icons/users.svg"}
                                             alt={page?.name}
@@ -178,21 +178,21 @@ export const PageProfile = () => {
                                             <div className='gap-1 flex  '>
                                                 <button
                                                     onClick={() => navigate('/create_post', { state: { pageId: page?.id, pageName: page?.name } })}
-                                                    className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                                    className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"
                                                     title={t('profile.create_post_for_page')}
                                                 >
-                                                    <PlusSquare className='w-5 h-5 text-indigo-600' />
+                                                    <PlusSquare className='w-5 h-5 text-indigo-600 dark:text-indigo-400' />
                                                 </button>
                                                 <button
                                                     onClick={() => openModal('pages')}
-                                                    className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                                    className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"
                                                     title={t('profile.settings')}
                                                 >
-                                                    <Settings className='w-5 h-5 text-indigo-600' />
+                                                    <Settings className='w-5 h-5 text-indigo-600 dark:text-indigo-400' />
                                                 </button>
                                                 <button
                                                     onClick={() => navigate(`/pages/${page?.id}/edit`)}
-                                                    className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                                    className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"
                                                     title={t('profile.edit_page')}
                                                 >
                                                     <Pencil className='w-5 h-5 text-[var(--special-purple)]' />
@@ -203,7 +203,7 @@ export const PageProfile = () => {
                                                 <button
                                                     onClick={follow}
                                                     className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${followed
-                                                        ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                                                         : 'bg-[var(--special-purple)] text-white hover:opacity-90'
                                                         }`}
                                                 >
@@ -211,8 +211,8 @@ export const PageProfile = () => {
                                                 </button>
                                                 <DropdownMenu
                                                     trigger={
-                                                        <button className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center">
-                                                            <MoreHorizontal className="w-5 h-5 text-indigo-600" />
+                                                        <button className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center">
+                                                            <MoreHorizontal className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                                                         </button>
                                                     }
                                                     items={postMenuItems}
@@ -223,11 +223,11 @@ export const PageProfile = () => {
                                 </div>
 
                                 <div>
-                                    <h1 className="text-2xl font-bold text-gray-900">{page?.name}</h1>
-                                    <p className="text-sm capitalize text-gray-500">{page?.category}</p>
+                                    <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{page?.name}</h1>
+                                    <p className="text-sm capitalize text-gray-500 dark:text-gray-400">{page?.category}</p>
                                 </div>
 
-                                <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100 text-sm text-gray-600">
+                                <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 text-sm text-gray-600 dark:text-gray-400">
                                     <span className="flex items-center gap-1.5 font-medium">
                                         <Users className="w-4 h-4 text-[var(--special-purple)]" />
                                         {page?.followers_count} {t('profile.followers')}
@@ -237,7 +237,7 @@ export const PageProfile = () => {
                         </div>
 
                         <div className="mt-6">
-                            <h2 className="text-xl font-bold text-gray-900 mb-4">{t('profile.page_posts')}</h2>
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">{t('profile.page_posts')}</h2>
                             {posts && posts.length > 0 ? (
                                 <PostGrid posts={posts} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} isLoading={postsLoading} />
                             ) : (

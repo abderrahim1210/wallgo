@@ -24,7 +24,7 @@ export const Tooltip: React.FC<TooltipProps> = ({ label, position = "top", child
         <div className="relative group inline-flex items-center">
             {children}
 
-            <span className={`absolute ${getPositionClasses()} hidden group-hover:block px-2.5 py-1 text-xs font-medium text-white bg-gray-900 rounded-md shadow-md whitespace-nowrap z-50 pointer-events-none`}>
+            <span className={`absolute ${getPositionClasses()} hidden group-hover:block px-2.5 py-1 text-xs font-medium text-white bg-gray-900 dark:bg-gray-800 rounded-md shadow-md whitespace-nowrap z-50 pointer-events-none`}>
                 {label}
             </span>
         </div>

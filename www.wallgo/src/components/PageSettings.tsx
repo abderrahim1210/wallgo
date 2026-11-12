@@ -47,22 +47,22 @@ export const PageSettings: React.FC<PageSettingsProps> = ({ page_id, group_id, t
     }
     return (
         <div className="z-50 flex items-center justify-center p-4 animate-fadeIn">
-            <div className="bg-white rounded-3xl w-full overflow-hidden border border-gray-100 transform transition-all">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl w-full overflow-hidden border border-gray-100 dark:border-gray-800 transform transition-all">
 
-                <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white">
+                <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
                     <div>
-                        <h3 className="text-lg font-bold text-gray-900">{t('pageSettings.title', { entity })}</h3>
-                        <p className="text-xs text-gray-500 mt-0.5">{t('pageSettings.description', { entity })}</p>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('pageSettings.title', { entity })}</h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t('pageSettings.description', { entity })}</p>
                     </div>
                 </div>
 
                 <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
 
-                    <div className="pt-4 border-t border-gray-100">
-                        <div className="bg-red-50/50 border border-red-100 rounded-2xl p-4 flex items-center justify-between gap-4">
+                    <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+                        <div className="bg-red-50/50 dark:bg-red-950/40 border border-red-100 dark:border-red-900/60 rounded-2xl p-4 flex items-center justify-between gap-4">
                             <div>
-                                <h4 className="text-sm font-bold text-red-700">{t('pageSettings.deleteTitle', { entity })}</h4>
-                                <p className="text-xs text-red-500 mt-0.5">
+                                <h4 className="text-sm font-bold text-red-700 dark:text-red-300">{t('pageSettings.deleteTitle', { entity })}</h4>
+                                <p className="text-xs text-red-500 dark:text-red-400 mt-0.5">
                                     {t('pageSettings.cannotRecover', { entity })}
                                 </p>
                             </div>

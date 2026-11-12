@@ -13,10 +13,10 @@ export const MobileCellNavbar = () => {
     const { user } = useAuth()!;
     const isActive = (path: string) => currendPath === path;
     const getLinkClass = (path: string) => {
-        return `rounded-xl transition-all duration-150 flex items-center justify-center ${isActive(path) ? 'text-[var(--special-purple)] bg-purple-50 shadow-inner' : 'text-gray-600 hover:text-[var(--special-purple)] transition-colors'}`;
+        return `rounded-xl transition-all duration-150 flex items-center justify-center ${isActive(path) ? 'text-[var(--special-purple)] bg-purple-50 dark:bg-purple-950/40 shadow-inner' : 'text-gray-600 dark:text-gray-400 hover:text-[var(--special-purple)] transition-colors'}`;
     }
     return (
-        <div className='md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 py-3 px-6 flex items-center justify-between z-40 shadow-lg'>
+        <div className='md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 py-3 px-6 flex items-center justify-between z-40 shadow-lg'>
             <Tooltip label={t('common.home')} position={position}>
                 <Link to="/" className={getLinkClass('/')}>
                     <Home className="w-6 h-6" />

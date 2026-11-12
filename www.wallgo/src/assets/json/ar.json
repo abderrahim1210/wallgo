@@ -83,7 +83,8 @@
     "terms": "الشروط",
     "privacyPolicy": "سياسة الخصوصية",
     "cookiesPolicy": "سياسة ملفات تعريف الارتباط",
-    "signIn": "تسجيل الدخول"
+    "signIn": "تسجيل الدخول",
+    "account_private":"هذا الحساب خاص"
   },
   "feed": {
     "posts": "المنشورات",
@@ -92,7 +93,7 @@
     "discover": "اكتشف",
     "createPost": "إنشاء منشور",
     "joinTitle": "انضم إلى WallGo اليوم! 🚀",
-    "joinDescription": "تواصل مع المبدعين، وشارك خلفياتك المفضلة، وابنِ مجتمعك.",
+    "joinDescription": "تواصل مع المبدعين، وشارك لحظاتك المفضلة، وابنِ مجتمعك.",
     "signIn": "تسجيل الدخول",
     "signUp": "إنشاء حساب",
     "quoteOne": "شارك عالمك على WallGo. 🎈",
@@ -231,6 +232,7 @@
     "privateAccount": "حساب خاص",
     "themeMode": "نمط المظهر",
     "lightMode": "الوضع الفاتح",
+    "darkMode": "الوضع الداكن",
     "darkModeComingSoon": "الوضع الداكن (قريبًا)",
     "appearanceDescription": "خصّص مظهر WallGo على جهازك.",
     "systemDefault": "إعدادات النظام الافتراضية",

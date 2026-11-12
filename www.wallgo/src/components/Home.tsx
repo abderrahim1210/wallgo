@@ -152,7 +152,7 @@ export const Home = () => {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gray-50/50 pb-20 md:pb-10">
+      <div className="min-h-screen bg-gray-50/50 dark:bg-gray-800/50 pb-20 md:pb-10">
         <div className="max-w-7xl mx-auto pt-6 px-2 flex justify-center lg:gap-6">
 
           <aside className="hidden lg:block w-64 shrink-0">
@@ -161,60 +161,60 @@ export const Home = () => {
               {
                 profile ? (
                   <>
-                    <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
-                      <div className="flex items-center space-x-3 mb-3 pb-3 border-b border-gray-100">
+                    <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-sm">
+                      <div className="flex items-center space-x-3 mb-3 pb-3 border-b border-gray-100 dark:border-gray-800">
                         <img
                           src={profile?.avatar_url ?? '/icons/avatar1.svg'}
                           alt={t('common.profile')}
-                          className="w-11 h-11 rounded-full object-cover border-2 border-purple-100"
+                          className="w-11 h-11 rounded-full object-cover border-2 border-purple-100 dark:border-purple-900/60"
                         />
                         <div className="overflow-hidden">
-                          <h4 className="font-semibold text-sm text-gray-900 truncate">{profile?.name}</h4>
-                          <p className="text-xs text-gray-500 truncate">@{profile?.username}</p>
+                          <h4 className="font-semibold text-sm text-gray-900 dark:text-gray-100 truncate">{profile?.name}</h4>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">@{profile?.username}</p>
                         </div>
                       </div>
-                      <div className="flex justify-around text-center py-1 text-xs text-gray-600">
+                      <div className="flex justify-around text-center py-1 text-xs text-gray-600 dark:text-gray-400">
                         <div>
-                          <span className="block font-bold text-gray-900 text-sm">{stats?.postsCount}</span>
+                          <span className="block font-bold text-gray-900 dark:text-gray-100 text-sm">{stats?.postsCount}</span>
                           <span>{t('feed.posts')}</span>
                         </div>
-                        <div className="border-r border-gray-100"></div>
+                        <div className="border-r border-gray-100 dark:border-gray-800"></div>
                         <div>
-                          <span className="block font-bold text-gray-900 text-sm">{stats?.followers_count}</span>
+                          <span className="block font-bold text-gray-900 dark:text-gray-100 text-sm">{stats?.followers_count}</span>
                           <span className='cursor-pointer' onClick={() => redirectToProfile()}>{t('feed.followers')}</span>
                         </div>
-                        <div className="border-r border-gray-100"></div>
+                        <div className="border-r border-gray-100 dark:border-gray-800"></div>
                         <div>
-                          <span className="block font-bold text-gray-900 text-sm">{stats?.followings_count}</span>
+                          <span className="block font-bold text-gray-900 dark:text-gray-100 text-sm">{stats?.followings_count}</span>
                           <span className='cursor-pointer' onClick={() => redirectToProfile()}>{t('feed.following')}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm space-y-2">
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 px-4 mb-2">{t('common.discover')}</h3>
+                    <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-sm space-y-2">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 px-4 mb-2">{t('common.discover')}</h3>
 
-                      <button onClick={() => navigate('/pages')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
-                        <Layers className="w-5 h-5 text-emerald-500" />
+                      <button onClick={() => navigate('/pages')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors font-medium text-sm cursor-pointer">
+                        <Layers className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
                         <span>{t('common.pages')}</span>
                       </button>
 
-                      <button onClick={() => navigate('/groups')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
+                      <button onClick={() => navigate('/groups')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors font-medium text-sm cursor-pointer">
                         <Users className="w-5 h-5 text-[var(--special-red)]" />
                         <span>{t('common.groups')}</span>
                       </button>
 
-                      <button onClick={() => navigate('/saved_posts')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium text-sm cursor-pointer">
-                        <Bookmark className="w-5 h-5 text-purple-500" />
+                      <button onClick={() => navigate('/saved_posts')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors font-medium text-sm cursor-pointer">
+                        <Bookmark className="w-5 h-5 text-purple-500 dark:text-purple-400" />
                         <span>{t('common.bookmarks')}</span>
                       </button>
 
-                      <button onClick={() => navigate('/settings')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 text-sm transition-colors cursor-pointer">
+                      <button onClick={() => navigate('/settings')} className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm transition-colors cursor-pointer">
                         <Settings className="w-5 h-5 text-[var(--special-gray)]" />
                         <span>{t('common.settings')}</span>
                       </button>
 
-                      <div className="pt-3 border-t border-gray-100 mt-3">
+                      <div className="pt-3 border-t border-gray-100 dark:border-gray-800 mt-3">
                         <button onClick={() => navigate('/create_post')} className="w-full py-3 bg-[var(--special-purple)] text-white font-medium text-sm rounded-xl shadow-md shadow-purple-600/20 flex items-center justify-center space-x-2 transition-all cursor-pointer hover:bg-[var(--special-white)] hover:text-[var(--special-purple)] hover:border hover:border-[var(--special-purple)]">
                           <Plus className="w-5 h-5" />
                           <span>{t('feed.createPost')}</span>
@@ -229,7 +229,7 @@ export const Home = () => {
 
                       <div className="space-y-1.5 relative z-10">
                         <h3 className="font-bold text-base tracking-tight">{t('feed.joinTitle')}</h3>
-                        <p className="text-xs text-purple-200 leading-relaxed">
+                        <p className="text-xs text-purple-200 dark:text-purple-300 leading-relaxed">
                           {t('feed.joinDescription')}
                         </p>
                       </div>
@@ -237,7 +237,7 @@ export const Home = () => {
                       <div className="flex items-center gap-2 pt-1 relative z-10">
                         <Link
                           to="/account/login"
-                          className="flex-1 py-2.5 px-3 bg-white hover:bg-purple-50 text-purple-900 text-xs font-semibold rounded-xl text-center transition shadow-sm"
+                          className="flex-1 py-2.5 px-3 bg-white dark:bg-gray-900 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-purple-900 dark:text-purple-200 text-xs font-semibold rounded-xl text-center transition shadow-sm"
                         >
                           {t('feed.signIn')}
                         </Link>
@@ -264,7 +264,7 @@ export const Home = () => {
 
                     <div className="space-y-1.5 relative z-10">
                       <h3 className="font-bold text-base tracking-tight">{t('feed.joinTitle')}</h3>
-                      <p className="text-xs text-purple-200 leading-relaxed">
+                      <p className="text-xs text-purple-200 dark:text-purple-300 leading-relaxed">
                         {t('feed.joinDescription')}
                       </p>
                     </div>
@@ -272,7 +272,7 @@ export const Home = () => {
                     <div className="flex items-center gap-2 pt-1 relative z-10">
                       <Link
                         to="/account/login"
-                        className="flex-1 py-2.5 px-3 bg-white hover:bg-purple-50 text-purple-900 text-xs font-semibold rounded-xl text-center transition shadow-sm"
+                        className="flex-1 py-2.5 px-3 bg-white dark:bg-gray-900 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-purple-900 dark:text-purple-200 text-xs font-semibold rounded-xl text-center transition shadow-sm"
                       >
                         {t('feed.signIn')}
                       </Link>
@@ -287,9 +287,9 @@ export const Home = () => {
                 </>
               )
             }
-            <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-6 w-full">
+            <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-sm mb-6 w-full">
               <div className='mb-3 px-1 h-10 flex items-center overflow-hidden'>
-                <p className={`quote text-2xs text-gray-500 transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}>
+                <p className={`quote text-2xs text-gray-500 dark:text-gray-400 transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}>
                   {quotes[currentIndex]}
                 </p>
 
@@ -309,7 +309,7 @@ export const Home = () => {
                       ? t('feed.whatsOnYourMind', { username: profile.username })
                       : t('feed.whatsOnYourMindNoName')}
                     onChange={checkWrite}
-                    className="w-full bg-gray-100/80 hover:bg-gray-100 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all rounded-full px-4 py-2.5 text-sm text-gray-800 outline-none border border-gray-200"
+                    className="w-full bg-gray-100/80 dark:bg-gray-800/80 hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all rounded-full px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 outline-none border border-gray-200 dark:border-gray-700"
                   />
                   {
                     write && (
@@ -340,8 +340,8 @@ export const Home = () => {
 
               {
                 searches.length > 0 && (
-                  <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
-                    <div className="flex items-center space-x-2 mb-4 text-gray-900 font-bold text-sm">
+                  <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5 shadow-sm">
+                    <div className="flex items-center space-x-2 mb-4 text-gray-900 dark:text-gray-100 font-bold text-sm">
                       <TrendingUp className="w-4 h-4 text-[var(--special-purple)]" />
                       <span>{t('feed.trendingForYou')}</span>
                     </div>
@@ -349,8 +349,8 @@ export const Home = () => {
                       {
                         searches?.map((item: any, index: number) => (
                           <div className="cursor-pointer group">
-                            <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[var(--special-purple)] transition-colors">#{item.term}</h4>
-                            <p className="text-xs text-gray-500">{t('feed.searchCount', { count: item.searchs_count })}</p>
+                            <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-200 group-hover:text-[var(--special-purple)] transition-colors">#{item.term}</h4>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{t('feed.searchCount', { count: item.searchs_count })}</p>
                           </div>
                         ))
                       }
@@ -361,8 +361,8 @@ export const Home = () => {
 
               {
                 users?.length > 0 && (
-                  <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
-                    <div className="flex items-center space-x-2 mb-4 text-gray-900 font-bold text-sm">
+                  <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5 shadow-sm">
+                    <div className="flex items-center space-x-2 mb-4 text-gray-900 dark:text-gray-100 font-bold text-sm">
                       <Users className="w-4 h-4 text-[var(--special-purple)]" />
                       <span>{t('feed.whoToFollow')}</span>
                     </div>

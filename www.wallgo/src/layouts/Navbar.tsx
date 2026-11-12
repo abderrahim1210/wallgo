@@ -1,5 +1,5 @@
 import { Bookmark, Clapperboard, Compass, Flame, Heart, Home, Menu, MessagesCircle, Plus, PlusCircle, PlusIcon, PlusSquare, Search, UserCircle, VideoIcon } from 'lucide-react'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Tooltip } from '../templates/Tooltip'
 import { Notifications } from '../components/Notifications'
@@ -11,10 +11,12 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { api_url } from '../pages/Auth/getUser'
 import { useTranslation } from 'react-i18next'
+import useDarkMode from '../hooks/useDarkMode'
 
 export const Navbar = () => {
     const { t } = useTranslation();
-    const linksClasse = "text-gray-700 hover:text-[var(--special-purple)] transition duration-150";
+    const { isDarkMode } = useDarkMode();
+    const linksClasse = "text-gray-700 dark:text-gray-300 hover:text-[var(--special-purple)] transition duration-150";
     const position = "bottom";
     const location = useLocation();
     const currendPath = location.pathname;
@@ -22,7 +24,7 @@ export const Navbar = () => {
     const isActive = (path: string) => currendPath === path;
     const navigate = useNavigate();
     const getLinkClass = (path: string) => {
-        return `rounded-xl transition-all duration-150 flex items-center justify-center ${isActive(path) ? 'text-[var(--special-purple)] bg-purple-50 shadow-inner' : 'text-gray-600 hover:text-[var(--special-purple)] hover:bg-gray-50'}`;
+        return `rounded-xl transition-all duration-150 flex items-center justify-center ${isActive(path) ? 'text-[var(--special-purple)] bg-purple-50 dark:bg-purple-950/40 shadow-inner' : 'text-gray-600 dark:text-gray-400 hover:text-[var(--special-purple)] hover:bg-gray-50 dark:hover:bg-gray-800'}`;
     }
     const [notifOpen, setNotifOpen] = useState(false);
     const { user } = useAuth()!;
@@ -55,15 +57,16 @@ export const Navbar = () => {
     });
 
     const notifications = data?.notifications;
+
     return (
         <>
-            <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 px-6 py-2 shadow-sm">
+            <nav className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 px-6 py-2 shadow-sm">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
 
                     <ul className="flex items-center m-0 p-0 list-none">
                         <li>
                             <Link to={'/'} title={t('common.brandName')} className={`${currendPath === '/' && 'bg-blue'}`}>
-                                <img src="/icons/logos/mix_logo1.webp" alt={t('common.brandName')} className="h-10 w-auto object-contain p-1" />
+                                <img src={isDarkMode ? "/icons/logos/mix_logo.webp" : "/icons/logos/mix_logo1.webp"} alt={t('common.brandName')} className="h-10 w-auto object-contain p-1" />
                             </Link>
                         </li>
                     </ul>
@@ -154,7 +157,7 @@ export const Navbar = () => {
                                 </>
                             ) : (
                                 <li className='flex items-center space-x-3'>
-                                    <Link to={'/account/login'} className='font-bold text-gray-700 hover:text-[var(--special-purple)] transition-colors'>
+                                    <Link to={'/account/login'} className='font-bold text-gray-700 dark:text-gray-300 hover:text-[var(--special-purple)] transition-colors'>
                                         {t('common.login')}
                                     </Link>
                                     <Link to={'/account/signup'} className='px-4 py-2 font-bold bg-[var(--special-purple)] rounded-lg text-white hover:bg-opacity-90 transition-all'>

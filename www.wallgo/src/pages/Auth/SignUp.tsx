@@ -88,16 +88,16 @@ export const SignUp = () => {
                         <img src="/icons/logos/mix_logo.webp" width={150} className='img-fluid' alt="" />
                     </div>
                     <div className='h-8 flex items-center justify-center mt-2 mb-5 overflow-hidden'>
-                        <p className={`text-gray-300 text-sm text-center typewriter-text transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}>
+                        <p className={`text-gray-300 dark:text-gray-400 text-sm text-center typewriter-text transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}>
                             {slogans[currentIndex]}
                         </p>
                     </div>
                     <form className='space-y-5' onSubmit={handleSubmit}>
 
                         <div>
-                            <label className='block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider'>{t('auth.fullName')}</label>
+                            <label className='block text-xs font-medium text-gray-300 dark:text-gray-400 mb-1.5 uppercase tracking-wider'>{t('auth.fullName')}</label>
                             <div className='relative'>
-                                <span className='absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400'>
+                                <span className='absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 dark:text-gray-500'>
                                     <User className='w-5 h-5' />
                                 </span>
                                 <input
@@ -107,14 +107,14 @@ export const SignUp = () => {
                                     onChange={handleChange}
                                     placeholder={t('auth.fullNamePlaceholder')}
                                     required
-                                    className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
+                                    className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
                                 />
                             </div>
                         </div>
                         <div>
-                            <label className='block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider'>{t('auth.username')}</label>
+                            <label className='block text-xs font-medium text-gray-300 dark:text-gray-400 mb-1.5 uppercase tracking-wider'>{t('auth.username')}</label>
                             <div className='relative'>
-                                <span className='absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400'>
+                                <span className='absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 dark:text-gray-500'>
                                     <AtSign className='w-5 h-5' />
                                 </span>
                                 <input
@@ -124,13 +124,13 @@ export const SignUp = () => {
                                     onChange={handleChange}
                                     placeholder={t('auth.usernamePlaceholder')}
                                     required
-                                    className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
+                                    className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className='block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider'>{t('auth.birthday')}</label>
+                            <label className='block text-xs font-medium text-gray-300 dark:text-gray-400 mb-1.5 uppercase tracking-wider'>{t('auth.birthday')}</label>
                             <div className='grid grid-cols-3 gap-3'>
                                 <select
                                     name='day'
@@ -138,7 +138,7 @@ export const SignUp = () => {
                                     onChange={handleChange}
                                     className='w-full px-3 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all cursor-pointer'
                                 >
-                                    <option value='' className='bg-[#0f172a] text-gray-400'>{t('auth.day')}</option>
+                                    <option value='' className='bg-[#0f172a] text-gray-400 dark:text-gray-500'>{t('auth.day')}</option>
                                     {Array.from({ length: 31 }, (_, i) => (
                                         <option key={i + 1} value={i + 1} className='bg-[#0f172a] text-white'>
                                             {i + 1}
@@ -152,7 +152,7 @@ export const SignUp = () => {
                                     onChange={handleChange}
                                     className='w-full px-3 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all cursor-pointer'
                                 >
-                                    <option value='' className='bg-[#0f172a] text-gray-400'>{t('auth.month')}</option>
+                                    <option value='' className='bg-[#0f172a] text-gray-400 dark:text-gray-500'>{t('auth.month')}</option>
                                     {Array.from({ length: 12 }, (_, index) => new Intl.DateTimeFormat(i18n.language, { month: 'short' }).format(new Date(2026, index, 1))).map((m, index) => (
                                         <option key={index + 1} value={index + 1} className='bg-[#0f172a] text-white'>
                                             {m}
@@ -166,7 +166,7 @@ export const SignUp = () => {
                                     onChange={handleChange}
                                     className='w-full px-3 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all cursor-pointer'
                                 >
-                                    <option value='' className='bg-[#0f172a] text-gray-400'>{t('auth.year')}</option>
+                                    <option value='' className='bg-[#0f172a] text-gray-400 dark:text-gray-500'>{t('auth.year')}</option>
                                     {Array.from({ length: 80 }, (_, i) => {
                                         const year = 2026 - i;
                                         return (
@@ -179,9 +179,9 @@ export const SignUp = () => {
                             </div>
                         </div>
                         <div>
-                            <label className='block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider'>{t('auth.emailAddress')}</label>
+                            <label className='block text-xs font-medium text-gray-300 dark:text-gray-400 mb-1.5 uppercase tracking-wider'>{t('auth.emailAddress')}</label>
                             <div className='relative'>
-                                <span className='absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400'>
+                                <span className='absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 dark:text-gray-500'>
                                     <Mail className='w-5 h-5' />
                                 </span>
                                 <input
@@ -191,15 +191,15 @@ export const SignUp = () => {
                                     onChange={handleChange}
                                     placeholder={t('auth.emailPlaceholder')}
                                     required
-                                    className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
+                                    className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className='block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider'>{t('auth.password')}</label>
+                            <label className='block text-xs font-medium text-gray-300 dark:text-gray-400 mb-1.5 uppercase tracking-wider'>{t('auth.password')}</label>
                             <div className='relative'>
-                                <span className='absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400'>
+                                <span className='absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 dark:text-gray-500'>
                                     <Lock className='w-5 h-5' />
                                 </span>
                                 <input
@@ -209,7 +209,7 @@ export const SignUp = () => {
                                     onChange={handleChange}
                                     placeholder='••••••••'
                                     required
-                                    className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
+                                    className='w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] transition-all text-sm'
                                 />
                             </div>
                         </div>
@@ -220,7 +220,7 @@ export const SignUp = () => {
                                 </div>
                             )
                         }
-                        <div className='text-xm text-semibold text-gray-400 space-y-3 font-semibold leading-relaxed'>
+                        <div className='text-xm text-semibold text-gray-400 dark:text-gray-500 space-y-3 font-semibold leading-relaxed'>
                             <p>
                                 {t('auth.contactInfoNotice')} <Link to='#' className='text-[var(--special-purple)] hover:underline'>{t('auth.learnMore')}</Link>.
                             </p>

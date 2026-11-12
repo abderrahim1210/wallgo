@@ -62,7 +62,7 @@ const PostsGrid: React.FC<PostsGridProps> = ({ data, isLoading, isFetchingNextPa
             <div ref={observerRef} className="h-10"></div>
 
             {!hasNextPage && data.length > 0 && (
-                <div className="text-center py-6 text-xs text-gray-400 font-medium uppercase tracking-wider">
+                <div className="text-center py-6 text-xs text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">
                     {t('feed.endReached')}
                 </div>
             )}

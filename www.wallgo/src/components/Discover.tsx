@@ -116,24 +116,24 @@ export const Discover = () => {
                 <div className="max-w-xl mx-auto mt-20 px-4">
                     <div className='flex justify-center flex-col items-center mb-3'>
                         <h1 className='font-bold text-4xl flex items-center gap-2'><Search className='w-8 h-8 text-[var(--special-purple)] transition hover:scale-110 hover:-rotate-6' /> {t('discover.heading')}</h1>
-                        <p className="text-sm text-gray-500 mt-1">{t('discover.description')}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('discover.description')}</p>
                     </div>
                     <div className="relative">
 
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Search className="w-5 h-5 text-gray-400" />
+                            <Search className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                         </div>
                         <input
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder={t('discover.searchPlaceholder')}
-                            className="w-full bg-white border border-gray-200 rounded-xl pl-12 pr-4 py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all"
+                            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl pl-12 pr-4 py-3 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all"
                         />
                         {searchQuery && (
                             <button
                                 onClick={() => setSearchQuery('')}
-                                className="absolute inset-y-0 right-0 pr-4 flex items-center text-xs text-gray-400 hover:text-gray-600"
+                                className="absolute inset-y-0 right-0 pr-4 flex items-center text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
                             >
                                 <X />
                             </button>
@@ -147,9 +147,9 @@ export const Discover = () => {
                             <button
                                 key={filter.id}
                                 onClick={() => setActiveFilter(filter.id)}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${activeFilter === filter.id
+                                className={`flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${activeFilter === filter.id
                                     ? 'bg-[var(--special-purple)] text-white shadow-sm'
-                                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                                    : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                     }`}
                             >
                                 {filter.icon}
@@ -164,15 +164,15 @@ export const Discover = () => {
                                 searches?.map((s: Search, index: number) => (
                                     <div
                                         key={index}
-                                        className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl hover:bg-gray-50 transition shadow-xs"
+                                        className="flex items-center justify-between p-3 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition shadow-xs"
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-[var(--special-purple)] font-bold">
+                                            <div className="w-10 h-10 rounded-full bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center text-[var(--special-purple)] font-bold">
                                                 <Clock className="w-5 h-5" />
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-sm text-gray-800 cursor-pointer" onClick={() => setSearchQuery(s?.term)}>#{s.term}</h4>
-                                                <p className="text-xs text-gray-400">{t('feed.searchCount', { count: s.searchs_count })}</p>
+                                                <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200 cursor-pointer" onClick={() => setSearchQuery(s?.term)}>#{s.term}</h4>
+                                                <p className="text-xs text-gray-400 dark:text-gray-500">{t('feed.searchCount', { count: s.searchs_count })}</p>
                                             </div>
                                         </div>
                                         <button className="text-xs font-semibold text-[var(--special-purple)] cursor-pointer" onClick={() => deleteTerm(s?.id)}>
@@ -212,15 +212,15 @@ export const Discover = () => {
                                             setSearchQuery(tag.term);
                                             setActiveFilter('posts');
                                         }}
-                                        className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl hover:bg-gray-50 transition cursor-pointer shadow-xs"
+                                        className="flex items-center justify-between p-3 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer shadow-xs"
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-[var(--special-purple)] font-bold">
+                                            <div className="w-10 h-10 rounded-full bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center text-[var(--special-purple)] font-bold">
                                                 <Hash className="w-5 h-5" />
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-sm text-gray-800">#{tag.term}</h4>
-                                                <p className="text-xs text-gray-400">{t('feed.searchCount', { count: tag.searchs_count })}</p>
+                                                <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200">#{tag.term}</h4>
+                                                <p className="text-xs text-gray-400 dark:text-gray-500">{t('feed.searchCount', { count: tag.searchs_count })}</p>
                                             </div>
                                         </div>
                                         <span className="text-xs font-semibold text-[var(--special-purple)]">{t('discover.explore')}</span>
@@ -232,7 +232,7 @@ export const Discover = () => {
                                     <div className="space-y-6">
                                         {items?.users?.data?.length > 0 && (
                                             <div>
-                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">{t('discover.filters.users')}</h3>
+                                                <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-3">{t('discover.filters.users')}</h3>
                                                 <div className="space-y-2">
                                                     {items?.users?.data.map((u: User) => <FollowUser user={u} key={u.id} onFollow={add_follow} />)}
                                                 </div>
@@ -241,14 +241,14 @@ export const Discover = () => {
 
                                         {items?.posts?.data?.length > 0 && (
                                             <div>
-                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">{t('discover.filters.posts')}</h3>
+                                                <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-3">{t('discover.filters.posts')}</h3>
                                                 <PostGrid posts={items?.posts?.data} isFetchingNextPage={isFetchingNextPage} hasNextPage={hasNextPage} fetchNextPage={fetchNextPage} isLoading={isLoading} />
                                             </div>
                                         )}
 
                                         {items?.pages?.data?.length > 0 && (
                                             <div>
-                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">{t('discover.filters.pages')}</h3>
+                                                <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-3">{t('discover.filters.pages')}</h3>
                                                 {
                                                     items?.pages?.data?.map((p: Page, index: number) => <PageCard page={p} key={index} />)
                                                 }
@@ -257,7 +257,7 @@ export const Discover = () => {
 
                                         {items?.groups?.data?.length > 0 && (
                                             <div>
-                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">{t('discover.filters.groups')}</h3>
+                                                <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-3">{t('discover.filters.groups')}</h3>
                                                 {
                                                     items?.groups?.data?.map((g: Group, index: number) => <GroupCard group={g} key={index} />)
                                                 }
@@ -277,7 +277,7 @@ export const Discover = () => {
 
             {selectedPost && (
                 <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="bg-white w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl relative flex flex-col md:flex-row animate-in zoom-in-95 duration-150">
+                    <div className="bg-white dark:bg-gray-900 w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl relative flex flex-col md:flex-row animate-in zoom-in-95 duration-150">
                         <button
                             onClick={() => setSelectedPost(null)}
                             className="absolute top-3 right-3 z-10 p-1.5 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors cursor-pointer"
@@ -291,19 +291,19 @@ export const Discover = () => {
 
                         <div className="md:w-1/2 p-5 flex flex-col justify-between">
                             <div>
-                                <div className="flex items-center space-x-3 mb-4 pb-3 border-b border-gray-100">
+                                <div className="flex items-center space-x-3 mb-4 pb-3 border-b border-gray-100 dark:border-gray-800">
                                     <img src={selectedPost.author.avatar} alt={t('feed.userAvatar')} className="w-10 h-10 rounded-full object-cover" />
                                     <div>
-                                        <h4 className="font-semibold text-sm text-gray-900">{selectedPost.author.name}</h4>
-                                        <p className="text-xs text-gray-500">@{selectedPost.author.username}</p>
+                                        <h4 className="font-semibold text-sm text-gray-900 dark:text-gray-100">{selectedPost.author.name}</h4>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">@{selectedPost.author.username}</p>
                                     </div>
                                 </div>
-                                <p className="text-sm text-gray-800 leading-relaxed mb-4">{selectedPost.content}</p>
+                                <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed mb-4">{selectedPost.content}</p>
                             </div>
 
-                            <div className="flex items-center space-x-4 pt-3 border-t border-gray-100 text-xs text-gray-500 font-medium">
-                                <span className="flex items-center space-x-1 text-red-500">❤️ {t('discover.likes', { count: selectedPost.likes })}</span>
-                                <span className="flex items-center space-x-1 text-purple-500">💬 {t('feed.comments', { count: selectedPost.comments })}</span>
+                            <div className="flex items-center space-x-4 pt-3 border-t border-gray-100 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                <span className="flex items-center space-x-1 text-red-500 dark:text-red-400">❤️ {t('discover.likes', { count: selectedPost.likes })}</span>
+                                <span className="flex items-center space-x-1 text-purple-500 dark:text-purple-400">💬 {t('feed.comments', { count: selectedPost.comments })}</span>
                             </div>
                         </div>
                     </div>

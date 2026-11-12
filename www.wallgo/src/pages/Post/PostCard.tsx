@@ -112,7 +112,7 @@ export const PostCard: React.FC<PostCardProps> = ({
     const postMenuItems: DropdownItem[] = [
         {
             label: t('feed.copyLink'),
-            icon: <Link className="w-4 h-4 text-blue-500" />,
+            icon: <Link className="w-4 h-4 text-blue-500 dark:text-blue-400" />,
             onClick: () => {
                 navigator.clipboard.writeText(`${window.location.href}post/${post?.id}`);
                 toast.success(t('feed.linkCopied'))
@@ -122,14 +122,14 @@ export const PostCard: React.FC<PostCardProps> = ({
         ...((isOwner) ? [
             {
                 label: t('feed.editPost'),
-                icon: <Edit3 className="w-4 h-4 text-emerald-500" />,
+                icon: <Edit3 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />,
                 onClick: () => navigate(`/post/${post?.id}/edit`, { state: { postToEdit: { content: post?.content, media_url: post?.media_url, created_at: post?.created_at }, id: post?.id } }),
             },
         ] : []),
         ...((isOwner || post?.is_group_owner) ? [
             {
                 label: t('feed.deletePost'),
-                icon: <Trash2 className="w-4 h-4 text-red-500" />,
+                icon: <Trash2 className="w-4 h-4 text-red-500 dark:text-red-400" />,
                 danger: true,
                 onClick: () => deletePost(post?.id),
             },
@@ -137,7 +137,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         ...(!isOwner ? [
             {
                 label: t('feed.reportPost'),
-                icon: <Flag className="w-4 h-4 text-red-500" />,
+                icon: <Flag className="w-4 h-4 text-red-500 dark:text-red-400" />,
                 danger: true,
                 onClick: () => openModal(`report-${post?.id}`),
             },
@@ -161,7 +161,7 @@ export const PostCard: React.FC<PostCardProps> = ({
     const isLocked = post?.unlock_time && moment(post?.unlock_time).isAfter(moment());
     const [commentId, setCommentId] = useState<number | null>(null);
     return (
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
             <div className="flex items-center justify-between p-4 pb-3 transition-all rounded-t-2xl">
                 <div className="flex items-center space-x-3">
                     {
@@ -169,18 +169,18 @@ export const PostCard: React.FC<PostCardProps> = ({
                             <img
                                 src={post?.postable?.logo_url || '/icons/users.svg'}
                                 alt={t('common.profile')}
-                                className="w-10 h-10 rounded-full object-cover border border-purple-100"
+                                className="w-10 h-10 rounded-full object-cover border border-purple-100 dark:border-purple-900/60"
                             />
                         ) : (
                             <img
                                 src={post?.user?.avatar_url || '/icons/avatar1.svg'}
                                 alt={t('common.profile')}
-                                className="w-10 h-10 rounded-full object-cover border border-purple-100"
+                                className="w-10 h-10 rounded-full object-cover border border-purple-100 dark:border-purple-900/60"
                             />
                         )
                     }
                     <div>
-                        <h4 className="flex gap-1 items-center font-semibold text-sm text-gray-900 leading-tight">
+                        <h4 className="flex gap-1 items-center font-semibold text-sm text-gray-900 dark:text-gray-100 leading-tight">
                             {
                                 (post?.postable_type?.includes('Page')) ? (
                                     <LinkR to={`/pages/${post?.postable?.id}`}>
@@ -205,7 +205,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                                 )
                             }
                         </h4>
-                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                             {!post?.postable && (
                                 <>
                                     <span>@{post?.user.username}</span>
@@ -227,7 +227,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 <Tooltip label={t('feed.moreOptions')}>
                     <DropdownMenu
                         trigger={
-                            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors cursor-pointer">
+                            <button className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-colors cursor-pointer">
                                 <MoreHorizontal className="w-5 h-5" />
                             </button>
                         }
@@ -242,12 +242,12 @@ export const PostCard: React.FC<PostCardProps> = ({
                     <TimeCapsuleLocked unlockTime={post?.unlock_time} createdAt={post?.created_at} />
                 ) : (
                     <>
-                        <div className="px-4 pb-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed hover:bg-gray-200 cursor-pointer" onClick={() => navigate(`/post/${post?.id}`)}>
+                        <div className="px-4 pb-3 text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer" onClick={() => navigate(`/post/${post?.id}`)}>
                             {post?.content}
                         </div>
 
                         {post?.media_url && (
-                            <div className="w-full bg-gray-50 max-h-[500px] overflow-hidden flex items-center justify-center">
+                            <div className="w-full bg-gray-50 dark:bg-gray-800 max-h-[500px] overflow-hidden flex items-center justify-center">
                                 <img src={post?.media_url} alt={t('feed.postContent')} className="w-full h-auto object-cover max-h-[500px]" onClick={() => setSelectedPost(post)} />
                             </div>
                         )}
@@ -287,30 +287,30 @@ export const PostCard: React.FC<PostCardProps> = ({
                 )
             }
 
-            <div className="px-4 py-3 flex items-center justify-between border-t border-gray-50 mt-1">
+            <div className="px-4 py-3 flex items-center justify-between border-t border-gray-50 dark:border-gray-800 mt-1">
                 <div className="flex items-center space-x-6">
                     <Tooltip label={t('feed.like')}>
                         <button
                             onClick={handleLike}
-                            className="flex items-center space-x-2 text-gray-600 hover:text-red-500 transition-colors group cursor-pointer"
+                            className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors group cursor-pointer"
                         >
                             <Heart
-                                className={`w-6 h-6 transition-transform active:scale-125 ${liked ? 'text-red-500 fill-red-500' : 'group-hover:scale-110'
+                                className={`w-6 h-6 transition-transform active:scale-125 ${liked ? 'text-red-500 dark:text-red-400 fill-red-500' : 'group-hover:scale-110'
                                     }`}
                             />
-                            <span className="text-xs font-semibold text-gray-700">{likes || post?.likes_count}</span>
+                            <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{likes || post?.likes_count}</span>
                         </button>
                     </Tooltip>
 
                     <Tooltip label={t('feed.comments', { count: post?.comments_count })}>
-                        <button onClick={() => openModal(`comments-${post?.id}-post`)} className="flex items-center space-x-2 text-gray-600 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">
+                        <button onClick={() => openModal(`comments-${post?.id}-post`)} className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-[var(--special-purple)] transition-colors group cursor-pointer">
                             <MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                            <span className="text-xs font-semibold text-gray-700">{post?.comments_count}</span>
+                            <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{post?.comments_count}</span>
                         </button>
                     </Tooltip>
 
                     <Tooltip label={t('feed.share')}>
-                        <button onClick={() => openModal(`share-${post?.id}`)} className="text-gray-600 hover:text-blue-500 transition-colors group cursor-pointer">
+                        <button onClick={() => openModal(`share-${post?.id}`)} className="text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors group cursor-pointer">
                             <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
                         </button>
                     </Tooltip>
@@ -319,7 +319,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 <Tooltip label={t('feed.savePost')}>
                     <button
                         onClick={handleSavePost}
-                        className={`text-gray-600 hover:text-[var(--special-purple)] transition-colors cursor-pointer ${saved ? 'text-[var(--special-purple)]' : ''
+                        className={`text-gray-600 dark:text-gray-400 hover:text-[var(--special-purple)] transition-colors cursor-pointer ${saved ? 'text-[var(--special-purple)]' : ''
                             }`}
                     >
                         <Bookmark className={`w-5 h-5 ${saved ? 'fill-[var(--special-purple)]' : ''}`} />

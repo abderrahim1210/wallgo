@@ -88,8 +88,8 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts, isLoading, fetchNextP
                 <React.Fragment key={post.id}>
                     <PostCard key={post.id} post={post} />
                     {(index + 1) % 6 === 0 && suggested_follow && suggested_follow.length > 0 && (
-                        <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm my-2 lg:hidden">
-                            <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">
+                        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-sm my-2 lg:hidden">
+                            <h3 className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-3">
                                 {t('feed.suggestedForYou')}
                             </h3>
 
@@ -109,7 +109,7 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts, isLoading, fetchNextP
             <div ref={observerRef} className="h-10"></div>
 
             {!hasNextPage && posts.length > 0 && (
-                <div className="text-center py-6 text-xs text-gray-400 font-medium uppercase tracking-wider">
+                <div className="text-center py-6 text-xs text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">
                     {t('feed.endReached')}
                 </div>
             )}

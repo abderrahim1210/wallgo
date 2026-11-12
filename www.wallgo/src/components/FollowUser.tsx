@@ -33,18 +33,18 @@ export const FollowUser: React.FC<FollowUserProps> = ({ user, onFollow, closeMod
         navigate(0);
     }
     return (
-        <div className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+        <div className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">
             <div className="flex items-center gap-3 min-w-0">
                 <img
                     src={user?.avatar_url || '/icons/avatar1.svg'}
                     alt={user?.name}
-                    className="w-12 h-12 rounded-full object-cover border border-gray-100 flex-shrink-0"
+                    className="w-12 h-12 rounded-full object-cover border border-gray-100 dark:border-gray-800 flex-shrink-0"
                 />
                 <div className="flex flex-col min-w-0">
-                    <h4 className="text-sm font-bold text-gray-900 truncate hover:underline cursor-pointer" onClick={() => preview()}>
+                    <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate hover:underline cursor-pointer" onClick={() => preview()}>
                         {user?.name}
                     </h4>
-                    <span className="text-xs font-medium text-gray-500 truncate">
+                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 truncate">
                         @{user?.username}
                     </span>
                 </div>
@@ -55,7 +55,7 @@ export const FollowUser: React.FC<FollowUserProps> = ({ user, onFollow, closeMod
                     <button
                         onClick={addFollow}
                         className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 shrink-0 cursor-pointer ${follow
-                            ? 'bg-fuchsia-50 text-[var(--special-purple)] border border-[var(--special-purple)] hover:bg-fuchsia-100'
+                            ? 'bg-fuchsia-50 dark:bg-fuchsia-950/40 text-[var(--special-purple)] border border-[var(--special-purple)] hover:bg-fuchsia-100 dark:hover:bg-fuchsia-900/40'
                             : 'bg-[var(--special-purple)] text-white hover:opacity-90 shadow-sm'
                             }`}
                     >
