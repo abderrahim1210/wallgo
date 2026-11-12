@@ -6,6 +6,8 @@ import ModalTemplate from '../../templates/ModalTemplate';
 import { CommentSection } from '../../components/CommentSection';
 import ShareDropdown from '../../components/ShareDropdown';
 import moment from 'moment';
+// @ts-ignore Moment locale modules do not include their own type declarations.
+import 'moment/locale/ar';
 import { useAuth } from '../../hooks/AuthProvider';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { Post } from '../../templates/PostGrid';
@@ -25,7 +27,8 @@ interface PostCardProps {
 export const PostCard: React.FC<PostCardProps> = ({
     post,
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const momentLocale = i18n.language.toLowerCase().startsWith('ar') ? 'ar' : 'en';
     const [liked, setLiked] = useState<boolean>(post?.is_liked);
     const [likes, setLikes] = useState(Number(post?.likes_count));
     const [saved, setSaved] = useState(Boolean(post?.is_saved));
@@ -207,12 +210,14 @@ export const PostCard: React.FC<PostCardProps> = ({
                                     <span>•</span>
                                 </>
                             )}
-                            <span>{moment(post?.created_at).fromNow()}</span>
+                            <span title={moment(post?.created_at).locale(momentLocale).format('LLL')}>
+                                {moment(post?.created_at).locale(momentLocale).fromNow()}
+                            </span>
                             <span>•</span>
                             {
                                 post?.unlock_time ? (
-                                    <Tooltip label={t('feed.unlockAt', { date: moment(post?.unlock_time).calendar(), time: moment(post?.unlock_time).format('MMM D, YYYY [at] h:mm A') })}><Timer className='w-3.5 h-3.5' /></Tooltip>
-                                ) : post?.schedule_time ? <Tooltip label={t('feed.scheduledAt', { date: moment(post?.schedule_time).calendar(), time: moment(post?.schedule_time).format('MMM D, YYYY [at] h:mm A') })}><CalendarClock className='w-3.5 h-3.5' /></Tooltip> : post?.visibility === 'public' ? <Tooltip label={t('feed.publicPost')}><Globe className='w-3.5 h-3.5' /></Tooltip> : <Tooltip label={t('feed.privatePost')}><Lock className='w-3.5 h-3.5' /></Tooltip>
+                                    <Tooltip label={t('feed.unlockAt', { date: moment(post?.unlock_time).locale(momentLocale).calendar(), time: moment(post?.unlock_time).locale(momentLocale).format('MMM D, YYYY h:mm A') })}><Timer className='w-3.5 h-3.5' /></Tooltip>
+                                ) : post?.schedule_time ? <Tooltip label={t('feed.scheduledAt', { date: moment(post?.schedule_time).locale(momentLocale).calendar(), time: moment(post?.schedule_time).locale(momentLocale).format('MMM D, YYYY h:mm A') })}><CalendarClock className='w-3.5 h-3.5' /></Tooltip> : post?.visibility === 'public' ? <Tooltip label={t('feed.publicPost')}><Globe className='w-3.5 h-3.5' /></Tooltip> : <Tooltip label={t('feed.privatePost')}><Lock className='w-3.5 h-3.5' /></Tooltip>
                             }
                         </div>
                     </div>

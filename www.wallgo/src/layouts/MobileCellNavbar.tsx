@@ -3,8 +3,10 @@ import React from 'react'
 import { Tooltip } from '../templates/Tooltip';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthProvider';
+import { useTranslation } from 'react-i18next';
 
 export const MobileCellNavbar = () => {
+    const { t } = useTranslation();
     const position = "top";
     const location = useLocation();
     const currendPath = location.pathname;
@@ -15,13 +17,13 @@ export const MobileCellNavbar = () => {
     }
     return (
         <div className='md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 py-3 px-6 flex items-center justify-between z-40 shadow-lg'>
-            <Tooltip label='Home' position={position}>
+            <Tooltip label={t('common.home')} position={position}>
                 <Link to="/" className={getLinkClass('/')}>
                     <Home className="w-6 h-6" />
                 </Link>
             </Tooltip>
 
-            <Tooltip label='For you' position={position}>
+            <Tooltip label={t('common.forYou')} position={position}>
                 <Link to="/search" className={getLinkClass('/search')}>
                     <Search className="w-6 h-6" />
                 </Link>
@@ -36,20 +38,20 @@ export const MobileCellNavbar = () => {
                 </Link>
             </div> */}
 
-            <Tooltip label='Reels' position={position}>
+            <Tooltip label={t('common.reels')} position={position}>
                 <Link to="/reels" className={getLinkClass('/reels')}>
                     <Clapperboard className="w-6 h-6" />
                 </Link>
             </Tooltip>
-            <Tooltip label='Messages' position={position}>
+            <Tooltip label={t('common.messages')} position={position}>
                 <Link to="/messenger" className={getLinkClass('/messenger')}>
                     <MessageCircle className="w-6 h-6" />
                 </Link>
             </Tooltip>
 
-            <Tooltip label='Profile' position={position}>
+            <Tooltip label={t('common.profile')} position={position}>
                 <Link to="/account/profile" className={getLinkClass('/account/profile')}>
-                    <img src={user && user?.avatar_url ? user.avatar_url : '/icons/avatar1.svg'} alt='avatar' className='w-7 h-7 object-cover rounded-full' />
+                    <img src={user && user?.avatar_url ? user.avatar_url : '/icons/avatar1.svg'} alt={t('common.avatar')} className='w-7 h-7 object-cover rounded-full' />
                 </Link>
             </Tooltip>
 

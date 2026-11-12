@@ -9,6 +9,7 @@ import { ErrorPage } from './ErrorPage';
 import { RequestCard } from './RequestCard';
 import { UserCheck, UserCheck2 } from 'lucide-react';
 import { EmptyContent } from './EmptyContent';
+import { useTranslation } from 'react-i18next';
 
 export type Request = {
     id: number;
@@ -28,6 +29,7 @@ export type Request = {
 }
 
 const JoinGroupRequests = () => {
+    const { t } = useTranslation();
     const fetchRequests = async ({ pageParam = 1 }) => {
         try {
             const res = await axios.get(`${api_url}/groups/requests?page=${pageParam}`, { withCredentials: true, withXSRFToken: true });
@@ -75,23 +77,23 @@ const JoinGroupRequests = () => {
     return (
         <MainLayout>
             <Helmet>
-                <title>Wallgo : Requests Groups</title>
+                <title>{t('requests.title')}</title>
             </Helmet>
 
             {
                 isLoading ? (
-                    <Spinner type='mini' text='Fetching requests ...' />
+                    <Spinner type='mini' text={t('requests.fetching')} />
                 ) : isError ? (
                     <ErrorPage codeP='500' />
                 ) : (
                     <div className='max-w-2xl mx-auto px-4 py-6'>
                         <div className='flex justify-start items-center mb-3'>
-                            <h1 className='font-bold text-3xl flex items-center gap-2'><UserCheck className='w-8 h-8 text-[var(--special-purple)]' /> Requests <span className='text-[var(--special-purple)]'>({requests.length ?? 0})</span></h1>
+                            <h1 className='font-bold text-3xl flex items-center gap-2'><UserCheck className='w-8 h-8 text-[var(--special-purple)]' /> {t('requests.title')} <span className='text-[var(--special-purple)]'>({requests.length ?? 0})</span></h1>
                         </div>
                         {requests?.length > 0 ? requests?.map((request, index: number) => (
                             <RequestCard request={request} key={index} />
                         )) : (
-                            <EmptyContent text='You dont have any request !' icon={<UserCheck2 />} />
+                            <EmptyContent text={t('requests.empty')} icon={<UserCheck2 />} />
                         )}
                     </div>
                 )

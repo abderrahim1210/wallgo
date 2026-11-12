@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import { FaFacebook, FaTelegram, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 import { FiCheck, FiCopy, FiShare2 } from 'react-icons/fi';
+import { useTranslation } from 'react-i18next';
 
 interface ShareDropdownProps {
     url: string;
 }
 
 const ShareDropdown: React.FC<ShareDropdownProps> = ({ url = window.location.href }) => {
+    const { t } = useTranslation();
     const [copied, setCopied] = useState(false);
 
     const handleCopyLink = () => {
@@ -20,7 +22,7 @@ const ShareDropdown: React.FC<ShareDropdownProps> = ({ url = window.location.hre
 
                 <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-3">
                     <h3 className="font-bold text-xl text-gray-800 flex items-center gap-2">
-                        <FiShare2 className="text-[var(--special-purple)]" /> Share Post
+                        <FiShare2 className="text-[var(--special-purple)]" /> {t('share.title')}
                     </h3>
                 </div>
 
@@ -74,11 +76,11 @@ const ShareDropdown: React.FC<ShareDropdownProps> = ({ url = window.location.hre
                     >
                         {copied ? (
                             <>
-                                <FiCheck className="w-3.5 h-3.5" /> Copied
+                                <FiCheck className="w-3.5 h-3.5" /> {t('share.copied')}
                             </>
                         ) : (
                             <>
-                                <FiCopy className="w-3.5 h-3.5" /> Copy
+                                <FiCopy className="w-3.5 h-3.5" /> {t('share.copy')}
                             </>
                         )}
                     </button>

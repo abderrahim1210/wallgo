@@ -4,6 +4,7 @@ import React, { useState, type ChangeEvent } from 'react'
 import toast from 'react-hot-toast'
 import LoadingButton from '../Icons/LoadingButton';
 import { useModal } from '../hooks/ModalProvider';
+import { useTranslation } from 'react-i18next';
 
 interface ReportProps {
     type: 'post' | 'page' | 'user' | 'group' | 'comment' | 'reel';
@@ -11,6 +12,8 @@ interface ReportProps {
     onClose?: () => void;
 }
 export const Report: React.FC<ReportProps> = ({ type, id, onClose }) => {
+    const { t } = useTranslation();
+    const entity = t(`report.types.${type}`);
     const [data, setData] = useState({
         reportable_id: id,
         reportable_type: type,
@@ -31,13 +34,13 @@ export const Report: React.FC<ReportProps> = ({ type, id, onClose }) => {
             const res = await axios.post(`${api_url}/send_report`, data, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 setLoading(false);
-                toast.success(res.data.message || 'Report added successfully');
+                toast.success(res.data.message || t('report.success'));
 
                 closeModal?.();
                 if (onClose) onClose();
             } else {
                 setLoading(false);
-                toast.error(res.data.message || 'Report failed to send');
+                toast.error(res.data.message || t('report.failure'));
                 console.error(res.data.message);
             }
         } catch (err: any) {
@@ -51,7 +54,7 @@ export const Report: React.FC<ReportProps> = ({ type, id, onClose }) => {
 
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                     <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
-                        <AlertTriangle className="w-5 h-5 text-red-500" /> Report {type}
+                        <AlertTriangle className="w-5 h-5 text-red-500" /> {t('report.title', { entity })}
                     </h3>
                 </div>
 
@@ -59,7 +62,7 @@ export const Report: React.FC<ReportProps> = ({ type, id, onClose }) => {
 
                     <div>
                         <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
-                            Select a reason for reporting
+                            {t('report.selectReason')}
                         </label>
                         <select
                             name='reason'
@@ -68,32 +71,32 @@ export const Report: React.FC<ReportProps> = ({ type, id, onClose }) => {
                             className="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--special-purple)] focus:bg-white transition-all text-gray-800"
                             required
                         >
-                            <option value="" disabled>Choose a reason...</option>
-                            <option value="spam">Spam or misleading</option>
-                            <option value="harassment">Harassment or hate speech</option>
-                            <option value="inappropriate">Inappropriate or explicit content</option>
-                            <option value="false_info">False information</option>
-                            <option value="other">Other</option>
+                            <option value="" disabled>{t('report.chooseReason')}</option>
+                            <option value="spam">{t('report.reasons.spam')}</option>
+                            <option value="harassment">{t('report.reasons.harassment')}</option>
+                            <option value="inappropriate">{t('report.reasons.inappropriate')}</option>
+                            <option value="false_info">{t('report.reasons.falseInfo')}</option>
+                            <option value="other">{t('report.reasons.other')}</option>
                         </select>
                     </div>
 
                     <div>
                         <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
-                            Additional Details (Optional)
+                            {t('report.additionalDetails')}
                         </label>
                         <textarea
                             name='description'
                             rows={3}
                             value={data.description}
                             onChange={handleChange}
-                            placeholder="Please provide more details about why you are reporting this..."
+                            placeholder={t('report.detailsPlaceholder')}
                             className="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--special-purple)] focus:bg-white transition-all text-gray-800 resize-none"
                         ></textarea>
                     </div>
 
                     <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
                         <LoadingButton loading={loading} type='submit' className="px-5 py-2 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-xl shadow-md transition-colors cursor-pointer disabled:opacity-50">
-                            Submit
+                            {t('report.submit')}
                         </LoadingButton>
                     </div>
 

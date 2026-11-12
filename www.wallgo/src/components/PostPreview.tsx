@@ -11,8 +11,10 @@ import { Skeleton } from '../templates/Skeleton'
 import { ErrorPage } from './ErrorPage'
 import Spinner from '../templates/Spinner'
 import { CommentSection } from './CommentSection'
+import { useTranslation } from 'react-i18next'
 
 export const PostPreview = () => {
+    const { t } = useTranslation();
     const { id } = useParams();
     const fetchInfos = async () => {
         try {
@@ -35,12 +37,12 @@ export const PostPreview = () => {
     return (
         <MainLayout>
             <Helmet>
-                <title>WallGo : Post</title>
+                <title>{t('pageTitles.post')}</title>
             </Helmet>
 
             {
                 isLoading ? (
-                    <Spinner text='Fetch post data ...' type='large' />
+                    <Spinner text={t('feed.fetchingPost')} type='large' />
                 ) : isError ? (
                     <div className='mt-10'>
                         <ErrorPage codeP='500' />
@@ -52,7 +54,7 @@ export const PostPreview = () => {
                             className="text-slate-400 transition-colors p-2 rounded-xl hover:bg-white/5 flex items-center space-x-1.5 font-medium group cursor-pointer"
                         >
                             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-                            <span>Back</span>
+                            <span>{t('auth.back')}</span>
                         </button>
 
                         <PostCard post={post} />

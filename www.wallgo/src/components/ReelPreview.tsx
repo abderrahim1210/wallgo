@@ -9,8 +9,10 @@ import Spinner from '../templates/Spinner';
 import { ErrorPage } from './ErrorPage';
 import { Helmet } from 'react-helmet-async';
 import { Navbar } from '../layouts/Navbar';
+import { useTranslation } from 'react-i18next';
 
 const ReelPreview = () => {
+    const { t } = useTranslation();
     const { id } = useParams();
     const fetchReel = async () => {
         try {
@@ -30,14 +32,14 @@ const ReelPreview = () => {
     return (
         <>
             <Helmet>
-                <title>{`WallGo : Reel ${reel?.caption}`}</title>
+                <title>{t('pageTitles.reel', { caption: reel?.caption || '' })}</title>
             </Helmet>
 
             <Navbar />
 
             {
                 isLoading ? (
-                    <Spinner type='large' text='Fetch reel ...' />
+                    <Spinner type='large' text={t('reelGrid.fetchingSingle')} />
                 ) : isError ? (
                     <ErrorPage codeP='500' />
                 ) : (

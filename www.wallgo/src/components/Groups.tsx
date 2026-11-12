@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { GroupCard } from './GroupCard';
 import { Skeleton } from '../templates/Skeleton';
 import { ErrorPage } from './ErrorPage';
+import { useTranslation } from 'react-i18next';
 
 export interface Group {
     id: number;
@@ -26,6 +27,7 @@ export interface Group {
 
 export const Groups = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const fetchGroups = async () => {
         try {
             const res = await axios.get(`${api_url}/groups`, { withCredentials: true, withXSRFToken: true });
@@ -58,10 +60,10 @@ export const Groups = () => {
                                 className="text-slate-400 transition-colors p-2 rounded-xl hover:bg-white/5 flex items-center space-x-1.5 font-medium group cursor-pointer"
                             >
                                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-                                <span>Back</span>
+                                <span>{t('auth.back')}</span>
                             </button>
                             <div className='flex justify-start items-center gap-2'>
-                                <h1 className='font-bold text-3xl flex items-center gap-2'><FaUsers className='w-8 h-8 text-[var(--special-purple)]' /> Your Groups <span className='text-[var(--special-purple)]'>({groups?.length ?? 0})</span></h1><button onClick={() => navigate('/group/create')} className='text-[var(--special-white)] bg-[var(--special-purple)] font-bold px-4 hover:bg-indigo-100 hover:text-[var(--special-purple)] rounded-full transition-all cursor-pointer flex'>New group <PlusIcon /></button>
+                                <h1 className='font-bold text-3xl flex items-center gap-2'><FaUsers className='w-8 h-8 text-[var(--special-purple)]' /> {t('groupsPages.your_groups')} <span className='text-[var(--special-purple)]'>({groups?.length ?? 0})</span></h1><button onClick={() => navigate('/group/create')} className='text-[var(--special-white)] bg-[var(--special-purple)] font-bold px-4 hover:bg-indigo-100 hover:text-[var(--special-purple)] rounded-full transition-all cursor-pointer flex'>{t('groupsPages.new_group')} <PlusIcon /></button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-3">
                                 {
@@ -69,7 +71,7 @@ export const Groups = () => {
                                         <GroupCard group={group} key={index} />
                                     )) : (
                                         <div className='col-span-full flex justify-center'>
-                                            <EmptyContent text="You don't have any group - try to create a first now !" icon={<Users />} />
+                                            <EmptyContent text={t('groupsPages.no_groups')} icon={<Users />} />
                                         </div>
                                     )
                                 }
@@ -78,7 +80,7 @@ export const Groups = () => {
                         <hr className="border-gray-200 my-8" />
                         <div className='px-4 py-6'>
                             <div className='flex justify-start items-center'>
-                                <h1 className='font-bold text-3xl flex items-center gap-2'><FaUsers className='w-8 h-8 text-[var(--special-purple)]' /> Suggested Groups <span className='text-[var(--special-purple)]'>({suggestedGroups?.length ?? 0})</span></h1>
+                                <h1 className='font-bold text-3xl flex items-center gap-2'><FaUsers className='w-8 h-8 text-[var(--special-purple)]' /> {t('groupsPages.suggested_groups')} <span className='text-[var(--special-purple)]'>({suggestedGroups?.length ?? 0})</span></h1>
                             </div>
 
 
@@ -86,7 +88,7 @@ export const Groups = () => {
                                 {
                                     suggestedGroups?.length > 0 ? suggestedGroups.map((group: Group, index: number) => <GroupCard group={group} key={index} />) : (
                                         <div className='col-span-full flex justify-center'>
-                                            <EmptyContent text='No groups suggested for you - try again later !' icon={<Users />} />
+                                            <EmptyContent text={t('groupsPages.no_suggested_groups')} icon={<Users />} />
                                         </div>
                                     )
                                 }

@@ -21,6 +21,7 @@ import { ErrorPage } from './ErrorPage'
 import { DropdownMenu, type DropdownItem } from '../templates/DropdownMenu'
 import ShareDropdown from './ShareDropdown'
 import { Report } from './Report'
+import { useTranslation } from 'react-i18next'
 
 interface User {
     id: number;
@@ -44,10 +45,16 @@ export const Profile = () => {
     const { id } = useParams();
     const api_url = 'https://api.wallgo.test';
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const { show, openModal, closeModal } = useModal()!;
     const { user } = useAuth()!;
-    if (!user) return <Navigate to={'/account/login'} replace />
     const [follow, setFollow] = useState(false);
+
+    useEffect(() => {
+        if (!user && !id){
+            navigate('/account/login');
+        }
+    },[user, id]);
 
     useEffect(() => {
         if (id) {
@@ -110,13 +117,13 @@ export const Profile = () => {
 
     const postMenuItems: DropdownItem[] = [
         {
-            label: 'Share profile',
+            label: t('profile.share_profile'),
             icon: <Share2 className="w-4 h-4 text-blue-500" />,
             onClick: () => openModal(`share-${profile?.id}`),
         },
 
         {
-            label: 'Report profile',
+            label: t('profile.report_profile'),
             icon: <Flag className="w-4 h-4 text-red-500" />,
             danger: true,
             onClick: () => openModal(`report-${profile?.id}`),
@@ -126,7 +133,7 @@ export const Profile = () => {
     return (
         <MainLayout>
             <Helmet>
-                <title>WallGo : Profile</title>
+                <title>{t('common.profile')}</title>
             </Helmet>
 
             {
@@ -137,7 +144,7 @@ export const Profile = () => {
                                 followers?.map((u: User) => (
                                     <FollowUser user={u} onFollow={add_follow} closeModal={closeModal} />
                                 ))
-                            ) : (<EmptyContent icon={<FaUsers />} text='No followers yet.' />)
+                            ) : (<EmptyContent icon={<FaUsers />} text={t('profile.no_followers')} />)
                         }
                     </ModalTemplate>
                 )
@@ -165,7 +172,7 @@ export const Profile = () => {
                                 followings?.map((u: User) => (
                                     <FollowUser user={u} onFollow={add_follow} closeModal={closeModal} />
                                 ))
-                            ) : (<EmptyContent icon={<FaUsers />} text='No followings yet.' />)
+                            ) : (<EmptyContent icon={<FaUsers />} text={t('profile.no_followings')} />)
                         }
                     </ModalTemplate>
                 )
@@ -184,7 +191,7 @@ export const Profile = () => {
                                 <div className="h-48 md:h-60 w-full rounded-xl overflow-hidden relative bg-gray-200">
                                     <img
                                         src={profile?.banner_url ?? '/backgrounds/user_banner.svg'}
-                                        alt="Profile Banner"
+                                        alt={t('common.profileBanner')}
                                         className="w-full h-full object-cover"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
@@ -195,7 +202,7 @@ export const Profile = () => {
                                     <div className="flex items-end gap-4">
                                         <img
                                             src={profile?.avatar_url ?? '/icons/avatar1.svg'}
-                                            alt="Avatar"
+                                            alt={t('common.avatar')}
                                             className="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover border-4 border-white shadow-md bg-white"
                                         />
                                         <div className="">
@@ -211,14 +218,14 @@ export const Profile = () => {
                                                 <button
                                                     onClick={() => navigate('/account/edit')}
                                                     className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
-                                                    title='Edit your account'
+                                                    title={t('profile.edit_account')}
                                                 >
                                                     <Pencil className='w-5 h-5 text-[var(--special-purple)]' />
                                                 </button>
                                                 <button
                                                     onClick={() => navigate('/create_post')}
                                                     className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
-                                                    title='Create post for this page'
+                                                    title={t('profile.create_post_for_profile')}
                                                 >
                                                     <PlusSquare className='w-5 h-5 text-indigo-600' />
                                                 </button>
@@ -228,7 +235,7 @@ export const Profile = () => {
                                                         navigate('/settings');
                                                     }}
                                                     className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
-                                                    title='Settings'
+                                                    title={t('profile.settings')}
                                                 >
                                                     <Settings className='w-5 h-5 text-indigo-600' />
                                                 </button>
@@ -236,11 +243,11 @@ export const Profile = () => {
                                         ) : (
                                             <div className="flex items-center gap-3">
                                                 <button onClick={() => set_follow(Number(id))} className={`flex items-center justify-center gap-2 px-6 py-2.5 ${follow ? 'bg-fuchsia-50 border border-[var(--special-purple)] text-[var(--special-purple)]' : 'bg-[var(--special-purple)] text-white'} hover:opacity-90  rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0`}>
-                                                    <span>{follow ? 'Followed' : 'Follow'}</span>
+                                                    <span>{follow ? t('profile.followed') : t('profile.follow')}</span>
                                                 </button>
 
                                                 <button className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0">
-                                                    <span>Message</span>
+                                                    <span>{t('profile.message')}</span>
                                                 </button>
                                                 <DropdownMenu
                                                     trigger={
@@ -261,13 +268,13 @@ export const Profile = () => {
 
                                 <div className="flex items-center gap-6 py-4 border-y border-gray-100 mb-6 text-sm">
                                     <div>
-                                        <span className="font-bold text-gray-900 text-base">{posts_list.length}</span> <span className="text-gray-500">Posts</span>
+                                        <span className="font-bold text-gray-900 text-base">{posts_list.length}</span> <span className="text-gray-500">{t('profile.posts')}</span>
                                     </div>
                                     <div>
-                                        <span className="font-bold text-gray-900 text-base cursor-pointer" onClick={() => openModal('followers')}>{stats?.followers_count} </span><span className="text-gray-500">Followers </span>
+                                        <span className="font-bold text-gray-900 text-base cursor-pointer" onClick={() => openModal('followers')}>{stats?.followers_count} </span><span className="text-gray-500">{t('profile.followers')}</span>
                                     </div>
                                     <div>
-                                        <span className="font-bold text-gray-900 text-base cursor-pointer" onClick={() => openModal('followings')}>{stats?.followings_count} </span> <span className="text-gray-500">Following</span>
+                                        <span className="font-bold text-gray-900 text-base cursor-pointer" onClick={() => openModal('followings')}>{stats?.followings_count} </span> <span className="text-gray-500">{t('profile.following')}</span>
                                     </div>
                                 </div>
 
@@ -285,7 +292,7 @@ export const Profile = () => {
                                         profile?.birth && (
                                             <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
                                                 <FiCalendar className="text-[var(--special-purple)] w-5 h-5" />
-                                                <span>Born on {profile.birth}</span>
+                                                <span>{t('profile.born_on', { date: profile.birth })}</span>
                                             </div>
                                         )
                                     }
@@ -294,7 +301,7 @@ export const Profile = () => {
                                         profile?.status && (
                                             <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
                                                 <FiHeart className="text-[var(--special-purple)] w-5 h-5" />
-                                                <span className='capitalize'>{profile.status}</span>
+                                                <span className='capitalize'>{t(`editProfile.${profile.status}`)}</span>
                                             </div>
                                         )
                                     }
@@ -302,7 +309,7 @@ export const Profile = () => {
                                         profile?.gender && (
                                             <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
                                                 <FaVenusMars className="text-[var(--special-purple)] w-5 h-5" />
-                                                <span className="capitalize">{profile.gender}</span>
+                                                <span className="capitalize">{t(`editProfile.${profile.gender}`)}</span>
                                             </div>
                                         )
                                     }
@@ -312,7 +319,7 @@ export const Profile = () => {
                         <div className='mt-3'>
                             {
                                 !posts_list ? (
-                                    <Spinner text='Wait a few seconds to get all posts ...' type='mini' />
+                                    <Spinner text={t('profile.wait_for_posts')} type='mini' />
                                 ) : (
                                     <PostGrid isLoading={postsLoading} posts={posts_list} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} />
                                 )

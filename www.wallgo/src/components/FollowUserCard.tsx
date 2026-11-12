@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import type { User } from './Home'
 import { useFollow } from './useFollow';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface FollowUserCardProps {
     user: User;
@@ -10,6 +11,7 @@ interface FollowUserCardProps {
 const FollowUserCard: React.FC<FollowUserCardProps> = ({ user }) => {
     const [follow, setFollow] = useState<boolean>(false);
     const { add_follow } = useFollow();
+    const { t } = useTranslation();
 
     const addFollow = (user_id: number) => {
         add_follow(user_id);
@@ -33,7 +35,7 @@ const FollowUserCard: React.FC<FollowUserCardProps> = ({ user }) => {
                 onClick={() => addFollow(user?.id)}
                 className={`w-full py-1.5 ${follow ? 'bg-[var(--special-white)] border border-[var(--special-gray)] text-[var(--special-gray)]' : 'bg-[var(--special-purple)] text-white'} text-[11px] font-semibold rounded-lg shadow-sm transition`}
             >
-                Follow
+                {t('profile.follow')}
             </button>
         </div>
     )

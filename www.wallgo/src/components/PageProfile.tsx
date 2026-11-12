@@ -19,6 +19,7 @@ import { ErrorPage } from './ErrorPage';
 import { DropdownMenu, type DropdownItem } from '../templates/DropdownMenu';
 import ShareDropdown from './ShareDropdown';
 import { Report } from './Report';
+import { useTranslation } from 'react-i18next';
 
 export interface Page {
     id: number;
@@ -42,7 +43,8 @@ export interface Page {
 export const PageProfile = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    if (!id) return <p>Id not found</p>;
+    const { t } = useTranslation();
+    if (!id) return <p>{t('profile.page_not_found')}</p>;
 
     const fetchPage = async () => {
         try {
@@ -101,13 +103,13 @@ export const PageProfile = () => {
     const { show, openModal, closeModal } = useModal()!;
     const postMenuItems: DropdownItem[] = [
         {
-            label: 'Share page',
+            label: t('profile.share_page'),
             icon: <Share2 className="w-4 h-4 text-blue-500" />,
             onClick: () => openModal(`share-${page?.id}`),
         },
 
         {
-            label: 'Report page',
+            label: t('profile.report_page'),
             icon: <Flag className="w-4 h-4 text-red-500" />,
             danger: true,
             onClick: () => openModal(`report-${page?.id}`),
@@ -116,7 +118,7 @@ export const PageProfile = () => {
     return (
         <MainLayout>
             <Helmet>
-                <title>WallGo : Page</title>
+                <title>{t('common.pages')}</title>
             </Helmet>
 
             {
@@ -177,21 +179,21 @@ export const PageProfile = () => {
                                                 <button
                                                     onClick={() => navigate('/create_post', { state: { pageId: page?.id, pageName: page?.name } })}
                                                     className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
-                                                    title='Create post for this page'
+                                                    title={t('profile.create_post_for_page')}
                                                 >
                                                     <PlusSquare className='w-5 h-5 text-indigo-600' />
                                                 </button>
                                                 <button
                                                     onClick={() => openModal('pages')}
                                                     className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
-                                                    title='Create post for this page'
+                                                    title={t('profile.settings')}
                                                 >
                                                     <Settings className='w-5 h-5 text-indigo-600' />
                                                 </button>
                                                 <button
                                                     onClick={() => navigate(`/pages/${page?.id}/edit`)}
                                                     className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
-                                                    title='Create post for this page'
+                                                    title={t('profile.edit_page')}
                                                 >
                                                     <Pencil className='w-5 h-5 text-[var(--special-purple)]' />
                                                 </button>
@@ -205,7 +207,7 @@ export const PageProfile = () => {
                                                         : 'bg-[var(--special-purple)] text-white hover:opacity-90'
                                                         }`}
                                                 >
-                                                    {followed ? <><Check className="w-4 h-4" /> Following</> : 'Follow Page'}
+                                                    {followed ? <><Check className="w-4 h-4" /> {t('profile.following')}</> : t('profile.follow_page')}
                                                 </button>
                                                 <DropdownMenu
                                                     trigger={
@@ -228,18 +230,18 @@ export const PageProfile = () => {
                                 <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100 text-sm text-gray-600">
                                     <span className="flex items-center gap-1.5 font-medium">
                                         <Users className="w-4 h-4 text-[var(--special-purple)]" />
-                                        {page?.followers_count} Followers
+                                        {page?.followers_count} {t('profile.followers')}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="mt-6">
-                            <h2 className="text-xl font-bold text-gray-900 mb-4">Page Posts</h2>
+                            <h2 className="text-xl font-bold text-gray-900 mb-4">{t('profile.page_posts')}</h2>
                             {posts && posts.length > 0 ? (
                                 <PostGrid posts={posts} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} isLoading={postsLoading} />
                             ) : (
-                                <EmptyContent text=" This page hasn't posted anything yet." icon={<FaRegNewspaper />} />
+                                <EmptyContent text={t('profile.no_page_posts')} icon={<FaRegNewspaper />} />
                             )}
                         </div>
                     </div>

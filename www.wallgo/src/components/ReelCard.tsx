@@ -15,12 +15,14 @@ import ShareDropdown from './ShareDropdown';
 import { ReelOptions } from './ReelOptions';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
+import { useTranslation } from 'react-i18next';
 
 interface ReelCardProps {
     reel: Reel;
 }
 
 export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
+    const { t } = useTranslation();
     const [isMuted, setIsMuted] = useState(false);
     const [playingVideoId, setPlayingVideoId] = useState<number | null>(1);
     const [isPlaying, setIsPlaying] = useState(true);
@@ -106,7 +108,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
         try {
             await axios.post(`${api_url}/post/save`, { reel_id: reel.id, type: 'reel' }, { withCredentials: true, withXSRFToken: true }).then(res => {
                 if (res.data.success) {
-                    toast.success(res.data.message);
+                    toast.success(saved ? t('reelCard.removedFromSaved') : t('reelCard.saved'));
                 }
             });
         } catch (err: any) {
@@ -120,25 +122,25 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
     const handleDelete = async () => {
         if (!reel?.id) return null;
         Swal.fire({
-            title: "Delete Reel",
-            text: `Are you sure for delete this reel ?`,
+            title: t('reelCard.deleteTitle'),
+            text: t('reelCard.deleteConfirmation'),
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Yes , delete it',
+            confirmButtonText: t('reelCard.confirmDelete'),
             confirmButtonColor: '#7371FC',
-            cancelButtonText: 'Cancel'
+            cancelButtonText: t('feed.cancel')
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
                     const url = isAuthorGroup ? `${api_url}/groups/delete_reel/${reel?.reelable.id}/${reel?.id}` : `${api_url}/reels/${reel?.id}`;
                     const res = await axios.delete(url, { withCredentials: true, withXSRFToken: true });
                     if (res.data.success) {
-                        toast.success(res.data.message || 'Reel deleted successfully');
+                        toast.success(t('reelCard.deleted'));
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
                     } else {
-                        toast.error(res.data.message || 'Failed to delete this reel');
+                        toast.error(t('reelCard.deleteFailed'));
                         console.log(res.data.message);
                     }
                 } catch (err: any) {
@@ -192,49 +194,51 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
 
             <button
                 onClick={() => setIsMuted(!isMuted)}
+                aria-label={isMuted ? t('reelCard.unmute') : t('reelCard.mute')}
+                title={isMuted ? t('reelCard.unmute') : t('reelCard.mute')}
                 className="absolute top-4 right-4 z-20 p-2.5 bg-black/40 backdrop-blur-md text-white rounded-full hover:bg-black/60 transition-colors cursor-pointer"
             >
                 {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
             </button>
 
             <div className="absolute right-4 bottom-20 z-30 flex flex-col items-center space-y-5 text-white">
-                <button className="flex flex-col items-center space-y-1 group cursor-pointer" onClick={handleLike}>
+                <button aria-label={t('feed.like')} className="flex flex-col items-center space-y-1 group cursor-pointer" onClick={handleLike}>
                     <div className="p-3 bg-white/10 backdrop-blur-md rounded-full group-hover:bg-white/20 transition-colors">
                         <Heart className={`w-6 h-6 ${liked ? 'text-red-500 fill-red-500' : 'text-white'} hover:text-red-500 transition-colors`} />
                     </div>
                     <span className="text-xs font-semibold">{reel.likes_count}</span>
                 </button>
 
-                <button className="flex flex-col items-center space-y-1 group cursor-pointer" onClick={() => openModal(`comments-reel-${reel?.id}`)}>
+                <button aria-label={t('feed.comments', { count: reel.comments_count })} className="flex flex-col items-center space-y-1 group cursor-pointer" onClick={() => openModal(`comments-reel-${reel?.id}`)}>
                     <div className="p-3 bg-white/10 backdrop-blur-md rounded-full group-hover:bg-white/20 transition-colors">
                         <MessageCircle className="w-6 h-6 text-white" />
                     </div>
                     <span className="text-xs font-semibold">{reel.comments_count}</span>
                 </button>
 
-                <button className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer" onClick={() => openModal(`share-${reel?.id}`)}>
+                <button aria-label={t('feed.share')} className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer" onClick={() => openModal(`share-${reel?.id}`)}>
                     <Send className="w-6 h-6 text-white" />
                 </button>
-                <button className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer" onClick={handleSavePost}>
+                <button aria-label={saved ? t('reelCard.removeSaved') : t('reelCard.save')} className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer" onClick={handleSavePost}>
                     <Bookmark className={`w-6 h-6 text-white ${saved ? 'fill-white' : ''}`} />
                 </button>
 
-                <button className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer" onClick={() => openModal(`options-reel-${reel?.id}`)}>
+                <button aria-label={t('reelCard.options')} className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors cursor-pointer" onClick={() => openModal(`options-reel-${reel?.id}`)}>
                     <MoreVertical className="w-6 h-6 text-white" />
                 </button>
             </div>
 
             <div className="relative z-20 p-4 text-white space-y-2.5 pb-6">
                 <div className="flex items-center space-x-3">
-                    <img src={reel?.reelable?.logo_url || reel?.user?.avatar_url} alt="Avatar" className="w-9 h-9 rounded-full object-cover border border-white/20" />
+                    <img src={reel?.reelable?.logo_url || reel?.user?.avatar_url} alt={t('feed.userAvatar')} className="w-9 h-9 rounded-full object-cover border border-white/20" />
                     <div>
-                        <h4 className="font-semibold text-sm cursor-pointer hover:underline w-[150px]" onClick={() => navigate(`${reel?.is_owner ? '/account/profile' : `/profile/${reel.user.id}/${reel.user.username}`}`)}>{reel?.reelable?.name ? `${reel?.user?.name} on ${reel?.reelable?.name}` : reel.user.name}</h4>
+                        <h4 className="font-semibold text-sm cursor-pointer hover:underline w-[150px]" onClick={() => navigate(`${reel?.is_owner ? '/account/profile' : `/profile/${reel.user.id}/${reel.user.username}`}`)}>{reel?.reelable?.name ? t('feed.postedInGroup', { username: reel?.user?.name, group: reel?.reelable?.name }) : reel.user.name}</h4>
                         <p className="text-xs text-gray-300">@{reel.user.username}</p>
                     </div>
                     {
                         !reel.is_owner && (
                             <button className="ml-2 px-3 py-1 bg-white/20 backdrop-blur-md hover:bg-white/30 text-xs font-semibold rounded-full transition-colors cursor-pointer" onClick={handleFollow}>
-                                {followed ? 'Followed' : 'Follow'}
+                                {followed ? t('profile.followed') : t('profile.follow')}
                             </button>
                         )
                     }

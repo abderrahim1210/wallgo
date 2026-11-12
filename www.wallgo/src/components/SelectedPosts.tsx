@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/AuthProvider';
 import { DropdownMenu, type DropdownItem } from '../templates/DropdownMenu';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 interface Post {
     id: number;
@@ -28,24 +29,25 @@ interface SelectedPostsProps {
 };
 
 export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose ,onDelete}) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { user } = useAuth()!;
     const isOwner = user?.id === post?.user.id;
     const postMenuItems: DropdownItem[] = [
         {
-            label: 'Copy link',
+            label: t('postDetails.copyLink'),
             icon: <Link className="w-4 h-4 text-blue-500" />,
-            onClick: () => toast.success('Link copied !'),
+            onClick: () => toast.success(t('postDetails.linkCopied')),
         },
 
         ...(isOwner ? [
             {
-                label: 'Edit Post',
+                label: t('postDetails.edit'),
                 icon: <Edit3 className="w-4 h-4 text-emerald-500" />,
                 onClick: () => navigate(`/post/${post?.id}/edit`, { state: { postToEdit: { content: post?.content, media_url: post?.media_url, created_at: post?.created_at }, id: post?.id } }),
             },
             {
-                label: 'Delete Post',
+                label: t('postDetails.delete'),
                 icon: <Trash2 className="w-4 h-4 text-red-500" />,
                 danger: true,
                 onClick: () => onDelete(post?.id),
@@ -53,7 +55,7 @@ export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose ,onD
         ] : []),
         ...(!isOwner ? [
             {
-                label: 'Report Post',
+                label: t('postDetails.report'),
                 icon: <Flag className="w-4 h-4 text-red-500" />,
                 danger: true,
                 onClick: () => console.log('Report clicked'),
@@ -81,14 +83,14 @@ export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose ,onD
                     />
                 </div>
                 <div className="md:w-1/2 bg-black flex items-center justify-center rounded-2xl">
-                    <img src={post?.media_url} alt="Detail" className="max-h-[400px] rounded-2xl w-full object-contain" />
+                    <img src={post?.media_url} alt={t('postDetails.imageAlt')} className="max-h-[400px] rounded-2xl w-full object-contain" />
                 </div>
 
                 <div className="md:w-1/2 p-5 flex flex-col justify-between">
                     <div>
                         <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100 pr-8">
                             <div className='flex items-center space-x-3'>
-                                <img src={post?.user.avatar_url} alt="Avatar" className="w-10 h-10 rounded-full object-cover" />
+                                <img src={post?.user.avatar_url} alt={t('common.avatar')} className="w-10 h-10 rounded-full object-cover" />
                                 <div>
                                     <h4 className="font-semibold text-sm text-gray-900">{post?.user.name}</h4>
                                     <p className="text-xs text-gray-500">@{post?.user.username}</p>
@@ -101,8 +103,8 @@ export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose ,onD
                     </div>
 
                     <div className="flex items-center space-x-4 pt-3 border-t border-gray-100 text-xs text-gray-500 font-medium">
-                        <span className="flex items-center gap-1 text-red-500"><Heart className='w-4 h-4' /> {post?.likes_count} Likes</span>
-                        <span className="flex items-center gap-1 text-purple-500"><MessageCircle className='w-4 h-4' /> {post?.comments_count} Comments</span>
+                        <span className="flex items-center gap-1 text-red-500"><Heart className='w-4 h-4' /> {t('postDetails.likes', { count: post?.likes_count })}</span>
+                        <span className="flex items-center gap-1 text-purple-500"><MessageCircle className='w-4 h-4' /> {t('postDetails.comments', { count: post?.comments_count })}</span>
                     </div>
                 </div>
             </div>

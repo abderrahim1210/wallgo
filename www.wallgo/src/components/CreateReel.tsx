@@ -6,6 +6,7 @@ import { MainLayout } from '../MainLayout';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export type Reel = {
     id: number;
@@ -40,6 +41,7 @@ export type Reel = {
 export const cloudName = "dhysaozog";
 
 export const CreateReel = () => {
+    const { t } = useTranslation();
     const { reel_id } = useParams();
     const location = useLocation();
     const groupId = location.state?.groupId;
@@ -88,7 +90,7 @@ export const CreateReel = () => {
                     if (fetchedReel.audio_name && fetchedReel.audio_url) {
                         setSelectedTrack({
                             title: fetchedReel.audio_name.split(' - ')[0] || fetchedReel.audio_name,
-                            artist: fetchedReel.audio_name.split(' - ')[1] || 'Unknown',
+                            artist: fetchedReel.audio_name.split(' - ')[1] || t('reelCreation.unknownArtist'),
                             url: fetchedReel.audio_url
                         });
                     }
@@ -111,7 +113,7 @@ export const CreateReel = () => {
             setVideoPreview(null);
             setSelectedTrack(null);
         }
-    }, [reel_id]);
+    }, [reel_id, t]);
 
     const [loading, setLoading] = useState(false);
     const [videoPreview, setVideoPreview] = useState<string | null>(null);
@@ -182,13 +184,13 @@ export const CreateReel = () => {
             const res = await axios[method](url, formData, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 setLoading(false);
-                toast.success(res.data.message || 'Reel created successfully');
+                toast.success(edit ? t('reelCreation.updated') : t('reelCreation.created'));
                 setTimeout(() => {
                     navigate('/reels');
                 }, 1000);
             } else {
                 setLoading(false);
-                toast.error(res.data.message || 'Failed to create a reel');
+                toast.error(edit ? t('reelCreation.updateFailed') : t('reelCreation.createFailed'));
                 console.log(res.data.message);
             }
         } catch (err: any) {
@@ -227,10 +229,12 @@ export const CreateReel = () => {
                     <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                         <div className="flex items-center gap-2 text-[var(--special-purple)]">
                             <Clapperboard className='w-5 h-5' />
-                            <h3 className="font-bold text-gray-800 text-xl">Create New Reel {groupName && `to ${groupName} group`}</h3>
+                            <h3 className="font-bold text-gray-800 text-xl">{groupName ? t('reelCreation.titleForGroup', { groupName }) : edit ? t('reelCreation.editTitle') : t('reelCreation.title')}</h3>
                         </div>
                         <button
                             onClick={() => navigate(-1)}
+                            aria-label={t('common.close')}
+                            title={t('common.close')}
                             className="text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:text-red-500 cursor-pointer transition"
                         >
                             <X className="w-5 h-5" />
@@ -245,8 +249,8 @@ export const CreateReel = () => {
                                     <Upload className="w-6 h-6" />
                                 </div>
                                 <div className="text-center">
-                                    <p className="text-sm font-bold text-gray-700">Click to upload your reel video</p>
-                                    <p className="text-xs text-gray-400 mt-1">MP4, MOV, or WebM (Max 50MB)</p>
+                                    <p className="text-sm font-bold text-gray-700">{t('reelCreation.uploadPrompt')}</p>
+                                    <p className="text-xs text-gray-400 mt-1">{t('reelCreation.videoRequirements')}</p>
                                 </div>
                                 <input
                                     type="file"
@@ -280,6 +284,8 @@ export const CreateReel = () => {
                                                 setReel(prev => ({ ...prev, video_url: '' }));
                                                 setVideoPreview(null);
                                             }}
+                                            aria-label={t('reelCreation.removeVideo')}
+                                            title={t('reelCreation.removeVideo')}
                                             className="absolute top-3 right-3 cursor-pointer bg-black/60 hover:bg-black text-white p-2 rounded-full backdrop-blur-xs transition"
                                         >
                                             <X className="w-4 h-4" />
@@ -290,18 +296,18 @@ export const CreateReel = () => {
                         )}
 
                         <div>
-                            <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Caption</label>
+                            <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">{t('reelCreation.caption')}</label>
                             <textarea
                                 name='caption'
                                 value={reel.caption}
                                 onChange={handleChange}
-                                placeholder="Write something about your reel... #explore"
+                                placeholder={t('reelCreation.captionPlaceholder')}
                                 rows={3}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] outline-none text-sm text-gray-800 resize-none transition"
                             />
                         </div>
                         <div className="relative">
-                            <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Audio Track Name</label>
+                            <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">{t('reelCreation.audioTrackName')}</label>
 
                             <div
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -310,7 +316,7 @@ export const CreateReel = () => {
                                 <div className="flex items-center gap-2">
                                     <Music className="w-3.5 h-3.5 text-[var(--special-purple)] animate-pulse" />
                                     <span className="text-xs text-gray-800 font-medium">
-                                        {selectedTrack ? `${selectedTrack.title} - ${selectedTrack.artist}` : 'Select an audio track...'}
+                                        {selectedTrack ? `${selectedTrack.title} - ${selectedTrack.artist}` : t('reelCreation.selectTrack')}
                                     </span>
                                 </div>
                                 <span className="text-xs text-gray-400">▼</span>
@@ -353,7 +359,7 @@ export const CreateReel = () => {
                                         </div>
                                         <div>
                                             <p className="text-xs font-bold text-gray-800">{selectedTrack.title}</p>
-                                            <p className="text-[10px] text-gray-500">{selectedTrack.artist} • <span className="text-[var(--special-purple)] font-semibold">Ready</span></p>
+                                            <p className="text-[10px] text-gray-500">{selectedTrack.artist} • <span className="text-[var(--special-purple)] font-semibold">{t('reelCreation.ready')}</span></p>
                                         </div>
                                     </div>
 
@@ -369,14 +375,14 @@ export const CreateReel = () => {
                                         }}
                                         className="text-gray-400 hover:text-red-500 text-xs font-semibold px-2 py-1 transition"
                                     >
-                                        Remove
+                                        {t('reelCreation.remove')}
                                     </button>
                                 </div>
                             )}
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Visibility</label>
+                            <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">{t('reelCreation.visibility')}</label>
                             <div className="relative flex items-center">
                                 {
                                     reel?.visibility === 'private' ? (
@@ -391,9 +397,9 @@ export const CreateReel = () => {
                                     onChange={handleChange}
                                     className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--special-purple)] focus:ring-1 focus:ring-[var(--special-purple)] outline-none text-sm text-gray-800 transition"
                                 >
-                                    <option value="">Select visibility</option>
-                                    <option value="public">Public</option>
-                                    <option value="private">Private</option>
+                                    <option value="">{t('reelCreation.selectVisibility')}</option>
+                                    <option value="public">{t('feed.public')}</option>
+                                    <option value="private">{t('feed.private')}</option>
                                 </select>
                             </div>
                         </div>
@@ -404,7 +410,7 @@ export const CreateReel = () => {
                                 onClick={() => navigate(-1)}
                                 className="px-5 py-2.5 cursor-pointer rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 transition"
                             >
-                                Cancel
+                                {t('feed.cancel')}
                             </button>
                             <button
                                 type="submit"
@@ -414,12 +420,12 @@ export const CreateReel = () => {
                                 {loading ? (
                                     <>
                                         <Loader2 className="w-4 h-4 animate-spin" />
-                                        <span>Posting Reel...</span>
+                                        <span>{edit ? t('reelCreation.updating') : t('reelCreation.posting')}</span>
                                     </>
                                 ) : (
                                     <>
                                         <Video className="w-4 h-4" />
-                                        <span>{edit ? 'Edit Reel' : 'Share Reel'}</span>
+                                        <span>{edit ? t('reelCreation.editReel') : t('reelCreation.shareReel')}</span>
                                     </>
                                 )}
                             </button>

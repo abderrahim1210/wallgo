@@ -1,6 +1,5 @@
-import { Album, FileText, Heart, MessageSquare, PaperBag } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react'
-import { SelectedPosts } from '../components/SelectedPosts';
+import { Album, FileText } from 'lucide-react';
+import React, { useEffect, useRef } from 'react'
 import { EmptyContent } from '../components/EmptyContent';
 import { PostCard } from '../pages/Post/PostCard';
 import { Skeleton } from './Skeleton';
@@ -55,12 +54,6 @@ interface PostGridProps {
 
 export const PostGrid: React.FC<PostGridProps> = ({ posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, suggested_follow }) => {
     const { t } = useTranslation();
-    if (posts?.length === 0) {
-        return (
-            <EmptyContent text={t('feed.noPostsFound')} icon={<Album />} />
-        )
-    }
-
     const observerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -82,6 +75,12 @@ export const PostGrid: React.FC<PostGridProps> = ({ posts, isLoading, fetchNextP
             if (currentRef) observer.unobserve(currentRef);
         };
     }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+    if (posts?.length === 0) {
+        return (
+            <EmptyContent text={t('feed.noPostsFound')} icon={<Album />} />
+        )
+    }
 
     return (
         <div className="gap-1 md:gap-2">

@@ -4,6 +4,7 @@ import { EmptyContent } from '../components/EmptyContent';
 import { Heart, MessageCircle, MoreVertical, Music, Send, Video, VolumeX } from 'lucide-react';
 import { Skeleton } from './Skeleton';
 import { ReelCard } from '../components/ReelCard';
+import { useTranslation } from 'react-i18next';
 
 interface ReelGridProps {
     reels: Reel[],
@@ -13,12 +14,7 @@ interface ReelGridProps {
     isFetchingNextPage: boolean;
 }
 export const ReelGrid: React.FC<ReelGridProps> = ({ reels, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage }) => {
-    if (reels?.length === 0) {
-        return (
-            <EmptyContent text='No posts found it - try again later !' icon={<Video />} />
-        )
-    }
-
+    const { t } = useTranslation();
     const observerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -40,6 +36,10 @@ export const ReelGrid: React.FC<ReelGridProps> = ({ reels, isLoading, fetchNextP
             if (currentRef) observer.unobserve(currentRef);
         };
     }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+    if (reels?.length === 0) {
+        return <EmptyContent text={t('feed.noPostsFound')} icon={<Video />} />;
+    }
+
     return (
         <div className='h-[calc(100vh-55px)] w-full overflow-y-scroll snap-y snap-mandatory scrollbar-none flex flex-col items-center'>
             {

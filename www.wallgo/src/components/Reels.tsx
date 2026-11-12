@@ -9,8 +9,10 @@ import Spinner from '../templates/Spinner';
 import { ErrorPage } from './ErrorPage';
 import { ReelGrid } from '../templates/ReelGrid';
 import { Toaster } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export const Reels = () => {
+    const { t } = useTranslation();
     const fetchReels = async ({pageParam=1}) => {
         try {
             const res = await axios.get(`${api_url}/reels?page=${pageParam}`, { withCredentials: true, withXSRFToken: true });
@@ -37,13 +39,13 @@ export const Reels = () => {
     return (
         <>
             <Helmet>
-                <title>WallGo : Reels</title>
+                <title>{t('pageTitles.reels')}</title>
             </Helmet>
             <Navbar />
             <Toaster position='top-right' />
             {
                 isLoading ? (
-                    <Spinner type='large' text='Fetching reel ...' />
+                    <Spinner type='large' text={t('reelGrid.fetching')} />
                 ) : isError ? (
                     <ErrorPage codeP='500' />
                 ) : (

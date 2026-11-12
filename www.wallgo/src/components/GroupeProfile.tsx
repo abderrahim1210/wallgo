@@ -18,6 +18,7 @@ import { DropdownMenu, type DropdownItem } from '../templates/DropdownMenu';
 import ShareDropdown from './ShareDropdown';
 import { Report } from './Report';
 import { Skeleton } from '../templates/Skeleton';
+import { useTranslation } from 'react-i18next';
 import { ErrorPage } from './ErrorPage';
 import toast from 'react-hot-toast';
 import LoadingButton from '../Icons/LoadingButton';
@@ -31,6 +32,7 @@ import PostsGrid from '../templates/PostsGrid';
 export const GroupeProfile = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const queryClient = useQueryClient();
     const fetchGroup = async () => {
         try {
@@ -114,7 +116,7 @@ export const GroupeProfile = () => {
             const res = await axios.post(`${api_url}/send_request`, { answer: answer, group_id: group?.id }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 queryClient.invalidateQueries({ queryKey: ['status_group', group?.id] });
-                toast.success(res.data.message || 'Request sent successfully');
+                toast.success(res.data.message || t('profile.request_sent_successfully'));
                 setTimeout(() => {
                     closeModal?.();
                 }, 1000);
@@ -128,13 +130,13 @@ export const GroupeProfile = () => {
 
     const postMenuItems: DropdownItem[] = [
         {
-            label: 'Share group',
+            label: t('profile.share_group'),
             icon: <Share2 className="w-4 h-4 text-blue-500" />,
             onClick: () => openModal(`share-${group?.id}`),
         },
 
         {
-            label: 'Report group',
+            label: t('profile.report_group'),
             icon: <Flag className="w-4 h-4 text-red-500" />,
             danger: true,
             onClick: () => openModal(`report-${group?.id}`),
@@ -192,11 +194,11 @@ export const GroupeProfile = () => {
             const res = await axios.delete(`${api_url}/groups/${group?.id}/remove_member/${id}`, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
                 setLoading(false);
-                toast.success(res.data.message || 'Member removed successfully');
+                toast.success(res.data.message || t('profile.member_removed_successfully'));
                 queryClient.invalidateQueries({ queryKey: ['groups-followers', group?.id] });
             } else {
                 setLoading(false);
-                toast.error(res.data.message || 'Something went wrong');
+                toast.error(res.data.message || t('profile.something_went_wrong'));
                 console.log(res.data.message);
             }
         } catch (err: any) {
@@ -207,12 +209,12 @@ export const GroupeProfile = () => {
 
     const createOptions = [
         {
-            label: 'Create Post',
+            label: t('profile.create_post_for_group'),
             icon: <PlusIcon className="w-4 h-4 text-[var(--special-purple)]" />,
             onClick: () => { navigate('/create_post', { state: { groupId: group?.id, contentGroup: '', groupName:group?.name } }) },
         },
         {
-            label: 'Create Reel',
+            label: t('profile.create_reel_for_group'),
             icon: <Clapperboard className="w-4 h-4 text-[var(--special-purple)]" />,
             onClick: () => { navigate('/create_reel', { state: { groupId: group?.id, groupName: group?.name } }) },
         },
@@ -221,7 +223,7 @@ export const GroupeProfile = () => {
     return (
         <MainLayout>
             <Helmet>
-                <title>{`WallGo : Group ${group?.name}`}</title>
+                <title>{t('profile.group_title', { name: group?.name ?? '' })}</title>
             </Helmet>
 
             {
@@ -254,12 +256,12 @@ export const GroupeProfile = () => {
                         <div className='mt-5 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm'>
                             <div className='flex items-center gap-2 mb-2'>
                                 <span className='px-2.5 py-1 text-xs font-semibold text-[var(--special-purple)] bg-indigo-50 rounded-lg'>
-                                    Group Question
+                                    {t('profile.group_question')}
                                 </span>
                             </div>
 
                             <h4 className='font-semibold text-gray-900 text-[18px] mb-1'>
-                                Answer the question to join <span className='text-[var(--special-purple)]'>{group?.name}</span>
+                                {t('profile.answer_join_question', { name: group?.name ?? '' })}
                             </h4>
                             <p className='text-gray-600 text-sm mb-4 bg-gray-50 p-3 rounded-xl border border-gray-100'>
                                 {question}
@@ -278,7 +280,7 @@ export const GroupeProfile = () => {
                                             />
                                             <div className='w-2.5 h-2.5 rounded-full bg-[var(--special-purple)] opacity-0 peer-checked:opacity-100 transition-opacity'></div>
                                         </div>
-                                        <span className='font-medium text-gray-800 text-sm'>Yes, I agree</span>
+                                        <span className='font-medium text-gray-800 text-sm'>{t('profile.yes_i_agree')}</span>
                                     </div>
                                 </label>
 
@@ -294,7 +296,7 @@ export const GroupeProfile = () => {
                                             />
                                             <div className='w-2.5 h-2.5 rounded-full bg-indigo-600 opacity-0 peer-checked:opacity-100 transition-opacity'></div>
                                         </div>
-                                        <span className='font-medium text-gray-800 text-sm'>No</span>
+                                        <span className='font-medium text-gray-800 text-sm'>{t('profile.no')}</span>
                                     </div>
                                 </label>
                             </div>
@@ -310,7 +312,7 @@ export const GroupeProfile = () => {
                                     }}
                                     className='px-5 py-2.5 rounded-xl font-semibold text-sm bg-[var(--sepcial-purple)] text-white shadow-sm shadow-indigo-200 transition-all active:scale-95'
                                 >
-                                    Submit Answer & Join
+                                    {t('profile.submit_answer_join')}
                                 </LoadingButton>
                             </div>
                         </div>
@@ -348,13 +350,13 @@ export const GroupeProfile = () => {
                                                     onClick={() => removeMember(user.id)}
                                                     className="px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
                                                 >
-                                                    {loading ? 'Removing ...' : 'Remove'}
+                                                    {loading ? t('profile.removing_member') : t('profile.remove_member')}
                                                 </button>
                                             )
                                         }
                                     </div>
                                 )) : (
-                                    <EmptyContent text='No followers yet!' icon={<User />} />
+                                    <EmptyContent text={t('profile.no_followers_group')} icon={<User />} />
                                 )
                             }
                         </div>
@@ -394,21 +396,21 @@ export const GroupeProfile = () => {
                                                 <button
                                                     onClick={() => navigate('/create_post')}
                                                     className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
-                                                    title='Create post for this page'
+                                                    title={t('profile.create_post_for_group')}
                                                 >
                                                     <PlusSquare className='w-5 h-5 text-indigo-600' />
                                                 </button>
                                                 <button
                                                     onClick={() => openModal('groups')}
                                                     className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
-                                                    title='Create post for this page'
+                                                    title={t('profile.settings')}
                                                 >
                                                     <Settings className='w-5 h-5 text-indigo-600' />
                                                 </button>
                                                 <button
                                                     onClick={() => navigate(`/groups/${group?.id}/edit`)}
                                                     className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
-                                                    title='Create post for this page'
+                                                    title={t('profile.edit_group')}
                                                 >
                                                     <Pencil className='w-5 h-5 text-[var(--special-purple)]' />
                                                 </button>
@@ -421,7 +423,7 @@ export const GroupeProfile = () => {
                                                             trigger={
                                                                 <button
                                                                     className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition shadow-sm cursor-pointer flex items-center justify-center"
-                                                                    title='Create post for this page'
+                                                                    title={t('profile.create_post_for_group')}
                                                                 >
                                                                     <PlusSquare className='w-5 h-5 text-indigo-600' />
                                                                 </button>
@@ -440,7 +442,7 @@ export const GroupeProfile = () => {
                                                             }}
                                                             className={`px-6 py-2.5 rounded-xl font-semibold capitalize text-sm transition shadow-sm cursor-pointer flex items-center gap-2 ${status === 'pending' ? 'bg-amber-300' : status === 'accepted' ? 'bg-green-300' : 'bg-red-400'}`}
                                                         >
-                                                            {status === 'pending' ? <Timer className="w-4 h-4" /> : <X className='w-4 h-4' />} {status} Request
+                                                            {status === 'pending' ? <Timer className="w-4 h-4" /> : <X className='w-4 h-4' />} {t('profile.request_status', { status: t(`profile.status.${status}`) })}
                                                         </button>
                                                     ) : (
                                                         <button
@@ -456,7 +458,7 @@ export const GroupeProfile = () => {
                                                                 : 'bg-[var(--special-purple)] text-white hover:opacity-90'
                                                                 }`}
                                                         >
-                                                            {(followed) ? 'Joined' : 'Join Group'}
+                                                            {(followed) ? t('profile.joined') : t('profile.join_group')}
                                                         </button>
                                                     )
                                                 }
@@ -481,7 +483,7 @@ export const GroupeProfile = () => {
                                             : 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
                                             }`}>
                                             {group?.visibility === 'private' ? <FaLock className="w-3 h-3" /> : <FaGlobe className="w-3 h-3" />}
-                                            {group?.visibility} Group
+                                            {t('profile.visibility_group', { visibility: group?.visibility === 'private' ? t('feed.private') : t('feed.public') })}
                                         </span>
                                     </div>
                                     <p className='text-gray-500'>{group?.description}</p>
@@ -490,7 +492,7 @@ export const GroupeProfile = () => {
                                 <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100 text-sm text-gray-600">
                                     <span className="flex items-center gap-1.5 font-medium cursor-pointer" onClick={() => openModal(`followers-group-${group?.id}`)}>
                                         <Users className="w-4 h-4 text-[var(--special-purple)]" />
-                                        {group?.followers_count} Followers
+                                        {group?.followers_count} {t('profile.followers')}
                                     </span>
                                 </div>
                             </div>
@@ -502,7 +504,7 @@ export const GroupeProfile = () => {
                                     <div className='flex items-center space-x-3 flex-1 min-w-0 mt-3 m-3'>
                                         <img
                                             src={user?.avatar_url ?? '/icons/avatar1.svg'}
-                                            alt="Profile"
+                                            alt={t('common.avatar')}
                                             className="w-10 h-10 rounded-full object-cover shrink-0"
                                         />
                                         <div className="relative flex-1 flex items-center space-x-2 min-w-0">
@@ -510,14 +512,14 @@ export const GroupeProfile = () => {
                                                 name='content'
                                                 value={content}
                                                 type="text"
-                                                placeholder={`What's on your mind, ${user?.username ?? ''}?`}
+                                                placeholder={t('feed.whatsOnYourMind', { username: user?.username ?? '' })}
                                                 onChange={checkWrite}
                                                 className="w-full bg-gray-100/80 hover:bg-gray-100 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all rounded-full px-4 py-2.5 text-sm text-gray-800 outline-none border border-gray-200"
                                             />
                                             {
                                                 write && (
                                                     <LoadingButton loading={loading} className='px-5 py-2.5 bg-[var(--special-purple)] text-white text-sm font-medium rounded-full hover:opacity-90 transition-all shadow-sm cursor-pointer animate-fadeIn font-semibold shrink-0' onClick={() => navigate('/create_post', { state: { groupId: group?.id, contentGroup: content } })}>
-                                                        Post
+                                                        {t('feed.post')}
                                                     </LoadingButton>
                                                 )
                                             }
@@ -525,10 +527,10 @@ export const GroupeProfile = () => {
                                     </div>
                                 )
                             }
-                            <h2 className="text-xl font-bold text-gray-900 mb-4">Group Posts</h2>
+                            <h2 className="text-xl font-bold text-gray-900 mb-4">{t('profile.group_posts')}</h2>
                             {
                                 (!isJoined && group?.visibility === 'private') ? (
-                                    <EmptyContent text='This group is private' icon={<Lock />} />
+                                    <EmptyContent text={t('profile.private_group')} icon={<Lock />} />
                                 ) : (
                                     <>
                                         <div className='flex space-x-2 border-b border-gray-100 pb-3 mb-3 mt-3'>
@@ -536,13 +538,13 @@ export const GroupeProfile = () => {
                                                 onClick={() => setActiveTab('posts')}
                                                 className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'posts' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                                             >
-                                                Posts
+                                                {t('profile.posts')}
                                             </button>
                                             <button
                                                 onClick={() => setActiveTab('reels')}
                                                 className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'reels' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                                             >
-                                                Reels
+                                                {t('profile.reels')}
                                             </button>
                                         </div>
                                         <div className='mt-3'>

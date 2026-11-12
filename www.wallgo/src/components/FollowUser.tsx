@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthProvider';
+import { useTranslation } from 'react-i18next';
 
 interface User {
     id: number;
@@ -20,6 +21,7 @@ export const FollowUser: React.FC<FollowUserProps> = ({ user, onFollow, closeMod
     const [follow, setFollow] = useState<boolean>(Boolean(user?.is_following));
     const navigate = useNavigate();
     const { user: cureentUser } = useAuth()!;
+    const { t } = useTranslation();
     const addFollow = () => {
         onFollow(user?.id);
         setFollow(prev => !prev);
@@ -57,7 +59,7 @@ export const FollowUser: React.FC<FollowUserProps> = ({ user, onFollow, closeMod
                             : 'bg-[var(--special-purple)] text-white hover:opacity-90 shadow-sm'
                             }`}
                     >
-                        {follow ? 'Followed' : 'Follow'}
+                        {follow ? t('profile.followed') : t('profile.follow')}
                     </button>
                 )
             }

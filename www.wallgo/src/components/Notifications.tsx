@@ -1,11 +1,11 @@
 import axios from 'axios';
 import React from 'react'
-import { FiCheck, FiHeart, FiMessageSquare, FiUserPlus } from 'react-icons/fi';
+import { FiCheck } from 'react-icons/fi';
 import { api_url } from '../pages/Auth/getUser';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import { NotificationCard } from './NotificationCard';
+import { useTranslation } from 'react-i18next';
 
 export interface Notification {
     id: string;
@@ -31,7 +31,7 @@ interface NotificationsProps {
 }
 
 export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose }) => {
-    if (!isOpen) return null;
+    const { t } = useTranslation();
     const fetchNotifications = async () => {
         try {
             const res = await axios.get(`${api_url}/notifications`, { withCredentials: true, withXSRFToken: true });
@@ -47,7 +47,8 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
 
     const { data: notifications = [] } = useQuery<Notification[]>({
         queryKey: ['notifications'],
-        queryFn: fetchNotifications
+        queryFn: fetchNotifications,
+        enabled: isOpen
     });
 
 
@@ -64,6 +65,7 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
         }
     }
     const navigate = useNavigate();
+    if (!isOpen) return null;
     return (
         <>
             <div className="fixed inset-0 z-40" onClick={(e) => {
@@ -74,27 +76,27 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
             <div className="absolute right-0 top-0 mt-5 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden transform transition-all animate-in fade-in slide-in-from-top-2">
 
                 <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
-                    <h3 className="font-bold text-base text-gray-800">Notifications</h3>
+                    <h3 className="font-bold text-base text-gray-800">{t('notifications.title')}</h3>
                     <button onClick={handleReadAll} className="text-xs text-[var(--special-purple)] hover:underline font-medium flex items-center gap-1">
-                        <FiCheck className="w-3.5 h-3.5" /> Mark all as read
+                        <FiCheck className="w-3.5 h-3.5" /> {t('notifications.markAllRead')}
                     </button>
                 </div>
 
                 <div className="max-h-[380px] overflow-y-auto divide-y divide-gray-50">
                     {notifications.length > 0 ? (
                         notifications.map((notif) => (
-                            <NotificationCard notif={notif} />
+                            <NotificationCard notif={notif} key={notif.id} />
                         ))
                     ) : (
                         <div className="py-8 text-center text-gray-400 text-sm">
-                            No notifications yet
+                            {t('notifications.empty')}
                         </div>
                     )}
                 </div>
 
                 <div className="p-2.5 border-t border-gray-100 text-center bg-gray-50">
                     <button onClick={() => navigate('/notifications/all')} className="cursor-pointer text-xs font-semibold text-gray-600 hover:text-[var(--special-purple)] transition-colors">
-                        View All Notifications
+                        {t('notifications.viewAll')}
                     </button>
                 </div>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { MainLayout } from '../MainLayout'
 import { Clock, FileText, Globe, Hash, Search, User, Users, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
@@ -11,12 +11,11 @@ import { ErrorPage } from './ErrorPage';
 import { EmptyContent } from './EmptyContent';
 import { FollowUser } from './FollowUser';
 import { useFollow } from './useFollow';
-import { PostCard } from '../pages/Post/PostCard';
-import FollowUserCard from './FollowUserCard';
 import type { Page } from './PageProfile';
 import { PageCard } from './PageCard';
 import type { Group } from './Groups';
 import { GroupCard } from './GroupCard';
+import { useTranslation } from 'react-i18next';
 
 type User = {
     id: number;
@@ -35,6 +34,7 @@ type Search = {
 }
 
 export const Discover = () => {
+    const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedPost, setSelectedPost] = useState<any | null>(null);
     const [activeFilter, setActiveFilter] = useState('all');
@@ -70,12 +70,12 @@ export const Discover = () => {
         : (firstPage[activeFilter]?.data || firstPage[activeFilter] || []);
 
     const filters = [
-        { id: 'all', label: 'All', icon: <Globe className="w-4 h-4" /> },
-        { id: 'posts', label: 'Posts', icon: <FileText className="w-4 h-4" /> },
-        { id: 'users', label: 'Users', icon: <User className="w-4 h-4" /> },
-        { id: 'groups', label: 'Groups', icon: <Users className="w-4 h-4" /> },
-        { id: 'pages', label: 'Pages', icon: <Users className="w-4 h-4" /> },
-        { id: 'tags', label: 'Hashtags', icon: <Hash className="w-4 h-4" /> },
+        { id: 'all', label: t('discover.filters.all'), icon: <Globe className="w-4 h-4" /> },
+        { id: 'posts', label: t('discover.filters.posts'), icon: <FileText className="w-4 h-4" /> },
+        { id: 'users', label: t('discover.filters.users'), icon: <User className="w-4 h-4" /> },
+        { id: 'groups', label: t('discover.filters.groups'), icon: <Users className="w-4 h-4" /> },
+        { id: 'pages', label: t('discover.filters.pages'), icon: <Users className="w-4 h-4" /> },
+        { id: 'tags', label: t('discover.filters.tags'), icon: <Hash className="w-4 h-4" /> },
     ];
     const { add_follow } = useFollow()!;
 
@@ -110,13 +110,13 @@ export const Discover = () => {
     return (
         <MainLayout>
             <Helmet>
-                <title>WallGo : Discover</title>
+                <title>{t('discover.title')}</title>
             </Helmet>
             <div className="pb-20 md:pb-10">
                 <div className="max-w-xl mx-auto mt-20 px-4">
                     <div className='flex justify-center flex-col items-center mb-3'>
-                        <h1 className='font-bold text-4xl flex items-center gap-2'><Search className='w-8 h-8 text-[var(--special-purple)] transition hover:scale-110 hover:-rotate-6' /> Search Wallgo</h1>
-                        <p className="text-sm text-gray-500 mt-1">Find posts, creators, groups, and hashtags</p>
+                        <h1 className='font-bold text-4xl flex items-center gap-2'><Search className='w-8 h-8 text-[var(--special-purple)] transition hover:scale-110 hover:-rotate-6' /> {t('discover.heading')}</h1>
+                        <p className="text-sm text-gray-500 mt-1">{t('discover.description')}</p>
                     </div>
                     <div className="relative">
 
@@ -127,7 +127,7 @@ export const Discover = () => {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search posts, tags, or creators..."
+                            placeholder={t('discover.searchPlaceholder')}
                             className="w-full bg-white border border-gray-200 rounded-xl pl-12 pr-4 py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[var(--special-purple)] transition-all"
                         />
                         {searchQuery && (
@@ -172,7 +172,7 @@ export const Discover = () => {
                                             </div>
                                             <div>
                                                 <h4 className="font-bold text-sm text-gray-800 cursor-pointer" onClick={() => setSearchQuery(s?.term)}>#{s.term}</h4>
-                                                <p className="text-xs text-gray-400">{s.searchs_count} searches</p>
+                                                <p className="text-xs text-gray-400">{t('feed.searchCount', { count: s.searchs_count })}</p>
                                             </div>
                                         </div>
                                         <button className="text-xs font-semibold text-[var(--special-purple)] cursor-pointer" onClick={() => deleteTerm(s?.id)}>
@@ -181,14 +181,14 @@ export const Discover = () => {
                                     </div>
                                 ))
                             }
-                            <EmptyContent text='Type to search' icon={<Search />} />
+                            <EmptyContent text={t('discover.typeToSearch')} icon={<Search />} />
                         </>
                     ) : isLoading ? (
-                        <Spinner type='mini' text={`Fetching ${activeFilter} ...`} />
+                        <Spinner type='mini' text={t('discover.fetching', { type: t(`discover.filters.${activeFilter}`) })} />
                     ) : isError ? (
                         <ErrorPage codeP='500' />
                     ) : items.length === 0 ? (
-                        <EmptyContent text={`No ${activeFilter} found!`} icon={<Search />} />
+                        <EmptyContent text={t('discover.noFilterResults', { type: t(`discover.filters.${activeFilter}`) })} icon={<Search />} />
                     ) : (
                         <div className="space-y-4">
                             {
@@ -220,10 +220,10 @@ export const Discover = () => {
                                             </div>
                                             <div>
                                                 <h4 className="font-bold text-sm text-gray-800">#{tag.term}</h4>
-                                                <p className="text-xs text-gray-400">{tag.searchs_count} searches</p>
+                                                <p className="text-xs text-gray-400">{t('feed.searchCount', { count: tag.searchs_count })}</p>
                                             </div>
                                         </div>
-                                        <span className="text-xs font-semibold text-[var(--special-purple)]">Explore</span>
+                                        <span className="text-xs font-semibold text-[var(--special-purple)]">{t('discover.explore')}</span>
                                     </div>
                                 ))
                             }
@@ -232,7 +232,7 @@ export const Discover = () => {
                                     <div className="space-y-6">
                                         {items?.users?.data?.length > 0 && (
                                             <div>
-                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">Users</h3>
+                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">{t('discover.filters.users')}</h3>
                                                 <div className="space-y-2">
                                                     {items?.users?.data.map((u: User) => <FollowUser user={u} key={u.id} onFollow={add_follow} />)}
                                                 </div>
@@ -241,14 +241,14 @@ export const Discover = () => {
 
                                         {items?.posts?.data?.length > 0 && (
                                             <div>
-                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">Posts</h3>
+                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">{t('discover.filters.posts')}</h3>
                                                 <PostGrid posts={items?.posts?.data} isFetchingNextPage={isFetchingNextPage} hasNextPage={hasNextPage} fetchNextPage={fetchNextPage} isLoading={isLoading} />
                                             </div>
                                         )}
 
                                         {items?.pages?.data?.length > 0 && (
                                             <div>
-                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">Pages</h3>
+                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">{t('discover.filters.pages')}</h3>
                                                 {
                                                     items?.pages?.data?.map((p: Page, index: number) => <PageCard page={p} key={index} />)
                                                 }
@@ -257,7 +257,7 @@ export const Discover = () => {
 
                                         {items?.groups?.data?.length > 0 && (
                                             <div>
-                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">Groups</h3>
+                                                <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">{t('discover.filters.groups')}</h3>
                                                 {
                                                     items?.groups?.data?.map((g: Group, index: number) => <GroupCard group={g} key={index} />)
                                                 }
@@ -265,7 +265,7 @@ export const Discover = () => {
                                         )}
 
                                         {(!items?.users?.data?.length && !items?.posts?.data?.length && !items?.pages?.data?.length && !items?.groups?.data?.length) && (
-                                            <EmptyContent text={`No results found for "${searchQuery}"`} icon={<Search />} />
+                                            <EmptyContent text={t('discover.noResults', { query: searchQuery })} icon={<Search />} />
                                         )}
                                     </div>
                                 )
@@ -286,13 +286,13 @@ export const Discover = () => {
                         </button>
 
                         <div className="md:w-1/2 bg-black flex items-center justify-center">
-                            <img src={selectedPost.image} alt="Detail" className="max-h-[400px] w-full object-contain" />
+                            <img src={selectedPost.image} alt={t('discover.imageDetail')} className="max-h-[400px] w-full object-contain" />
                         </div>
 
                         <div className="md:w-1/2 p-5 flex flex-col justify-between">
                             <div>
                                 <div className="flex items-center space-x-3 mb-4 pb-3 border-b border-gray-100">
-                                    <img src={selectedPost.author.avatar} alt="Avatar" className="w-10 h-10 rounded-full object-cover" />
+                                    <img src={selectedPost.author.avatar} alt={t('feed.userAvatar')} className="w-10 h-10 rounded-full object-cover" />
                                     <div>
                                         <h4 className="font-semibold text-sm text-gray-900">{selectedPost.author.name}</h4>
                                         <p className="text-xs text-gray-500">@{selectedPost.author.username}</p>
@@ -302,8 +302,8 @@ export const Discover = () => {
                             </div>
 
                             <div className="flex items-center space-x-4 pt-3 border-t border-gray-100 text-xs text-gray-500 font-medium">
-                                <span className="flex items-center space-x-1 text-red-500">❤️ {selectedPost.likes} Likes</span>
-                                <span className="flex items-center space-x-1 text-purple-500">💬 {selectedPost.comments} Comments</span>
+                                <span className="flex items-center space-x-1 text-red-500">❤️ {t('discover.likes', { count: selectedPost.likes })}</span>
+                                <span className="flex items-center space-x-1 text-purple-500">💬 {t('feed.comments', { count: selectedPost.comments })}</span>
                             </div>
                         </div>
                     </div>

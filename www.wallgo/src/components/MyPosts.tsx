@@ -7,8 +7,10 @@ import { FaPencil } from 'react-icons/fa6';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
+import { useTranslation } from 'react-i18next';
 
 export const MyPosts = () => {
+    const { t } = useTranslation();
     const fetchPosts = async () => {
         try {
             const res = await axios.get(`${api_url}/my_posts`, { withCredentials: true, withXSRFToken: true });
@@ -26,11 +28,11 @@ export const MyPosts = () => {
     return (
         <MainLayout>
             <Helmet>
-                <title>WallGo : My Posts</title>
+                <title>{t('pageTitles.myPosts')}</title>
             </Helmet>
             <div className='px-4 py-6 max-w-4xl mx-auto'>
                 <div className='flex justify-start items-center'>
-                    <h1 className='font-bold text-3xl flex items-center gap-2 mb-3'><FaPencil className='w-8 h-8 text-[var(--special-purple)]' /> My Posts <span className='text-[var(--special-purple)]'>({posts.length})</span></h1>
+                    <h1 className='font-bold text-3xl flex items-center gap-2 mb-3'><FaPencil className='w-8 h-8 text-[var(--special-purple)]' /> {t('pageTitles.myPostsHeading')} <span className='text-[var(--special-purple)]'>({posts.length})</span></h1>
                 </div>
                 <PostGrid posts={posts} />
             </div>

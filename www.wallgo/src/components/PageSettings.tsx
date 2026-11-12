@@ -4,6 +4,7 @@ import { api_url } from '../pages/Auth/getUser';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { useTranslation } from 'react-i18next';
 
 interface PageSettingsProps {
     page_id?: number
@@ -11,29 +12,31 @@ interface PageSettingsProps {
     type: 'Page' | 'Group';
 }
 export const PageSettings: React.FC<PageSettingsProps> = ({ page_id, group_id, type }) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
+    const entity = t(type === 'Page' ? 'common.page' : 'common.group');
     const handleDelete = async () => {
         if (!page_id && !group_id) return null;
         Swal.fire({
-            title: `Delete ${type}`,
-            text:  `Are you sure for delete this ${type} ?`,
+            title: t('pageSettings.deleteTitle', { entity }),
+            text: t('pageSettings.deleteConfirmation', { entity }),
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Yes , delete it',
+            confirmButtonText: t('pageSettings.confirmDelete'),
             confirmButtonColor: '#7371FC',
-            cancelButtonText: 'Cancel'
+            cancelButtonText: t('common.cancel')
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
                     const url = `${api_url}/${type === 'Page' ? 'pages' : 'groups'}/${page_id ?? group_id}`
                     const res = await axios.delete(url, { withCredentials: true, withXSRFToken: true });
                     if (res.data.success) {
-                        toast.success(res.data.message || 'Page deleted successfully');
+                        toast.success(res.data.message || t('pageSettings.deleted', { entity }));
                         setTimeout(() => {
                             navigate('/pages');
                         }, 1000);
                     } else {
-                        toast.error(res.data.message || 'Failed to delete page');
+                        toast.error(res.data.message || t('pageSettings.deleteFailed', { entity }));
                         console.log(res.data.message);
                     }
                 } catch (err: any) {
@@ -48,8 +51,8 @@ export const PageSettings: React.FC<PageSettingsProps> = ({ page_id, group_id, t
 
                 <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white">
                     <div>
-                        <h3 className="text-lg font-bold text-gray-900">{type} Settings</h3>
-                        <p className="text-xs text-gray-500 mt-0.5">Manage your {type} details and preferences</p>
+                        <h3 className="text-lg font-bold text-gray-900">{t('pageSettings.title', { entity })}</h3>
+                        <p className="text-xs text-gray-500 mt-0.5">{t('pageSettings.description', { entity })}</p>
                     </div>
                 </div>
 
@@ -58,16 +61,16 @@ export const PageSettings: React.FC<PageSettingsProps> = ({ page_id, group_id, t
                     <div className="pt-4 border-t border-gray-100">
                         <div className="bg-red-50/50 border border-red-100 rounded-2xl p-4 flex items-center justify-between gap-4">
                             <div>
-                                <h4 className="text-sm font-bold text-red-700">Delete {type}</h4>
+                                <h4 className="text-sm font-bold text-red-700">{t('pageSettings.deleteTitle', { entity })}</h4>
                                 <p className="text-xs text-red-500 mt-0.5">
-                                    Once deleted, it cannot be recovered.
+                                    {t('pageSettings.cannotRecover', { entity })}
                                 </p>
                             </div>
                             <button
                                 onClick={handleDelete}
                                 className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-xs transition shadow-sm cursor-pointer whitespace-nowrap"
                             >
-                                Delete {type}
+                                {t('pageSettings.deleteTitle', { entity })}
                             </button>
                         </div>
                     </div>

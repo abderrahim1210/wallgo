@@ -3,6 +3,7 @@ import type { Reel } from '../components/CreateReel'
 import { useNavigate } from 'react-router-dom';
 import { EmptyContent } from '../components/EmptyContent';
 import { Video } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface PostsGridProps {
     data: Reel[],
@@ -12,6 +13,7 @@ interface PostsGridProps {
     isFetchingNextPage: boolean;
 }
 const PostsGrid: React.FC<PostsGridProps> = ({ data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage }) => {
+    const { t } = useTranslation();
     const observerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -54,14 +56,14 @@ const PostsGrid: React.FC<PostsGridProps> = ({ data, isLoading, isFetchingNextPa
                         </div>
                     </div>
                 )) : (
-                    <EmptyContent text='No reels saved - start to save !' icon={<Video />} />
+                    <EmptyContent text={t('reelGrid.emptySaved')} icon={<Video />} />
                 )}
             </div>
             <div ref={observerRef} className="h-10"></div>
 
             {!hasNextPage && data.length > 0 && (
                 <div className="text-center py-6 text-xs text-gray-400 font-medium uppercase tracking-wider">
-                    You've reached the end!
+                    {t('feed.endReached')}
                 </div>
             )}
         </>
