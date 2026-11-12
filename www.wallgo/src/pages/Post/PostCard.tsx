@@ -7,7 +7,7 @@ import { CommentSection } from '../../components/CommentSection';
 import ShareDropdown from '../../components/ShareDropdown';
 import moment from 'moment';
 // @ts-ignore Moment locale modules do not include their own type declarations.
-import 'moment/locale/ar';
+import 'moment/dist/locale/ar';
 import { useAuth } from '../../hooks/AuthProvider';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { Post } from '../../templates/PostGrid';
@@ -28,7 +28,9 @@ export const PostCard: React.FC<PostCardProps> = ({
     post,
 }) => {
     const { t, i18n } = useTranslation();
-    const momentLocale = i18n.language.toLowerCase().startsWith('ar') ? 'ar' : 'en';
+    const currentLang = i18n.language?.toLowerCase().startsWith('ar') ? 'ar' : 'en';
+
+    const m = (date?: string | Date | null) => moment.utc(date).local().locale(currentLang);
     const [liked, setLiked] = useState<boolean>(post?.is_liked);
     const [likes, setLikes] = useState(Number(post?.likes_count));
     const [saved, setSaved] = useState(Boolean(post?.is_saved));
@@ -137,7 +139,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 label: t('feed.reportPost'),
                 icon: <Flag className="w-4 h-4 text-red-500" />,
                 danger: true,
-                onClick: () => openModal('report'),
+                onClick: () => openModal(`report-${post?.id}`),
             },
         ] : [])
     ];
@@ -210,14 +212,14 @@ export const PostCard: React.FC<PostCardProps> = ({
                                     <span>•</span>
                                 </>
                             )}
-                            <span title={moment(post?.created_at).locale(momentLocale).format('LLL')}>
-                                {moment(post?.created_at).locale(momentLocale).fromNow()}
+                            <span title={m(post?.created_at).format('LLL')}>
+                                {m(post?.created_at).fromNow()}
                             </span>
                             <span>•</span>
                             {
                                 post?.unlock_time ? (
-                                    <Tooltip label={t('feed.unlockAt', { date: moment(post?.unlock_time).locale(momentLocale).calendar(), time: moment(post?.unlock_time).locale(momentLocale).format('MMM D, YYYY h:mm A') })}><Timer className='w-3.5 h-3.5' /></Tooltip>
-                                ) : post?.schedule_time ? <Tooltip label={t('feed.scheduledAt', { date: moment(post?.schedule_time).locale(momentLocale).calendar(), time: moment(post?.schedule_time).locale(momentLocale).format('MMM D, YYYY h:mm A') })}><CalendarClock className='w-3.5 h-3.5' /></Tooltip> : post?.visibility === 'public' ? <Tooltip label={t('feed.publicPost')}><Globe className='w-3.5 h-3.5' /></Tooltip> : <Tooltip label={t('feed.privatePost')}><Lock className='w-3.5 h-3.5' /></Tooltip>
+                                    <Tooltip label={t('feed.unlockAt', { date: m(post?.unlock_time).calendar(), time: m(post?.unlock_time).format('MMM D, YYYY h:mm A') })}><Timer className='w-3.5 h-3.5' /></Tooltip>
+                                ) : post?.schedule_time ? <Tooltip label={t('feed.scheduledAt', { date: m(post?.schedule_time).calendar(), time: m(post?.schedule_time).format('MMM D, YYYY h:mm A') })}><CalendarClock className='w-3.5 h-3.5' /></Tooltip> : post?.visibility === 'public' ? <Tooltip label={t('feed.publicPost')}><Globe className='w-3.5 h-3.5' /></Tooltip> : <Tooltip label={t('feed.privatePost')}><Lock className='w-3.5 h-3.5' /></Tooltip>
                             }
                         </div>
                     </div>
@@ -270,7 +272,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             }
 
             {
-                show === 'report' && (
+                show === `report-${post?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
                         <Report id={post?.id} type='post' />
                     </ModalTemplate>

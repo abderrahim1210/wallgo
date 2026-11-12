@@ -201,7 +201,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                 {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
             </button>
 
-            <div className="absolute right-4 bottom-20 z-30 flex flex-col items-center space-y-5 text-white">
+            <div className="absolute right-4 bottom-20 z-30 rtl:right-auto rtl:left-4 flex flex-col items-center space-y-5 text-white">
                 <button aria-label={t('feed.like')} className="flex flex-col items-center space-y-1 group cursor-pointer" onClick={handleLike}>
                     <div className="p-3 bg-white/10 backdrop-blur-md rounded-full group-hover:bg-white/20 transition-colors">
                         <Heart className={`w-6 h-6 ${liked ? 'text-red-500 fill-red-500' : 'text-white'} hover:text-red-500 transition-colors`} />

@@ -37,6 +37,13 @@
   font-weight: bold;
 }
 
+@font-face {
+  font-family: 'Parastoo';
+  src: url("./assets/fonts/Parastoo.ttf");
+  font-style: normal;
+  font-display: swap;
+}
+
 
 :root {
   --special-red: #DB5461;
@@ -79,7 +86,7 @@ body {
 }
 
 .quote {
-  font-family: 'Fredoka', 'sans-serif';
+  font-family: 'Fredoka', 'Parastoo', 'sans-serif';
 }
 
 .modal {
@@ -104,7 +111,6 @@ body {
   left: 0;
   width: 100vw !important;
   height: 100vh !important;
-  /* background-color: rgba(0, 0, 0, 0.5) !important; */
   backdrop-filter: blur(4px);
   z-index: 1040 !important;
 }
