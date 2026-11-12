@@ -51,11 +51,7 @@ export const Profile = () => {
     const { user } = useAuth()!;
     const [follow, setFollow] = useState(false);
 
-    useEffect(() => {
-        if (!user && !id){
-            navigate('/account/login');
-        }
-    },[user, id]);
+    
 
     useEffect(() => {
         if (id) {

@@ -1,5 +1,5 @@
-import { Bookmark, CalendarClock, Crown, Edit3, Flag, Globe, Heart, Link, Lock, MessageCircle, MoreHorizontal, Share2, Sparkles, Timer, Trash2, X } from 'lucide-react';
-import React, { useEffect, useState } from 'react'
+import { Bookmark, CalendarClock, Crown, Edit3, Flag, Globe, Heart, Link, Lock, MessageCircle, MoreHorizontal, Play, Share2, Sparkles, Timer, Trash2, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react'
 import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
 import { useModal } from '../../hooks/ModalProvider';
 import ModalTemplate from '../../templates/ModalTemplate';
@@ -160,6 +160,19 @@ export const PostCard: React.FC<PostCardProps> = ({
     const location = useLocation();
     const isLocked = post?.unlock_time && moment(post?.unlock_time).isAfter(moment());
     const [commentId, setCommentId] = useState<number | null>(null);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+
+    const togglePlay = () => {
+        if (!videoRef.current) return;
+        if (isPlaying) {
+            videoRef.current.pause();
+            setIsPlaying(false);
+        } else {
+            videoRef.current.play();
+            setIsPlaying(true);
+        }
+    };
     return (
         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
             <div className="flex items-center justify-between p-4 pb-3 transition-all rounded-t-2xl">
@@ -246,9 +259,33 @@ export const PostCard: React.FC<PostCardProps> = ({
                             {post?.content}
                         </div>
 
-                        {post?.media_url && (
+                        {post?.media_url && post?.media_url.includes('image') && (
                             <div className="w-full bg-gray-50 dark:bg-gray-800 max-h-[500px] overflow-hidden flex items-center justify-center">
                                 <img src={post?.media_url} alt={t('feed.postContent')} className="w-full h-auto object-cover max-h-[500px]" onClick={() => setSelectedPost(post)} />
+                            </div>
+                        )}
+
+                        {post?.media_url && post?.media_url.includes('video') && (
+                            <div className="w-full bg-gray-50 dark:bg-gray-800 max-h-[500px] overflow-hidden flex items-center justify-center">
+                                <div className="relative overflow-hidden bg-black flex items-center justify-center border border-gray-200 dark:border-gray-700">
+                                    <video
+                                        src={post?.media_url}
+                                        autoPlay
+                                        playsInline
+                                        onClick={togglePlay}
+                                        onPlay={() => setIsPlaying(true)}
+                                        onPause={() => setIsPlaying(false)}
+                                        ref={videoRef}
+                                    />
+
+                                    {!isPlaying && (
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none z-10">
+                                            <div className="p-3 bg-black/60 backdrop-blur-md rounded-full text-white">
+                                                <Play className="w-6 h-6" />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
                     </>

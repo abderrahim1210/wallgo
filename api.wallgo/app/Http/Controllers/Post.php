@@ -25,7 +25,8 @@ class Post extends Controller
             'media_url' => ['nullable', 'string'],
             'postable_id' => ['nullable', 'integer'],
             'postable_type' => ['nullable', 'string', 'in:page,group'],
-            'visibility' => ['nullable', 'string', 'in:public,private']
+            'visibility' => ['nullable', 'string', 'in:public,private'],
+            'media_type' => ['nullable', 'string', 'in:video,image']
         ]);
 
         $data = $request->all();
@@ -40,27 +41,27 @@ class Post extends Controller
                 ]);
             }
 
-            if (!empty($data['media_url']) && str_starts_with($data['media_url'], 'data:image')) {
-                $check = new \App\Http\Controllers\ValideImage();
-                $valide = $check->valide($data['media_url']);
+            // if (!empty($data['media_url']) && str_starts_with($data['media_url'], 'data:image')) {
+            //     $check = new \App\Http\Controllers\ValideImage();
+            //     $valide = $check->valide($data['media_url']);
 
-                if ($valide) {
-                    try {
-                        $upload = new \App\Http\Controllers\CloudinaryActions();
-                        $res = $upload->upload($data['media_url'], 'wallgo_medias');
-                        $data['media_url'] = $res['image_url'] ?? $res['secure_url'] ?? $res['url'];
-                    } catch (\Exception $e) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Upload banner failed : ' . $e->getMessage()
-                        ]);
-                    }
-                } else {
-                    unset($data['media_url']);
-                }
-            } else {
-                unset($data['media_url']);
-            }
+            //     if ($valide) {
+            //         try {
+            //             $upload = new \App\Http\Controllers\CloudinaryActions();
+            //             $res = $upload->upload($data['media_url'], 'wallgo_medias');
+            //             $data['media_url'] = $res['image_url'] ?? $res['secure_url'] ?? $res['url'];
+            //         } catch (\Exception $e) {
+            //             return response()->json([
+            //                 'success' => false,
+            //                 'message' => 'Upload banner failed : ' . $e->getMessage()
+            //             ]);
+            //         }
+            //     } else {
+            //         unset($data['media_url']);
+            //     }
+            // } else {
+            //     unset($data['media_url']);
+            // }
 
             $postable = null;
             $type = $request->postable_type;
@@ -88,7 +89,8 @@ class Post extends Controller
                 'visibility' => $data['visibility'] ?? 'public',
                 'post_type' => $data['post_type'] ?? 'regular',
                 'postable_id' => $postable->id ?? null,
-                'postable_type' => $postable ? get_class($postable) : null
+                'postable_type' => $postable ? get_class($postable) : null,
+                'media_type' => $data['media_type']
             ]);
 
             return response()->json([

@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import ButtonSpinner from '../Icons/ButtonSpinner';
 import LoadingButton from '../Icons/LoadingButton';
 import { useTranslation } from 'react-i18next';
+import { cloudName } from './CreateReel';
 
 interface Post {
     content: string;
@@ -23,6 +24,7 @@ interface Post {
     postable_id?: number;
     postable_type?: string,
     visibility: string;
+    media_type: string;
 }
 
 
@@ -43,6 +45,7 @@ const CreatePost = () => {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [notification, setNotification] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const videoInputRef = useRef<HTMLInputElement>(null);
     const { user } = useAuth()!;
     const [loading, setLoading] = useState(false);
     const [visibility, setVisibility] = useState<'private' | 'public'>('public');
@@ -55,6 +58,7 @@ const CreatePost = () => {
         capsule_status: '',
         media_url: '',
         visibility: visibility,
+        media_type: '',
     });
     const showNotify = (msg: string) => {
         setNotification(msg);
@@ -100,7 +104,7 @@ const CreatePost = () => {
             reader.onloadend = () => {
                 const base64String = reader.result as string;
                 setSelectedImage(base64String);
-                setPost(prev => ({ ...prev, media_url: base64String }));
+                setPost(prev => ({ ...prev, media_url: base64String, media_type: 'image' }));
                 showNotify(t('feed.imageAttached'));
             };
             reader.readAsDataURL(file);
@@ -137,7 +141,8 @@ const CreatePost = () => {
                 unlock_time: data.post.unlock_time || '',
                 capsule_status: data.post.capsule_status || '',
                 media_url: data.post.media_url || '',
-                visibility: data.post.visibility || 'public'
+                visibility: data.post.visibility || 'public',
+                media_type: data.post.media_type || ''
             });
             setPrivacy(data.post.post_type || 'regular');
             setVisibility(data.post.visibility || 'public');
@@ -174,6 +179,22 @@ const CreatePost = () => {
         setContent(prev => prev + emoji);
     };
 
+    const [videoVideoFile, setVideoFile] = useState<File | null>(null);
+    const [videoPreview, setVideoPreview] = useState<string | null>(null);
+    const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setVideoFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const f = reader.result as string;
+                setVideoPreview(f);
+                setPost(prev => ({ ...prev, media_url: f, media_type: 'video' }))
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!post.content.trim() && !selectedImage) {
@@ -182,9 +203,52 @@ const CreatePost = () => {
         }
         setLoading(true);
         try {
+            let fileUrl = post.media_url;
+            if (videoVideoFile || selectedImage) {
+                const type = videoVideoFile ? 'video' : 'image';
+                const file = type === 'video' ? videoVideoFile : selectedImage;
+                const presetFile = type === 'video' ? 'wallgo_posts_video' : 'wallgo_posts_image';
+                const cloudinaryFormData = new FormData();
+                cloudinaryFormData.append('file', file!);
+                cloudinaryFormData.append('upload_preset', presetFile);
+                cloudinaryFormData.append('resource_type', type);
+
+                const resCloud = await axios.post(
+                    `https://api.cloudinary.com/v1_1/${cloudName}/${type}/upload`,
+                    cloudinaryFormData
+                );
+
+                fileUrl = resCloud.data.secure_url;
+            }
+
+            const formData = new FormData();
+
+            formData.append('content', post.content);
+            formData.append('post_type', post.post_type);
+            if (post.schedule_time) {
+                formData.append('schedule_time', post.schedule_time);
+            }
+            if (post.expires_at) {
+                formData.append('expires_at', post.expires_at);
+            }
+            if (post.unlock_time) {
+                formData.append('unlock_time', post.unlock_time);
+            }
+            if (post.capsule_status) {
+                formData.append('capsule_status', post.capsule_status);
+            }
+            formData.append('visibility', post.visibility);
+            formData.append('media_url', fileUrl!);
+            if (videoVideoFile) {
+                formData.append('media_type', 'video');
+            }
+
+            if (selectedImage) {
+                formData.append('media_type', 'image');
+            }
             const url = isEditMode ? `${api_url}/posts/${id}/update` : `${api_url}/posts/create`;
             const method = isEditMode ? 'put' : 'post';
-            await axios[method](url, post, { withCredentials: true, withXSRFToken: true }).then(res => {
+            await axios[method](url, formData, { withCredentials: true, withXSRFToken: true }).then(res => {
                 if (res.data.success) {
                     setLoading(false);
                     toast.success(res.data.message || t('feed.postUploaded'));
@@ -198,6 +262,7 @@ const CreatePost = () => {
                 }
             })
         } catch (err: any) {
+            setLoading(false);
             console.error(err?.response?.data);
         }
         if (!content.trim() && !selectedImage) {
@@ -223,7 +288,8 @@ const CreatePost = () => {
                 unlock_time: '',
                 capsule_status: '',
                 media_url: '',
-                visibility: 'public'
+                visibility: 'public',
+                media_type: ''
             });
         }
     }, [id]);
@@ -234,6 +300,7 @@ const CreatePost = () => {
             setPost(prev => ({ ...prev, postable_type: type === 'page' ? 'page' : type === 'group' ? 'group' : '' }));
         }
     }, [type]);
+
     return (
         <>
             <Helmet>
@@ -363,6 +430,31 @@ const CreatePost = () => {
                             </div>
                         )}
 
+                        {
+                            videoPreview && (
+                                <div className="px-4 pb-3 relative">
+                                    <div className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 max-h-72 flex justify-center">
+                                        <video
+                                            src={videoPreview}
+                                            className="h-full object-contain"
+                                            loop
+                                            autoPlay
+                                            playsInline
+                                        // onClick={togglePlay}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setVideoPreview(null)}
+                                            className="absolute top-2 right-2 p-1.5 bg-gray-900/70 hover:bg-red-600 text-white rounded-full transition-colors cursor-pointer"
+                                            title={t('feed.removeImage')}
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            )
+                        }
+
                         <div className="relative px-4">
                             {showEmojiPicker && (
                                 <div className="absolute bottom-2 left-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-2.5 rounded-xl shadow-lg grid grid-cols-6 gap-2 z-20">
@@ -390,22 +482,37 @@ const CreatePost = () => {
                                     accept="image/*"
                                     className="hidden"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg transition-colors cursor-pointer"
-                                    title={t('feed.photoVideo')}
-                                >
-                                    <Image className="w-5 h-5" />
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => showNotify(t('feed.videoComingSoon'))}
-                                    className="p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded-lg transition-colors cursor-pointer"
-                                    title={t('feed.video')}
-                                >
-                                    <Video className="w-5 h-5" />
-                                </button>
+                                <input
+                                    type="file"
+                                    accept="video/*"
+                                    className="hidden"
+                                    ref={videoInputRef}
+                                    onChange={handleVideoChange}
+                                />
+                                {
+                                    !selectedImage && !videoPreview && (
+                                        <>
+                                            <button
+                                                type="button"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg transition-colors cursor-pointer"
+                                                title={t('feed.photoVideo')}
+                                            >
+                                                <Image className="w-5 h-5" />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    videoInputRef.current?.click();
+                                                }}
+                                                className="p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded-lg transition-colors cursor-pointer"
+                                                title={t('feed.video')}
+                                            >
+                                                <Video className="w-5 h-5" />
+                                            </button>
+                                        </>
+                                    )
+                                }
                                 <button
                                     type="button"
                                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
