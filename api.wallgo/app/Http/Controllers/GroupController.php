@@ -412,8 +412,8 @@ class GroupController extends Controller
 
         $user_id = Auth::id();
 
-        $group = Group::where('owner_id', $user_id)->findOrFail($group_id);
-        $followers = $group->followers()->get();
+        $group = Group::findOrFail($group_id);
+        $followers = $group->followers()->where('user_id', '!=', $user_id)->get();
 
         return response()->json([
             'success' => true,

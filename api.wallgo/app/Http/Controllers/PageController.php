@@ -389,6 +389,70 @@ class PageController extends Controller
         }
     }
 
+    public function followers($page_id)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+
+        $user_id = Auth::id();
+
+        $page = Page::findOrFail($page_id);
+        $followers = $page->followers()->where('user_id', '!=', $user_id)->get();
+
+        return response()->json([
+            'success' => true,
+            'followers' => $followers
+        ]);
+    }
+
+    public function removeMember($page_id, $user_id)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+        $current_user_id = Auth::id();
+
+        if (!User::find($user_id)) {
+            return response()->json([
+                'success' => false,
+                'message' => "User by id $user_id not found"
+            ], 404);
+        }
+
+        $page = Page::where('id', $page_id)->where('owner_id', $current_user_id)->first();
+        if (!$page) {
+            return response()->json([
+                'success' => false,
+                'message' => "Page by id $page_id not found"
+            ], 404);
+        }
+
+        try {
+            $follow = GroupPageFollow::where('user_id', $user_id)->where('followable_id', $page_id)->where('followable_type', \App\Models\Page::class)->first();
+            if ($follow) {
+                $follow->delete();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Member deleted successfully'
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => "Failed : " . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
     public function deleteComment(string $page_id, string $comment_id)
     {
         if (!Auth::check()) {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async';
 import { MainLayout } from '../MainLayout';
 import { PostGrid, type Post } from '../templates/PostGrid';
-import { Check, Clapperboard, Flag, MoreHorizontal, Pencil, PlusIcon, PlusSquare, Settings, Share2, Users } from 'lucide-react';
+import { Check, Clapperboard, Flag, MoreHorizontal, Pencil, PlusIcon, PlusSquare, Settings, Share2, User, Users } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
@@ -22,6 +22,7 @@ import { Report } from './Report';
 import { useTranslation } from 'react-i18next';
 import type { Reel } from './CreateReel';
 import PostsGrid from '../templates/PostsGrid';
+import FollowersPageGroup from './FollowersPageGroup';
 
 export interface Page {
     id: number;
@@ -155,6 +156,20 @@ export const PageProfile = () => {
     ];
 
     const [activeTab, setActiveTab] = useState<'posts' | 'videos' | 'reels' | 'about'>('posts');
+
+    const fetchFollowers = async () => {
+        try {
+            const res = await axios.get(`${api_url}/pages/${page?.id}/followers`, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) return res.data.followers;
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
+
+    const { data: followersList } = useQuery({
+        queryKey: ['pages-followers', page?.id],
+        queryFn: fetchFollowers
+    });
     return (
         <MainLayout>
             <Helmet>
@@ -181,6 +196,22 @@ export const PageProfile = () => {
                 show === `report-${page?.id}` && (
                     <ModalTemplate show={show} closeModal={closeModal}>
                         <Report id={page?.id} type='page' />
+                    </ModalTemplate>
+                )
+            }
+
+            {
+                show === `followers-page-${page?.id}` && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <div>
+                            {
+                                followersList?.length > 0 ? followersList.map((u: { id: number; username: string; name: string; avatar_url: string; }) => (
+                                    <FollowersPageGroup u={u} user={user} obj={page} type='pages' />
+                                )) : (
+                                    <EmptyContent text={t('profile.no_followers_group')} icon={<User />} />
+                                )
+                            }
+                        </div>
                     </ModalTemplate>
                 )
             }
@@ -272,7 +303,7 @@ export const PageProfile = () => {
                                 </div>
 
                                 <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 text-sm text-gray-600 dark:text-gray-400">
-                                    <span className="flex items-center gap-1.5 font-medium">
+                                    <span className="flex items-center gap-1.5 font-medium cursor-pointer" onClick={() => openModal(`followers-page-${page?.id}`)}>
                                         <Users className="w-4 h-4 text-[var(--special-purple)]" />
                                         {page?.followers_count} {t('profile.followers')}
                                     </span>
