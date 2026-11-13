@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\GroupQuestion;
 use App\Models\Page;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,7 +52,8 @@ class UpdatePageGroup extends Controller
             'logo_url' => ['nullable', 'string'],
             'banner_url' => ['nullable', 'string'],
             'category' => ['nullable', 'string'],
-            'visibility' => ['nullable', 'string', 'in:public,private']
+            'visibility' => ['nullable', 'string', 'in:public,private'],
+            'question' => ['nullable', 'string']
         ]);
         try {
             $validator = new \App\Http\Controllers\ValidePageLogoBanner();
@@ -80,7 +82,8 @@ class UpdatePageGroup extends Controller
                 'name',
                 'description',
                 'category',
-                'visibility'
+                'visibility',
+                'question'
             ]));
 
             if ($request->filled('name')) {
@@ -99,17 +102,46 @@ class UpdatePageGroup extends Controller
                 $obj->visibility = $request->visibility;
             }
 
+            $isUpdated = false;
             if ($obj->isDirty()) {
                 $obj->save();
+                $isUpdated = true;
+            }
+            if ((string) $request->type === 'groups' && $request->has('question')) {
+                $row = GroupQuestion::where('group_id', $obj->id)->first();
+                $questionText = trim($request->question);
+                if ($row) {
+                    if (empty($questionText)) {
+                        $row->delete();
+                        $isUpdated = true;
+                    } else {
+                        if ($row->question !== $questionText) {
+                            $row->update([
+                                'question' => trim($request->question)
+                            ]);
+                            $isUpdated = true;
+                        }
+                    }
+                } else {
+                    if (!empty($questionText)) {
+                        GroupQuestion::create([
+                            'group_id' => $obj->id,
+                            'question' => trim($request->question)
+                        ]);
+                        $isUpdated = true;
+                    }
+                }
+            }
 
+            if ($isUpdated) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Page updated successfully'
+                    'message' => 'Updated successfully'
                 ]);
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to update informations for this page'
+                    'message' => 'No updates change it'
                 ]);
             }
         } catch (\Exception $e) {

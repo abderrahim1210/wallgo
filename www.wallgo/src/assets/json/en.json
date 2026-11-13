@@ -84,7 +84,7 @@
     "privacyPolicy": "Privacy policy",
     "cookiesPolicy": "Cookies policy",
     "signIn": "Sign in",
-    "account_private":"This profile is private"
+    "account_private": "This profile is private"
   },
   "feed": {
     "posts": "Posts",
@@ -211,7 +211,7 @@
     "unexpectedTitle": "Unexpected error",
     "unexpectedMessage": "An unexpected error occurred. Please try again later.",
     "backToHome": "Back to home",
-    "noGroups":"You don't have any group - try to create a first now !"
+    "noGroups": "You don't have any group - try to create a first now !"
   },
   "settings": {
     "title": "Settings",

@@ -78,8 +78,8 @@ export const GroupeProfile = () => {
         },
         initialPageParam: 1
     });
-    
-    const { data: rls, isLoading:reelsLoading, hasNextPage:hasNextPageReels, fetchNextPage:fetchNextPageReels, isFetchingNextPage:isFetchingNextPageReels } = useInfiniteQuery({
+
+    const { data: rls, isLoading: reelsLoading, hasNextPage: hasNextPageReels, fetchNextPage: fetchNextPageReels, isFetchingNextPage: isFetchingNextPageReels } = useInfiniteQuery({
         queryKey: ['groups_reels', id],
         queryFn: fetchReels,
         getNextPageParam: (lastPage: any) => {
@@ -211,7 +211,7 @@ export const GroupeProfile = () => {
         {
             label: t('profile.create_post_for_group'),
             icon: <PlusIcon className="w-4 h-4 text-[var(--special-purple)]" />,
-            onClick: () => { navigate('/create_post', { state: { groupId: group?.id, contentGroup: '', groupName:group?.name } }) },
+            onClick: () => { navigate('/create_post', { state: { groupId: group?.id, contentGroup: '', groupName: group?.name } }) },
         },
         {
             label: t('profile.create_reel_for_group'),
@@ -393,13 +393,17 @@ export const GroupeProfile = () => {
                                     {
                                         user?.id === group?.owner.id ? (
                                             <div className='gap-1 flex'>
-                                                <button
-                                                    onClick={() => navigate('/create_post')}
-                                                    className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"
-                                                    title={t('profile.create_post_for_group')}
-                                                >
-                                                    <PlusSquare className='w-5 h-5 text-indigo-600 dark:text-indigo-400' />
-                                                </button>
+                                                <DropdownMenu
+                                                    trigger={
+                                                        <button
+                                                            className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                                            title={t('profile.create_post_for_group')}
+                                                        >
+                                                            <PlusSquare className='w-5 h-5 text-indigo-600 dark:text-indigo-400' />
+                                                        </button>
+                                                    }
+                                                    items={createOptions}
+                                                />
                                                 <button
                                                     onClick={() => openModal('groups')}
                                                     className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"

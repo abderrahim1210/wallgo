@@ -6,6 +6,7 @@ import axios from 'axios'
 import { api_url } from '../pages/Auth/getUser'
 import moment from 'moment'
 import { Check, Heart, MessageSquare, UserCheck, UserPlus, X } from 'lucide-react'
+import i18n from '../i18n'
 
 interface NotificationCardProps {
     notif: Notification
@@ -21,6 +22,9 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({ notif }) => 
             console.error(err?.response.data);
         }
     }
+    const currentLang = i18n.language?.toLowerCase().startsWith('ar') ? 'ar' : 'en';
+
+    const m = (date?: string | Date | null) => moment.utc(date).local().locale(currentLang);
     return (
         <div
             key={notif.id}
@@ -54,7 +58,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({ notif }) => 
                 <p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 leading-snug">
                     <span className="font-semibold">{notif.data.user_name}</span> {notif.data.message} {notif?.data?.comment_content && `"${notif.data.comment_content}"`}
                 </p>
-                <span className="text-[11px] text-gray-400 dark:text-gray-500 mt-1 block">{moment(notif.created_at).fromNow()}</span>
+                <span className="text-[11px] text-gray-400 dark:text-gray-500 mt-1 block">{m(notif.created_at).fromNow()}</span>
             </div>
 
             {!notif.read_at && (

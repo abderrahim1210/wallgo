@@ -27,7 +27,8 @@ export const EditPage = () => {
         banner_url: '',
         category: '',
         type: '',
-        visibility: ''
+        visibility: '',
+        question: ''
     });
 
 
@@ -43,7 +44,6 @@ export const EditPage = () => {
     const { data, isLoading, isError } = useQuery({
         queryKey: [type, id],
         queryFn: fetchData,
-        staleTime: 1000 * 60 * 5
     });
 
     useEffect(() => {
@@ -56,7 +56,8 @@ export const EditPage = () => {
                     banner_url: data.page.banner_url || '',
                     category: data.page.category || '',
                     visibility: '',
-                    type: String(type)
+                    type: String(type),
+                    question: ''
                 });
             }
             if (data?.group) {
@@ -67,7 +68,8 @@ export const EditPage = () => {
                     banner_url: data.group.banner_url || '',
                     category: '',
                     visibility: data.group.visibility || '',
-                    type: String(type)
+                    type: String(type),
+                    question: data.question?.question || ''
                 });
             }
         }
@@ -264,6 +266,20 @@ export const EditPage = () => {
                                     )
                                 }
 
+                                {
+                                    type === 'groups' && (
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('pageForm.question')}</label>
+                                            <textarea
+                                                rows={3}
+                                                value={formData?.question}
+                                                onChange={handleChange}
+                                                name='question'
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-[var(--special-purple)] focus:ring-2 focus:ring-[var(--special-purple)]/20 outline-none transition text-sm bg-gray-50/50 dark:bg-gray-800/50 resize-none"
+                                            />
+                                        </div>
+                                    )
+                                }
                             </div>
 
                             <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
