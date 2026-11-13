@@ -242,6 +242,8 @@ const CreatePost = () => {
             if (videoVideoFile) {
                 formData.append('media_type', 'video');
             }
+            formData.append('postable_id', String(post?.postable_id));
+            formData.append('postable_type', post?.postable_type!);
 
             if (selectedImage) {
                 formData.append('media_type', 'image');
@@ -319,7 +321,7 @@ const CreatePost = () => {
                     <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                         <h2 className="text-gray-900 dark:text-gray-100 font-bold text-base flex items-center space-x-2">
                             <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                            <span>{t('feed.createNewPost')} {groupName ?? pageName ?? ''}</span>
+                            <span>{groupId ? t('feed.createNewPostForGroup', {groupName}) : pageName ? t('feed.createNewPostForPage', {pageName}) : isEditMode ? t('feed.editPost') : t('feed.createNewPost')}</span>
                         </h2>
                         <button
                             onClick={() => navigate(-1)}

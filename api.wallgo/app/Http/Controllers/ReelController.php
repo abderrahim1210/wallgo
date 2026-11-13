@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\Page;
 use App\Models\Reel;
 use App\Models\ReelViews;
 use App\Models\User;
@@ -61,10 +62,22 @@ class ReelController extends Controller
             'audio_url' => ['nullable', 'string'],
             'visibility' => ['nullable', 'string', 'in:public,private'],
             'reelable_id' => ['nullable', 'integer', 'exists:groups,id'],
-            'reelable_type' => ['nullable', 'string', 'in:group']
+            'reelable_type' => ['nullable', 'string', 'in:group'],
+            'type' => ['string', 'in:group,page']
         ]);
 
-        $group = Group::find($request->reelable_id);
+        $type = $request->type;
+        $reelable = null;
+        switch ($type) {
+            case 'group':
+                $reelable = Group::find($request->reelable_id);
+                if (!$reelable) return response()->json(['success' => false, 'message' => "Group by id $request->id not found"]);
+                break;
+            case 'page':
+                $reelable = Page::find($request->reelable_id);
+                if (!$reelable) return response()->json(['success' => false, 'message' => "Page by id $request->id not found"]);
+                break;
+        }
 
         try {
             Reel::create([
@@ -76,7 +89,7 @@ class ReelController extends Controller
                 'visibility' => $request->visibility ?? 'public',
                 'public_id' => $request->public_id,
                 'reelable_id' => $request->reelable_id ?? null,
-                'reelable_type' => get_class($group) ?? null
+                'reelable_type' => get_class($reelable) ?? null
             ]);
             return response()->json([
                 'success' => true,

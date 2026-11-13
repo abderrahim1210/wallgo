@@ -158,6 +158,8 @@
     "unlockAt": "Unlocks {{date}} {{time}}",
     "scheduledAt": "Scheduled to post {{date}} {{time}}",
     "createNewPost": "Create new post",
+    "createNewPostForGroup": "Create new post for {{groupName}}",
+    "createNewPostForPage": "Create new post for {{pageName}}",
     "update": "Update",
     "public": "Public",
     "private": "Private",
@@ -296,6 +298,7 @@
     "removing_member": "Removing ...",
     "create_post_for_group": "Create post for this group",
     "create_reel_for_group": "Create reel for this group",
+    "create_reel_for_page": "Create reel for this page",
     "edit_group": "Edit this group",
     "request_status": "{{status}} Request",
     "status": {
@@ -406,6 +409,7 @@
   "reelCreation": {
     "title": "Create New Reel",
     "titleForGroup": "Create New Reel for {{groupName}}",
+    "titleForPage": "Create New Reel for {{pageName}}",
     "editTitle": "Edit Reel",
     "uploadPrompt": "Click to upload your reel video",
     "removeVideo": "Remove video",

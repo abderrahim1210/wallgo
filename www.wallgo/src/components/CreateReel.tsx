@@ -36,6 +36,7 @@ export type Reel = {
         owner_id: number;
         logo_url: string;
     }
+    reelable_type:string;
 }
 
 export const cloudName = "dhysaozog";
@@ -46,6 +47,8 @@ export const CreateReel = () => {
     const location = useLocation();
     const groupId = location.state?.groupId;
     const groupName = location.state?.groupName;
+    const pageId = location.state?.pageId;
+    const pageName = location.state?.pageName;
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedTrack, setSelectedTrack] = useState<{ title: string; artist: string; url: string } | null>(null);
     const [isPlayingPreview, setIsPlayingPreview] = useState(false);
@@ -71,7 +74,13 @@ export const CreateReel = () => {
     }, [groupId]);
 
     useEffect(() => {
-        if (reel_id || !groupId) {
+        if (pageId) {
+            setReel(prev => ({ ...prev, reelable_id: pageId, reelable_type: 'page' }));
+        }
+    }, [pageId]);
+
+    useEffect(() => {
+        if (reel_id) {
             setEdit(true);
             axios.get(`${api_url}/reels/${reel_id}`, { withCredentials: true, withXSRFToken: true }).then(res => {
                 if (res.data.success) {
@@ -179,7 +188,9 @@ export const CreateReel = () => {
             formData.append('audio_name', reel.audio_name);
             formData.append('audio_url', reel.audio_url);
             formData.append('visibility', reel.visibility);
-            formData.append('reelable_id', groupId);
+            formData.append('type', groupId ? 'group' : 'page');
+            const rel_id = groupId ?? pageId;
+            formData.append('reelable_id', rel_id);
             formData.append('reelable_type', 'group');
             const res = await axios[method](url, formData, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
@@ -229,7 +240,7 @@ export const CreateReel = () => {
                     <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
                         <div className="flex items-center gap-2 text-[var(--special-purple)]">
                             <Clapperboard className='w-5 h-5' />
-                            <h3 className="font-bold text-gray-800 dark:text-gray-200 text-xl">{groupName ? t('reelCreation.titleForGroup', { groupName }) : edit ? t('reelCreation.editTitle') : t('reelCreation.title')}</h3>
+                            <h3 className="font-bold text-gray-800 dark:text-gray-200 text-xl">{groupName ? t('reelCreation.titleForGroup', { groupName }) : pageName ? t('reelCreation.titleForPage', { pageName }) : edit ? t('reelCreation.editTitle') : t('reelCreation.title')}</h3>
                         </div>
                         <button
                             onClick={() => navigate(-1)}

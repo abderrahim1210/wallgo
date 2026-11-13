@@ -132,7 +132,8 @@ export const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const url = isAuthorGroup ? `${api_url}/groups/delete_reel/${reel?.reelable.id}/${reel?.id}` : `${api_url}/reels/${reel?.id}`;
+                    const type = reel?.reelable_type.includes('Group') ? 'group' : 'page';
+                    const url = isAuthorGroup ? `${api_url}/groups/delete_reel/${reel?.reelable.id}/${reel?.id}/${type}` : `${api_url}/reels/${reel?.id}`;
                     const res = await axios.delete(url, { withCredentials: true, withXSRFToken: true });
                     if (res.data.success) {
                         toast.success(t('reelCard.deleted'));

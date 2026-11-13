@@ -298,6 +298,7 @@
     "removing_member": "جارٍ الإزالة ...",
     "create_post_for_group": "إنشاء منشور لهذه المجموعة",
     "create_reel_for_group": "إنشاء ريل لهذه المجموعة",
+    "create_reel_for_page": "إنشاء ريل لهذه الصفحة",
     "edit_group": "تعديل هذه المجموعة",
     "request_status": "طلب {{status}}",
     "status": {

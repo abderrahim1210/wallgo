@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\AlertDeletePostFromOwner;
 use Cloudinary\Cloudinary;
+use App\Models\Page;
 
 class GroupController extends Controller
 {
@@ -115,7 +116,7 @@ class GroupController extends Controller
             if (!$group) return response()->json(['success' => false, 'message' => "Group by id $id not found"], 404);
             $isJoined = false;
             if ($user_id !== $group->owner_id) {
-                $joined = GroupPageFollow::where('user_id', $user_id)->where('followable_id', $group->id)->first();
+                $joined = GroupPageFollow::where('user_id', $user_id)->where('followable_id', $group->id)->exists();
                 if ($joined) $isJoined = true;
             } else {
                 $isJoined = true;
@@ -509,7 +510,7 @@ class GroupController extends Controller
         }
     }
 
-    public function deleteReel($group_id, $reel_id)
+    public function deleteReel($id, $reel_id, $type)
     {
         if (!Auth::check()) {
             return response()->json([
@@ -519,9 +520,19 @@ class GroupController extends Controller
         }
 
         $user_id = Auth::id();
-        $group = Group::findOrFail($group_id);
+        $reelable = null;
+        switch ($type) {
+            case 'group':
+                $reelable = Group::findOrFail($id);
+                if (!$reelable) return response()->json(['success' => false, 'message' => "Group by id $id not found"]);
+                break;
+            case 'page':
+                $reelable = Page::findOrFail($id);
+                if (!$reelable) return response()->json(['success' => false, 'message' => "Page by id $id not found"]);
+                break;
+        }
         $reel = Reel::findOrFail($reel_id);
-        if ($group->owner_id !== $user_id) {
+        if ($reelable->owner_id !== $user_id) {
             return response()->json([
                 'success' => false,
                 'message' => "You dont have permission for delete this post"
@@ -553,7 +564,9 @@ class GroupController extends Controller
                 $reel->reports()->delete();
                 $reel->delete();
 
-                $user->notify(new AlertDeletePostFromOwner($group, $content));
+                if ($user_id !== $user->id) {
+                    $user->notify(new AlertDeletePostFromOwner($reelable, $content));
+                }
 
                 return response()->json([
                     'success' => true,

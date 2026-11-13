@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async';
 import { MainLayout } from '../MainLayout';
 import { PostGrid, type Post } from '../templates/PostGrid';
-import { Check, Flag, MoreHorizontal, Pencil, PlusSquare, Settings, Share2, Users } from 'lucide-react';
+import { Check, Clapperboard, Flag, MoreHorizontal, Pencil, PlusIcon, PlusSquare, Settings, Share2, Users } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { api_url } from '../pages/Auth/getUser';
@@ -114,7 +114,20 @@ export const PageProfile = () => {
             danger: true,
             onClick: () => openModal(`report-${page?.id}`),
         },
-    ]
+    ];
+
+    const createOptions = [
+        {
+            label: t('profile.create_post_for_page'),
+            icon: <PlusIcon className="w-4 h-4 text-[var(--special-purple)]" />,
+            onClick: () => { navigate('/create_post', { state: { pageId: page?.id, contentGroup: '', pageName: page?.name } }) },
+        },
+        {
+            label: t('profile.create_reel_for_page'),
+            icon: <Clapperboard className="w-4 h-4 text-[var(--special-purple)]" />,
+            onClick: () => { navigate('/create_reel', { state: { pageId: page?.id, pageName: page?.name } }) },
+        },
+    ];
     return (
         <MainLayout>
             <Helmet>
@@ -176,13 +189,17 @@ export const PageProfile = () => {
                                     {
                                         user?.id === page?.owner.id ? (
                                             <div className='gap-1 flex  '>
-                                                <button
-                                                    onClick={() => navigate('/create_post', { state: { pageId: page?.id, pageName: page?.name } })}
-                                                    className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"
-                                                    title={t('profile.create_post_for_page')}
-                                                >
-                                                    <PlusSquare className='w-5 h-5 text-indigo-600 dark:text-indigo-400' />
-                                                </button>
+                                                <DropdownMenu
+                                                    trigger={
+                                                        <button
+                                                            className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"
+                                                            title={t('profile.create_post_for_group')}
+                                                        >
+                                                            <PlusSquare className='w-5 h-5 text-indigo-600 dark:text-indigo-400' />
+                                                        </button>
+                                                    }
+                                                    items={createOptions}
+                                                />
                                                 <button
                                                     onClick={() => openModal('pages')}
                                                     className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition shadow-sm cursor-pointer flex items-center justify-center"

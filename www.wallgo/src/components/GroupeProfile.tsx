@@ -22,12 +22,8 @@ import { useTranslation } from 'react-i18next';
 import { ErrorPage } from './ErrorPage';
 import toast from 'react-hot-toast';
 import LoadingButton from '../Icons/LoadingButton';
-import FollowUserCard from './FollowUserCard';
-import { FollowUser } from './FollowUser';
-import { ReelGrid } from '../templates/ReelGrid';
 import type { Reel } from './CreateReel';
 import PostsGrid from '../templates/PostsGrid';
-// import type { User } from './Home';
 
 export const GroupeProfile = () => {
     const { id } = useParams();
@@ -504,7 +500,7 @@ export const GroupeProfile = () => {
 
                         <div className="mt-6">
                             {
-                                isJoined && (
+                                (isJoined && (status === 'pending' || status === 'rejected')) && (
                                     <div className='flex items-center space-x-3 flex-1 min-w-0 mt-3 m-3'>
                                         <img
                                             src={user?.avatar_url ?? '/icons/avatar1.svg'}
