@@ -20,6 +20,8 @@ import { DropdownMenu, type DropdownItem } from '../templates/DropdownMenu';
 import ShareDropdown from './ShareDropdown';
 import { Report } from './Report';
 import { useTranslation } from 'react-i18next';
+import type { Reel } from './CreateReel';
+import PostsGrid from '../templates/PostsGrid';
 
 export interface Page {
     id: number;
@@ -64,6 +66,15 @@ export const PageProfile = () => {
         }
     }
 
+    const fetchReels = async ({ pageParam = 1 }) => {
+        try {
+            const res = await axios.get(`${api_url}/pages/${id}/reels?page=${pageParam}`, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) return res.data.reels;
+        } catch (err: any) {
+            console.error(err?.response.data);
+        }
+    }
+
     const { data: page, isLoading: pageLoading, isError: pageError, } = useQuery({
         queryKey: ['page', id],
         queryFn: fetchPage,
@@ -81,7 +92,21 @@ export const PageProfile = () => {
         initialPageParam: 1
     });
 
+    const { data: rls, isLoading: reelsLoading, isError: reelsError, isFetchingNextPage: isFetchingNextPageReels, hasNextPage: hasNextPageReels, fetchNextPage: fetchNextPageReels } = useInfiniteQuery({
+        queryKey: ['reels_pages', id],
+        queryFn: fetchReels,
+        getNextPageParam: (lastPage: any) => {
+            if (lastPage?.current_page < lastPage?.last_page) {
+                return lastPage.current_page + 1;
+            }
+            return undefined;
+        },
+        initialPageParam: 1
+    });
+
     const posts: Post[] = ps?.pages.flatMap((page: any) => page?.data || []) || [];
+    const reels: Reel[] = rls?.pages.flatMap((page: any) => page?.data || []) || [];
+    const videos = posts?.filter(p => p?.media_url?.includes('video')) || [];
 
     const [followed, setFollowed] = useState<boolean>(false);
 
@@ -128,6 +153,8 @@ export const PageProfile = () => {
             onClick: () => { navigate('/create_reel', { state: { pageId: page?.id, pageName: page?.name } }) },
         },
     ];
+
+    const [activeTab, setActiveTab] = useState<'posts' | 'videos' | 'reels' | 'about'>('posts');
     return (
         <MainLayout>
             <Helmet>
@@ -254,12 +281,68 @@ export const PageProfile = () => {
                         </div>
 
                         <div className="mt-6">
-                            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">{t('profile.page_posts')}</h2>
-                            {posts && posts.length > 0 ? (
-                                <PostGrid posts={posts} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} isLoading={postsLoading} />
-                            ) : (
-                                <EmptyContent text={t('profile.no_page_posts')} icon={<FaRegNewspaper />} />
-                            )}
+                            <div className='flex space-x-2 border-b border-gray-100 dark:border-gray-800 pb-3 mb-3 mt-3'>
+                                <button
+                                    onClick={() => setActiveTab('posts')}
+                                    className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'posts' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+                                >
+                                    {t('profile.posts')}
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('reels')}
+                                    className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'reels' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+                                >
+                                    {t('profile.reels')}
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('videos')}
+                                    className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'videos' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+                                >
+                                    {t('profile.videos')}
+                                </button>
+                            </div>
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 capitalize">{activeTab}</h2>
+
+                            <div className="space-y-4">
+                                {
+                                    activeTab === 'posts' && (
+                                        <div className="space-y-6">
+                                            {posts?.length > 0 && (
+                                                <div>
+                                                    <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-3">{t('discover.filters.posts')}</h3>
+                                                    <PostGrid posts={posts} isFetchingNextPage={isFetchingNextPage} hasNextPage={hasNextPage} fetchNextPage={fetchNextPage} isLoading={postsLoading} />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )
+                                }
+
+                                {
+                                    activeTab === 'reels' && (
+                                        <div className='space-y-6'>
+                                            {reels?.length > 0 && (
+                                                <div>
+                                                    <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-3">{t('discover.filters.reels')}</h3>
+                                                    <PostsGrid data={reels} isFetchingNextPage={isFetchingNextPageReels} hasNextPage={hasNextPageReels} fetchNextPage={fetchNextPageReels} isLoading={reelsLoading} />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )
+                                }
+
+                                {
+                                    activeTab === 'videos' && (
+                                        <div className="space-y-6">
+                                            {posts?.length > 0 && (
+                                                <div>
+                                                    <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-3">{t('discover.filters.videos')}</h3>
+                                                    <PostGrid posts={videos} isFetchingNextPage={isFetchingNextPage} hasNextPage={hasNextPage} fetchNextPage={fetchNextPage} isLoading={postsLoading} />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )
+                                }
+                            </div>
                         </div>
                     </div>
                 )

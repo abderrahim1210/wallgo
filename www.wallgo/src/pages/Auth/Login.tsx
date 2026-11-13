@@ -27,6 +27,7 @@ export const Login = () => {
         if (!formData.email || !formData.password) {
             console.log("Email and password is obligatory");
         }
+        setError('');
         setLoading(true);
         try {
             await axios.post(`${api_url}/login`, formData, { withCredentials: true, withXSRFToken: true }).then(res => {

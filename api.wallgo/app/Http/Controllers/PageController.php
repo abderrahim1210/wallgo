@@ -8,6 +8,7 @@ use App\Models\GroupJoinRequest;
 use App\Models\GroupPageFollow;
 use App\Models\Page;
 use App\Models\Post;
+use App\Models\Reel;
 use App\Models\User;
 use App\Notifications\FollowPageGroup;
 use Illuminate\Http\Request;
@@ -355,6 +356,36 @@ class PageController extends Controller
                 'success' => false,
                 'message' => 'Failed : ' . $e->getMessage()
             ]);
+        }
+    }
+
+    public function reels(string $id)
+    {
+        if (!$id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Id is required for show page'
+            ]);
+        }
+
+        $user_id = Auth::id();
+
+        try {
+            $page = Page::find($id);
+            if (!$page) return response()->json(['success' => false, 'message' => "Page by id $id not found"], 404);
+
+            $reels = Reel::with(['user:id,username,name,avatar_url'])->withCount(['likes', 'comments'])->withExists(['user as is_owner' => function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            }])->where('reelable_id', $page->id)->latest()->paginate(10);
+            return response()->json([
+                'success' => true,
+                'reels' => $reels
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
         }
     }
 

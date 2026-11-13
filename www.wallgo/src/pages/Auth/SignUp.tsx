@@ -30,6 +30,7 @@ export const SignUp = () => {
         if (!formData.email || !formData.password || !formData.name) {
             console.log("Email,password,name is obligatory");
         }
+        setError('');
         setLoading(true);
         try {
             await axios.get(`${url}/sanctum/csrf-cookie`, { withCredentials: true, withXSRFToken: true });

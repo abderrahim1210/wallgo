@@ -93,6 +93,8 @@ export const GroupeProfile = () => {
     const posts: Post[] = ps?.pages.flatMap((page: any) => page?.data || []) || [];
     const reels: Reel[] = rls?.pages.flatMap((page: any) => page?.data || []) || [];
 
+    const videos = posts?.filter(p => p?.media_url?.includes('video')) || [];
+
     const [followed, setFollowed] = useState<boolean>(false);
 
     useEffect(() => {
@@ -541,6 +543,12 @@ export const GroupeProfile = () => {
                                                 {t('profile.posts')}
                                             </button>
                                             <button
+                                                onClick={() => setActiveTab('videos')}
+                                                className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'videos' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+                                            >
+                                                {t('profile.videos')}
+                                            </button>
+                                            <button
                                                 onClick={() => setActiveTab('reels')}
                                                 className={`px-4 py-1.5 cursor-pointer rounded-full text-sm font-bold transition ${activeTab === 'reels' ? 'bg-[var(--special-purple)] text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
                                             >
@@ -551,6 +559,9 @@ export const GroupeProfile = () => {
                                             {
                                                 activeTab === 'posts' ? (
                                                     <PostGrid posts={posts} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} isLoading={isLoading} />
+                                                ) :
+                                                activeTab === 'videos' ? (
+                                                    <PostGrid posts={videos} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} isLoading={isLoading} />
                                                 ) : (
                                                     <PostsGrid data={reels} fetchNextPage={fetchNextPageReels} hasNextPage={hasNextPageReels} isFetchingNextPage={isFetchingNextPageReels} isLoading={reelsLoading} />
                                                 )
