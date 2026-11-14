@@ -34,7 +34,8 @@ class ReelController extends Controller
                 $q->where('user_id', $user_id);
             }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
-            }])->latest()->paginate(10);
+            }])
+                ->orderByRaw('views_count DESC,RANDOM()')->orderBy('is_followed', 'desc')->paginate(10);
             return response()->json([
                 'success' => true,
                 'reels' => $reels

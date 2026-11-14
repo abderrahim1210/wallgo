@@ -191,7 +191,7 @@
     "minutesShort": "د",
     "secondsShort": "ث",
     "wallProgress": "تم فتح {{percent}}٪ من الجدار",
-    "insights":"من المشاهدات"
+    "insights":"{{views}} من المشاهدات"
   },
   "errors": {
     "badRequestTitle": "طلب غير صالح",

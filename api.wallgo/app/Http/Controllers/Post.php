@@ -124,7 +124,8 @@ class Post extends Controller
                                     );
                             });
                     })
-                    ->inRandomOrder()->paginate(10);
+                    ->orderByRaw('views_count DESC, RANDOM()')
+                    ->paginate(10);
                 return response()->json([
                     'success' => true,
                     'posts' => $posts

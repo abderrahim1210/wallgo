@@ -190,7 +190,7 @@
     "minutesShort": "Min",
     "secondsShort": "Sec",
     "wallProgress": "The wall is {{percent}}% down",
-    "insights":"Views"
+    "insights":"{{views}} Views"
   },
   "errors": {
     "badRequestTitle": "Bad request",

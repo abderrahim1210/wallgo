@@ -390,9 +390,9 @@ export const PostCard: React.FC<PostCardProps> = ({
                     </Tooltip>
                 </div>
 
-                <div className='space-x-4 flex items-center'>
-                    <Tooltip label={t('feed.insights')}>
-                        <div className="flex items-center gap-1.5 text-xs font-medium text-gray-400 dark:text-gray-500">
+                <div className='space-x-4'>
+                    <Tooltip label={t('feed.insights', { views: post?.views_count })}>
+                        <div className="flex items-center justify-items-center gap-1.5 text-xs font-medium text-gray-400 dark:text-gray-500">
                             <EyeIcon className="w-4 h-4" />
                             <span>{post?.views_count || 0}</span>
                         </div>
