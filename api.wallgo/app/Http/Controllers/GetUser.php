@@ -18,22 +18,22 @@ class GetUser extends Controller
             $user_id = empty($id) ? $authenticated_user : $id;
             $user = User::withCount(['followers', 'followings'])->findOrFail($user_id);
             $posts = Post::where('user_id', $user_id)->count();
-            $followers_list = $user->followers()->get()->map(function ($follower) use ($user_id) {
+            $followers_list = $user->followers()->get()->map(function ($follower) use ($authenticated_user) {
                 return [
                     'id' => $follower->id,
                     'name' => $follower->name,
                     'username' => $follower->username,
                     'avatar_url' => $follower->avatar_url,
-                    'is_following' => Follow::where('follower_id', $user_id)->where('following_id', $follower->id)->exists()
+                    'is_following' => Follow::where('follower_id', $authenticated_user)->where('following_id', $follower->id)->exists()
                 ];
             });
-            $followings_list = $user->followings()->get()->map(function ($following) use ($user_id) {
+            $followings_list = $user->followings()->get()->map(function ($following) use ($authenticated_user) {
                 return [
                     'id' => $following->id,
                     'name' => $following->name,
                     'username' => $following->username,
                     'avatar_url' => $following->avatar_url,
-                    'is_following' => Follow::where('follower_id', $user_id)->where('following_id', $following->id)->exists()
+                    'is_following' => Follow::where('follower_id', $authenticated_user)->where('following_id', $following->id)->exists()
                 ];
             });
             return response()->json([
