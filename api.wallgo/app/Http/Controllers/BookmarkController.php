@@ -93,13 +93,9 @@ class BookmarkController extends Controller
                 $q->where('user_id', $user_id);
             }])->paginate(10);
 
-            $reels = Reel::with(['user:id,username,name,avatar_url'])->withCount(['likes', 'comments'])->withExists(['user as is_owner' => function ($q) use ($user_id) {
+            $reels = Reel::whereHas('bookmarks', function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
-            }])->withExists(['user as is_followed' => function ($q) use ($user_id) {
-                $q->whereHas('followers', function ($query) use ($user_id) {
-                    $query->where('follower_id', $user_id);
-                });
-            }])->withExists(['likes as is_liked' => function ($q) use ($user_id) {
+            })->with(['user:id,username,name,avatar_url'])->withExists(['user as is_owner' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
             }])->withExists(['bookmarks as is_saved' => function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
