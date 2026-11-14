@@ -307,6 +307,7 @@
       "accepted": "Accepted",
       "rejected": "Rejected"
     },
+    "visitors":"Visitors",
     "join_group": "Join Group",
     "joined_group": "Joined",
     "visibility_group": "{{visibility}} Group",

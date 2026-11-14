@@ -95,6 +95,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(PostView::class);
     }
+    
+    public function profileViews()
+    {
+        return $this->hasMany(User::class);
+    }
 
     /**
      * Get the attributes that should be cast.

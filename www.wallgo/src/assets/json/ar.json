@@ -321,7 +321,8 @@
     "group_question_label": "سؤال المجموعة",
     "all":"الكل",
     "videos":"الفيديوهات",
-    "about":"حول"
+    "about":"حول",
+    "visitors":"من الزوار"
   },
   "editProfile": {
     "title": "تعديل الملف الشخصي",

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Follow;
 use App\Models\Post;
+use App\Models\ProfileView;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -92,6 +93,48 @@ class GetUser extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function incrementViews(string $id)
+    {
+        $user_id = Auth::id();
+        if (!$user_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not exist'
+            ]);
+        }
+
+        try {
+            if ($user_id !== $user->id) {
+                $existingView = ProfileView::where('profile_id', $user->id)->where('user_id', $user_id)->first();
+                if (!$existingView) {
+                    ProfileView::create([
+                        'user_id' => $user_id,
+                        'profile_id' => $user->id
+                    ]);
+                    $user->increment('views_count');
+                }
+            }
+
+
+            return response()->json([
+                'success' => true,
+                'views_count' => $user->fresh()->views_count
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error : ' . $e->getMessage()
             ], 500);
         }
     }

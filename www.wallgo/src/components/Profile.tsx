@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type FC } from 'react'
+import React, { useEffect, useRef, useState, type FC } from 'react'
 import { MainLayout } from '../MainLayout'
 import { FaCalendarAlt, FaCamera, FaEnvelope, FaGlobe, FaMapMarkerAlt, FaPhone, FaUserEdit, FaUsers, FaVenusMars } from 'react-icons/fa'
 import { PostGrid, type Post } from '../templates/PostGrid'
@@ -38,9 +38,8 @@ interface User {
     location?: string;
     is_following?: boolean;
     visibility: string;
+    views_count:number;
 }
-
-
 
 export const Profile = () => {
     const { id } = useParams();
@@ -51,7 +50,7 @@ export const Profile = () => {
     const { user } = useAuth()!;
     const [follow, setFollow] = useState(false);
 
-    
+
 
     useEffect(() => {
         if (id) {
@@ -127,6 +126,43 @@ export const Profile = () => {
         },
     ];
 
+    const profileRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    const timer = setTimeout(() => {
+                        incrementView(profile.id);
+                        observer.disconnect();
+                    }, 1500);
+
+                    return () => clearTimeout(timer);
+                }
+            },
+            { threshold: 0.5 }
+        );
+
+        if (profileRef.current) {
+            observer.observe(profileRef.current);
+        }
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [profile?.id]);
+
+    const incrementView = async (profileId: number) => {
+        try {
+            await axios.post(`${api_url}/profiles/${profileId}/view`, {}, {
+                withCredentials: true,
+                withXSRFToken: true
+            });
+        } catch (err) {
+            console.error("Failed to increment view", err);
+        }
+    }
+
     return (
         <MainLayout>
             <Helmet>
@@ -182,7 +218,7 @@ export const Profile = () => {
                         <ErrorPage codeP='500' />
                     </div>
                 ) : (
-                    <div className="max-w-4xl mx-auto px-4 py-8 pb-20">
+                    <div className="max-w-4xl mx-auto px-4 py-8 pb-20" ref={profileRef}>
                         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm">
                             {
                                 <div className="h-48 md:h-60 w-full rounded-xl overflow-hidden relative bg-gray-200 dark:bg-gray-700">
@@ -272,6 +308,9 @@ export const Profile = () => {
                                     </div>
                                     <div>
                                         <span className="font-bold text-gray-900 dark:text-gray-100 text-base cursor-pointer" onClick={() => openModal('followings')}>{stats?.followings_count} </span> <span className="text-gray-500 dark:text-gray-400">{t('profile.following')}</span>
+                                    </div>
+                                    <div>
+                                        <span className="font-bold text-gray-900 dark:text-gray-100 text-base">{profile?.views_count} </span> <span className="text-gray-500 dark:text-gray-400">{t('profile.visitors')}</span>
                                     </div>
                                 </div>
 
