@@ -1,4 +1,4 @@
-import { Bookmark, CalendarClock, Crown, Edit3, Flag, Globe, Heart, Link, Lock, MessageCircle, MoreHorizontal, Play, Share2, Sparkles, Timer, Trash2, X } from 'lucide-react';
+import { Bookmark, CalendarClock, Crown, Edit3, EyeIcon, Flag, Globe, Heart, Link, Lock, MessageCircle, MoreHorizontal, Play, Share2, Sparkles, Timer, Trash2, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react'
 import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
 import { useModal } from '../../hooks/ModalProvider';
@@ -173,8 +173,45 @@ export const PostCard: React.FC<PostCardProps> = ({
             setIsPlaying(true);
         }
     };
+
+    const postRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    const timer = setTimeout(() => {
+                        incrementView(post.id);
+                        observer.disconnect();
+                    }, 1500);
+
+                    return () => clearTimeout(timer);
+                }
+            },
+            { threshold: 0.5 }
+        );
+
+        if (postRef.current) {
+            observer.observe(postRef.current);
+        }
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [post.id]);
+
+    const incrementView = async (postId: number) => {
+        try {
+            await axios.post(`${api_url}/posts/${postId}/view`, {}, {
+                withCredentials: true,
+                withXSRFToken: true
+            });
+        } catch (err) {
+            console.error("Failed to increment view", err);
+        }
+    };
     return (
-        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md">
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm mb-6 transition-all duration-200 hover:shadow-md" ref={postRef}>
             <div className="flex items-center justify-between p-4 pb-3 transition-all rounded-t-2xl">
                 <div className="flex items-center space-x-3">
                     {
@@ -353,15 +390,23 @@ export const PostCard: React.FC<PostCardProps> = ({
                     </Tooltip>
                 </div>
 
-                <Tooltip label={t('feed.savePost')}>
-                    <button
-                        onClick={handleSavePost}
-                        className={`text-gray-600 dark:text-gray-400 hover:text-[var(--special-purple)] transition-colors cursor-pointer ${saved ? 'text-[var(--special-purple)]' : ''
-                            }`}
-                    >
-                        <Bookmark className={`w-5 h-5 ${saved ? 'fill-[var(--special-purple)]' : ''}`} />
-                    </button>
-                </Tooltip>
+                <div className='space-x-4 flex items-center'>
+                    <Tooltip label={t('feed.insights')}>
+                        <div className="flex items-center gap-1.5 text-xs font-medium text-gray-400 dark:text-gray-500">
+                            <EyeIcon className="w-4 h-4" />
+                            <span>{post?.views_count || 0}</span>
+                        </div>
+                    </Tooltip>
+                    <Tooltip label={t('feed.savePost')}>
+                        <button
+                            onClick={handleSavePost}
+                            className={`text-gray-600 dark:text-gray-400 hover:text-[var(--special-purple)] transition-colors cursor-pointer ${saved ? 'text-[var(--special-purple)]' : ''
+                                }`}
+                        >
+                            <Bookmark className={`w-5 h-5 ${saved ? 'fill-[var(--special-purple)]' : ''}`} />
+                        </button>
+                    </Tooltip>
+                </div>
             </div>
             {selectedPost && (
                 <SelectedPosts post={selectedPost} onClose={() => setSelectedPost(null)} onDelete={deletePost} />

@@ -189,7 +189,8 @@
     "hoursShort": "Hrs",
     "minutesShort": "Min",
     "secondsShort": "Sec",
-    "wallProgress": "The wall is {{percent}}% down"
+    "wallProgress": "The wall is {{percent}}% down",
+    "insights":"Views"
   },
   "errors": {
     "badRequestTitle": "Bad request",

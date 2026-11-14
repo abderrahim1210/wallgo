@@ -190,7 +190,8 @@
     "hoursShort": "س",
     "minutesShort": "د",
     "secondsShort": "ث",
-    "wallProgress": "تم فتح {{percent}}٪ من الجدار"
+    "wallProgress": "تم فتح {{percent}}٪ من الجدار",
+    "insights":"من المشاهدات"
   },
   "errors": {
     "badRequestTitle": "طلب غير صالح",

@@ -76,4 +76,9 @@ class Post extends Model
         }
         return false;
     }
+
+    public function postViews()
+    {
+        return $this->hasMany(PostView::class);
+    }
 }

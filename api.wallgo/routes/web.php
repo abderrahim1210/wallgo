@@ -257,6 +257,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/last_searches', [SearchController::class, 'get_searches']);
 
     Route::delete('/searches/{id}', [SearchController::class, 'deleteTerm']);
+
+    Route::post('/posts/{id}/view', [Post::class, 'incrementViews']);
 });
 Route::post('/send_link_email', [ForgotPassword::class, 'send_link']);
 

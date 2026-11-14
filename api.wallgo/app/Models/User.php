@@ -86,6 +86,16 @@ class User extends Authenticatable
         return $this->hasMany(Reel::class);
     }
 
+    public function reelViews()
+    {
+        return $this->hasMany(ReelViews::class);
+    }
+
+    public function postViews()
+    {
+        return $this->hasMany(PostView::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

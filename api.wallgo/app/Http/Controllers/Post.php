@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Group;
 use App\Models\Page;
 use App\Models\Post as ModelsPost;
+use App\Models\PostView;
 use App\Models\Report;
 use App\Models\User;
 use BcMath\Number;
@@ -234,6 +235,46 @@ class Post extends Controller
                 'success' => false,
                 'message' => 'Failed : ' . $e->getMessage()
             ]);
+        }
+    }
+
+    public function incrementViews(string $id)
+    {
+        $user_id = Auth::id();
+        if (!$user_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+        $post = ModelsPost::find($id);
+        if (!$post) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Post not exist'
+            ]);
+        }
+
+        try {
+            $existingView = PostView::where('post_id', $post->id)->where('user_id', $user_id)->first();
+            if (!$existingView) {
+                PostView::create([
+                    'user_id' => $user_id,
+                    'post_id' => $post->id
+                ]);
+                $post->increment('views_count');
+            }
+
+
+            return response()->json([
+                'success' => true,
+                'views_count' => $post->fresh()->views_count
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error : ' . $e->getMessage()
+            ], 500);
         }
     }
 }

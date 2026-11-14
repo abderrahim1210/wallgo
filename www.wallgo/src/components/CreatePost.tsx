@@ -25,6 +25,7 @@ interface Post {
     postable_type?: string,
     visibility: string;
     media_type: string;
+    
 }
 
 

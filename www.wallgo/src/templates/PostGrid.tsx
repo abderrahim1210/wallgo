@@ -41,6 +41,7 @@ export interface Post {
     visibility: 'private' | 'public';
     is_group_owner?: boolean;
     is_page_owner?:boolean;
+    views_count:number;
 };
 
 interface PostGridProps {
