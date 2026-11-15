@@ -573,5 +573,375 @@
     "emptySaved": "No reels saved. Start saving some!",
     "fetching": "Fetching reels...",
     "fetchingSingle": "Fetching reel..."
+  },
+  "privacy": {
+    "pageTitle": "WallGo: Privacy",
+    "eyebrow": "Your privacy matters",
+    "title": "Privacy at WallGo",
+    "subtitle": "A clear look at the information WallGo handles, how it supports the service, and the controls available to you.",
+    "summaryNote": "This page explains WallGo's privacy practices in plain language. Review the sections below to understand what information is used and how to manage your account.",
+    "toc": {
+      "ariaLabel": "Privacy policy sections",
+      "title": "On this page"
+    },
+    "sections": {
+      "information": {
+        "eyebrow": "The data you share",
+        "title": "Information we collect",
+        "description": "We handle information you provide and activity generated as you use WallGo, to operate the features you choose to use.",
+        "items": {
+          "account": {
+            "title": "Account details",
+            "description": "Your username and email address, along with the credentials needed to create and access your account."
+          },
+          "profile": {
+            "title": "Profile information",
+            "description": "Details you add to your profile, such as your name, photo, bio, and other information you choose to share."
+          },
+          "content": {
+            "title": "Your content",
+            "description": "Posts, Reels, comments, and bookmarks or other saved items associated with your account."
+          },
+          "interactions": {
+            "title": "Interactions and metrics",
+            "description": "Activity such as follows, likes, comments, saved items, and content or profile views, which helps features work and provides engagement counts."
+          }
+        }
+      },
+      "profileViews": {
+        "eyebrow": "Engagement, with context",
+        "title": "Profile views & visitor privacy",
+        "description": "Profile view counts help people understand engagement without presenting a public list of who visited.",
+        "items": {
+          "recording": {
+            "title": "How views are counted",
+            "description": "When you are signed in, WallGo may associate a profile view with your account and the profile viewed so repeat views can be counted once."
+          },
+          "visibility": {
+            "title": "What profile owners see",
+            "description": "The profile feature displays an aggregate visitor count, not a list of visitor identities. The view record is still processed by WallGo to operate this feature."
+          }
+        }
+      },
+      "usage": {
+        "eyebrow": "Using information responsibly",
+        "title": "How we use data",
+        "description": "Information supports the core features of WallGo and helps us keep the service useful and reliable.",
+        "items": {
+          "feed": {
+            "title": "Personalize your experience",
+            "description": "Use your connections and activity to organize relevant posts, Reels, and community content in your experience."
+          },
+          "security": {
+            "title": "Protect the platform",
+            "description": "Support account authentication, help identify misuse, and maintain the safety and reliability of WallGo."
+          },
+          "notifications": {
+            "title": "Deliver notifications",
+            "description": "Provide service notifications and activity updates related to your account and interactions."
+          },
+          "improvement": {
+            "title": "Improve WallGo",
+            "description": "Understand how features are used so we can maintain, troubleshoot, and improve the product."
+          }
+        }
+      },
+      "security": {
+        "eyebrow": "Safeguards and control",
+        "title": "Data security & storage",
+        "description": "We use technical and organizational safeguards intended to protect information, while recognizing that no online service can guarantee absolute security.",
+        "items": {
+          "authentication": {
+            "title": "Authentication & access controls",
+            "description": "WallGo uses Sanctum-backed authentication for protected API requests and access controls to help limit account actions to signed-in users."
+          },
+          "storage": {
+            "title": "Protected systems",
+            "description": "Account information and activity are stored in application databases. We apply security practices to protect these systems and the information they handle."
+          },
+          "control": {
+            "title": "Your control",
+            "description": "Use account features and settings to manage the profile information and content associated with your account."
+          }
+        }
+      },
+      "rights": {
+        "eyebrow": "Your account, your choices",
+        "title": "Your rights & controls",
+        "description": "WallGo gives you tools to review and manage information you have added to your account.",
+        "items": {
+          "profile": {
+            "title": "Update your profile",
+            "description": "Review and edit profile details through your account profile and editing options."
+          },
+          "content": {
+            "title": "Manage your content",
+            "description": "Delete posts and Reels you have shared using the controls available with your content."
+          },
+          "settings": {
+            "title": "Manage account settings",
+            "description": "Adjust available account, notification, visibility, and security settings to suit your preferences."
+          }
+        }
+      }
+    }
+  },
+  "about": {
+    "pageTitle": "WallGo: About",
+    "logoAlt": "WallGo logo",
+    "eyebrow": "A more human social network",
+    "title": "About WallGo",
+    "description": "A modern social space for authentic moments, creative expression, and meaningful connection.",
+    "whyTitle": "Why we built WallGo",
+    "whyDescription": "Social media should make it easier to connect, share, and discover—not feel cluttered or invasive. WallGo was created in 2026 to bring the focus back to people, with an experience designed around creativity, community, and user choice.",
+    "featuresTitle": "A place for every part of your story",
+    "featuresDescription": "Share what matters, find your people, and keep the moments you want to come back to.",
+    "features": {
+      "posts": {
+        "title": "Posts",
+        "description": "Share photos, thoughts, and everyday updates with your community."
+      },
+      "reels": {
+        "title": "Reels",
+        "description": "Create and discover short-form videos that bring ideas and moments to life."
+      },
+      "bookmarks": {
+        "title": "Bookmarks",
+        "description": "Save posts and inspiration to revisit whenever you want."
+      },
+      "communities": {
+        "title": "Pages & communities",
+        "description": "Build a space around your interests, bring people together, and grow as a community."
+      },
+      "profileViews": {
+        "title": "Anonymous profile views",
+        "description": "See profile view insights while keeping the identity of visitors private."
+      }
+    },
+    "journeyTitle": "Our journey",
+    "timeline": {
+      "beginningDate": "September 2026",
+      "beginningDescription": "Development began with a vision for a complete, modern social network built around genuine connection.",
+      "todayDate": "The journey continues",
+      "todayDescription": "WallGo keeps growing and improving, shaped by the needs and ideas of its community."
+    },
+    "founderTitle": "Meet the founder",
+    "founderName": "Abderrahim Khali Ali",
+    "founderRole": "Founder & full-stack web developer",
+    "founderDescription": "Based in Morocco, Abderrahim created WallGo to build a thoughtful, user-focused platform that adds value to everyday online communication."
+  },
+  "terms": {
+    "pageTitle": "WallGo: Terms of Service",
+    "eyebrow": "Clear expectations, better community",
+    "title": "Terms of Service",
+    "subtitle": "These terms explain the basic rules for using WallGo, sharing content, and taking part in the community.",
+    "effectiveDateLabel": "Effective Date:",
+    "effectiveDate": "2026",
+    "summaryNote": "Please read these Terms before using WallGo. They are a plain-language overview of important conditions; if you do not agree, do not register for or use the service. Rights that cannot be limited under applicable law remain unaffected.",
+    "toc": {
+      "ariaLabel": "Terms of Service sections",
+      "title": "On this page"
+    },
+    "sections": {
+      "acceptance": {
+        "eyebrow": "Starting with WallGo",
+        "title": "Acceptance of terms",
+        "description": "WallGo launched in 2026. By creating an account or using the platform, you agree to these Terms and to follow the rules that help keep the service safe and useful.",
+        "items": {
+          "agreement": {
+            "title": "Your agreement",
+            "description": "If you do not agree to these Terms, do not create an account or continue using WallGo."
+          },
+          "updates": {
+            "title": "Changes to these Terms",
+            "description": "We may update these Terms as WallGo evolves or as requirements change. The revised version will be posted here with an updated effective date. Continued use after an update takes effect means you accept the revised Terms."
+          }
+        }
+      },
+      "accounts": {
+        "eyebrow": "Keep your account in good standing",
+        "title": "User accounts & security",
+        "description": "You are responsible for the information you provide and for taking reasonable care of your account.",
+        "items": {
+          "accuracy": {
+            "title": "Accurate information",
+            "description": "Provide accurate account and profile information, and update it when it changes so your account details remain current."
+          },
+          "credentials": {
+            "title": "Protect your credentials",
+            "description": "Keep your password and sign-in credentials private. Do not let others use your account, and take reasonable steps to protect your devices and sessions."
+          },
+          "responsibility": {
+            "title": "Account activity",
+            "description": "You are responsible for activity carried out through your account. If you believe someone has accessed it without permission, secure your account using the available password recovery options."
+          }
+        }
+      },
+      "content": {
+        "eyebrow": "Share responsibly",
+        "title": "User-generated content",
+        "description": "You decide what to share. You are responsible for the content you post, the rights you have to it, and how it affects others.",
+        "items": {
+          "ownership": {
+            "title": "You keep ownership",
+            "description": "You retain ownership of Posts, Reels, comments, and other content you create, subject to the rights of other people whose material you include."
+          },
+          "permission": {
+            "title": "Permission to operate WallGo",
+            "description": "When you share content, you give WallGo a non-exclusive permission to host, store, reproduce, display, and distribute it as needed to provide, secure, and operate the features you choose to use."
+          },
+          "bookmarks": {
+            "title": "Bookmarks and saved content",
+            "description": "Bookmarks are saved references to content, not a transfer of ownership. The original creator keeps their rights, and the content remains subject to its audience and visibility settings."
+          },
+          "rules": {
+            "title": "Content that is not allowed",
+            "description": "Do not post or share harassment, threats, spam, illegal material, content that violates another person's rights or privacy, or anything else prohibited by applicable law."
+          }
+        }
+      },
+      "features": {
+        "eyebrow": "Use features with care",
+        "title": "Platform features & interactions",
+        "description": "WallGo includes public feeds, messaging, and engagement features. Use them respectfully and consider the audience and visibility of each interaction.",
+        "items": {
+          "feeds": {
+            "title": "Feeds and sharing",
+            "description": "Content shared to public areas may be visible to other people. You are responsible for choosing what to publish and for respecting the rights and privacy of others."
+          },
+          "messaging": {
+            "title": "Messaging",
+            "description": "Use messages for legitimate communication. Do not use messaging to harass, threaten, spam, or otherwise harm other people."
+          },
+          "profileViews": {
+            "title": "Profile view insights",
+            "description": "WallGo may record a signed-in profile view to prevent duplicate counts. Profile owners see an aggregate count, not a list of visitor identities; the underlying activity is still processed to provide the feature."
+          },
+          "integrity": {
+            "title": "Respect platform integrity",
+            "description": "Do not interfere with WallGo, bypass access controls, scrape data without permission, manipulate engagement metrics, or use automated means to disrupt the service."
+          }
+        }
+      },
+      "termination": {
+        "eyebrow": "Safety and enforcement",
+        "title": "Termination & suspension",
+        "description": "We may take action when necessary to protect people, the service, or compliance with applicable law.",
+        "items": {
+          "enforcement": {
+            "title": "When action may be taken",
+            "description": "WallGo may remove content, restrict features, suspend, or terminate an account that violates these Terms, community guidelines, or applicable law, or that puts the platform or its users at risk."
+          },
+          "access": {
+            "title": "Effect on access",
+            "description": "A suspension or termination may limit or end access to your account or content. Where appropriate and practical, we may provide notice or an opportunity to address the issue."
+          }
+        }
+      },
+      "liability": {
+        "eyebrow": "Service availability",
+        "title": "Limitation of liability",
+        "description": "This section describes limits on responsibility to the extent allowed by applicable law. It does not remove any rights or remedies that cannot legally be excluded.",
+        "items": {
+          "availability": {
+            "title": "Service provided as available",
+            "description": "WallGo is provided on an \"as is\" and \"as available\" basis. We do not promise that the service will always be uninterrupted, error-free, secure, or available at every time or location."
+          },
+          "limits": {
+            "title": "Limits where permitted by law",
+            "description": "To the fullest extent permitted by applicable law, WallGo is not responsible for indirect, incidental, special, consequential, or punitive losses arising from your use of, or inability to use, the service."
+          },
+          "protection": {
+            "title": "Rights preserved",
+            "description": "Nothing in these Terms excludes or limits liability or consumer rights that cannot be excluded or limited under the laws that apply to you."
+          }
+        }
+      }
+    }
+  },
+  "support": {
+        "pageTitle": "WallGo: Support",
+        "eyebrow": "Here to help",
+        "title": "How can we help?",
+        "subtitle": "Find a quick answer, explore help topics, or send a note to the WallGo support team.",
+        "categoriesTitle": "Browse help topics",
+        "categoriesDescription": "Choose a topic to prefill your message, or search the answers below.",
+        "search": {
+          "label": "Search frequently asked questions",
+          "placeholder": "Search for an answer...",
+          "clear": "Clear search"
+        },
+        "categories": {
+          "account": {
+            "title": "Account & login",
+            "description": "Sign-in, password, and profile access."
+          },
+          "content": {
+            "title": "Reels & posts",
+            "description": "Creating, managing, and removing content."
+          },
+          "privacy": {
+            "title": "Privacy & security",
+            "description": "Profile views, visibility, and account safety."
+          },
+          "general": {
+            "title": "General inquiries",
+            "description": "Other questions, feedback, or a bug report."
+          }
+        },
+        "faq": {
+          "eyebrow": "Quick answers",
+          "title": "Frequently asked questions",
+          "description": "Search common questions and expand an answer for more detail.",
+          "noResultsTitle": "No matching answers",
+          "noResultsDescription": "Try a different search, or send us a message and we will point you in the right direction.",
+          "resetPassword": {
+            "question": "How do I reset my password?",
+            "answer": "Go to the Log in page and choose “Forgot password?”. Enter the email address linked to your account, then follow the instructions sent to your inbox. Check your spam folder if the message does not arrive."
+          },
+          "accountAccess": {
+            "question": "What should I do if I cannot access my account?",
+            "answer": "First try the password reset flow using the email associated with your account. If you still cannot sign in, use the contact form below and include the email address on the account. Never send us your password."
+          },
+          "profileViews": {
+            "question": "How do anonymous profile views work?",
+            "answer": "When you are signed in, WallGo may associate a profile view with your account to avoid counting the same viewer repeatedly. Profile owners see an aggregate visitor count, not a list of viewer identities; WallGo still processes the view record to provide this feature."
+          },
+          "deleteContent": {
+            "question": "How can I delete a post or Reel?",
+            "answer": "Open the post or Reel and use its options menu to choose the delete action. Confirm the prompt to remove the item. Only delete content you own or are authorized to manage."
+          },
+          "privacySettings": {
+            "question": "Where can I manage my privacy and security settings?",
+            "answer": "Open Settings from your account menu to review available account visibility, notification, and security options. You can also update profile details from your profile editing page."
+          },
+          "reportProblem": {
+            "question": "How do I report a bug or send feedback?",
+            "answer": "Choose General inquiries in the contact form, describe what happened, and include the steps to reproduce the issue if you can. Do not include your password or other sensitive credentials."
+          }
+        },
+        "form": {
+          "eyebrow": "Talk to our team",
+          "title": "Send us a message",
+          "description": "Choose a topic and tell us how we can help. Add a reply email if you would like us to get back to you.",
+          "categoryLabel": "What do you need help with?",
+          "replyEmailLabel": "Your email (optional)",
+          "replyEmailPlaceholder": "you@example.com",
+          "messageLabel": "Message",
+          "messagePlaceholder": "Share the details that will help us understand your question...",
+          "mailtoNote": "This opens your email app with a prepared message. Nothing is sent until you review and send it there.",
+          "submit": "Continue to email",
+          "subjectPrefix": "WallGo support",
+          "replyEmailBodyLabel": "Reply email"
+        },
+        "contact": {
+          "emailTitle": "Email support",
+          "emailDescription": "Prefer to write from your own email app? Reach the WallGo support team here.",
+          "emailAddress": "Email {{email}}",
+          "guidelinesTitle": "Community guidelines",
+          "guidelinesDescription": "Help keep WallGo welcoming by reviewing the rules for content and interactions.",
+          "guidelinesLink": "Review content rules",
+          "privacyNote": "Only include information needed to resolve your request. Do not share passwords or private authentication codes."
+        }
   }
 }

@@ -26,6 +26,10 @@ import NotificationsView from '../components/NotificationsView'
 import JoinGroupRequests from '../components/JoinGroupRequests'
 import ForgotPassword from '../pages/Auth/ForgotPassword'
 import ResetPassword from '../components/ResetPassword'
+import About from '../components/About'
+import Privacy from '../components/Privacy'
+import Terms from '../components/Terms'
+import Support from '../components/Support'
 
 export const AppRoutes = () => {
     return (
@@ -61,6 +65,10 @@ export const AppRoutes = () => {
             <Route path='/groups_requests' element={<JoinGroupRequests />} />
             <Route path='/forgot_password' element={<ForgotPassword />} />
             <Route path='/reset-password' element={<ResetPassword />} />
+            <Route path='/wallgo/about' element={<About />} />
+            <Route path='/wallgo/privacy' element={<Privacy />} />
+            <Route path='/wallgo/terms' element={<Terms />} />
+            <Route path='/wallgo/support' element={<Support />} />
         </Routes>
     )
 }

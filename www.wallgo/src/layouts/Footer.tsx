@@ -16,10 +16,10 @@ export const Footer = () => {
                 <div className='max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between text-sm text-gray-500 dark:text-gray-400'>
                     <p>&copy;{year} {t('common.allRightsReserved', { brandName: t('common.brandName') })}</p>
                     <div className="flex space-x-6 mt-2 sm:mt-0">
-                        <Link to="#" className={linksClass}>{t('common.about')}</Link>
-                        <Link to="#" className={linksClass}>{t('common.privacy')}</Link>
-                        <Link to="#" className={linksClass}>{t('common.terms')}</Link>
-                        <Link to="#" className={linksClass}>{t('common.support')}</Link>
+                        <Link to="/wallgo/about" className={linksClass}>{t('common.about')}</Link>
+                        <Link to="/wallgo/privacy" className={linksClass}>{t('common.privacy')}</Link>
+                        <Link to="/wallgo/terms" className={linksClass}>{t('common.terms')}</Link>
+                        <Link to="/wallgo/support" className={linksClass}>{t('common.support')}</Link>
                     </div>
                 </div>
             </footer>
