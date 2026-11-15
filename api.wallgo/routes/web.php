@@ -12,6 +12,7 @@ use App\Http\Controllers\GetUser;
 use App\Http\Controllers\GetUsers;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Like as ControllersLike;
+use App\Http\Controllers\Messenger;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Post;
@@ -259,8 +260,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/searches/{id}', [SearchController::class, 'deleteTerm']);
 
     Route::post('/posts/{id}/view', [Post::class, 'incrementViews']);
-    
+
     Route::post('/profiles/{id}/view', [GetUser::class, 'incrementViews']);
+
+    Route::prefix('/messenger')->group(function () {
+        Route::get('/', [Messenger::class, 'index']);
+        Route::get('/{id}', [Messenger::class, 'show']);
+    });
 });
 Route::post('/send_link_email', [ForgotPassword::class, 'send_link']);
 

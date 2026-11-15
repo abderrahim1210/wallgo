@@ -5,10 +5,9 @@ import { SignUp } from '../pages/Auth/SignUp'
 import { Login } from '../pages/Auth/Login'
 import { Discover } from '../components/Discover'
 import { Reels } from '../components/Reels'
-import { Messenger } from '../components/Messenger'
+import { Messenger } from '../pages/Messenger/Messenger'
 import SavedPosts from '../components/SavedPosts'
 import CreatePost from '../components/CreatePost'
-import { MyPosts } from '../components/MyPosts'
 import { Pages } from '../components/Pages'
 import { Groups } from '../components/Groups'
 import { EditProfile } from '../components/EditProfile'
@@ -42,7 +41,7 @@ export const AppRoutes = () => {
             <Route path='/messenger' element={<Messenger />} />
             <Route path='/saved_posts' element={<SavedPosts />} />
             <Route path='/create_post' element={<CreatePost />} />
-            <Route path='/myposts' element={<MyPosts />} />
+            {/* <Route path='/myposts' element={<MyPosts />} /> */}
             <Route path='/pages' element={<Pages />} />
             <Route path='/groups' element={<Groups />} />
             <Route path='/account/profile' element={<Profile />} />

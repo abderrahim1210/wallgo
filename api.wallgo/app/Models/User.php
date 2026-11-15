@@ -101,9 +101,9 @@ class User extends Authenticatable
         return $this->hasMany(User::class);
     }
 
-    public function conversation()
+    public function conversations()
     {
-        return $this->belongsToMany(Conversation::class, 'conversations_users');
+        return $this->belongsToMany(Conversation::class, 'conversation_user');
     }
 
     public function messages()
