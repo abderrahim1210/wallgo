@@ -58,9 +58,9 @@ export const Messenger = () => {
                         time: conv?.time || '',
                         unread: conv?.unread || '',
                         online: conv?.online || '',
-                        user:conv?.user
+                        user: conv?.user
                     });
-                    setActiveChat(conv);
+                    // setActiveChat(conv);
                 }
             });
         }
@@ -73,11 +73,16 @@ export const Messenger = () => {
 
     const currentTime = () => new Date().toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
 
-    const handleSendMessage = (e: React.FormEvent) => {
+    const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
         const text = messageInput.trim();
         if (!text) return;
 
+        try {
+            await axios.post(`${api_url}/messenger/send`, { content: text, conversation_id: activeChat?.id }, { withCredentials: true, withXSRFToken: true });
+        } catch (err) {
+            console.error(err);
+        }
         setMessages((currentMessages) => [
             ...currentMessages,
             { id: currentMessages.length + 1, sender: 'me', text, time: currentTime() },
