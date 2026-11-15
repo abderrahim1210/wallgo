@@ -1,257 +1,328 @@
-import React, { useRef, useState } from 'react'
-import { ArrowLeft, CheckCheck, Image, MoreVertical, Phone, Search, Send, Smile, Video } from 'lucide-react';
-import { Navbar } from '../layouts/Navbar';
+import React, { useRef, useState } from 'react';
+import { ArrowLeft, CheckCheck, Image, Info, Phone, Search, Send, Smile, Video } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { MobileCellNavbar } from '../layouts/MobileCellNavbar';
 import { useTranslation } from 'react-i18next';
+import { Navbar } from '../layouts/Navbar';
+import { MobileCellNavbar } from '../layouts/MobileCellNavbar';
+
+type Conversation = {
+    id: number;
+    name: string;
+    avatar: string;
+    lastMessage: string;
+    time: string;
+    unread: number;
+    online: boolean;
+};
+
+type ChatMessage = {
+    id: number;
+    sender: 'me' | 'them';
+    text: string;
+    time: string;
+    image?: string;
+};
+
+type ConversationItemProps = {
+    conversation: Conversation;
+    active: boolean;
+    yesterdayLabel: string;
+    onSelect: (conversation: Conversation) => void;
+};
+
+const ConversationItem = ({ conversation, active, yesterdayLabel, onSelect }: ConversationItemProps) => (
+    <button
+        type="button"
+        onClick={() => onSelect(conversation)}
+        aria-pressed={active}
+        className={`flex w-full items-center gap-3 rounded-2xl p-3 text-start transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--special-purple)] ${
+            active
+                ? 'bg-[var(--special-purple)]/10'
+                : 'border-s-transparent hover:bg-white/70 dark:hover:bg-white/5'
+        }`}
+    >
+        <span className="relative shrink-0">
+            <img src={conversation.avatar} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-white/80 dark:ring-gray-800" />
+            {conversation.online && (
+                <span className="absolute bottom-0 end-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-500 dark:border-gray-900" />
+            )}
+        </span>
+        <span className="min-w-0 flex-1">
+            <span className="flex items-baseline justify-between gap-2">
+                <span className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">{conversation.name}</span>
+                <span className="shrink-0 text-[10px] text-gray-400 dark:text-gray-500">
+                    {conversation.time === 'yesterday' ? yesterdayLabel : conversation.time}
+                </span>
+            </span>
+            <span className="mt-1 block truncate text-xs text-gray-500 dark:text-gray-400">{conversation.lastMessage}</span>
+        </span>
+        {conversation.unread > 0 && (
+            <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-[var(--special-purple)] px-1 text-[10px] font-bold text-white shadow-sm shadow-[var(--special-purple)]/25">
+                {conversation.unread}
+            </span>
+        )}
+    </button>
+);
+
+type MessageBubbleProps = {
+    message: ChatMessage;
+    attachmentAlt: string;
+};
+
+const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) => (
+    <div className={`flex ${message.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
+        <div
+            className={`max-w-[85%] overflow-hidden rounded-2xl text-sm leading-relaxed shadow-sm md:max-w-md ${
+                message.sender === 'me'
+                    ? 'rounded-ee-md bg-[var(--special-purple)] text-white shadow-[var(--special-purple)]/15'
+                    : 'rounded-es-md border border-gray-200/80 bg-white/85 text-gray-800 dark:border-white/10 dark:bg-gray-800/80 dark:text-gray-100'
+            }`}
+        >
+            {message.image && (
+                <div className="p-1.5">
+                    <img src={message.image} alt={attachmentAlt} className="max-h-60 w-full rounded-xl object-cover" />
+                </div>
+            )}
+            {message.text && <p className="px-4 py-2.5">{message.text}</p>}
+            <div className={`flex items-center justify-end gap-1.5 px-3 pb-2 text-[10px] ${message.sender === 'me' ? 'text-white/75' : 'text-gray-400 dark:text-gray-500'}`}>
+                <span>{message.time}</span>
+                {message.sender === 'me' && <CheckCheck className="h-3 w-3" />}
+            </div>
+        </div>
+    </div>
+);
+
+const conversations: Conversation[] = [
+    {
+        id: 1,
+        name: 'Sara Miller',
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+        lastMessage: 'Safée, daccord! Nchofouk gheda ncha2llah. 🚀',
+        time: '10:45 AM',
+        unread: 2,
+        online: true,
+    },
+    {
+        id: 2,
+        name: 'Abderrahim Khali Ali',
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
+        lastMessage: 'Wach wajadti dak l-code dyal Laravel?',
+        time: 'yesterday',
+        unread: 0,
+        online: false,
+    },
+];
 
 export const Messenger = () => {
     const { t, i18n } = useTranslation();
-    const [conversations, setConversations] = useState([
-        {
-            id: 1,
-            name: 'Sara Miller',
-            avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
-            lastMessage: 'Safée, daccord! Nchofouk gheda ncha2llah. 🚀',
-            time: '10:45 AM',
-            unread: 2,
-            online: true,
-        },
-        {
-            id: 2,
-            name: 'Abderrahim Khali Ali',
-            avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
-            lastMessage: 'Wach wajadti dak l-code dyal Laravel?',
-            time: 'yesterday',
-            unread: 0,
-            online: false,
-        },
-    ]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    const [showDropdown, setShowDropdown] = useState(false);
+    const [showChatInfo, setShowChatInfo] = useState(false);
     const [notification, setNotification] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-
-    const showNotify = (msg: string) => {
-        setNotification(msg);
-        setTimeout(() => setNotification(null), 2500);
-    }
     const [activeChat, setActiveChat] = useState(conversations[0]);
     const [messageInput, setMessageInput] = useState('');
-    const [messages, setMessages] = useState([
+    const [messages, setMessages] = useState<ChatMessage[]>([
         { id: 1, sender: 'them', text: 'Salam! Labas 3lik?', time: '10:30 AM' },
         { id: 2, sender: 'me', text: 'Walaeikom Assalam, alhamdulillah kolchi مزيان!', time: '10:32 AM' },
         { id: 3, sender: 'them', text: 'Safée, daccord! Nchofouk gheda ncha2llah. 🚀', time: '10:45 AM' },
     ]);
     const [showMobileChat, setShowMobileChat] = useState(false);
+    const [term, setTerm] = useState('');
+
+    const showNotify = (msg: string) => {
+        setNotification(msg);
+        setTimeout(() => setNotification(null), 2500);
+    };
+
+    const currentTime = () => new Date().toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
 
     const handleSendMessage = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!messageInput.trim()) return;
-        const newMessage = {
-            id: messages.length + 1,
-            sender: 'me',
-            text: messageInput,
-            time: new Date().toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }),
-        }
-        setMessages([...messages, newMessage]);
+        const text = messageInput.trim();
+        if (!text) return;
+
+        setMessages((currentMessages) => [
+            ...currentMessages,
+            { id: currentMessages.length + 1, sender: 'me', text, time: currentTime() },
+        ]);
         setMessageInput('');
         setShowEmojiPicker(false);
-    }
+    };
 
-    const handleSelectChat = (conv: typeof conversations[0]) => {
-        setActiveChat(conv);
+    const handleSelectChat = (conversation: Conversation) => {
+        setActiveChat(conversation);
         setShowMobileChat(true);
     };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            const newMessage = {
-                id: messages.length + 1,
-                sender: 'me',
-                text: '',
-                image: imageUrl,
-                time: new Date().toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }),
-            };
-            setMessages([...messages, newMessage]);
-            showNotify(t('messenger.imageSent'));
-        }
+        if (!file) return;
+
+        const imageUrl = URL.createObjectURL(file);
+        setMessages((currentMessages) => [
+            ...currentMessages,
+            { id: currentMessages.length + 1, sender: 'me', text: '', image: imageUrl, time: currentTime() },
+        ]);
+        showNotify(t('messenger.imageSent'));
+        e.target.value = '';
     };
 
     const addEmoji = (emoji: string) => {
-        setMessageInput(prev => prev + emoji);
+        setMessageInput((currentInput) => currentInput + emoji);
     };
 
     const emojis = ['😊', '🚀', '🔥', '👍', '❤️', '💡', '😎', '💻', '✨', '⭐'];
-
-    const [term, setTerm] = useState('');
-    const filteredConversations = conversations.filter(c =>
-        c.name.toLowerCase().includes(term.toLowerCase())
+    const filteredConversations = conversations.filter((conversation) =>
+        conversation.name.toLowerCase().includes(term.toLowerCase())
     );
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTerm(e.target.value);
-    };
     return (
         <>
             <Navbar />
-            <div className="min-h-[calc(100vh-95px)] bg-gray-50 dark:bg-gray-800 flex justify-center items-center p-0 md:p-4 pb-10 md:pb-4 relative">
+            <main className="relative flex min-h-[calc(100dvh-95px)] items-center justify-center bg-gradient-to-br from-violet-50 via-slate-50 to-indigo-100 px-0 pb-20 pt-0 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 md:px-4 md:py-5 md:pb-5">
                 <Helmet>
                     <title>{t('messenger.title')}</title>
                 </Helmet>
 
                 {notification && (
-                    <div className="absolute top-6 z-50 bg-gray-900 dark:bg-gray-800 text-white text-xs px-4 py-2 rounded-xl shadow-lg transition-all animate-bounce">
+                    <div role="status" className="absolute top-5 z-50 rounded-full border border-white/20 bg-gray-900/90 px-5 py-2.5 text-xs font-medium text-white shadow-xl backdrop-blur-xl dark:bg-gray-800/90">
                         {notification}
                     </div>
                 )}
 
-                <div className="w-full max-w-5xl h-full md:h-[90vh] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 md:rounded-2xl flex overflow-hidden shadow-sm relative">
-
-                    <div className={`w-full md:w-80 border-r border-gray-200 dark:border-gray-700 flex flex-col bg-white dark:bg-gray-900 ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
-                        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                            <h2 className="text-gray-900 dark:text-gray-100 font-bold text-lg">{t('messenger.title')}</h2>
+                <section
+                    dir={i18n.dir()}
+                    aria-label={t('messenger.title')}
+                    className="relative flex h-[calc(100dvh-180px)] min-h-[420px] max-h-[820px] w-full overflow-hidden border-y border-white/70 bg-white/80 shadow-2xl shadow-indigo-950/10 backdrop-blur-2xl dark:border-white/10 dark:bg-gray-900/75 md:h-[min(82vh,820px)] md:min-h-[560px] md:max-w-6xl md:rounded-3xl md:border"
+                >
+                    <aside className={`w-full shrink-0 flex-col border-e border-gray-200/70 bg-white/45 dark:border-white/10 dark:bg-gray-950/20 md:flex md:w-[340px] ${showMobileChat ? 'hidden' : 'flex'}`}>
+                        <div className="border-b border-gray-200/70 px-5 py-5 dark:border-white/10">
+                            <h1 className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">{t('messenger.title')}</h1>
                         </div>
 
-                        <div className="p-3">
-                            <div className="relative">
-                                <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400 dark:text-gray-500" />
+                        <div className="p-4">
+                            <label className="relative block">
+                                <Search className="pointer-events-none absolute start-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                                 <input
-                                    type="text"
+                                    type="search"
                                     value={term}
-                                    onChange={handleChange}
+                                    onChange={(e) => setTerm(e.target.value)}
                                     placeholder={t('messenger.searchPlaceholder')}
-                                    className="w-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-xs rounded-xl pl-9 pr-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 border border-gray-200 dark:border-gray-700"
+                                    aria-label={t('messenger.searchPlaceholder')}
+                                    className="w-full rounded-2xl border border-gray-200/80 bg-white/70 py-3 pe-4 ps-10 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[var(--special-purple)] focus:ring-4 focus:ring-[var(--special-purple)]/10 dark:border-white/10 dark:bg-gray-800/55 dark:text-gray-100 dark:placeholder:text-gray-500"
                                 />
-                            </div>
+                            </label>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto scrollbar-none">
-                            {filteredConversations.map((conv) => (
-                                <div
-                                    key={conv.id}
-                                    onClick={() => { setActiveChat(conv); setShowMobileChat(true); }}
-                                    className={`flex items-center space-x-3 p-3.5 cursor-pointer transition-colors border-b border-gray-100 dark:border-gray-800 ${activeChat.id === conv.id ? 'bg-blue-50/60 dark:bg-blue-950/40' : 'hover:bg-gray-50 dark:hover:bg-gray-800'
-                                        }`}
-                                >
-                                    <div className="relative">
-                                        <img src={conv.avatar} alt={conv.name} className="w-12 h-12 rounded-full object-cover" />
-                                        {conv.online && (
-                                            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex justify-between items-baseline">
-                                            <h4 className="text-gray-900 dark:text-gray-100 font-semibold text-sm truncate">{conv.name}</h4>
-                                            <span className="text-[10px] text-gray-400 dark:text-gray-500">{conv.time === 'yesterday' ? t('messenger.yesterday') : conv.time}</span>
-                                        </div>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">{conv.lastMessage}</p>
-                                    </div>
-                                    {conv.unread > 0 && (
-                                        <span className="w-5 h-5 bg-blue-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                                            {conv.unread}
-                                        </span>
-                                    )}
-                                </div>
+                        <nav aria-label={t('messenger.title')} className="no-scrollbar flex-1 space-y-1 overflow-y-auto px-2 pb-3">
+                            {filteredConversations.map((conversation) => (
+                                <ConversationItem
+                                    key={conversation.id}
+                                    conversation={conversation}
+                                    active={activeChat.id === conversation.id}
+                                    yesterdayLabel={t('messenger.yesterday')}
+                                    onSelect={handleSelectChat}
+                                />
                             ))}
-                        </div>
-                    </div>
+                        </nav>
+                    </aside>
 
-                    <div className={`flex-1 flex-col bg-white dark:bg-gray-900 ${showMobileChat ? 'flex' : 'hidden md:flex'}`}>
-                        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-900 relative">
-                            <div className="flex items-center space-x-3">
+                    <div className={`min-w-0 flex-1 flex-col bg-white/35 dark:bg-gray-900/25 ${showMobileChat ? 'flex' : 'hidden md:flex'}`}>
+                        <header className="relative flex items-center justify-between border-b border-gray-200/70 bg-white/45 px-4 py-4 dark:border-white/10 dark:bg-gray-900/35 sm:px-6">
+                            <div className="flex min-w-0 items-center gap-3">
                                 <button
+                                    type="button"
                                     onClick={() => setShowMobileChat(false)}
-                                    className="md:hidden text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mr-1 cursor-pointer"
+                                    className="rounded-xl p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white md:hidden"
                                     aria-label={t('auth.back')}
                                 >
-                                    <ArrowLeft className="w-5 h-5" />
+                                    <ArrowLeft className="h-5 w-5 rtl:rotate-180" />
                                 </button>
-                                <img src={activeChat.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
-                                <div>
-                                    <h4 className="text-gray-900 dark:text-gray-100 font-semibold text-sm">{activeChat.name}</h4>
-                                    <p className="text-[10px] text-green-600 dark:text-green-400 font-medium">{t('messenger.activeNow')}</p>
+                                <span className="relative shrink-0">
+                                    <img src={activeChat.avatar} alt="" className="h-11 w-11 rounded-full object-cover ring-2 ring-white dark:ring-gray-800" />
+                                    {activeChat.online && <span className="absolute bottom-0 end-0 h-3 w-3 rounded-full border-2 border-white bg-emerald-500 dark:border-gray-900" />}
+                                </span>
+                                <div className="min-w-0">
+                                    <h2 className="truncate text-sm font-bold text-gray-900 dark:text-white">{activeChat.name}</h2>
+                                    {activeChat.online && (
+                                        <p className="mt-0.5 flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                            {t('messenger.activeNow')}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="flex items-center space-x-4 text-gray-500 dark:text-gray-400 relative">
+                            <div className="relative flex shrink-0 items-center gap-1 text-gray-500 dark:text-gray-400 sm:gap-2">
                                 <button
+                                    type="button"
                                     onClick={() => showNotify(t('messenger.startingAudioCall', { name: activeChat.name }))}
-                                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+                                    className="rounded-xl p-2.5 transition hover:bg-[var(--special-purple)]/10 hover:text-[var(--special-purple)]"
                                     title={t('messenger.voiceCall')}
+                                    aria-label={t('messenger.voiceCall')}
                                 >
-                                    <Phone className="w-5 h-5" />
+                                    <Phone className="h-4.5 w-4.5" />
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={() => showNotify(t('messenger.startingVideoCall', { name: activeChat.name }))}
-                                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+                                    className="rounded-xl p-2.5 transition hover:bg-[var(--special-purple)]/10 hover:text-[var(--special-purple)]"
                                     title={t('messenger.videoCall')}
+                                    aria-label={t('messenger.videoCall')}
                                 >
-                                    <Video className="w-5 h-5" />
+                                    <Video className="h-4.5 w-4.5" />
                                 </button>
                                 <button
-                                    onClick={() => setShowDropdown(!showDropdown)}
-                                    className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors cursor-pointer"
-                                    title={t('messenger.moreOptions')}
+                                    type="button"
+                                    onClick={() => setShowChatInfo(!showChatInfo)}
+                                    className="rounded-xl p-2.5 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                                    title={t('messenger.chatInfo')}
+                                    aria-label={t('messenger.chatInfo')}
+                                    aria-expanded={showChatInfo}
+                                    aria-haspopup="dialog"
                                 >
-                                    <MoreVertical className="w-5 h-5" />
+                                    <Info className="h-4.5 w-4.5" />
                                 </button>
 
-                                {showDropdown && (
-                                    <div className="absolute right-0 top-10 w-40 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg py-1 z-20 text-xs">
-                                        <button onClick={() => { setShowDropdown(false); showNotify(t('messenger.chatMuted')); }} className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300">{t('messenger.muteNotifications')}</button>
-                                        <button onClick={() => { setShowDropdown(false); setMessages([]); showNotify(t('messenger.chatCleared')); }} className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-red-600 dark:text-red-400">{t('messenger.clearChat')}</button>
+                                {showChatInfo && (
+                                    <div role="dialog" aria-label={t('messenger.chatInfo')} className="absolute end-0 top-12 z-20 w-64 rounded-2xl border border-gray-200/80 bg-white/95 p-4 shadow-xl shadow-gray-950/10 backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/95">
+                                        <div className="flex items-center gap-3">
+                                            <span className="relative shrink-0">
+                                                <img src={activeChat.avatar} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-white dark:ring-gray-800" />
+                                                {activeChat.online && <span className="absolute bottom-0 end-0 h-3 w-3 rounded-full border-2 border-white bg-emerald-500 dark:border-gray-900" />}
+                                            </span>
+                                            <div className="min-w-0">
+                                                <h3 className="truncate text-sm font-semibold text-gray-900 dark:text-white">{activeChat.name}</h3>
+                                                <p className={`mt-0.5 text-xs ${activeChat.online ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                                                    {activeChat.online ? t('messenger.activeNow') : t('messenger.offline')}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="mt-4 space-y-1 border-t border-gray-200/70 pt-3 text-xs dark:border-white/10">
+                                            <button type="button" onClick={() => { setShowChatInfo(false); showNotify(t('messenger.chatMuted')); }} className="w-full rounded-xl px-3 py-2.5 text-start text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5">{t('messenger.muteNotifications')}</button>
+                                            <button type="button" onClick={() => { setShowChatInfo(false); setMessages([]); showNotify(t('messenger.chatCleared')); }} className="w-full rounded-xl px-3 py-2.5 text-start text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30">{t('messenger.clearChat')}</button>
+                                        </div>
                                     </div>
                                 )}
                             </div>
-                        </div>
+                        </header>
 
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col justify-end bg-gray-50/50 dark:bg-gray-800/50">
-                            {messages.map((msg: any) => (
-                                <div
-                                    key={msg.id}
-                                    className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}
-                                >
-                                    <div
-                                        className={`max-w-xs md:max-w-md rounded-2xl text-xs leading-relaxed overflow-hidden ${msg.sender === 'me'
-                                            ? 'bg-blue-600 text-white rounded-br-none shadow-sm'
-                                            : 'bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 rounded-bl-none border border-gray-200 dark:border-gray-700 shadow-sm'
-                                            }`}
-                                    >
-                                        {msg.image && (
-                                            <div className="p-1">
-                                                <img
-                                                    src={msg.image}
-                                                    alt={t('messenger.uploadedAttachmentAlt')}
-                                                    className="w-full max-h-60 object-cover rounded-xl"
-                                                />
-                                            </div>
-                                        )}
-
-                                        {msg.text && (
-                                            <p className="px-4 py-2.5">{msg.text}</p>
-                                        )}
-
-                                        <div className={`flex items-center justify-end space-x-1 px-3 pb-2 text-[9px] ${msg.sender === 'me' ? 'text-blue-100 dark:text-blue-200' : 'text-gray-400 dark:text-gray-500'}`}>
-                                            <span>{msg.time}</span>
-                                            {msg.sender === 'me' && <CheckCheck className="w-3 h-3" />}
-                                        </div>
-                                    </div>
-                                </div>
+                        <div className="flex flex-1 flex-col justify-end space-y-4 overflow-y-auto bg-gradient-to-b from-white/10 to-gray-100/35 p-4 dark:to-black/10 sm:p-6">
+                            {messages.map((message) => (
+                                <MessageBubble key={message.id} message={message} attachmentAlt={t('messenger.uploadedAttachmentAlt')} />
                             ))}
                         </div>
 
-                        <div className="relative">
+                        <div className="relative border-t border-gray-200/70 bg-white/55 dark:border-white/10 dark:bg-gray-900/45">
                             {showEmojiPicker && (
-                                <div className="absolute bottom-16 left-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-2 rounded-xl shadow-lg flex gap-2 z-20">
-                                    {emojis.map((emoji, index) => (
+                                <div className="absolute bottom-full start-3 z-20 mb-2 flex max-w-[calc(100%-1.5rem)] flex-wrap gap-1.5 rounded-2xl border border-gray-200/80 bg-white/95 p-2.5 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/95">
+                                    {emojis.map((emoji) => (
                                         <button
-                                            key={index}
+                                            key={emoji}
                                             type="button"
                                             onClick={() => addEmoji(emoji)}
-                                            className="text-lg hover:scale-125 transition-transform cursor-pointer"
+                                            className="rounded-lg p-1.5 text-lg transition-transform hover:scale-125"
+                                            aria-label={emoji}
                                         >
                                             {emoji}
                                         </button>
@@ -259,55 +330,49 @@ export const Messenger = () => {
                                 </div>
                             )}
 
-                            <form onSubmit={handleSendMessage} className="p-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex items-center space-x-3">
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    onChange={handleImageUpload}
-                                    accept="image/*"
-                                    className="hidden"
-                                />
-
+                            <form onSubmit={handleSendMessage} className="flex items-center gap-1.5 p-3 sm:gap-2.5 sm:p-4">
+                                <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" className="hidden" />
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+                                    className="shrink-0 rounded-xl p-2.5 text-gray-400 transition hover:bg-[var(--special-purple)]/10 hover:text-[var(--special-purple)] dark:text-gray-500"
                                     title={t('messenger.sendImage')}
+                                    aria-label={t('messenger.sendImage')}
                                 >
-                                    <Image className="w-5 h-5" />
+                                    <Image className="h-5 w-5" />
                                 </button>
-
                                 <button
                                     type="button"
                                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                                    className="text-gray-400 dark:text-gray-500 hover:text-amber-500 dark:hover:text-amber-400 transition-colors cursor-pointer"
+                                    className="shrink-0 rounded-xl p-2.5 text-gray-400 transition hover:bg-amber-50 hover:text-amber-500 dark:text-gray-500 dark:hover:bg-amber-950/30"
                                     title={t('messenger.addEmoji')}
+                                    aria-label={t('messenger.addEmoji')}
+                                    aria-expanded={showEmojiPicker}
                                 >
-                                    <Smile className="w-5 h-5" />
+                                    <Smile className="h-5 w-5" />
                                 </button>
-
                                 <input
                                     type="text"
                                     value={messageInput}
                                     onChange={(e) => setMessageInput(e.target.value)}
                                     placeholder={t('messenger.typeMessage')}
-                                    className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-xs rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-blue-500 border border-gray-200 dark:border-gray-700"
+                                    aria-label={t('messenger.typeMessage')}
+                                    className="min-w-0 flex-1 rounded-2xl border border-gray-200/80 bg-white/75 px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[var(--special-purple)] focus:ring-4 focus:ring-[var(--special-purple)]/10 dark:border-white/10 dark:bg-gray-800/70 dark:text-gray-100 dark:placeholder:text-gray-500"
                                 />
-
                                 <button
                                     type="submit"
-                                    className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors cursor-pointer flex items-center justify-center shadow-sm"
+                                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--special-purple)] text-white shadow-lg shadow-[var(--special-purple)]/25 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[var(--special-purple)]/30 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--special-purple)]/25"
                                     title={t('messenger.send')}
                                     aria-label={t('messenger.send')}
                                 >
-                                    <Send className="w-4 h-4" />
+                                    <Send className="h-4 w-4 rtl:rotate-180" />
                                 </button>
                             </form>
                         </div>
                     </div>
-                </div>
-            </div>
+                </section>
+            </main>
             <MobileCellNavbar />
         </>
-    )
-}
+    );
+};
