@@ -98,16 +98,36 @@ export const Messenger = () => {
             setActiveChat(null);
         }
     }, [conv]);
-    useEffect(() => {
-        if (activeChat) {
-            axios.get(`${api_url}/messages/conversation`, { params: { conversation_id: activeChat?.id }, withCredentials: true, withXSRFToken: true }).then(res => {
-                if (res.data.success) {
-                    const messages = res.data.messages;
-                    setMessages(messages);
-                }
-            });
+    // useEffect(() => {
+    //     if (activeChat) {
+    //         axios.get(`${api_url}/messages/conversation`, { params: { conversation_id: activeChat?.id }, withCredentials: true, withXSRFToken: true }).then(res => {
+    //             if (res.data.success) {
+    //                 const messages = res.data.messages;
+    //                 setMessages(messages);
+    //             }
+    //         });
+    //     }
+    // }, [activeChat]);
+
+    const fetchMessages = async () => {
+        try {
+            const res = await axios.get(`${api_url}/messages/conversation`, { params: { conversation_id: activeChat?.id }, withCredentials: true, withXSRFToken: true });
+            if (res.data.success) return res.data.messages;
+        } catch (err) {
+            console.error(err);
         }
-    }, [activeChat]);
+    }
+
+    const { data: mss } = useQuery({
+        queryKey: [`messages-${activeChat?.id}`],
+        queryFn: fetchMessages,
+    })
+
+    useEffect(() => {
+        if (mss) {
+            setMessages(messages);
+        }
+    }, [mss]);
 
     const showNotify = (msg: string) => {
         setNotification(msg);
