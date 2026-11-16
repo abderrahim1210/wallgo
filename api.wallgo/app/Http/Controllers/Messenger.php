@@ -24,7 +24,7 @@ class Messenger extends Controller
         try {
             $conversations = $user->conversations()->with(['users' => function ($q) use ($user_id) {
                 $q->where('users.id', '!=', $user_id);
-            }, 'latestMessage'])->get()->map(function ($conversation) use ($user_id) {
+            }, 'latestMessage'])->latest()->get()->map(function ($conversation) use ($user_id) {
                 $otherUser = $conversation->users->first();
 
                 return [

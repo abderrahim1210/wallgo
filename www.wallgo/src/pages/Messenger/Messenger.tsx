@@ -12,6 +12,7 @@ import type { Conversation } from './ConversationItem';
 import ConversationItem from './ConversationItem';
 import { EmptyContent } from '../../components/EmptyContent';
 import { useLocation } from 'react-router-dom';
+import Spinner from '../../templates/Spinner';
 
 export const Messenger = () => {
     const location = useLocation();
@@ -45,27 +46,58 @@ export const Messenger = () => {
     const [showMobileChat, setShowMobileChat] = useState(false);
     const [term, setTerm] = useState('');
 
-    useEffect(() => {
-        if (id) {
-            axios.get(`${api_url}/messenger/${id}`, { withCredentials: true, withXSRFToken: true }).then(res => {
-                if (res.data.success) {
-                    const conv = res.data.conversation;
-                    setActiveChat({
-                        id: conv?.id || '',
-                        name: conv?.name || '',
-                        avatar_url: conv?.avatar_url || '',
-                        lastMessage: conv?.lastMessage || '',
-                        time: conv?.time || '',
-                        unread: conv?.unread || '',
-                        online: conv?.online || '',
-                        user: conv?.user
-                    });
-                    // setActiveChat(conv);
-                }
-            });
-        }
-    }, [id]);
+    // useEffect(() => {
+    //     if (id) {
+    //         axios.get(`${api_url}/messenger/${id}`, { withCredentials: true, withXSRFToken: true }).then(res => {
+    //             if (res.data.success) {
+    //                 const conv = res.data.conversation;
+    //                 setActiveChat({
+    //                     id: conv?.id || '',
+    //                     name: conv?.name || '',
+    //                     avatar_url: conv?.avatar_url || '',
+    //                     latest_message: conv?.lastMessage || '',
+    //                     time: conv?.time || '',
+    //                     // unread: conv?.unread || '',
+    //                     online: conv?.online || '',
+    //                     user: conv?.user
+    //                 });
+    //                 // setActiveChat(conv);
+    //             }
+    //         });
+    //     }
+    // }, [id]);
 
+    const fetchConversation = async () => {
+        try {
+            const res = await axios.get(`${api_url}/messenger/${id}`, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) return res.data.conversation;
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    const { data: conv, isLoading: convLoading } = useQuery({
+        queryKey: [`conversation-${id}`, id],
+        queryFn: fetchConversation,
+        enabled: id,
+    });
+
+    useEffect(() => {
+        if (conv) {
+            setActiveChat({
+                id: conv?.id || '',
+                name: conv?.name || '',
+                avatar_url: conv?.avatar_url || '',
+                latest_message: conv?.lastMessage || '',
+                time: conv?.time || '',
+                // unread: conv?.unread || '',
+                online: conv?.online || '',
+                user: conv?.user
+            });
+        } else {
+            setActiveChat(null);
+        }
+    }, [conv]);
     useEffect(() => {
         if (activeChat) {
             axios.get(`${api_url}/messages/conversation`, { params: { conversation_id: activeChat?.id }, withCredentials: true, withXSRFToken: true }).then(res => {
@@ -96,7 +128,7 @@ export const Messenger = () => {
         }
         setMessages((currentMessages) => [
             ...currentMessages,
-            { id: currentMessages.length + 1, sender: 'me', content:text, time: currentTime() },
+            { id: currentMessages.length + 1, sender: 'me', content: text, time: currentTime() },
         ]);
         setMessageInput('');
         setShowEmojiPicker(false);
@@ -181,7 +213,9 @@ export const Messenger = () => {
                     </aside>
 
                     {
-                        activeChat ? (
+                        convLoading ? (
+                            <Spinner type='mini' text='Fetching conversation ...' />
+                        ) : activeChat ? (
                             <div className={`min-w-0 flex-1 flex-col bg-white/35 dark:bg-gray-900/25 ${showMobileChat ? 'flex' : 'hidden md:flex'}`}>
                                 <header className="relative flex items-center justify-between border-b border-gray-200/70 bg-white/45 px-4 py-4 dark:border-white/10 dark:bg-gray-900/35 sm:px-6">
                                     <div className="flex min-w-0 items-center gap-3">
@@ -263,9 +297,11 @@ export const Messenger = () => {
                                 </header>
 
                                 <div className="flex flex-1 flex-col justify-end space-y-4 overflow-y-auto bg-gradient-to-b from-white/10 to-gray-100/35 p-4 dark:to-black/10 sm:p-6">
-                                    {messages.map((message) => (
+                                    {messages?.length > 0 ? messages.map((message) => (
                                         <MessageBubble key={message.id} message={message} attachmentAlt={t('messenger.uploadedAttachmentAlt')} />
-                                    ))}
+                                    )) : (
+                                        <span className='text-sm text-center text-gray-500'>No messages yet. Send a message to start the conversation!</span>
+                                    )}
                                 </div>
 
                                 <div className="relative border-t border-gray-200/70 bg-white/55 dark:border-white/10 dark:bg-gray-900/45">
