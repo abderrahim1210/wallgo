@@ -66,6 +66,17 @@ export const Messenger = () => {
         }
     }, [id]);
 
+    useEffect(() => {
+        if (activeChat) {
+            axios.get(`${api_url}/messages/conversation`, { params: { conversation_id: activeChat?.id }, withCredentials: true, withXSRFToken: true }).then(res => {
+                if (res.data.success) {
+                    const messages = res.data.messages;
+                    setMessages(messages);
+                }
+            });
+        }
+    }, [activeChat]);
+
     const showNotify = (msg: string) => {
         setNotification(msg);
         setTimeout(() => setNotification(null), 2500);
@@ -85,7 +96,7 @@ export const Messenger = () => {
         }
         setMessages((currentMessages) => [
             ...currentMessages,
-            { id: currentMessages.length + 1, sender: 'me', text, time: currentTime() },
+            { id: currentMessages.length + 1, sender: 'me', content:text, time: currentTime() },
         ]);
         setMessageInput('');
         setShowEmojiPicker(false);
@@ -103,7 +114,7 @@ export const Messenger = () => {
         const imageUrl = URL.createObjectURL(file);
         setMessages((currentMessages) => [
             ...currentMessages,
-            { id: currentMessages.length + 1, sender: 'me', text: '', image: imageUrl, time: currentTime() },
+            { id: currentMessages.length + 1, sender: 'me', content: '', image: imageUrl, time: currentTime() },
         ]);
         showNotify(t('messenger.imageSent'));
         e.target.value = '';

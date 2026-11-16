@@ -4,7 +4,7 @@ import React from 'react'
 export type ChatMessage = {
     id: number;
     sender: 'me' | 'them';
-    text: string;
+    content: string;
     time: string;
     image?: string;
 };
@@ -27,7 +27,7 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
                     <img src={message.image} alt={attachmentAlt} className="max-h-60 w-full rounded-xl object-cover" />
                 </div>
             )}
-            {message.text && <p className="px-4 py-2.5">{message.text}</p>}
+            {message.content && <p className="px-4 py-2.5">{message.content}</p>}
             <div className={`flex items-center justify-end gap-1.5 px-3 pb-2 text-[10px] ${message.sender === 'me' ? 'text-white/75' : 'text-gray-400 dark:text-gray-500'}`}>
                 <span>{message.time}</span>
                 {message.sender === 'me' && <CheckCheck className="h-3 w-3" />}
