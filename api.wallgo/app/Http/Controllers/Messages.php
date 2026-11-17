@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Conversation;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,76 +10,107 @@ class Messages extends Controller
 {
     public function send(Request $request)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+
+        if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'User unauthorized'
+                'message' => 'User unauthorized',
             ], 401);
         }
 
-        $user_id = Auth::id();
-        $request->validate([
-            'content' => ['nullable', 'string'],
-            'media_url' => ['nullable', 'string'],
-            'conversation_id' => ['required', 'numeric', 'exists:conversations,id']
+        $data = $request->validate([
+            'content' => ['nullable', 'string', 'max:10000', 'required_without:media_url'],
+            'media_url' => ['nullable', 'url', 'max:2048', 'required_without:content'],
+            'conversation_id' => ['required', 'integer', 'exists:conversations,id'],
         ]);
 
-        $conversation = Conversation::find((int) $request->conversation_id);
-        try {
-            Message::create([
-                'conversation_id' => $conversation->id,
-                'sender_id' => $user_id,
-                'content' => trim($request->content),
-                'is_read' => false
-            ]);
+        $conversation = $user->conversations()->whereKey($data['conversation_id'])->first();
 
-            return response()->json([
-                'success' => true,
-            ], 201);
-        } catch (\Exception $e) {
+        if (!$conversation) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed : ' . $e->getMessage()
-            ], 500);
+                'message' => 'You are not a participant in this conversation',
+            ], 403);
         }
-    }
 
+        $content = trim($data['content'] ?? '');
+        $mediaUrl = $data['media_url'] ?? null;
+
+        if ($content === '' && !$mediaUrl) {
+            return response()->json([
+                'success' => false,
+                'message' => 'A message or attachment is required',
+            ], 422);
+        }
+
+        $message = $conversation->messages()->create([
+            'sender_id' => $user->id,
+            'content' => $content,
+            'media_url' => $mediaUrl,
+            'is_read' => false,
+        ]);
+        $conversation->touch();
+
+        return response()->json([
+            'success' => true,
+            'message' => $this->messagePayload($message, (int) $user->id),
+        ], 201);
+    }
 
     public function messages(Request $request)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+
+        if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'User unauthorized'
-            ]);
+                'message' => 'User unauthorized',
+            ], 401);
         }
 
-        $user_id = (int) Auth::id();
-        
-        $request->validate([
-            'conversation_id' => ['required', 'numeric', 'exists:conversations,id']
+        $data = $request->validate([
+            'conversation_id' => ['required', 'integer', 'exists:conversations,id'],
         ]);
 
-        $conversation = Conversation::find((int) $request->conversation_id);
-        try {
-            $messages = $conversation->messages()->orderBy('created_at', 'asc')->get()->map(function ($message) use ($user_id){
-                return [
-                    'id' => $message->id,
-                    'sender_id' => (int) $message->sender_id,
-                    'sender' => (int) $message->sender_id === $user_id ? 'me' : 'them',
-                    'content' => $message->content,
-                    'time' => $message->created_at->format('H:i')
-                ];
-            });
-            return response()->json([
-                'success' => true,
-                'messages' => $messages
-            ]);
-        } catch (\Exception $e) {
+        $conversation = $user->conversations()->whereKey($data['conversation_id'])->first();
+
+        if (!$conversation) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed : ' . $e->getMessage()
-            ], 500);
+                'message' => 'You are not a participant in this conversation',
+            ], 403);
         }
+
+        $conversation->messages()
+            ->where('sender_id', '!=', $user->id)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        $messages = $conversation->messages()
+            ->orderBy('created_at')
+            ->orderBy('id')
+            ->get()
+            ->map(fn (Message $message) => $this->messagePayload($message, (int) $user->id));
+
+        return response()->json([
+            'success' => true,
+            'messages' => $messages,
+        ]);
+    }
+
+    private function messagePayload(Message $message, int $currentUserId): array
+    {
+        return [
+            'id' => $message->id,
+            'sender_id' => (int) $message->sender_id,
+            'sender' => (int) $message->sender_id === $currentUserId ? 'me' : 'them',
+            'content' => $message->content,
+            'image' => $message->media_url,
+            'media_url' => $message->media_url,
+            'is_read' => (bool) $message->is_read,
+            'time' => $message->created_at?->format('H:i') ?? '',
+            'created_at' => $message->created_at,
+        ];
     }
 }

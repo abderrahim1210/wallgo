@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Conversation;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -12,87 +11,124 @@ class Messenger extends Controller
 {
     public function index()
     {
-        if (!Auth::check()) {
+        $user_id = Auth::user();
+
+        if (!$user_id) {
             return response()->json([
                 'success' => false,
                 'message' => 'User unauthorized'
             ], 401);
         }
 
-        $user_id = Auth::id();
         $user = User::find($user_id);
-        try {
-            $conversations = $user->conversations()->with(['users' => function ($q) use ($user_id) {
-                $q->where('users.id', '!=', $user_id);
-            }, 'latestMessage'])->latest()->get()->map(function ($conversation) use ($user_id) {
-                $otherUser = $conversation->users->first();
 
-                return [
-                    'id' => $conversation->id,
-                    'user' => $otherUser ? [
-                        'id' => $otherUser->id,
-                        'name' => $otherUser->name,
-                        'username' => $otherUser->username ?? null,
-                        'avatar_url' => $otherUser->avatar_url ?? null,
-                        'online' => false,
-                    ] : null,
-                    'latest_message' => $conversation->latestMessage,
-                    'created_at' => $conversation->created_at,
-                    'updated_at' => $conversation->updated_at,
-                ];
-            });
+        $conversations = $user->conversations()
+            ->with([
+                'users' => fn($query) => $query->where('users.id', '!=', $user->id),
+                'latestMessage',
+            ])
+            ->withCount([
+                'messages as unread' => fn($query) => $query
+                    ->where('sender_id', '!=', $user->id)
+                    ->where('is_read', false),
+            ])
+            ->orderByDesc('updated_at')
+            ->get()
+            ->map(fn(Conversation $conversation) => $this->conversationPayload($conversation));
 
-            return response()->json([
-                'success' => true,
-                'conversations' => $conversations
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed : ' . $e->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'conversations' => $conversations,
+        ]);
     }
 
     public function show(string $otherUserId)
     {
-        if (!$otherUserId) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Id required'
-            ]);
-        }
+        $user_id = Auth::user();
 
-        if (!Auth::check()) {
+        if (!$user_id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'
             ], 401);
         }
 
-        $currentUserId = Auth::id();
+        $user = User::find($user_id);
 
-        $conversation = Conversation::whereHas('users', function ($query) use ($currentUserId) {
-            $query->where('user_id', $currentUserId);
-        })
-            ->whereHas('users', function ($query) use ($otherUserId) {
-                $query->where('user_id', $otherUserId);
-            })
-            ->first();
-
-        if (!$conversation) {
-            $conversation = Conversation::create();
-
-            $conversation->users()->attach([$currentUserId, $otherUserId]);
+        if (!ctype_digit($otherUserId)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'A valid user id is required'
+            ], 422);
         }
 
-        $conversation->load(['users' => function ($query) use ($currentUserId) {
-            $query->where('users.id', '!=', $currentUserId);
-        }, 'latestMessage']);
+        $otherUser = User::find($otherUserId);
+
+        if (!$otherUser) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        if ($otherUser->id === $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'A conversation with yourself is not allowed'
+            ], 422);
+        }
+
+        $conversation = DB::transaction(function () use ($user, $otherUser) {
+            $conversation = $user->conversations()
+                ->whereHas('users', fn($query) => $query->where('users.id', $otherUser->id))
+                ->first();
+
+            if (!$conversation) {
+                $conversation = Conversation::create();
+                $conversation->users()->attach([$user->id, $otherUser->id]);
+            }
+
+            return $conversation;
+        });
+
+        $conversation->load([
+            'users' => fn($query) => $query->where('users.id', '!=', $user->id),
+            'latestMessage',
+        ])->loadCount([
+            'messages as unread' => fn($query) => $query
+                ->where('sender_id', '!=', $user->id)
+                ->where('is_read', false),
+        ]);
 
         return response()->json([
             'success' => true,
-            'conversation' => $conversation
+            'conversation' => $this->conversationPayload($conversation),
         ]);
+    }
+
+    private function conversationPayload(Conversation $conversation): array
+    {
+        $otherUser = $conversation->users->first();
+        $latestMessage = $conversation->latestMessage;
+        $user = $otherUser ? [
+            'id' => $otherUser->id,
+            'name' => $otherUser->name,
+            'username' => $otherUser->username,
+            'avatar_url' => $otherUser->avatar_url,
+            'online' => (bool) ($otherUser->online ?? false),
+        ] : null;
+
+        return [
+            'id' => $conversation->id,
+            'name' => $otherUser?->name ?? '',
+            'avatar_url' => $otherUser?->avatar_url,
+            'latest_message' => $latestMessage,
+            'time' => $latestMessage?->created_at?->toIso8601String() ?? '',
+            'online' => (bool) ($otherUser?->online ?? false),
+            'user' => $user,
+            'unread' => (int) ($conversation->unread ?? 0),
+            'created_at' => $conversation->created_at,
+            'updated_at' => $conversation->updated_at,
+        ];
     }
 }

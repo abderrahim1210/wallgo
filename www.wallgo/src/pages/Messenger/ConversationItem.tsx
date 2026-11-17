@@ -6,12 +6,13 @@ export type Conversation = {
     id: number;
     name: string;
     avatar_url: string;
+    unread:number;
     latest_message: {
         id: number;
         content: string;
         created_at: string;
-        read_at: boolean;
-    }
+        is_read: boolean;
+    } | null;
     time: string;
     online: boolean;
     user: {
@@ -44,7 +45,7 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, onSelect, m }:
             }`}
     >
         <span className="relative shrink-0">
-            <img src={conversation?.user.avatar_url ?? '/icons/avatar1.svg'} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-white/80 dark:ring-gray-800" />
+            <img src={conversation?.user?.avatar_url ?? '/icons/avatar1.svg'} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-white/80 dark:ring-gray-800" />
             {conversation.online && (
                 <span className="absolute bottom-0 end-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-500 dark:border-gray-900" />
             )}
@@ -60,13 +61,13 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, onSelect, m }:
                     )
                 }
             </span>
-            <span className="mt-1 block truncate text-xs text-gray-500 dark:text-gray-400">{conversation.latest_message?.content ?? "Tape to send first message"}</span>
+            <span className={`mt-1 block truncate text-xs text-gray-500 ${!conversation?.latest_message?.is_read ? 'font-bold' : ''} dark:text-gray-400`}>{conversation.latest_message?.content ?? "Tape to send first message"}</span>
         </span>
-        {/* {conversation.latest_message. > 0 && (
+        {conversation?.unread > 0 && (
             <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-[var(--special-purple)] px-1 text-[10px] font-bold text-white shadow-sm shadow-[var(--special-purple)]/25">
-                {conversation.unread}
+                {conversation?.unread}
             </span>
-        )} */}
+        )}
     </button>
 );
 

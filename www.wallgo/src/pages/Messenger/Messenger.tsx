@@ -69,13 +69,14 @@ export const Messenger = () => {
     useEffect(() => {
         if (conv) {
             setActiveChat({
-                id: conv?.id || '',
-                name: conv?.name || '',
-                avatar_url: conv?.avatar_url || '',
-                latest_message: conv?.lastMessage || '',
-                time: conv?.time || '',
-                online: conv?.online || '',
-                user: conv?.user
+                id: conv.id,
+                name: conv.name,
+                avatar_url: conv.avatar_url ?? '',
+                latest_message: conv.latest_message ?? null,
+                time: conv.time ?? '',
+                online: conv.online ?? false,
+                user: conv?.user,
+                unread: conv.unread ?? 0
             });
         } else {
             setActiveChat(null);
@@ -93,6 +94,7 @@ export const Messenger = () => {
     const { data: mss, isLoading: messagesLoading, isError: messagesError } = useQuery({
         queryKey: [`messages-${activeChat?.id}`],
         queryFn: fetchMessages,
+        enabled: !!activeChat?.id,
     })
 
     useEffect(() => {
@@ -174,8 +176,8 @@ export const Messenger = () => {
                     aria-label={t('messenger.title')}
                     className="relative flex h-[calc(100dvh-115px)] min-h-[380px] w-full overflow-hidden border-y border-gray-200/70 bg-white shadow-[0_24px_80px_-32px_rgba(52,52,74,0.24)] dark:border-white/10 dark:bg-gray-900 md:h-[min(82vh,820px)] md:min-h-[560px] md:max-w-7xl md:rounded-3xl md:border"
                 >
-                    <aside className={`w-full shrink-0 flex-col border-e border-gray-200/70 bg-white dark:border-white/10 dark:bg-gray-950/30 md:flex md:w-[360px] ${showMobileChat ? 'hidden' : 'flex'}`}>
-                        <div className="border-b border-gray-100 px-5 py-5 dark:border-white/10">
+                    <aside className={`h-full min-h-0 w-full shrink-0 flex-col overflow-hidden border-e border-gray-200/70 bg-white dark:border-white/10 dark:bg-gray-950/30 md:flex md:w-[360px] ${showMobileChat ? 'hidden' : 'flex'}`}>
+                        <div className="shrink-0 border-b border-gray-100 px-5 py-5 dark:border-white/10">
                             <div className="flex items-center gap-3">
                                 <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--special-purple)] text-white shadow-md shadow-[var(--special-purple)]/20">
                                     <MessageCircle className="h-5 w-5" />
@@ -184,7 +186,7 @@ export const Messenger = () => {
                             </div>
                         </div>
 
-                        <div className="p-4 pb-3">
+                        <div className="shrink-0 p-4 pb-3">
                             <label className="relative block">
                                 <Search className="pointer-events-none absolute start-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                                 <input
@@ -198,8 +200,8 @@ export const Messenger = () => {
                             </label>
                         </div>
 
-                        <nav aria-label={t('messenger.title')} className="no-scrollbar flex-1 space-y-1 overflow-y-auto px-2 pb-3">
-                            {conversations.map((conversation) => (
+                        <nav aria-label={t('messenger.title')} className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain px-2 pb-3">
+                            {filteredConversations.map((conversation) => (
                                 <ConversationItem
                                     key={conversation.id}
                                     conversation={conversation}
@@ -216,8 +218,8 @@ export const Messenger = () => {
                         convLoading ? (
                             <Spinner type='mini' text='Fetching conversation ...' />
                         ) : activeChat ? (
-                            <div className={`min-w-0 flex-1 flex flex-col h-full bg-[#fafaff] dark:bg-gray-900/50 ${showMobileChat ? 'flex' : 'hidden md:flex'}`}>
-                                <header className="relative flex items-center justify-between border-b border-gray-200/70 bg-white px-4 py-4 dark:border-white/10 dark:bg-gray-900 sm:px-6">
+                            <div className={`h-full min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden bg-[#fafaff] dark:bg-gray-900/50 ${showMobileChat ? 'flex' : 'hidden md:flex'}`}>
+                                <header className="relative flex shrink-0 items-center justify-between border-b border-gray-200/70 bg-white px-4 py-4 dark:border-white/10 dark:bg-gray-900 sm:px-6">
                                     <div className="flex min-w-0 items-center gap-3">
                                         <button
                                             type="button"
@@ -296,20 +298,22 @@ export const Messenger = () => {
                                     </div>
                                 </header>
 
-                                <div className="flex flex-1 flex-col justify-end space-y-4 overflow-y-auto bg-gradient-to-b from-white via-[#fafaff] to-[#f6f5fc] p-4 dark:from-gray-900 dark:via-gray-900 dark:to-gray-950 sm:p-6">
-                                    {
-                                        messagesLoading ? (
-                                            <Spinner text='Fetching messages ...' type='mini' />
-                                        ) : messagesError ? (
-                                            <ErrorPage codeP='500' />
-                                        ) : messages?.length > 0 ? messages.map((message) => (
-                                            <MessageBubble key={message.id} message={message} attachmentAlt={t('messenger.uploadedAttachmentAlt')} />
-                                        )) : (
-                                            <span className='text-sm text-center text-gray-500'>No messages yet. Send a message to start the conversation!</span>
-                                        )}
+                                <div className="min-h-0 flex-1 flex flex-col overflow-y-auto overscroll-contain bg-gradient-to-b from-white via-[#fafaff] to-[#f6f5fc] p-4 dark:from-gray-900 dark:via-gray-900 dark:to-gray-950 sm:p-6">
+                                    <div className="mt-auto flex flex-col gap-4">
+                                        {
+                                            messagesLoading ? (
+                                                <Spinner text='Fetching messages ...' type='mini' />
+                                            ) : messagesError ? (
+                                                <ErrorPage codeP='500' />
+                                            ) : messages?.length > 0 ? messages.map((message) => (
+                                                <MessageBubble key={message.id} message={message} attachmentAlt={t('messenger.uploadedAttachmentAlt')} />
+                                            )) : (
+                                                <span className='text-sm text-center text-gray-500'>No messages yet. Send a message to start the conversation!</span>
+                                            )}
+                                    </div>
                                 </div>
 
-                                <div className="relative border-t border-gray-200/70 bg-white dark:border-white/10 dark:bg-gray-900">
+                                <div className="relative shrink-0 border-t border-gray-200/70 bg-white dark:border-white/10 dark:bg-gray-900">
                                     {showEmojiPicker && (
                                         <div className="absolute bottom-full start-3 z-20 mb-2 flex max-w-[calc(100%-1.5rem)] flex-wrap gap-1.5 rounded-2xl border border-gray-200/80 bg-white/95 p-2.5 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/95">
                                             {emojis.map((emoji) => (
