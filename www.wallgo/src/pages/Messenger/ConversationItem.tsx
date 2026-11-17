@@ -30,16 +30,17 @@ type ConversationItemProps = {
     active: boolean;
     yesterdayLabel: string;
     onSelect: (conversation: Conversation) => void;
+    m: (time: string | Date | null) => moment.Moment;
 };
 
-const ConversationItem = ({ conversation, active, yesterdayLabel, onSelect }: ConversationItemProps) => (
+const ConversationItem = ({ conversation, active, yesterdayLabel, onSelect, m }: ConversationItemProps) => (
     <button
         type="button"
         onClick={() => onSelect(conversation)}
         aria-pressed={active}
         className={`flex w-full items-center cursor-pointer gap-3 rounded-2xl p-3 text-start transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--special-purple)] ${active
-            ? 'bg-[var(--special-purple)]/10'
-            : 'border-s-transparent hover:bg-white/70 dark:hover:bg-white/5'
+            ? 'bg-[var(--special-purple)]/10 ring-1 ring-inset ring-[var(--special-purple)]/15'
+            : 'hover:bg-gray-50 dark:hover:bg-white/5'
             }`}
     >
         <span className="relative shrink-0">
@@ -54,7 +55,7 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, onSelect }: Co
                 {
                     conversation?.latest_message && (
                         <span className="shrink-0 text-[10px] text-gray-400 dark:text-gray-500">
-                            {moment(conversation.latest_message?.created_at).calendar() === 'yesterday' ? yesterdayLabel : moment(conversation?.latest_message?.created_at).fromNow()}
+                            {m(conversation.latest_message?.created_at).calendar() === 'yesterday' ? yesterdayLabel : m(conversation?.latest_message?.created_at).fromNow()}
                         </span>
                     )
                 }

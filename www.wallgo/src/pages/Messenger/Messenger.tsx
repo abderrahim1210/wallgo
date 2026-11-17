@@ -13,11 +13,16 @@ import ConversationItem from './ConversationItem';
 import { EmptyContent } from '../../components/EmptyContent';
 import { useLocation } from 'react-router-dom';
 import Spinner from '../../templates/Spinner';
+import { ErrorPage } from '../../components/ErrorPage';
+import moment from 'moment';
 
 export const Messenger = () => {
     const location = useLocation();
     const id = location.state?.id;
     const { t, i18n } = useTranslation();
+    const currentLang = i18n.language?.toLowerCase().startsWith('ar') ? 'ar' : 'en';
+
+    const m = (date?: string | Date | null) => moment.utc(date).local().locale(currentLang);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showChatInfo, setShowChatInfo] = useState(false);
     const [notification, setNotification] = useState<string | null>(null);
@@ -46,27 +51,6 @@ export const Messenger = () => {
     const [showMobileChat, setShowMobileChat] = useState(false);
     const [term, setTerm] = useState('');
 
-    // useEffect(() => {
-    //     if (id) {
-    //         axios.get(`${api_url}/messenger/${id}`, { withCredentials: true, withXSRFToken: true }).then(res => {
-    //             if (res.data.success) {
-    //                 const conv = res.data.conversation;
-    //                 setActiveChat({
-    //                     id: conv?.id || '',
-    //                     name: conv?.name || '',
-    //                     avatar_url: conv?.avatar_url || '',
-    //                     latest_message: conv?.lastMessage || '',
-    //                     time: conv?.time || '',
-    //                     // unread: conv?.unread || '',
-    //                     online: conv?.online || '',
-    //                     user: conv?.user
-    //                 });
-    //                 // setActiveChat(conv);
-    //             }
-    //         });
-    //     }
-    // }, [id]);
-
     const fetchConversation = async () => {
         try {
             const res = await axios.get(`${api_url}/messenger/${id}`, { withCredentials: true, withXSRFToken: true });
@@ -90,7 +74,6 @@ export const Messenger = () => {
                 avatar_url: conv?.avatar_url || '',
                 latest_message: conv?.lastMessage || '',
                 time: conv?.time || '',
-                // unread: conv?.unread || '',
                 online: conv?.online || '',
                 user: conv?.user
             });
@@ -98,17 +81,6 @@ export const Messenger = () => {
             setActiveChat(null);
         }
     }, [conv]);
-    // useEffect(() => {
-    //     if (activeChat) {
-    //         axios.get(`${api_url}/messages/conversation`, { params: { conversation_id: activeChat?.id }, withCredentials: true, withXSRFToken: true }).then(res => {
-    //             if (res.data.success) {
-    //                 const messages = res.data.messages;
-    //                 setMessages(messages);
-    //             }
-    //         });
-    //     }
-    // }, [activeChat]);
-
     const fetchMessages = async () => {
         try {
             const res = await axios.get(`${api_url}/messages/conversation`, { params: { conversation_id: activeChat?.id }, withCredentials: true, withXSRFToken: true });
@@ -118,14 +90,16 @@ export const Messenger = () => {
         }
     }
 
-    const { data: mss } = useQuery({
+    const { data: mss, isLoading: messagesLoading, isError: messagesError } = useQuery({
         queryKey: [`messages-${activeChat?.id}`],
         queryFn: fetchMessages,
     })
 
     useEffect(() => {
         if (mss) {
-            setMessages(messages);
+            setMessages(mss);
+        } else {
+            setMessages([]);
         }
     }, [mss]);
 
@@ -184,7 +158,7 @@ export const Messenger = () => {
     return (
         <>
             <Navbar />
-            <main className="relative flex min-h-[calc(100dvh-95px)] items-center justify-center bg-gradient-to-br from-violet-50 via-slate-50 to-indigo-100 px-0 pb-20 pt-0 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 md:px-4 md:py-5 md:pb-5">
+            <main className="relative flex min-h-[calc(100dvh-95px)] items-center justify-center bg-gradient-to-br from-[#f7f6ff] via-[#f8f9fc] to-[#f1f0ff] px-0 pb-20 pt-0 dark:from-gray-950 dark:via-gray-900 dark:to-[#211d3d] md:px-4 md:py-5 md:pb-5">
                 <Helmet>
                     <title>{t('messenger.title')}</title>
                 </Helmet>
@@ -198,14 +172,19 @@ export const Messenger = () => {
                 <section
                     dir={i18n.dir()}
                     aria-label={t('messenger.title')}
-                    className="relative flex h-[calc(100dvh-180px)] min-h-[420px] max-h-[820px] w-full overflow-hidden border-y border-white/70 bg-white/80 shadow-2xl shadow-indigo-950/10 backdrop-blur-2xl dark:border-white/10 dark:bg-gray-900/75 md:h-[min(82vh,820px)] md:min-h-[560px] md:max-w-6xl md:rounded-3xl md:border"
+                    className="relative flex h-[calc(100dvh-115px)] min-h-[380px] w-full overflow-hidden border-y border-gray-200/70 bg-white shadow-[0_24px_80px_-32px_rgba(52,52,74,0.24)] dark:border-white/10 dark:bg-gray-900 md:h-[min(82vh,820px)] md:min-h-[560px] md:max-w-7xl md:rounded-3xl md:border"
                 >
-                    <aside className={`w-full shrink-0 flex-col border-e border-gray-200/70 bg-white/45 dark:border-white/10 dark:bg-gray-950/20 md:flex md:w-[340px] ${showMobileChat ? 'hidden' : 'flex'}`}>
-                        <div className="border-b border-gray-200/70 px-5 py-5 dark:border-white/10">
-                            <h1 className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">{t('messenger.title')}</h1>
+                    <aside className={`w-full shrink-0 flex-col border-e border-gray-200/70 bg-white dark:border-white/10 dark:bg-gray-950/30 md:flex md:w-[360px] ${showMobileChat ? 'hidden' : 'flex'}`}>
+                        <div className="border-b border-gray-100 px-5 py-5 dark:border-white/10">
+                            <div className="flex items-center gap-3">
+                                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--special-purple)] text-white shadow-md shadow-[var(--special-purple)]/20">
+                                    <MessageCircle className="h-5 w-5" />
+                                </span>
+                                <h1 className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">{t('messenger.title')}</h1>
+                            </div>
                         </div>
 
-                        <div className="p-4">
+                        <div className="p-4 pb-3">
                             <label className="relative block">
                                 <Search className="pointer-events-none absolute start-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                                 <input
@@ -214,7 +193,7 @@ export const Messenger = () => {
                                     onChange={(e) => setTerm(e.target.value)}
                                     placeholder={t('messenger.searchPlaceholder')}
                                     aria-label={t('messenger.searchPlaceholder')}
-                                    className="w-full rounded-2xl border border-gray-200/80 bg-white/70 py-3 pe-4 ps-10 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[var(--special-purple)] focus:ring-4 focus:ring-[var(--special-purple)]/10 dark:border-white/10 dark:bg-gray-800/55 dark:text-gray-100 dark:placeholder:text-gray-500"
+                                    className="w-full rounded-2xl border border-gray-200/80 bg-gray-50/80 py-3 pe-4 ps-10 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[var(--special-purple)] focus:bg-white focus:ring-4 focus:ring-[var(--special-purple)]/10 dark:border-white/10 dark:bg-gray-800/70 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:bg-gray-800"
                                 />
                             </label>
                         </div>
@@ -227,6 +206,7 @@ export const Messenger = () => {
                                     active={activeChat?.id === conversation?.id}
                                     yesterdayLabel={t('messenger.yesterday')}
                                     onSelect={handleSelectChat}
+                                    m={m}
                                 />
                             ))}
                         </nav>
@@ -236,8 +216,8 @@ export const Messenger = () => {
                         convLoading ? (
                             <Spinner type='mini' text='Fetching conversation ...' />
                         ) : activeChat ? (
-                            <div className={`min-w-0 flex-1 flex-col bg-white/35 dark:bg-gray-900/25 ${showMobileChat ? 'flex' : 'hidden md:flex'}`}>
-                                <header className="relative flex items-center justify-between border-b border-gray-200/70 bg-white/45 px-4 py-4 dark:border-white/10 dark:bg-gray-900/35 sm:px-6">
+                            <div className={`min-w-0 flex-1 flex flex-col h-full bg-[#fafaff] dark:bg-gray-900/50 ${showMobileChat ? 'flex' : 'hidden md:flex'}`}>
+                                <header className="relative flex items-center justify-between border-b border-gray-200/70 bg-white px-4 py-4 dark:border-white/10 dark:bg-gray-900 sm:px-6">
                                     <div className="flex min-w-0 items-center gap-3">
                                         <button
                                             type="button"
@@ -316,15 +296,20 @@ export const Messenger = () => {
                                     </div>
                                 </header>
 
-                                <div className="flex flex-1 flex-col justify-end space-y-4 overflow-y-auto bg-gradient-to-b from-white/10 to-gray-100/35 p-4 dark:to-black/10 sm:p-6">
-                                    {messages?.length > 0 ? messages.map((message) => (
-                                        <MessageBubble key={message.id} message={message} attachmentAlt={t('messenger.uploadedAttachmentAlt')} />
-                                    )) : (
-                                        <span className='text-sm text-center text-gray-500'>No messages yet. Send a message to start the conversation!</span>
-                                    )}
+                                <div className="flex flex-1 flex-col justify-end space-y-4 overflow-y-auto bg-gradient-to-b from-white via-[#fafaff] to-[#f6f5fc] p-4 dark:from-gray-900 dark:via-gray-900 dark:to-gray-950 sm:p-6">
+                                    {
+                                        messagesLoading ? (
+                                            <Spinner text='Fetching messages ...' type='mini' />
+                                        ) : messagesError ? (
+                                            <ErrorPage codeP='500' />
+                                        ) : messages?.length > 0 ? messages.map((message) => (
+                                            <MessageBubble key={message.id} message={message} attachmentAlt={t('messenger.uploadedAttachmentAlt')} />
+                                        )) : (
+                                            <span className='text-sm text-center text-gray-500'>No messages yet. Send a message to start the conversation!</span>
+                                        )}
                                 </div>
 
-                                <div className="relative border-t border-gray-200/70 bg-white/55 dark:border-white/10 dark:bg-gray-900/45">
+                                <div className="relative border-t border-gray-200/70 bg-white dark:border-white/10 dark:bg-gray-900">
                                     {showEmojiPicker && (
                                         <div className="absolute bottom-full start-3 z-20 mb-2 flex max-w-[calc(100%-1.5rem)] flex-wrap gap-1.5 rounded-2xl border border-gray-200/80 bg-white/95 p-2.5 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/95">
                                             {emojis.map((emoji) => (
