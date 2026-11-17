@@ -82,6 +82,23 @@ export const Messenger = () => {
             setActiveChat(null);
         }
     }, [conv]);
+
+    useEffect(() => {
+        if (!activeChat) return;
+
+        // الاستماع للقناة الخاصة بالمحادثة
+        window.Echo.private(`chat.${activeChat.id}`)
+            .listen('MessageSent', (e: any) => {
+                // فاش يوصل ميساج جديد، زيدو ديركت للستة ديال الميساجات فالبلاصة
+                setMessages((prevMessages) => [...prevMessages, e.message]);
+            });
+
+        // التنظيف فاش يخرج المستخدم من المحادثة
+        return () => {
+            window.Echo.leave(`chat.${activeChat.id}`);
+        };
+    }, [activeChat]);
+
     const fetchMessages = async () => {
         try {
             const res = await axios.get(`${api_url}/messages/conversation`, { params: { conversation_id: activeChat?.id }, withCredentials: true, withXSRFToken: true });

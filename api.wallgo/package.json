@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "laravel-echo": "^2.6.3",
+    "pusher-js": "^8.6.0"
+  }
+}

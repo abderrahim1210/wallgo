@@ -289,8 +289,4 @@ Route::get('/pages/{id}/reels', [PageController::class, 'reels']);
 
 Route::get('/groups/{id}/reels', [GroupController::class, 'reels']);
 
-Route::get('/test', function () {
-    return view('vendor.emails.ResetYourPassword');
-});
-
 require __DIR__ . '/auth.php';
