@@ -54,7 +54,7 @@ export const Navbar = () => {
 
     const fetchNewMessages = async () => {
         try {
-            const res = await axios.get(`${api_url}/notifications`, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.get(`${api_url}/notifications/noread`, { withCredentials: true, withXSRFToken: true });
             if (res.data && res.data.success) {
                 return res.data.messages;
             }
@@ -70,7 +70,7 @@ export const Navbar = () => {
         queryFn: fetchNotifications,
     });
 
-    const { data: messages = 0 } = useQuery({
+    const { data: messages } = useQuery({
         queryKey: ['messages_count'],
         queryFn: fetchNewMessages
     });

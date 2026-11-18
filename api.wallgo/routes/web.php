@@ -272,8 +272,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [Messenger::class, 'show']);
     });
 
-    Route::prefix('/messages')->group(function(){
-        Route::get('/conversation',[Messages::class, 'messages']);
+    Route::prefix('/messages')->group(function () {
+        Route::get('/conversation', [Messages::class, 'messages']);
+
+        Route::put('/read_message', [Messages::class, 'read_message']);
     });
 });
 Route::post('/send_link_email', [ForgotPassword::class, 'send_link']);

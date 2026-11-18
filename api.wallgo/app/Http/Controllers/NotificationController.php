@@ -38,11 +38,11 @@ class NotificationController extends Controller
         }
         $user_id = Auth::id();
         $user = User::find($user_id);
-        $new_messages = $user->conversations()->withCount(['messages as unread' => fn($q) => $q->where('sender_id', '!=', $user->id)->where('is_read', false)])->latest()->count();
+        $new_messages = $user->conversations()->withCount(['messages as unread' => fn($q) => $q->where('sender_id', '!=', $user->id)->where('is_read', false)])->count();
         return response()->json([
             'success' => true,
             'messages' => $new_messages
-        ],200);
+        ], 200);
     }
 
     public function all()

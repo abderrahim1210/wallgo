@@ -121,4 +121,29 @@ class Messages extends Controller
             'created_at' => $message->created_at,
         ];
     }
+
+    public function read_message(Request $request)
+    {
+        $request->validate([
+            'message_id' => ['required', 'numeric', 'exists:messages,id']
+        ]);
+        $message_id = (int) $request->message_id;
+        try {
+            $message = Message::findOrFail($message_id);
+            $message->update([
+                'is_read' => true
+            ]);
+
+            $message->touch();
+
+            return response()->json([
+                'success' => true,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

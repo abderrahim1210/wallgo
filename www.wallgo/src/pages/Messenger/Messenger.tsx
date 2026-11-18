@@ -191,7 +191,7 @@ export const Messenger = () => {
             <Navbar />
             <main className="relative flex min-h-[calc(100dvh-95px)] items-center justify-center bg-gradient-to-br from-[#f7f6ff] via-[#f8f9fc] to-[#f1f0ff] px-0 pb-20 pt-0 dark:from-gray-950 dark:via-gray-900 dark:to-[#211d3d] md:px-4 md:py-5 md:pb-5">
                 <Helmet>
-                    <title>{t('messenger.title')}</title>
+                    <title>{`WallGo : ${t('messenger.title')}`}</title>
                 </Helmet>
 
                 {notification && (
