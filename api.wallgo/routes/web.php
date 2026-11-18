@@ -268,14 +268,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/messenger')->group(function () {
         Route::get('/', [Messenger::class, 'index']);
-        Route::post('/send', [Messages::class, 'send']);
         Route::get('/{id}', [Messenger::class, 'show']);
+        Route::put('/read_conversation', [Messenger::class, 'read_conversation']);
     });
 
     Route::prefix('/messages')->group(function () {
+        Route::post('/send', [Messages::class, 'send']);
         Route::get('/conversation', [Messages::class, 'messages']);
-
-        Route::put('/read_message', [Messages::class, 'read_message']);
     });
 });
 Route::post('/send_link_email', [ForgotPassword::class, 'send_link']);

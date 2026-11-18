@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Message;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -38,7 +39,10 @@ class NotificationController extends Controller
         }
         $user_id = Auth::id();
         $user = User::find($user_id);
-        $new_messages = $user->conversations()->withCount(['messages as unread' => fn($q) => $q->where('sender_id', '!=', $user->id)->where('is_read', false)])->count();
+        $new_messages = Message::whereHas('conversation.users', function ($q) use ($user_id) {
+            $q->where('users.id', $user_id);
+        })->where('sender_id', '!=', $user_id)
+            ->where('is_read', false)->count();
         return response()->json([
             'success' => true,
             'messages' => $new_messages

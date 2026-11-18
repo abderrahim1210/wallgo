@@ -1,8 +1,4 @@
-import axios from 'axios';
 import { CheckCheck } from 'lucide-react';
-import { useEffect, useRef } from 'react';
-import { api_url } from '../Auth/getUser';
-import { useQueryClient } from '@tanstack/react-query';
 
 export type ChatMessage = {
     id: number;
@@ -18,44 +14,8 @@ type MessageBubbleProps = {
 };
 
 export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) => {
-    const messageRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    const timer = setTimeout(() => {
-                        read(message.id);
-                        observer.disconnect();
-                    }, 1500);
-
-                    return () => clearTimeout(timer);
-                }
-            },
-            { threshold: 0.5 }
-        );
-
-        if (messageRef.current) {
-            observer.observe(messageRef.current);
-        }
-
-        return () => {
-            observer.disconnect();
-        };
-    }, [message.id]);
-
-    const queryClient = useQueryClient();
-    const read = async (id: number) => {
-        if (!id) return null;
-        try {
-            await axios.put(`${api_url}/messages/read_message`, { message_id: message?.id }, { withCredentials: true, withXSRFToken: true });
-            queryClient.invalidateQueries({ queryKey: ['messages_count'] });
-        } catch (err) {
-            console.error(err);
-        }
-    }
     return (
-        <div ref={messageRef} className={`flex min-w-0 ${message.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
+        <div className={`flex min-w-0 ${message.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
             <div
                 className={`min-w-0 max-w-[85%] overflow-hidden rounded-2xl text-sm leading-relaxed shadow-sm md:max-w-md ${message.sender === 'me'
                     ? 'rounded-ee-md bg-[var(--special-purple)] text-white shadow-[var(--special-purple)]/15'

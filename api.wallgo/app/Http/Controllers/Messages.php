@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Notifications\NewMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Messages extends Controller
 {
@@ -56,7 +57,11 @@ class Messages extends Controller
         ]);
         $conversation->touch();
 
-        $user->notify(new NewMessage($user, $message));
+        $recipient = $conversation->users()->where('user_id','!=',$user->id)->first();
+
+        if (!$recipient){
+            $recipient->notify(new NewMessage($user, $message));
+        }
 
         return response()->json([
             'success' => true,
@@ -122,28 +127,28 @@ class Messages extends Controller
         ];
     }
 
-    public function read_message(Request $request)
-    {
-        $request->validate([
-            'message_id' => ['required', 'numeric', 'exists:messages,id']
-        ]);
-        $message_id = (int) $request->message_id;
-        try {
-            $message = Message::findOrFail($message_id);
-            $message->update([
-                'is_read' => true
-            ]);
+    // public function read_message(Request $request)
+    // {
+    //     $request->validate([
+    //         'message_id' => ['required', 'numeric', 'exists:messages,id']
+    //     ]);
+    //     $message_id = (int) $request->message_id;
+    //     try {
+    //         $message = Message::findOrFail($message_id);
+    //         $message->update([
+    //             'is_read' => true
+    //         ]);
 
-            $message->touch();
+    //         $message->touch();
 
-            return response()->json([
-                'success' => true,
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed : ' . $e->getMessage()
-            ], 500);
-        }
-    }
+    //         return response()->json([
+    //             'success' => true,
+    //         ], 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Failed : ' . $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
 }

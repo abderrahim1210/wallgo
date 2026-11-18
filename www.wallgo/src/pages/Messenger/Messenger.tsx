@@ -11,7 +11,7 @@ import { MessageBubble, type ChatMessage } from './MessageBubble';
 import type { Conversation } from './ConversationItem';
 import ConversationItem from './ConversationItem';
 import { EmptyContent } from '../../components/EmptyContent';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Spinner from '../../templates/Spinner';
 import { ErrorPage } from '../../components/ErrorPage';
 import moment from 'moment';
@@ -80,6 +80,8 @@ export const Messenger = () => {
     const showMobileChat = currentSelection?.showOnMobile ?? Boolean(id);
     const activeChatId = activeChat?.id;
 
+    const navigate = useNavigate();
+
     const fetchMessages = async () => {
         const res = await axios.get(`${api_url}/messages/conversation`, { params: { conversation_id: activeChatId }, withCredentials: true, withXSRFToken: true });
         if (!res.data.success) throw new Error('Failed to fetch messages');
@@ -110,13 +112,12 @@ export const Messenger = () => {
 
         try {
             setIsSending(true);
-            const res = await axios.post(`${api_url}/messenger/send`, { content: text, conversation_id: activeChat.id }, { withCredentials: true, withXSRFToken: true });
+            const res = await axios.post(`${api_url}/messages/send`, { content: text, conversation_id: activeChat.id }, { withCredentials: true, withXSRFToken: true });
             if (!res.data.success || !res.data.message) throw new Error('Failed to send message');
             queryClient.setQueryData<ChatMessage[]>([`messages-${activeChat.id}`], (currentMessages = []) => [
                 ...currentMessages,
                 res.data.message,
             ]);
-            await queryClient.invalidateQueries({ queryKey: ['conversations'] });
             setMessageInput('');
             setShowEmojiPicker(false);
         } catch (err) {
@@ -185,6 +186,24 @@ export const Messenger = () => {
         chat?.name?.toLowerCase().includes(term.toLowerCase())
         || chat?.latest_message?.content?.toLowerCase().includes(term.toLowerCase())
     );
+
+    useEffect(() => {
+        const markAsRead = async () => {
+            try {
+                await axios.put(`${api_url}/messenger/read_conversation`, {
+                    conversation_id: activeChat?.id
+                }, {
+                    withCredentials: true,
+                    withXSRFToken: true
+                });
+                queryClient.invalidateQueries({ queryKey: ['messages_count'] });
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        markAsRead();
+    }, [activeChat?.id]);
 
     return (
         <>
@@ -263,7 +282,7 @@ export const Messenger = () => {
                                         <button
                                             type="button"
                                             onClick={handleBackToConversations}
-                                            className="rounded-xl p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white md:hidden"
+                                            className="rounded-xl p-2 text-gray-500 cursor-pointer transition hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white md:hidden"
                                             aria-label={t('auth.back')}
                                         >
                                             <ArrowLeft className="h-5 w-5 rtl:rotate-180" />
@@ -273,7 +292,7 @@ export const Messenger = () => {
                                             {activeChat?.user?.online && <span className="absolute bottom-0 end-0 h-3 w-3 rounded-full border-2 border-white bg-emerald-500 dark:border-gray-900" />}
                                         </span>
                                         <div className="min-w-0">
-                                            <h2 className="truncate text-sm font-bold text-gray-900 dark:text-white">{activeChat?.user?.name}</h2>
+                                            <h2 className="truncate text-sm font-bold text-gray-900 dark:text-white cursor-pointer" onClick={() => navigate(`/profile/${activeChat.id}/${activeChat.user.username}`)}>{activeChat?.user?.name}</h2>
                                             {activeChat?.user?.online && (
                                                 <p className="mt-0.5 flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
                                                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -287,7 +306,7 @@ export const Messenger = () => {
                                         <button
                                             type="button"
                                             onClick={() => showNotify(t('messenger.startingAudioCall', { name: activeChat?.user?.name }))}
-                                            className="rounded-xl p-2.5 transition hover:bg-[var(--special-purple)]/10 hover:text-[var(--special-purple)]"
+                                            className="rounded-xl p-2.5 transition cursor-pointer hover:bg-[var(--special-purple)]/10 hover:text-[var(--special-purple)]"
                                             title={t('messenger.voiceCall')}
                                             aria-label={t('messenger.voiceCall')}
                                         >
@@ -296,7 +315,7 @@ export const Messenger = () => {
                                         <button
                                             type="button"
                                             onClick={() => showNotify(t('messenger.startingVideoCall', { name: activeChat?.user?.name }))}
-                                            className="rounded-xl p-2.5 transition hover:bg-[var(--special-purple)]/10 hover:text-[var(--special-purple)]"
+                                            className="rounded-xl p-2.5 transition cursor-pointer hover:bg-[var(--special-purple)]/10 hover:text-[var(--special-purple)]"
                                             title={t('messenger.videoCall')}
                                             aria-label={t('messenger.videoCall')}
                                         >
@@ -305,7 +324,7 @@ export const Messenger = () => {
                                         <button
                                             type="button"
                                             onClick={() => setShowChatInfo(!showChatInfo)}
-                                            className="rounded-xl p-2.5 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                                            className="rounded-xl p-2.5 transition cursor-pointer hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
                                             title={t('messenger.chatInfo')}
                                             aria-label={t('messenger.chatInfo')}
                                             aria-expanded={showChatInfo}

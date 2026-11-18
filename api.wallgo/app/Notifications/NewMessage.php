@@ -46,7 +46,7 @@ class NewMessage extends Notification
             'user_avatar' => $this->sender->avatar_url,
             'type' => 'message',
             'message' => "{{$this->sender->name}} send you message !",
-            'link' => env('FRONTEND_URL') . "/messenger"
+            'link' => "/messenger"
         ];
     }
 }

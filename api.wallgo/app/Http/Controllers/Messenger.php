@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Conversation;
+use App\Models\Message;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -130,5 +132,17 @@ class Messenger extends Controller
             'created_at' => $conversation->created_at,
             'updated_at' => $conversation->updated_at,
         ];
+    }
+
+    public function read_conversation(Request $request)
+    {
+        $request->validate([
+            'conversation_id' => ['required', 'integer', 'exists:conversations,id']
+        ]);
+
+        Message::where('conversation_id', $request->conversation_id)->where('sender_id', '!=', Auth::id())->where('is_read', false)->update(['is_read' => true]);
+        return response()->json([
+            'success' => true,
+        ], 200);
     }
 }
