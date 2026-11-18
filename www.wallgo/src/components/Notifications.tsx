@@ -20,7 +20,7 @@ export interface Notification {
         message: string;
         link: string;
         followig_id?: number;
-        comment_content?:string;
+        comment_content?: string;
     }
     created_at: string;
 }
@@ -51,13 +51,12 @@ export const Notifications: React.FC<NotificationsProps> = ({ isOpen, onClose })
         enabled: isOpen
     });
 
-
     const queryClient = useQueryClient();
     const handleReadAll = async () => {
         try {
             await axios.post(`${api_url}/notifications/is_read/all`, {}, { withCredentials: true, withXSRFToken: true }).then(res => {
-                if (res.data.success){
-                    queryClient.invalidateQueries({queryKey:['notifications']})
+                if (res.data.success) {
+                    queryClient.invalidateQueries({ queryKey: ['notifications'] })
                 }
             });
         } catch (err: any) {

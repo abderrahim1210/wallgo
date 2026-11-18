@@ -561,7 +561,19 @@
     "addEmoji": "إضافة رمز تعبيري",
     "typeMessage": "اكتب رسالة...",
     "send": "إرسال",
-    "yesterday": "أمس"
+    "yesterday": "أمس",
+    "startConversation": "ابدأ محادثة",
+    "imageMessage": "صورة",
+    "noMessages": "لا توجد رسائل بعد. أرسل رسالة لبدء المحادثة!",
+    "noConversations": "لا توجد محادثات بعد.",
+    "noSearchResults": "لا توجد محادثات تطابق البحث.",
+    "loadingConversations": "جارٍ تحميل المحادثات...",
+    "conversationsLoadFailed": "تعذر تحميل المحادثات. حاول مرة أخرى.",
+    "messagesLoadFailed": "تعذر تحميل الرسائل. حاول مرة أخرى.",
+    "conversationsLoadFailed": "تعذر تحميل المحادثات. حاول مرة أخرى.",
+    "messagesLoadFailed": "تعذر تحميل الرسائل. حاول مرة أخرى.",
+    "sendFailed": "تعذر إرسال رسالتك. حاول مرة أخرى.",
+    "invalidImage": "يرجى اختيار صورة صالحة."
   },
   "pageTitles": {
     "myPosts": "WallGo: منشوراتي",

@@ -51,10 +51,30 @@ export const Navbar = () => {
         }
     }
 
+
+    const fetchNewMessages = async () => {
+        try {
+            const res = await axios.get(`${api_url}/notifications`, { withCredentials: true, withXSRFToken: true });
+            if (res.data && res.data.success) {
+                return res.data.messages;
+            }
+            return 0;
+        } catch (err: any) {
+            console.error(err?.response.data);
+            return 0;
+        }
+    }
+
     const { data } = useQuery({
         queryKey: ['notifications_navbar', user?.id],
         queryFn: fetchNotifications,
     });
+
+    const { data: messages = 0 } = useQuery({
+        queryKey: ['messages_count'],
+        queryFn: fetchNewMessages
+    });
+
 
     const notifications = data?.notifications;
 
@@ -97,6 +117,9 @@ export const Navbar = () => {
                             <Tooltip label={t('common.messages')} position={position}>
                                 <Link to="/messenger" className={getLinkClass('/messenger')}>
                                     <MessagesCircle className='w-7 h-7' />
+                                    {messages > 0 && (
+                                        <span className="absolute top-6.5 right-1 w-3 h-3 p-2 pt-2 flex justify-center items-center bg-red-500 rounded-full border-2 border-white text-white text-xs text-center font-bold">{messages}</span>
+                                    )}
                                 </Link>
                             </Tooltip>
                         </li>

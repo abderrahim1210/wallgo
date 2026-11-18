@@ -1,5 +1,4 @@
 import { CheckCheck } from 'lucide-react';
-import React from 'react'
 
 export type ChatMessage = {
     id: number;

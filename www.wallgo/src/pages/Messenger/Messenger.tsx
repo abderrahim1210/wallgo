@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, CheckCheck, Image, Info, MessageCircle, Phone, Search, Send, Smile, Video } from 'lucide-react';
+import { ArrowLeft, Image, Info, MessageCircle, Phone, Search, Send, Smile, Video } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { Navbar } from '../../layouts/Navbar';
 import { MobileCellNavbar } from '../../layouts/MobileCellNavbar';
 import axios from 'axios';
 import { api_url } from '../Auth/getUser';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { MessageBubble, type ChatMessage } from './MessageBubble';
 import type { Conversation } from './ConversationItem';
 import ConversationItem from './ConversationItem';
@@ -15,10 +15,12 @@ import { useLocation } from 'react-router-dom';
 import Spinner from '../../templates/Spinner';
 import { ErrorPage } from '../../components/ErrorPage';
 import moment from 'moment';
+import { cloudName } from '../../components/CreateReel';
 
 export const Messenger = () => {
     const location = useLocation();
     const id = location.state?.id;
+    const queryClient = useQueryClient();
     const { t, i18n } = useTranslation();
     const currentLang = i18n.language?.toLowerCase().startsWith('ar') ? 'ar' : 'en';
 
@@ -29,140 +31,149 @@ export const Messenger = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const fetchConversations = async () => {
-        try {
-            const res = await axios.get(`${api_url}/messenger`, { withCredentials: true, withXSRFToken: true });
-            if (res.data.success) return res.data;
-        } catch (err: any) {
-            console.error(err?.response.data);
-        }
-    }
+        const res = await axios.get(`${api_url}/messenger`, { withCredentials: true, withXSRFToken: true });
+        if (!res.data.success) throw new Error('Failed to fetch conversations');
+        return res.data;
+    };
 
-    const { data, isLoading, isError } = useQuery({
+    const { data, isLoading, isError: conversationsError } = useQuery({
         queryKey: ['conversations'],
         queryFn: fetchConversations
     });
 
     const conversations: Conversation[] = data?.conversations || [];
 
-    const [activeChat, setActiveChat] = useState<Conversation | null>(null);
-    const [conversation, setConversation] = useState<Conversation | null>(null);
+    const [chatSelection, setChatSelection] = useState<{
+        locationKey: string;
+        conversation: Conversation;
+        showOnMobile: boolean;
+    } | null>(null);
     const [messageInput, setMessageInput] = useState('');
-    const [messages, setMessages] = useState<ChatMessage[]>([]);
-    const [showMobileChat, setShowMobileChat] = useState(false);
     const [term, setTerm] = useState('');
+    const [isSending, setIsSending] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
 
     const fetchConversation = async () => {
-        try {
-            const res = await axios.get(`${api_url}/messenger/${id}`, { withCredentials: true, withXSRFToken: true });
-            if (res.data.success) return res.data.conversation;
-        } catch (err) {
-            console.error(err);
-        }
-    }
+        const res = await axios.get(`${api_url}/messenger/${id}`, { withCredentials: true, withXSRFToken: true });
+        if (!res.data.success) throw new Error('Failed to fetch conversation');
+        return res.data.conversation;
+    };
 
-    const { data: conv, isLoading: convLoading } = useQuery({
+    const { data: conv, isLoading: convLoading, isError: convError } = useQuery({
         queryKey: [`conversation-${id}`, id],
         queryFn: fetchConversation,
-        enabled: id,
+        enabled: Boolean(id),
     });
 
-    useEffect(() => {
-        if (conv) {
-            setActiveChat({
-                id: conv.id,
-                name: conv.name,
-                avatar_url: conv.avatar_url ?? '',
-                latest_message: conv.latest_message ?? null,
-                time: conv.time ?? '',
-                online: conv.online ?? false,
-                user: conv?.user,
-                unread: conv.unread ?? 0
-            });
-        } else {
-            setActiveChat(null);
-        }
-    }, [conv]);
-
-    useEffect(() => {
-        if (!activeChat) return;
-
-        // الاستماع للقناة الخاصة بالمحادثة
-        window.Echo.private(`chat.${activeChat.id}`)
-            .listen('MessageSent', (e: any) => {
-                // فاش يوصل ميساج جديد، زيدو ديركت للستة ديال الميساجات فالبلاصة
-                setMessages((prevMessages) => [...prevMessages, e.message]);
-            });
-
-        // التنظيف فاش يخرج المستخدم من المحادثة
-        return () => {
-            window.Echo.leave(`chat.${activeChat.id}`);
-        };
-    }, [activeChat]);
+    const linkedConversation: Conversation | null = conv ? {
+        id: conv.id,
+        name: conv.name,
+        avatar_url: conv.avatar_url ?? '',
+        latest_message: conv.latest_message ?? null,
+        time: conv.time ?? '',
+        online: conv.online ?? false,
+        user: conv.user,
+        unread: conv.unread ?? 0
+    } : null;
+    const currentSelection = chatSelection?.locationKey === location.key ? chatSelection : null;
+    const activeChat = currentSelection?.conversation ?? linkedConversation;
+    const showMobileChat = currentSelection?.showOnMobile ?? Boolean(id);
+    const activeChatId = activeChat?.id;
 
     const fetchMessages = async () => {
-        try {
-            const res = await axios.get(`${api_url}/messages/conversation`, { params: { conversation_id: activeChat?.id }, withCredentials: true, withXSRFToken: true });
-            if (res.data.success) return res.data.messages;
-        } catch (err) {
-            console.error(err);
-        }
-    }
+        const res = await axios.get(`${api_url}/messages/conversation`, { params: { conversation_id: activeChatId }, withCredentials: true, withXSRFToken: true });
+        if (!res.data.success) throw new Error('Failed to fetch messages');
+        return res.data.messages as ChatMessage[];
+    };
 
-    const { data: mss, isLoading: messagesLoading, isError: messagesError } = useQuery({
-        queryKey: [`messages-${activeChat?.id}`],
+    const { data: messages = [], isLoading: messagesLoading, isError: messagesError } = useQuery({
+        queryKey: [`messages-${activeChatId}`],
         queryFn: fetchMessages,
-        enabled: !!activeChat?.id,
+        enabled: Boolean(activeChatId),
     })
 
     useEffect(() => {
-        if (mss) {
-            setMessages(mss);
-        } else {
-            setMessages([]);
+        if (activeChatId && !messagesLoading && !messagesError) {
+            void queryClient.invalidateQueries({ queryKey: ['conversations'] });
         }
-    }, [mss]);
+    }, [activeChatId, messagesError, messagesLoading, queryClient]);
 
     const showNotify = (msg: string) => {
         setNotification(msg);
         setTimeout(() => setNotification(null), 2500);
     };
 
-    const currentTime = () => new Date().toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
-
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
         const text = messageInput.trim();
-        if (!text) return;
+        if (!text || !activeChat) return;
 
         try {
-            await axios.post(`${api_url}/messenger/send`, { content: text, conversation_id: activeChat?.id }, { withCredentials: true, withXSRFToken: true });
+            setIsSending(true);
+            const res = await axios.post(`${api_url}/messenger/send`, { content: text, conversation_id: activeChat.id }, { withCredentials: true, withXSRFToken: true });
+            if (!res.data.success || !res.data.message) throw new Error('Failed to send message');
+            queryClient.setQueryData<ChatMessage[]>([`messages-${activeChat.id}`], (currentMessages = []) => [
+                ...currentMessages,
+                res.data.message,
+            ]);
+            await queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            setMessageInput('');
+            setShowEmojiPicker(false);
         } catch (err) {
             console.error(err);
+            showNotify(t('messenger.sendFailed'));
+        } finally {
+            setIsSending(false);
         }
-        setMessages((currentMessages) => [
-            ...currentMessages,
-            { id: currentMessages.length + 1, sender: 'me', content: text, time: currentTime() },
-        ]);
-        setMessageInput('');
-        setShowEmojiPicker(false);
     };
 
     const handleSelectChat = (conversation: Conversation) => {
-        setActiveChat(conversation);
-        setShowMobileChat(true);
+        setChatSelection({ locationKey: location.key, conversation, showOnMobile: true });
+        setMessageInput('');
+        setShowChatInfo(false);
+        setShowEmojiPicker(false);
     };
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    const handleBackToConversations = () => {
+        if (activeChat) {
+            setChatSelection({ locationKey: location.key, conversation: activeChat, showOnMobile: false });
+        }
+    };
 
-        const imageUrl = URL.createObjectURL(file);
-        setMessages((currentMessages) => [
-            ...currentMessages,
-            { id: currentMessages.length + 1, sender: 'me', content: '', image: imageUrl, time: currentTime() },
-        ]);
-        showNotify(t('messenger.imageSent'));
-        e.target.value = '';
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !activeChat) return;
+        if (!file.type.startsWith('image/')) {
+            showNotify(t('messenger.invalidImage'));
+            e.target.value = '';
+            return;
+        }
+
+        try {
+            setIsUploadingImage(true);
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'wallgo_posts_image');
+            formData.append('resource_type', 'image');
+            const upload = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, formData);
+            const res = await axios.post(
+                `${api_url}/messenger/send`,
+                { media_url: upload.data.secure_url, conversation_id: activeChat.id },
+                { withCredentials: true, withXSRFToken: true }
+            );
+            if (!res.data.success || !res.data.message) throw new Error('Failed to send image');
+            queryClient.setQueryData<ChatMessage[]>([`messages-${activeChat.id}`], (currentMessages = []) => [
+                ...currentMessages,
+                res.data.message,
+            ]);
+            await queryClient.invalidateQueries({ queryKey: ['conversations'] });
+        } catch (err) {
+            console.error(err);
+            showNotify(t('messenger.sendFailed'));
+        } finally {
+            setIsUploadingImage(false);
+            e.target.value = '';
+        }
     };
 
     const addEmoji = (emoji: string) => {
@@ -170,8 +181,9 @@ export const Messenger = () => {
     };
 
     const emojis = ['😊', '🚀', '🔥', '👍', '❤️', '💡', '😎', '💻', '✨', '⭐'];
-    const filteredConversations = conversations?.filter((conversation) =>
-        conversation?.name?.toLowerCase().includes(term.toLowerCase())
+    const filteredConversations = conversations.filter((chat) =>
+        chat?.name?.toLowerCase().includes(term.toLowerCase())
+        || chat?.latest_message?.content?.toLowerCase().includes(term.toLowerCase())
     );
 
     return (
@@ -218,12 +230,20 @@ export const Messenger = () => {
                         </div>
 
                         <nav aria-label={t('messenger.title')} className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain px-2 pb-3">
-                            {filteredConversations.map((conversation) => (
+                            {isLoading ? (
+                                <Spinner type="mini" text={t('messenger.loadingConversations')} />
+                            ) : conversationsError ? (
+                                <p role="alert" className="p-4 text-sm text-red-600 dark:text-red-400">{t('messenger.conversationsLoadFailed')}</p>
+                            ) : filteredConversations.length === 0 ? (
+                                <p className="p-4 text-center text-sm text-gray-500">{conversations.length ? t('messenger.noSearchResults') : t('messenger.noConversations')}</p>
+                            ) : filteredConversations.map((conversation) => (
                                 <ConversationItem
                                     key={conversation.id}
                                     conversation={conversation}
                                     active={activeChat?.id === conversation?.id}
                                     yesterdayLabel={t('messenger.yesterday')}
+                                    startConversationLabel={t('messenger.startConversation')}
+                                    imageMessageLabel={t('messenger.imageMessage')}
                                     onSelect={handleSelectChat}
                                     m={m}
                                 />
@@ -234,13 +254,15 @@ export const Messenger = () => {
                     {
                         convLoading ? (
                             <Spinner type='mini' text='Fetching conversation ...' />
+                        ) : convError ? (
+                            <ErrorPage codeP='500' />
                         ) : activeChat ? (
                             <div className={`h-full min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden bg-[#fafaff] dark:bg-gray-900/50 ${showMobileChat ? 'flex' : 'hidden md:flex'}`}>
                                 <header className="relative flex shrink-0 items-center justify-between border-b border-gray-200/70 bg-white px-4 py-4 dark:border-white/10 dark:bg-gray-900 sm:px-6">
                                     <div className="flex min-w-0 items-center gap-3">
                                         <button
                                             type="button"
-                                            onClick={() => setShowMobileChat(false)}
+                                            onClick={handleBackToConversations}
                                             className="rounded-xl p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white md:hidden"
                                             aria-label={t('auth.back')}
                                         >
@@ -306,10 +328,6 @@ export const Messenger = () => {
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <div className="mt-4 space-y-1 border-t border-gray-200/70 pt-3 text-xs dark:border-white/10">
-                                                    <button type="button" onClick={() => { setShowChatInfo(false); showNotify(t('messenger.chatMuted')); }} className="w-full rounded-xl px-3 py-2.5 text-start text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5">{t('messenger.muteNotifications')}</button>
-                                                    <button type="button" onClick={() => { setShowChatInfo(false); setMessages([]); showNotify(t('messenger.chatCleared')); }} className="w-full rounded-xl px-3 py-2.5 text-start text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30">{t('messenger.clearChat')}</button>
-                                                </div>
                                             </div>
                                         )}
                                     </div>
@@ -321,11 +339,11 @@ export const Messenger = () => {
                                             messagesLoading ? (
                                                 <Spinner text='Fetching messages ...' type='mini' />
                                             ) : messagesError ? (
-                                                <ErrorPage codeP='500' />
+                                                <p role="alert" className="text-center text-sm text-red-600 dark:text-red-400">{t('messenger.messagesLoadFailed')}</p>
                                             ) : messages?.length > 0 ? messages.map((message) => (
                                                 <MessageBubble key={message.id} message={message} attachmentAlt={t('messenger.uploadedAttachmentAlt')} />
                                             )) : (
-                                                <span className='text-sm text-center text-gray-500'>No messages yet. Send a message to start the conversation!</span>
+                                                <span className='text-sm text-center text-gray-500'>{t('messenger.noMessages')}</span>
                                             )}
                                     </div>
                                 </div>
@@ -348,11 +366,12 @@ export const Messenger = () => {
                                     )}
 
                                     <form onSubmit={handleSendMessage} className="flex items-center gap-1.5 p-3 sm:gap-2.5 sm:p-4">
-                                        <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" className="hidden" />
+                                        <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" disabled={isUploadingImage || isSending} className="hidden" />
                                         <button
                                             type="button"
                                             onClick={() => fileInputRef.current?.click()}
-                                            className="shrink-0 rounded-xl p-2.5 text-gray-400 transition hover:bg-[var(--special-purple)]/10 hover:text-[var(--special-purple)] dark:text-gray-500"
+                                            disabled={isUploadingImage || isSending}
+                                            className="shrink-0 rounded-xl p-2.5 text-gray-400 transition hover:bg-[var(--special-purple)]/10 hover:text-[var(--special-purple)] disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-500"
                                             title={t('messenger.sendImage')}
                                             aria-label={t('messenger.sendImage')}
                                         >
@@ -372,13 +391,15 @@ export const Messenger = () => {
                                             type="text"
                                             value={messageInput}
                                             onChange={(e) => setMessageInput(e.target.value)}
+                                            disabled={isSending || isUploadingImage}
                                             placeholder={t('messenger.typeMessage')}
                                             aria-label={t('messenger.typeMessage')}
                                             className="min-w-0 flex-1 rounded-2xl border border-gray-200/80 bg-white/75 px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[var(--special-purple)] focus:ring-4 focus:ring-[var(--special-purple)]/10 dark:border-white/10 dark:bg-gray-800/70 dark:text-gray-100 dark:placeholder:text-gray-500"
                                         />
                                         <button
                                             type="submit"
-                                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--special-purple)] text-white shadow-lg shadow-[var(--special-purple)]/25 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[var(--special-purple)]/30 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--special-purple)]/25"
+                                            disabled={isSending || isUploadingImage || !messageInput.trim()}
+                                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--special-purple)] text-white shadow-lg shadow-[var(--special-purple)]/25 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[var(--special-purple)]/30 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--special-purple)]/25 disabled:cursor-not-allowed disabled:opacity-50"
                                             title={t('messenger.send')}
                                             aria-label={t('messenger.send')}
                                         >

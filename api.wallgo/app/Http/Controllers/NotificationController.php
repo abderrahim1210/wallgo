@@ -20,10 +20,29 @@ class NotificationController extends Controller
         $user_id = Auth::id();
         $user = User::find($user_id);
         $notifications = $user->notifications()->latest()->get();
+        $new_messages = $user->conversations()->withCount(['messages as unread' => fn($q) => $q->where('sender_id', '!=', $user->id)->where('is_read', false)])->latest()->count();
         return response()->json([
             'success' => true,
-            'notifications' => $notifications
+            'notifications' => $notifications,
+            'messages' => $new_messages
         ], 200);
+    }
+
+    public function not_read()
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+        $user_id = Auth::id();
+        $user = User::find($user_id);
+        $new_messages = $user->conversations()->withCount(['messages as unread' => fn($q) => $q->where('sender_id', '!=', $user->id)->where('is_read', false)])->latest()->count();
+        return response()->json([
+            'success' => true,
+            'messages' => $new_messages
+        ],200);
     }
 
     public function all()
@@ -43,7 +62,7 @@ class NotificationController extends Controller
         ], 200);
     }
 
-    public function mark_as_read(Request $request, $type=null)
+    public function mark_as_read(Request $request, $type = null)
     {
         if (!Auth::check()) {
             return response()->json([

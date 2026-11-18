@@ -11,7 +11,7 @@ class Messenger extends Controller
 {
     public function index()
     {
-        $user_id = Auth::user();
+        $user_id = Auth::id();
 
         if (!$user_id) {
             return response()->json([

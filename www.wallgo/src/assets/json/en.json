@@ -562,7 +562,19 @@
     "addEmoji": "Add Emoji",
     "typeMessage": "Type a message...",
     "send": "Send",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "startConversation": "Start a conversation",
+    "imageMessage": "Photo",
+    "noMessages": "No messages yet. Send a message to start the conversation!",
+    "noConversations": "No conversations yet.",
+    "noSearchResults": "No conversations match your search.",
+    "loadingConversations": "Loading conversations...",
+    "conversationsLoadFailed": "Could not load conversations. Please try again.",
+    "messagesLoadFailed": "Could not load messages. Please try again.",
+    "conversationsLoadFailed": "Could not load conversations. Please try again.",
+    "messagesLoadFailed": "Could not load messages. Please try again.",
+    "sendFailed": "Could not send your message. Please try again.",
+    "invalidImage": "Please choose a valid image."
   },
   "pageTitles": {
     "myPosts": "WallGo: My Posts",

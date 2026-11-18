@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Message;
+use App\Models\User;
+use App\Notifications\NewMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,14 +12,16 @@ class Messages extends Controller
 {
     public function send(Request $request)
     {
-        $user = Auth::user();
+        $user_id = Auth::id();
 
-        if (!$user) {
+        if (!$user_id) {
             return response()->json([
                 'success' => false,
                 'message' => 'User unauthorized',
             ], 401);
         }
+
+        $user = User::find($user_id);
 
         $data = $request->validate([
             'content' => ['nullable', 'string', 'max:10000', 'required_without:media_url'],
@@ -52,6 +56,8 @@ class Messages extends Controller
         ]);
         $conversation->touch();
 
+        $user->notify(new NewMessage($user, $message));
+
         return response()->json([
             'success' => true,
             'message' => $this->messagePayload($message, (int) $user->id),
@@ -60,14 +66,16 @@ class Messages extends Controller
 
     public function messages(Request $request)
     {
-        $user = Auth::user();
+        $user_id = Auth::id();
 
-        if (!$user) {
+        if (!$user_id) {
             return response()->json([
                 'success' => false,
                 'message' => 'User unauthorized',
             ], 401);
         }
+
+        $user = User::find($user_id);
 
         $data = $request->validate([
             'conversation_id' => ['required', 'integer', 'exists:conversations,id'],
@@ -91,7 +99,7 @@ class Messages extends Controller
             ->orderBy('created_at')
             ->orderBy('id')
             ->get()
-            ->map(fn (Message $message) => $this->messagePayload($message, (int) $user->id));
+            ->map(fn(Message $message) => $this->messagePayload($message, (int) $user->id));
 
         return response()->json([
             'success' => true,

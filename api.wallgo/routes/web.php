@@ -244,6 +244,8 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 
+    Route::get('/notifications/noread', [NotificationController::class, 'not_read']);
+
     Route::delete('/groups/{group_id}/remove_member/{user_id}', [GroupController::class, 'removeMember']);
     Route::delete('/pages/{page_id}/remove_member/{user_id}', [PageController::class, 'removeMember']);
 
