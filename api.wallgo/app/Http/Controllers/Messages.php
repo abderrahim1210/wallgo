@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageSent;
 use App\Models\Message;
 use App\Models\User;
-use App\Notifications\NewMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -57,11 +57,7 @@ class Messages extends Controller
         ]);
         $conversation->touch();
 
-        $recipient = $conversation->users()->where('user_id','!=',$user->id)->first();
-
-        if (!$recipient){
-            $recipient->notify(new NewMessage($user, $message));
-        }
+        broadcast(new MessageSent($this->messagePayload($message, (int) $user->id), (int) $conversation->id))->toOthers();
 
         return response()->json([
             'success' => true,

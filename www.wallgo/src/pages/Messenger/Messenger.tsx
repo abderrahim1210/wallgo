@@ -188,22 +188,58 @@ export const Messenger = () => {
     );
 
     useEffect(() => {
+        if (!activeChat?.id) return;
+
+        let cancelled = false;
+
         const markAsRead = async () => {
             try {
-                await axios.put(`${api_url}/messenger/read_conversation`, {
-                    conversation_id: activeChat?.id
-                }, {
-                    withCredentials: true,
-                    withXSRFToken: true
-                });
-                queryClient.invalidateQueries({ queryKey: ['messages_count'] });
+                await axios.put(
+                    `${api_url}/messenger/read_conversation`,
+                    { conversation_id: activeChat.id },
+                    { withCredentials: true, withXSRFToken: true }
+                );
+
+                if (!cancelled) {
+                    await queryClient.invalidateQueries({ queryKey: ['messages_count'] });
+                    await queryClient.invalidateQueries({ queryKey: ['conversations'] });
+                }
             } catch (err) {
                 console.error(err);
             }
         };
 
         markAsRead();
-    }, [activeChat?.id]);
+
+        return () => {
+            cancelled = true;
+        };
+    }, [activeChat?.id, queryClient]);
+    useEffect(() => {
+        if (!activeChatId || !window.Echo) return;
+
+        const channelName = `conversation.${activeChatId}`;
+        const channel = window.Echo.private(channelName);
+
+        const handleMessageSent = (e: { message: ChatMessage }) => {
+            if (!e?.message) return;
+
+            queryClient.setQueryData<ChatMessage[]>([`messages-${activeChatId}`], (current = []) => {
+                if (current.some((m) => m.id === e.message.id)) return current;
+                return [...current, e.message];
+            });
+
+            void queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            void queryClient.invalidateQueries({ queryKey: ['messages_count'] });
+        };
+
+        channel.listen('.message.sent', handleMessageSent);
+
+        return () => {
+            channel.stopListening('.message.sent', handleMessageSent);
+            window.Echo.leave(channelName);
+        };
+    }, [activeChatId, queryClient]);
 
     return (
         <>
