@@ -201,7 +201,7 @@ export const Messenger = () => {
                 );
 
                 if (!cancelled) {
-                    await queryClient.invalidateQueries({ queryKey: ['messages_count'] });
+                    queryClient.setQueryData<number>(['messages_count'], (old = 0) => Math.max(0, old - 1));
                     await queryClient.invalidateQueries({ queryKey: ['conversations'] });
                 }
             } catch (err) {
@@ -241,10 +241,21 @@ export const Messenger = () => {
         };
     }, [activeChatId, queryClient]);
 
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const el = messagesContainerRef.current;
+        if (!el) return;
+
+        requestAnimationFrame(() => {
+            el.scrollTop = el.scrollHeight;
+        });
+    }, [messages.length, activeChatId]);
+
     return (
         <>
             <Navbar />
-            <main className="relative flex min-h-[calc(100dvh-95px)] items-center justify-center bg-gradient-to-br from-[#f7f6ff] via-[#f8f9fc] to-[#f1f0ff] px-0 pb-20 pt-0 dark:from-gray-950 dark:via-gray-900 dark:to-[#211d3d] md:px-4 md:py-5 md:pb-5">
+            <main className="flex justify-center md:mt-2">
                 <Helmet>
                     <title>{`WallGo : ${t('messenger.title')}`}</title>
                 </Helmet>
@@ -388,7 +399,7 @@ export const Messenger = () => {
                                     </div>
                                 </header>
 
-                                <div className="min-h-0 flex-1 flex flex-col overflow-y-auto overscroll-contain bg-gradient-to-b from-white via-[#fafaff] to-[#f6f5fc] p-4 dark:from-gray-900 dark:via-gray-900 dark:to-gray-950 sm:p-6">
+                                <div ref={messagesContainerRef} className="min-h-0 flex-1 flex flex-col overflow-y-auto overscroll-contain bg-gradient-to-b from-white via-[#fafaff] to-[#f6f5fc] p-4 dark:from-gray-900 dark:via-gray-900 dark:to-gray-950 sm:p-6">
                                     <div className="mt-auto flex flex-col gap-4">
                                         {
                                             messagesLoading ? (
