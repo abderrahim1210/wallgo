@@ -573,7 +573,8 @@
     "conversationsLoadFailed": "تعذر تحميل المحادثات. حاول مرة أخرى.",
     "messagesLoadFailed": "تعذر تحميل الرسائل. حاول مرة أخرى.",
     "sendFailed": "تعذر إرسال رسالتك. حاول مرة أخرى.",
-    "invalidImage": "يرجى اختيار صورة صالحة."
+    "invalidImage": "يرجى اختيار صورة صالحة.",
+    "today":"اليوم"
   },
   "pageTitles": {
     "myPosts": "WallGo: منشوراتي",

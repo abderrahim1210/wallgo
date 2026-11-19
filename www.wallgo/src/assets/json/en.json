@@ -574,7 +574,8 @@
     "conversationsLoadFailed": "Could not load conversations. Please try again.",
     "messagesLoadFailed": "Could not load messages. Please try again.",
     "sendFailed": "Could not send your message. Please try again.",
-    "invalidImage": "Please choose a valid image."
+    "invalidImage": "Please choose a valid image.",
+    "today":"Today"
   },
   "pageTitles": {
     "myPosts": "WallGo: My Posts",

@@ -252,6 +252,24 @@ export const Messenger = () => {
         });
     }, [messages.length, activeChatId]);
 
+
+    const getDateLabel = (rawDate?: string | Date | null) => {
+        if (!rawDate) return null;
+        const target = moment.utc(rawDate).local();
+        if (!target.isValid()) return null;
+
+        const now = moment();
+
+        if (target.isSame(now, 'day')) {
+            return t('messenger.today');
+        }
+
+        if (target.isSame(now.clone().subtract(1, 'day'), 'day')) {
+            return t('messenger.yesterday');
+        }
+
+        return target.locale(currentLang).format('DD MMM YYYY');
+    }
     return (
         <>
             <Navbar />
@@ -336,11 +354,12 @@ export const Messenger = () => {
                                         </button>
                                         <span className="relative shrink-0">
                                             <img src={activeChat?.user?.avatar_url ?? '/icons/avatar1.svg'} alt="" className="h-11 w-11 rounded-full object-cover ring-2 ring-white dark:ring-gray-800" />
-                                            {activeChat?.user?.online && <span className="absolute bottom-0 end-0 h-3 w-3 rounded-full border-2 border-white bg-emerald-500 dark:border-gray-900" />}
+                                            {activeChat?.online && <span className="absolute bottom-0 end-0 h-3 w-3 rounded-full border-2 border-white bg-emerald-500 dark:border-gray-900" />}
                                         </span>
                                         <div className="min-w-0">
                                             <h2 className="truncate text-sm font-bold text-gray-900 dark:text-white cursor-pointer" onClick={() => navigate(`/profile/${activeChat.id}/${activeChat.user.username}`)}>{activeChat?.user?.name}</h2>
-                                            {activeChat?.user?.online && (
+                                            <span className='text-[10px]'>@{activeChat?.user?.username}</span>
+                                            {activeChat?.online && (
                                                 <p className="mt-0.5 flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
                                                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                                                     {t('messenger.activeNow')}
@@ -406,10 +425,40 @@ export const Messenger = () => {
                                                 <Spinner text='Fetching messages ...' type='mini' />
                                             ) : messagesError ? (
                                                 <p role="alert" className="text-center text-sm text-red-600 dark:text-red-400">{t('messenger.messagesLoadFailed')}</p>
-                                            ) : messages?.length > 0 ? messages.map((message) => (
-                                                <MessageBubble key={message.id} message={message} attachmentAlt={t('messenger.uploadedAttachmentAlt')} />
-                                            )) : (
-                                                <span className='text-sm text-center text-gray-500'>{t('messenger.noMessages')}</span>
+                                            ) : messages?.length > 0 ? (
+                                                (() => {
+                                                    let lastDateKey: string | null = null;
+
+                                                    return messages.map((message) => {
+                                                        const rawDate = (message as ChatMessage & { created_at?: string }).created_at;
+                                                        const dateKey = rawDate ? moment.utc(rawDate).local().format('YYYY-MM-DD') : null;
+                                                        const showDivider = Boolean(dateKey && dateKey !== lastDateKey);
+
+                                                        if (dateKey) {
+                                                            lastDateKey = dateKey;
+                                                        }
+
+                                                        return (
+                                                            <React.Fragment key={message.id}>
+                                                                {showDivider && (
+                                                                    <div className="my-1 flex items-center justify-center">
+                                                                        <span className="rounded-full border border-white/10 bg-gray-800/80 px-3.5 py-1 text-[11px] font-medium text-gray-300 shadow-sm backdrop-blur-md dark:bg-gray-800/90 dark:text-gray-300">
+                                                                            {getDateLabel(rawDate)}
+                                                                        </span>
+                                                                    </div>
+                                                                )}
+                                                                <MessageBubble
+                                                                    message={message}
+                                                                    attachmentAlt={t('messenger.uploadedAttachmentAlt')}
+                                                                />
+                                                            </React.Fragment>
+                                                        );
+                                                    });
+                                                })()
+                                            ) : (
+                                                <span className='text-sm text-center text-gray-500'>
+                                                    {t('messenger.noMessages')}
+                                                </span>
                                             )}
                                     </div>
                                 </div>
