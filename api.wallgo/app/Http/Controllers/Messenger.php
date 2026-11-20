@@ -25,6 +25,7 @@ class Messenger extends Controller
         $user = User::find($user_id);
 
         $conversations = $user->conversations()
+            ->wherePivotNull('deleted_at')
             ->with([
                 'users' => fn($query) => $query->where('users.id', '!=', $user->id),
                 'latestMessage',

@@ -20,4 +20,9 @@ class Conversation extends Model
     {
         return $this->hasOne(Message::class)->latest();
     }
+
+    public function reports()
+    {
+        return $this->morphMany(Report::class, 'reportable');
+    }
 }

@@ -517,7 +517,8 @@
       "user": "User",
       "group": "Group",
       "comment": "Comment",
-      "reel": "Reel"
+      "reel": "Reel",
+      "conversation":"Conversation"
     }
   },
   "postDetails": {

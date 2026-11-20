@@ -9,6 +9,9 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import { api_url } from '../Auth/getUser';
 import toast from 'react-hot-toast';
+import ModalTemplate from '../../templates/ModalTemplate';
+import { Report } from '../../components/Report';
+import { useQueryClient } from '@tanstack/react-query';
 
 
 export type Conversation = {
@@ -55,7 +58,6 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
 
     const { show, openModal, closeModal } = useModal()!;
     const [dropdownMenu, setDropDownMenu] = useState<{ conversation: Conversation, x: number, y: number } | null>(null);
-    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!dropdownMenu) return;
@@ -86,13 +88,13 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
             label: t('messenger.reportConversation'),
             icon: <Flag className="w-4 h-4 text-red-500 dark:text-red-400" />,
             danger: true,
-            onClick: () => openModal(``),
+            onClick: () => openModal(`report-conversation-${conversation?.id}`),
         },
     ];
+    const queryClient = useQueryClient();
 
     const deleteConversation = async (convId: number) => {
         if (!convId) return;
-        setLoading(true);
         Swal.fire({
             title: t('messenger.deleteConversation'),
             text: t('messenger.confirmDeleteConversation'),
@@ -111,7 +113,7 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
                     const res = await axios.delete(`${api_url}/conversations/${convId}/${type}`, { withCredentials: true, withXSRFToken: true });
                     if (res.data.success) {
                         toast.success(res.data.message || 'Conversation deleted successfully');
-                        setLoading(false);
+                        queryClient.invalidateQueries({ queryKey: ['notifications'] });
                     }
                 } catch (err) {
                     console.error(err);
@@ -122,7 +124,13 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
 
     return (
         <div className='relative'>
-
+            {
+                show === `report-conversation-${conversation?.id}` && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <Report type='conversation' id={conversation?.id} />
+                    </ModalTemplate>
+                )
+            }
             <button
                 type="button"
                 onClick={() => onSelect(conversation)}

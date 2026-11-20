@@ -516,7 +516,8 @@
       "user": "المستخدم",
       "group": "المجموعة",
       "comment": "التعليق",
-      "reel": "الريل"
+      "reel": "الريل",
+      "conversation":"المحادثة"
     }
   },
   "postDetails": {

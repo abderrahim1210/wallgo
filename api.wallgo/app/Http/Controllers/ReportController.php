@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\Conversation;
 use App\Models\Group;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Reel;
 use App\Models\Report;
 use App\Models\User;
+use App\Notifications\AlertToSendReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -49,6 +51,10 @@ class ReportController extends Controller
                     $reportable = Reel::select('id')->find($request->reportable_id);
                     if (!$reportable) return response()->json(['success' => false, 'message' => "Reel by id $request->reportable_id not found"]);
                     break;
+                case 'conversation':
+                    $reportable = Conversation::select('id')->find($request->reportable_id);
+                    if (!$reportable) return response()->json(['success' => false, 'message' => "Conversation by id $request->reportable_id not found"]);
+                    break;
             }
 
             Report::create([
@@ -58,6 +64,9 @@ class ReportController extends Controller
                 'reportable_id' => $reportable->id,
                 'reportable_type' => $reportable ? get_class($reportable) : null
             ]);
+
+            $user = User::find($user_id);
+            $user->notify(new AlertToSendReport());
             return response()->json([
                 'success' => true,
                 'message' => 'Report send succefully'

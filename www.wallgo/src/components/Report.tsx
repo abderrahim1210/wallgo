@@ -7,7 +7,7 @@ import { useModal } from '../hooks/ModalProvider';
 import { useTranslation } from 'react-i18next';
 
 interface ReportProps {
-    type: 'post' | 'page' | 'user' | 'group' | 'comment' | 'reel';
+    type: 'post' | 'page' | 'user' | 'group' | 'comment' | 'reel' | 'conversation';
     id: number,
     onClose?: () => void;
 }

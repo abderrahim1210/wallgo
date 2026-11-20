@@ -16,8 +16,6 @@ import Spinner from '../../templates/Spinner';
 import { ErrorPage } from '../../components/ErrorPage';
 import moment from 'moment';
 import { cloudName } from '../../components/CreateReel';
-import type { DropdownItem } from '../../templates/DropdownMenu';
-import { useModal } from '../../hooks/ModalProvider';
 
 export type StateParams = {
     conversation: Conversation,
