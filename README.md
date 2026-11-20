@@ -7,7 +7,7 @@
     <img src="./www.wallgo/public/backgrounds/background.webp" alt="Watch WallGo Promo Video" width="800" />
   </a>
   <br />
-  <a href="https://res.cloudinary.com/dhysaozog/video/upload/v1795192856/wallgo_promo_mchbeg.mp4">▶️ Watch WallGo Demo Video</a>
+  https://res.cloudinary.com/dhysaozog/video/upload/v1795192856/wallgo_promo_mchbeg.mp4
 </p>
   <br />
   <b>A modern full-stack web application for sharing moments, preserving time capsules, and connecting in real-time.</b>
