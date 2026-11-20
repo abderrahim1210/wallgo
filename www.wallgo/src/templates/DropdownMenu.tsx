@@ -45,18 +45,25 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
     };
 
     const updatePosition = () => {
-        if (!containerRef.current) return;
-        const rect = containerRef.current.getBoundingClientRect();
         const menuH = menuRef.current?.offsetHeight ?? 0;
+        const rect = containerRef.current?.getBoundingClientRect();
 
-        let left = align === 'right' ? rect.right - MENU_W : rect.left;
-        left = Math.max(PADDING, Math.min(left, window.innerWidth - MENU_W - PADDING));
-
-        let top = rect.bottom + GAP;
-        if (top + menuH > window.innerHeight - PADDING) {
-            top = rect.top - menuH - GAP;
+        let left: number;
+        let top: number;
+        if (position) {
+            left = position.x;
+            top = position.y;
+        } else {
+            if (!rect) return;
+            left = align === 'right' ? rect.right - MENU_W : rect.left;
+            top = rect.bottom + GAP;
+            if (top + menuH > window.innerHeight - PADDING) {
+                top = rect.top - menuH - GAP;
+            }
         }
-        top = Math.max(PADDING, top);
+
+        left = Math.max(PADDING, Math.min(left, window.innerWidth - MENU_W - PADDING));
+        top = Math.max(PADDING, Math.min(top, window.innerHeight - menuH - PADDING));
 
         setCoords({ top, left });
     };

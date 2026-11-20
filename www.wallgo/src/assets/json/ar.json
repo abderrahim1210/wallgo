@@ -581,7 +581,10 @@
     "startTalk": "ابدأ التحدث",
     "deletedConversation":"حذف المحادثة",
     "confirmDeleteConversation":"هل أنت متأكد لحذف هذه المحادثة ؟",
-    "deleteForEveryone":"الحذف عند الجميع"
+    "deleteForEveryone":"الحذف عند الجميع",
+    "deleteMessage":"حذف الرسالة",
+    "confirmDeleteMessage":"هل أنت متأكد لحذف هذه الرسالة ؟",
+    "reportMessage":"الابلاغ عن الرسالة"
   },
   "pageTitles": {
     "myPosts": "WallGo: منشوراتي",

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\MessageSent;
 use App\Models\Message;
 use App\Models\User;
+use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -28,6 +29,7 @@ class Messages extends Controller
             'content' => ['nullable', 'string', 'max:10000', 'required_without:media_url'],
             'media_url' => ['nullable', 'url', 'max:2048', 'required_without:content'],
             'conversation_id' => ['required', 'integer', 'exists:conversations,id'],
+            'public_id' => ['nullable', 'string']
         ]);
 
         $conversation = $user->conversations()->whereKey($data['conversation_id'])->first();
@@ -41,6 +43,7 @@ class Messages extends Controller
 
         $content = trim($data['content'] ?? '');
         $mediaUrl = $data['media_url'] ?? null;
+        $public_id = $data['public_id'] ?? null;
 
         if ($content === '' && !$mediaUrl) {
             return response()->json([
@@ -54,6 +57,8 @@ class Messages extends Controller
             'content' => $content,
             'media_url' => $mediaUrl,
             'is_read' => false,
+            'public_id' => $public_id
+
         ]);
         $conversation->touch();
 
@@ -123,28 +128,50 @@ class Messages extends Controller
         ];
     }
 
-    // public function read_message(Request $request)
-    // {
-    //     $request->validate([
-    //         'message_id' => ['required', 'numeric', 'exists:messages,id']
-    //     ]);
-    //     $message_id = (int) $request->message_id;
-    //     try {
-    //         $message = Message::findOrFail($message_id);
-    //         $message->update([
-    //             'is_read' => true
-    //         ]);
+    public function destroy(string $id)
+    {
+        if (!$id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Id required'
+            ]);
+        }
 
-    //         $message->touch();
+        $id = (int) $id;
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
 
-    //         return response()->json([
-    //             'success' => true,
-    //         ], 200);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Failed : ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
+        $user_id = Auth::id();
+        $message = Message::where('sender_id', $user_id)->findOrFail($id);
+        try {
+            if ($message->media_url) {
+                $cloudinary = new Cloudinary([
+                    'cloud' => [
+                        'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                        'api_key'    => env('CLOUDINARY_API_KEY'),
+                        'api_secret' => env('CLOUDINARY_API_SECRET'),
+                    ],
+                    'url' => [
+                        'secure' => true
+                    ]
+                ]);
+
+                $cloudinary->uploadApi()->destroy($message->public_id);
+            }
+            $message->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Message deleted successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

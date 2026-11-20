@@ -165,7 +165,7 @@ export const Messenger = () => {
             const upload = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, formData);
             const res = await axios.post(
                 `${api_url}/messages/send`,
-                { media_url: upload.data.secure_url, conversation_id: activeChat.id },
+                { media_url: upload.data.secure_url, public_id: upload.data.public_id, conversation_id: activeChat.id },
                 { withCredentials: true, withXSRFToken: true }
             );
             if (!res.data.success || !res.data.message) throw new Error('Failed to send image');
@@ -288,6 +288,7 @@ export const Messenger = () => {
 
         fn({ conversation, x, y });
     }
+
     return (
         <>
             <Navbar />
@@ -469,7 +470,6 @@ export const Messenger = () => {
                                                                 <MessageBubble
                                                                     message={message}
                                                                     attachmentAlt={t('messenger.uploadedAttachmentAlt')}
-                                                                    handleOpenConversationMenu={handleOpenConversationMenu}
                                                                 />
                                                             </React.Fragment>
                                                         );

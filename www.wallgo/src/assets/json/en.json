@@ -582,7 +582,10 @@
     "startTalk":"Start Talk",
     "deletedConversation":"Delete conversation",
     "confirmDeleteConversation":"Are you sure to delete this conversation ?",
-    "deleteForEveryone":"Delete For Everyone"
+    "deleteForEveryone":"Delete For Everyone",
+    "deleteMessage":"Delete Message",
+    "confirmDeleteMessage":"Are you sure to delete this message ?",
+    "reportMessage":"Report Message"
   },
   "pageTitles": {
     "myPosts": "WallGo: My Posts",
