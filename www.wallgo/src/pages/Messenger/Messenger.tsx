@@ -341,7 +341,7 @@ export const Messenger = () => {
                         ) : convError ? (
                             <ErrorPage codeP='500' />
                         ) : activeChat ? (
-                            <div className={`h-full min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden bg-[#fafaff] dark:bg-gray-900/50 ${showMobileChat ? 'flex' : 'hidden md:flex'}`}>
+                            <div className={`h-full min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden bg-[#fafaff] dark:bg-gray-900/50 ${showMobileChat ? 'flex' : 'hidden md:flex'} custom-scrollbar`}>
                                 <header className="relative flex shrink-0 items-center justify-between border-b border-gray-200/70 bg-white px-4 py-4 dark:border-white/10 dark:bg-gray-900 sm:px-6">
                                     <div className="flex min-w-0 items-center gap-3">
                                         <button

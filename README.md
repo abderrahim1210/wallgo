@@ -2,6 +2,7 @@
 
 <p align="center">
   <img src="./www.wallgo/public/backgrounds/background.webp" alt="Pixora Logo" width="800" />
+  <video src="https://res.cloudinary.com/dhysaozog/video/upload/v1795192856/wallgo_promo_mchbeg.mp4" controls autoplay loop muted playsinline width="800"></video>
   <br />
   <b>A modern full-stack web application for sharing moments, preserving time capsules, and connecting in real-time.</b>
 </p>
