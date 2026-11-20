@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Image, Info, MessageCircle, Phone, Search, Send, Smile, Video } from 'lucide-react';
+import { ArrowLeft, Flag, Image, Info, MessageCircle, Phone, Search, Send, Smile, Trash2, Video } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { Navbar } from '../../layouts/Navbar';
@@ -16,6 +16,14 @@ import Spinner from '../../templates/Spinner';
 import { ErrorPage } from '../../components/ErrorPage';
 import moment from 'moment';
 import { cloudName } from '../../components/CreateReel';
+import type { DropdownItem } from '../../templates/DropdownMenu';
+import { useModal } from '../../hooks/ModalProvider';
+
+export type StateParams = {
+    conversation: Conversation,
+    x: number;
+    y: number;
+}
 
 export const Messenger = () => {
     const location = useLocation();
@@ -154,11 +162,11 @@ export const Messenger = () => {
             setIsUploadingImage(true);
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('upload_preset', 'wallgo_posts_image');
+            formData.append('upload_preset', 'wallgo_messages_image');
             formData.append('resource_type', 'image');
             const upload = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, formData);
             const res = await axios.post(
-                `${api_url}/messenger/send`,
+                `${api_url}/messages/send`,
                 { media_url: upload.data.secure_url, conversation_id: activeChat.id },
                 { withCredentials: true, withXSRFToken: true }
             );
@@ -270,6 +278,18 @@ export const Messenger = () => {
 
         return target.locale(currentLang).format('DD MMM YYYY');
     }
+
+    const handleOpenConversationMenu = (e: React.MouseEvent<HTMLElement>, conversation: Conversation, fn: ({ conversation, x, y }: StateParams) => void) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const menuWidth = 180;
+        const menuHeight = 130;
+        const x = Math.min(e.clientX, window.innerWidth - menuWidth - 8);
+        const y = Math.min(e.clientY, window.innerHeight - menuHeight - 8);
+
+        fn({ conversation, x, y });
+    }
     return (
         <>
             <Navbar />
@@ -330,6 +350,7 @@ export const Messenger = () => {
                                     imageMessageLabel={t('messenger.imageMessage')}
                                     onSelect={handleSelectChat}
                                     m={m}
+                                    handleOpenConversationMenu={handleOpenConversationMenu}
                                 />
                             ))}
                         </nav>
@@ -450,6 +471,7 @@ export const Messenger = () => {
                                                                 <MessageBubble
                                                                     message={message}
                                                                     attachmentAlt={t('messenger.uploadedAttachmentAlt')}
+                                                                    handleOpenConversationMenu={handleOpenConversationMenu}
                                                                 />
                                                             </React.Fragment>
                                                         );

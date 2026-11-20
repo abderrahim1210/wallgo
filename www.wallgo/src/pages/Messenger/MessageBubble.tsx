@@ -1,4 +1,6 @@
 import { CheckCheck } from 'lucide-react';
+import type { Conversation } from './ConversationItem';
+import type { StateParams } from './Messenger';
 
 export type ChatMessage = {
     id: number;
@@ -11,9 +13,10 @@ export type ChatMessage = {
 type MessageBubbleProps = {
     message: ChatMessage;
     attachmentAlt: string;
+    handleOpenConversationMenu: (e: React.MouseEvent<HTMLElement>, conversatoin: Conversation, fn: ({ conversation, x, y }: StateParams) => void) => void;
 };
 
-export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) => {
+export const MessageBubble = ({ message, attachmentAlt, handleOpenConversationMenu }: MessageBubbleProps) => {
     return (
         <div className={`flex min-w-0 ${message.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
             <div

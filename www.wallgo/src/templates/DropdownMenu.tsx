@@ -103,15 +103,19 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
     return (
         <div className="relative inline-flex text-left" ref={containerRef}>
-            <div onClick={handleToggle} className="cursor-pointer inline-flex items-center select-none">
-                {trigger}
-            </div>
+            {
+                trigger && (
+                    <div onClick={handleToggle} className="cursor-pointer inline-flex items-center select-none">
+                        {trigger}
+                    </div>
+                )
+            }
 
             {isOpen && createPortal(
                 <div
                     ref={menuRef}
                     style={{ top: `${coords.top}px`, left: `${coords.left}px` }}
-                    className="fixed z-[9999] w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-2xl py-1.5"
+                    className="fixed z-[9999] w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-2xl py-1.5"
                 >
                     {items.map((item, index) => (
                         <button key={index} onClick={() => { item.onClick(); setOpenState(false); }}

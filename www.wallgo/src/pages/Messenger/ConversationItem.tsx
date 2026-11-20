@@ -4,6 +4,7 @@ import { t } from 'i18next';
 import { Flag, Trash2 } from 'lucide-react';
 import { useModal } from '../../hooks/ModalProvider';
 import { useEffect, useState } from 'react';
+import type { StateParams } from './Messenger';
 
 
 export type Conversation = {
@@ -39,9 +40,10 @@ type ConversationItemProps = {
     imageMessageLabel: string;
     onSelect: (conversation: Conversation) => void;
     m: (time: string | Date | null) => moment.Moment;
+    handleOpenConversationMenu: (e: React.MouseEvent<HTMLElement>, conversation: Conversation, fn: ({ conversation, x, y }: StateParams) => void) => void;
 };
 
-const ConversationItem = ({ conversation, active, yesterdayLabel, startConversationLabel, imageMessageLabel, onSelect, m }: ConversationItemProps) => {
+const ConversationItem = ({ conversation, active, yesterdayLabel, startConversationLabel, imageMessageLabel, onSelect, m, handleOpenConversationMenu }: ConversationItemProps) => {
     const messageTime = conversation.latest_message ? m(conversation.latest_message.created_at) : null;
     const isYesterday = messageTime?.isValid()
         && m(new Date()).startOf('day').diff(messageTime.clone().startOf('day'), 'days') === 1;
@@ -83,19 +85,6 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
         },
     ];
 
-
-
-    const handleOpenConversationMenu = (e: React.MouseEvent<HTMLElement>, conversation: Conversation) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const menuWidth = 180;
-        const menuHeight = 130;
-        const x = Math.min(e.clientX, window.innerWidth - menuWidth - 8);
-        const y = Math.min(e.clientY, window.innerHeight - menuHeight - 8);
-
-        setDropDownMenu({ conversation, x, y });
-    }
     return (
         <div className='relative'>
 
@@ -103,7 +92,7 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
                 type="button"
                 onClick={() => onSelect(conversation)}
                 aria-pressed={active}
-                onContextMenu={(e) => handleOpenConversationMenu(e, conversation)}
+                onContextMenu={(e) => handleOpenConversationMenu(e, conversation, setDropDownMenu)}
                 className={`flex w-full items-center cursor-pointer gap-3 rounded-2xl p-3 text-start transition-all duration-200 border border-gray-200 focus-visible:ring-2 focus-visible:ring-[var(--special-purple)] ${active
                     ? 'bg-[var(--special-purple)]/10 ring-1 ring-inset ring-[var(--special-purple)]/15'
                     : 'hover:bg-gray-50 dark:hover:bg-white/5'
@@ -136,14 +125,16 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
 
             </button>
             {dropdownMenu && (
-                <DropdownMenu
-                    items={conversationMenu}
-                    open={true}
-                    onOpenChange={(open) => {
-                        if (!open) setDropDownMenu(null);
-                    }}
-                    position={{ x: dropdownMenu.x, y: dropdownMenu.y }}
-                />
+                <div className='absolute'>
+                    <DropdownMenu
+                        items={conversationMenu}
+                        open={true}
+                        onOpenChange={(open) => {
+                            if (!open) setDropDownMenu(null);
+                        }}
+                        position={{ x: dropdownMenu.x, y: dropdownMenu.y }}
+                    />
+                </div>
             )}
         </div>
     );
