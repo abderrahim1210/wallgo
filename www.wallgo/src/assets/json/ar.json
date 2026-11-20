@@ -84,7 +84,7 @@
     "privacyPolicy": "سياسة الخصوصية",
     "cookiesPolicy": "سياسة ملفات تعريف الارتباط",
     "signIn": "تسجيل الدخول",
-    "account_private":"هذا الحساب خاص"
+    "account_private": "هذا الحساب خاص"
   },
   "feed": {
     "posts": "المنشورات",
@@ -191,7 +191,7 @@
     "minutesShort": "د",
     "secondsShort": "ث",
     "wallProgress": "تم فتح {{percent}}٪ من الجدار",
-    "insights":"{{views}} من المشاهدات"
+    "insights": "{{views}} من المشاهدات"
   },
   "errors": {
     "badRequestTitle": "طلب غير صالح",
@@ -319,10 +319,10 @@
     "share_group": "مشاركة المجموعة",
     "report_group": "الإبلاغ عن المجموعة",
     "group_question_label": "سؤال المجموعة",
-    "all":"الكل",
-    "videos":"الفيديوهات",
-    "about":"حول",
-    "visitors":"من الزوار"
+    "all": "الكل",
+    "videos": "الفيديوهات",
+    "about": "حول",
+    "visitors": "من الزوار"
   },
   "editProfile": {
     "title": "تعديل الملف الشخصي",
@@ -395,8 +395,8 @@
       "groups": "المجموعات",
       "pages": "الصفحات",
       "tags": "الوسوم",
-      "reels":"ريلز",
-      "videos":"الفيديوهات"
+      "reels": "ريلز",
+      "videos": "الفيديوهات"
     }
   },
   "reelCard": {
@@ -574,7 +574,10 @@
     "messagesLoadFailed": "تعذر تحميل الرسائل. حاول مرة أخرى.",
     "sendFailed": "تعذر إرسال رسالتك. حاول مرة أخرى.",
     "invalidImage": "يرجى اختيار صورة صالحة.",
-    "today":"اليوم"
+    "today": "اليوم",
+    "deleteConversation": "حذف المحادثة",
+    "reportConversation": "الابلاغ عن المحادثة",
+    "startTalk": "ابدأ التحدث"
   },
   "pageTitles": {
     "myPosts": "WallGo: منشوراتي",

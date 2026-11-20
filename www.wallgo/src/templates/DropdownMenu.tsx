@@ -9,9 +9,12 @@ export interface DropdownItem {
 }
 
 interface DropdownMenuProps {
-    trigger: React.ReactNode;
+    trigger?: React.ReactNode;
     items: DropdownItem[];
-    align?: 'left' | 'right'
+    align?: 'left' | 'right',
+    open?: boolean,
+    onOpenChange?: (open: boolean) => void,
+    position?: { x: number, y: number } | null
 }
 
 const MENU_W = 192;
@@ -21,12 +24,25 @@ const PADDING = 8;
 export const DropdownMenu: React.FC<DropdownMenuProps> = ({
     trigger,
     items,
-    align = 'right'
+    align = 'right',
+    onOpenChange,
+    open: controlledOpen,
+    position
 }) => {
     const [coords, setCoords] = useState({ top: 0, left: 0 });
-    const [isOpen, setIsOpen] = useState(false);
+    // const [isOpen, setIsOpen] = useState(false);
+    const [internalOpen, setInternalOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
+
+    const setOpenState = (next: boolean) => {
+        if (controlledOpen === undefined) {
+            setInternalOpen(next);
+        }
+        onOpenChange?.(next);
+    };
 
     const updatePosition = () => {
         if (!containerRef.current) return;
@@ -47,17 +63,17 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
     useLayoutEffect(() => {
         if (isOpen) updatePosition();
-    }, [isOpen]);
+    }, [isOpen, position?.x, position?.y]);
 
     const handleToggle = (e: React.MouseEvent) => {
         e.stopPropagation();
-        setIsOpen(prev => !prev);
+        setOpenState(!isOpen);
     };
 
     useEffect(() => {
         if (!isOpen) return;
 
-        const close = () => setIsOpen(false);
+        const close = () => setOpenState(false);
 
         const handleOutside = (e: MouseEvent | TouchEvent) => {
             const target = e.target as Node;
@@ -98,7 +114,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
                     className="fixed z-[9999] w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-2xl py-1.5"
                 >
                     {items.map((item, index) => (
-                        <button key={index} onClick={() => { item.onClick(); setIsOpen(false); }}
+                        <button key={index} onClick={() => { item.onClick(); setOpenState(false); }}
                             className={`w-full cursor-pointer flex items-center space-x-2.5 px-4 py-2.5 text-xs font-medium transition-colors ${item.danger ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
                             {item.icon && <span className="w-4 h-4">{item.icon}</span>}
                             <span>{item.label}</span>

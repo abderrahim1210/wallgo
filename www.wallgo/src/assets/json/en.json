@@ -575,7 +575,10 @@
     "messagesLoadFailed": "Could not load messages. Please try again.",
     "sendFailed": "Could not send your message. Please try again.",
     "invalidImage": "Please choose a valid image.",
-    "today":"Today"
+    "today":"Today",
+    "deleteConversation":"Delete Conversation",
+    "reportConversation":"Report Conversation",
+    "startTalk":"Start Talk"
   },
   "pageTitles": {
     "myPosts": "WallGo: My Posts",

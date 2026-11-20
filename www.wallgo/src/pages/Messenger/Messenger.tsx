@@ -525,7 +525,7 @@ export const Messenger = () => {
                             </div>
                         ) : (
                             <div className='mx-auto flex'>
-                                <EmptyContent text='Start talk' icon={<MessageCircle />} />
+                                <EmptyContent text={t('messenger.startTalk')} icon={<MessageCircle />} />
                             </div>
                         )
                     }
