@@ -2,7 +2,13 @@
 
 <p align="center">
   <img src="./www.wallgo/public/backgrounds/background.webp" alt="Pixora Logo" width="800" />
-  <video src="https://res.cloudinary.com/dhysaozog/video/upload/v1795192856/wallgo_promo_mchbeg.mp4" controls autoplay loop muted playsinline width="800"></video>
+  <p align="center">
+  <a href="https://res.cloudinary.com/dhysaozog/video/upload/v1795192856/wallgo_promo_mchbeg.mp4" target="_blank">
+    <img src="./www.wallgo/public/backgrounds/background.webp" alt="Watch WallGo Promo Video" width="800" />
+  </a>
+  <br />
+  <a href="https://res.cloudinary.com/dhysaozog/video/upload/v1795192856/wallgo_promo_mchbeg.mp4">▶️ Watch WallGo Demo Video</a>
+</p>
   <br />
   <b>A modern full-stack web application for sharing moments, preserving time capsules, and connecting in real-time.</b>
 </p>
@@ -17,11 +23,13 @@
 ---
 
 ## 📌 About WallGo
+
 **WallGo** is a feature-rich full-stack web platform designed to capture and share life's memories. Whether it's posting everyday updates, locking away memories in **Time Capsules** for the future, or engaging in real-time conversations, WallGo delivers a seamless, high-performance user experience.
 
 ---
 
 ## ✨ Core Features
+
 - **Smart Posts & Feed**: Share and explore interactive media feeds with instant updates.
 - **Time Capsules**: Seal messages, photos, and media to be unlocked at a specific future date.
 - **Real-time Chat**: Connect with other users instantly through a responsive messaging interface.
@@ -33,11 +41,13 @@
 ## 🛠️ Tech Stack
 
 ### **Backend (`/api.wallgo`)**
+
 - **Framework**: Laravel 11 (PHP 8.4)
 - **Database**: PostgreSQL
 - **Environment**: Laravel Herd / Composer
 
 ### **Frontend (`/www.wallgo`)**
+
 - **Library**: React with TypeScript
 - **Styling**: Tailwind CSS / SCSS
 - **State & Routing**: React Router, TanStack Query / Redux Toolkit
