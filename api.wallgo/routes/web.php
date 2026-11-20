@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\EditProfile;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\ForgotPassword;
@@ -190,19 +191,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/search', [SearchController::class, 'search']);
 
     Route::prefix('/reels')->group(function () {
-
         Route::post('/create', [ReelController::class, 'create']);
-
         Route::put('/{id}/edit', [ReelController::class, 'update']);
-
         Route::get('/', [ReelController::class, 'index']);
-
         Route::get('/{id}', [ReelController::class, 'show']);
-
         Route::get('/{id}/preview', [ReelController::class, 'preview']);
-
         Route::delete('/{id}', [ReelController::class, 'destroy']);
-
         Route::post('/{id}/view', [ReelController::class, 'incrementViews']);
     });
 
@@ -275,6 +269,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/messages')->group(function () {
         Route::post('/send', [Messages::class, 'send']);
         Route::get('/conversation', [Messages::class, 'messages']);
+    });
+
+    Route::prefix('/conversations')->group(function () {
+        Route::delete('/{id}/{type}', [ConversationController::class, 'destroy']);
     });
 });
 Route::post('/send_link_email', [ForgotPassword::class, 'send_link']);

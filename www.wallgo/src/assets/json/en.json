@@ -578,7 +578,10 @@
     "today":"Today",
     "deleteConversation":"Delete Conversation",
     "reportConversation":"Report Conversation",
-    "startTalk":"Start Talk"
+    "startTalk":"Start Talk",
+    "deletedConversation":"Delete conversation",
+    "confirmDeleteConversation":"Are you sure to delete this conversation ?",
+    "deleteForEveryone":"Delete For Everyone"
   },
   "pageTitles": {
     "myPosts": "WallGo: My Posts",

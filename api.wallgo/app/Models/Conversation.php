@@ -13,7 +13,7 @@ class Conversation extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withPivot('deleted_at')->withTimestamps();
     }
 
     public function latestMessage()

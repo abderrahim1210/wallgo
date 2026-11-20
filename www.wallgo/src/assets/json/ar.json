@@ -577,7 +577,10 @@
     "today": "اليوم",
     "deleteConversation": "حذف المحادثة",
     "reportConversation": "الابلاغ عن المحادثة",
-    "startTalk": "ابدأ التحدث"
+    "startTalk": "ابدأ التحدث",
+    "deletedConversation":"حذف المحادثة",
+    "confirmDeleteConversation":"هل أنت متأكد لحذف هذه المحادثة ؟",
+    "deleteForEveryone":"الحذف عند الجميع"
   },
   "pageTitles": {
     "myPosts": "WallGo: منشوراتي",

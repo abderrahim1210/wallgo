@@ -5,6 +5,10 @@ import { Flag, Trash2 } from 'lucide-react';
 import { useModal } from '../../hooks/ModalProvider';
 import { useEffect, useState } from 'react';
 import type { StateParams } from './Messenger';
+import Swal from 'sweetalert2';
+import axios from 'axios';
+import { api_url } from '../Auth/getUser';
+import toast from 'react-hot-toast';
 
 
 export type Conversation = {
@@ -51,6 +55,7 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
 
     const { show, openModal, closeModal } = useModal()!;
     const [dropdownMenu, setDropDownMenu] = useState<{ conversation: Conversation, x: number, y: number } | null>(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!dropdownMenu) return;
@@ -74,7 +79,7 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
             label: t('messenger.deleteConversation'),
             icon: <Trash2 className="w-4 h-4 text-red-500 dark:text-red-400" />,
             danger: true,
-            onClick: () => openModal(``),
+            onClick: () => deleteConversation(conversation?.id),
         },
 
         {
@@ -84,6 +89,36 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
             onClick: () => openModal(``),
         },
     ];
+
+    const deleteConversation = async (convId: number) => {
+        if (!convId) return;
+        setLoading(true);
+        Swal.fire({
+            title: t('messenger.deleteConversation'),
+            text: t('messenger.confirmDeleteConversation'),
+            icon: 'question',
+            showCancelButton: true,
+            input: 'checkbox',
+            inputPlaceholder: t('messenger.deleteForEveryone'),
+            inputValue: 0,
+            confirmButtonText: t('feed.yesDelete'),
+            confirmButtonColor: '#7371FC',
+            cancelButtonText: t('feed.cancel')
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const type = result.value ? 'everyone' : 'to_me';
+                try {
+                    const res = await axios.delete(`${api_url}/conversations/${convId}/${type}`, { withCredentials: true, withXSRFToken: true });
+                    if (res.data.success) {
+                        toast.success(res.data.message || 'Conversation deleted successfully');
+                        setLoading(false);
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        })
+    }
 
     return (
         <div className='relative'>
