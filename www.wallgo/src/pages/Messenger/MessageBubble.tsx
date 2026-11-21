@@ -1,4 +1,4 @@
-import { CheckCheck, Flag, Trash2 } from 'lucide-react';
+import { Check, CheckCheck, Flag, Pencil, Trash2, X } from 'lucide-react';
 import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
@@ -10,6 +10,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useModal } from '../../hooks/ModalProvider';
 import ModalTemplate from '../../templates/ModalTemplate';
 import { Report } from '../../components/Report';
+import { Tooltip } from '../../templates/Tooltip';
+import { Spinner } from 'react-bootstrap';
 
 export type ChatMessage = {
     id: number;
@@ -18,6 +20,8 @@ export type ChatMessage = {
     time: string;
     image?: string;
     conversation_id: number;
+    edited: boolean;
+    can_edit:boolean;
 };
 
 type MessageBubbleProps = {
@@ -28,6 +32,8 @@ type MessageBubbleProps = {
 export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) => {
     const [dropdownMenu, setDropDownMenu] = useState<{ message: ChatMessage, x: number, y: number } | null>(null);
     const { show, openModal, closeModal } = useModal()!;
+    const [loading, setLoading] = useState(false);
+    const [newContent, setNewContent] = useState('');
 
     useEffect(() => {
         if (!dropdownMenu) return;
@@ -48,6 +54,13 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
 
 
     const isOwner: boolean = message?.sender === 'me';
+    const [messageToEdit, setMessageToEdit] = useState(false);
+
+    useEffect(() => {
+        if (messageToEdit) {
+            setNewContent(message?.content);
+        }
+    }, [messageToEdit]);
 
     const messageMenu: DropdownItem[] = [
         ...((!isOwner) ? [
@@ -55,7 +68,15 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
                 label: t('messenger.reportMessage'),
                 icon: <Flag className="w-4 h-4 text-red-500 dark:text-red-400" />,
                 danger: true,
-                onClick: () => {openModal(`report-message-${message?.id}`)},
+                onClick: () => { openModal(`report-message-${message?.id}`) },
+            },
+        ] : []),
+        ...((isOwner && message?.can_edit && !message?.image) ? [
+            {
+                label: t('messenger.editMessage'),
+                icon: <Pencil className="w-4 h-4 text-[var(--special-purple)]" />,
+                danger: false,
+                onClick: () => { setMessageToEdit(prev => !prev) },
             },
         ] : []),
         ...((isOwner) ? [
@@ -109,6 +130,28 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
             }
         })
     }
+
+    const handleEdit = async () => {
+        if (!message.id && newContent === '') return null;
+        setLoading(true);
+        try {
+            const res = await axios.put(`${api_url}/messages/edit`, { message_id: message?.id, content: newContent }, { withCredentials: true, withXSRFToken: true });
+            if (res.data.success) {
+                setLoading(false);
+                setMessageToEdit(false);
+                toast.success(res.data.message);
+                queryClient.invalidateQueries({ queryKey: [`messages-${message?.conversation_id}`] });
+            } else {
+                setLoading(false);
+                toast.error(res.data.messages || 'Failed to edit message');
+            }
+        } catch (err) {
+            setLoading(false);
+            console.error(err);
+        }
+    }
+
+
     return (
         <div className='relative'>
             {
@@ -126,13 +169,30 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
                         : 'rounded-es-md border border-gray-200/80 bg-white/85 text-gray-800 dark:border-white/10 dark:bg-gray-800/80 dark:text-gray-100'
                         }`}
                 >
-                    {message.image && (
-                        <div className="p-1.5">
-                            <img src={message.image} alt={attachmentAlt} className="max-h-60 w-full max-w-full rounded-xl object-cover" />
-                        </div>
-                    )}
-                    {message.content && <p className="break-words whitespace-pre-wrap px-4 py-2.5 [overflow-wrap:anywhere]">{message.content}</p>}
+                    {messageToEdit ?
+                        <div className='flex'>
+                            <input value={newContent} onChange={(e) => setNewContent(e.target.value)} type='text' className='m-1 bg-indigo-300 dark:bg-gray-900 rounded-xl px-3 py-2 text-xs text-gray-700 dark:text-gray-200 focus:outline-none focus:border-[var(--special-purple)] transition' />
+                            <Tooltip label={t('common.valideChanges')}>
+                                <button className='cursor-pointer text-green-400 m-1' onClick={handleEdit}>
+                                    <Check />
+                                </button>
+                            </Tooltip>
+                            <Tooltip label={t('common.discardChanges')}>
+                                <button className='cursor-pointer text-red-400 m-1' onClick={() => setMessageToEdit(false)}>
+                                    <X />
+                                </button>
+                            </Tooltip>
+                        </div> :
+                        (!message?.image) ? <p className="break-words whitespace-pre-wrap px-4 py-2.5 [overflow-wrap:anywhere]">{message.content}</p> :
+                            <div className="p-1.5">
+                                <img src={message.image} alt={attachmentAlt} className="max-h-60 w-full max-w-full rounded-xl object-cover" />
+                            </div>}
                     <div className={`flex items-center justify-end gap-1.5 px-3 pb-2 text-[10px] ${message.sender === 'me' ? 'text-white/75' : 'text-gray-400 dark:text-gray-500'}`}>
+                        {
+                            message?.edited && (
+                                <span>{t('messenger.edited')}</span>
+                            )
+                        }
                         <span>{message.time}</span>
                         {message.sender === 'me' && <CheckCheck className="h-3 w-3" />}
                     </div>

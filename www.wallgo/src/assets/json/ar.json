@@ -585,7 +585,9 @@
     "deleteForEveryone":"الحذف عند الجميع",
     "deleteMessage":"حذف الرسالة",
     "confirmDeleteMessage":"هل أنت متأكد لحذف هذه الرسالة ؟",
-    "reportMessage":"الابلاغ عن الرسالة"
+    "reportMessage":"الابلاغ عن الرسالة",
+    "editMessage":"تعديل الرسالة",
+    "edited":"تم تعديله"
   },
   "pageTitles": {
     "myPosts": "WallGo: منشوراتي",

@@ -122,10 +122,55 @@ class Messages extends Controller
             'content' => $message->content,
             'image' => $message->media_url,
             'media_url' => $message->media_url,
+            'conversation_id' => $message->conversation_id,
             'is_read' => (bool) $message->is_read,
             'time' => $message->created_at?->format('H:i') ?? '',
+            'can_edit' => $message->created_at ? abs($message->created_at->diffInMinutes(now())) <= 45 : false,
             'created_at' => $message->created_at,
+            'edited' => (bool) $message->edited
         ];
+    }
+
+    public function update(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+
+        $user_id = Auth::id();
+        $request->validate([
+            'message_id' => ['required', 'numeric', 'exists:messages,id'],
+            'content' => ['required', 'string']
+        ]);
+
+        $message = Message::where('sender_id', $user_id)->findOrFail((int) $request->message_id);
+        try {
+            $content = trim($request->content);
+            if ($message->content !== $content) {
+                $message->update([
+                    'content' => $content,
+                    'edited' => true,
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Message edited successfully'
+                ], 200);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Nothing to update'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function destroy(string $id)

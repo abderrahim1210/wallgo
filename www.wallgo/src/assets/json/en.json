@@ -586,7 +586,9 @@
     "deleteForEveryone":"Delete For Everyone",
     "deleteMessage":"Delete Message",
     "confirmDeleteMessage":"Are you sure to delete this message ?",
-    "reportMessage":"Report Message"
+    "reportMessage":"Report Message",
+    "editMessage":"Edit Message",
+    "edited":"Edited"
   },
   "pageTitles": {
     "myPosts": "WallGo: My Posts",

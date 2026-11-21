@@ -14,7 +14,8 @@ class Message extends Model
         'content',
         'media_url',
         'is_read',
-        'public_id'
+        'public_id',
+        'edited'
     ];
 
     protected $casts = [

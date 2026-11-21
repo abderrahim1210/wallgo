@@ -269,6 +269,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/messages')->group(function () {
         Route::post('/send', [Messages::class, 'send']);
         Route::get('/conversation', [Messages::class, 'messages']);
+        Route::put('/edit', [Messages::class, 'update']);
         Route::delete('/{id}', [Messages::class, 'destroy']);
     });
 
