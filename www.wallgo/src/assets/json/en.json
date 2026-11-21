@@ -518,7 +518,8 @@
       "group": "Group",
       "comment": "Comment",
       "reel": "Reel",
-      "conversation":"Conversation"
+      "conversation":"Conversation",
+      "message":"Message"
     }
   },
   "postDetails": {

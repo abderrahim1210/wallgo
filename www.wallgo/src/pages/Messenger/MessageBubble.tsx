@@ -7,6 +7,9 @@ import axios from 'axios';
 import { api_url } from '../Auth/getUser';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
+import { useModal } from '../../hooks/ModalProvider';
+import ModalTemplate from '../../templates/ModalTemplate';
+import { Report } from '../../components/Report';
 
 export type ChatMessage = {
     id: number;
@@ -24,6 +27,7 @@ type MessageBubbleProps = {
 
 export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) => {
     const [dropdownMenu, setDropDownMenu] = useState<{ message: ChatMessage, x: number, y: number } | null>(null);
+    const { show, openModal, closeModal } = useModal()!;
 
     useEffect(() => {
         if (!dropdownMenu) return;
@@ -46,12 +50,14 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
     const isOwner: boolean = message?.sender === 'me';
 
     const messageMenu: DropdownItem[] = [
-        {
-            label: t('messenger.reportMessage'),
-            icon: <Flag className="w-4 h-4 text-red-500 dark:text-red-400" />,
-            danger: true,
-            onClick: () => { },
-        },
+        ...((!isOwner) ? [
+            {
+                label: t('messenger.reportMessage'),
+                icon: <Flag className="w-4 h-4 text-red-500 dark:text-red-400" />,
+                danger: true,
+                onClick: () => {openModal(`report-message-${message?.id}`)},
+            },
+        ] : []),
         ...((isOwner) ? [
             {
                 label: t('messenger.deleteMessage'),
@@ -105,6 +111,13 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
     }
     return (
         <div className='relative'>
+            {
+                show === `report-message-${message?.id}` && (
+                    <ModalTemplate show={show} closeModal={closeModal}>
+                        <Report id={message?.id} type='message' />
+                    </ModalTemplate>
+                )
+            }
             <div className={`flex min-w-0 ${message.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
                 <div
                     onContextMenu={(e) => handleOpenMessageMenu(e, message)}

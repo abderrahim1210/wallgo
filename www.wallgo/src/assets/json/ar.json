@@ -517,7 +517,8 @@
       "group": "المجموعة",
       "comment": "التعليق",
       "reel": "الريل",
-      "conversation":"المحادثة"
+      "conversation":"المحادثة",
+      "message":"الرسالة"
     }
   },
   "postDetails": {

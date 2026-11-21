@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Comment;
 use App\Models\Conversation;
 use App\Models\Group;
+use App\Models\Message;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Reel;
@@ -54,6 +55,10 @@ class ReportController extends Controller
                 case 'conversation':
                     $reportable = Conversation::select('id')->find($request->reportable_id);
                     if (!$reportable) return response()->json(['success' => false, 'message' => "Conversation by id $request->reportable_id not found"]);
+                    break;
+                case 'message':
+                    $reportable = Message::select('id')->find($request->reportable_id);
+                    if (!$reportable) return response()->json(['success' => false, 'message' => "Message by id $request->reportable_id not found"]);
                     break;
             }
 
