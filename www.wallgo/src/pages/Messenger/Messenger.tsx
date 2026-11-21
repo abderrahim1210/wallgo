@@ -340,19 +340,33 @@ export const Messenger = () => {
         },
     ];
 
-    const [lightTheme, setLightTheme] = useState<{id:number;src:string;} | null>(null);
-    const [darkTheme, setDarkTheme] = useState<{id:number;src:string} | null>(null);
+    const [lightTheme, setLightTheme] = useState<{ id: number; src: string; } | null>(null);
+    const [darkTheme, setDarkTheme] = useState<{ id: number; src: string } | null>(null);
     const { theme } = useDarkMode();
     useEffect(() => {
         if (!activeChat?.theme) {
             if (theme === 'light') {
-                setLightTheme({id:listeLightThemes[0].id, src:listeLightThemes[0].src});
+                setLightTheme({ id: listeLightThemes[0].id, src: listeLightThemes[0].src });
             } else {
-                setDarkTheme({id:listeDarkThemes[0].id, src:listeDarkThemes[0].src});
+                setDarkTheme({ id: listeDarkThemes[0].id, src: listeDarkThemes[0].src });
             }
         }
     }, [theme]);
 
+    const activeWallpaperSrc =
+        theme === 'dark'
+            ? (darkTheme?.src ?? listeDarkThemes[0]?.src)
+            : (lightTheme?.src ?? listeLightThemes[0]?.src);
+
+    const handleChangeTheme = (id: number, t: 'light' | 'dark') => {
+        if (t === 'light') {
+            const item = listeLightThemes.find(l => l.id === id);
+            setLightTheme({ id: Number(item?.id), src: String(item?.src) });
+        } else {
+            const item = listeDarkThemes.find(l => l.id === id);
+            setDarkTheme({ id: Number(item?.id), src: String(item?.src) });
+        }
+    }
     return (
         <>
             <Navbar />
@@ -505,7 +519,7 @@ export const Messenger = () => {
                                                         <div className='grid grid-cols-4 gap-2'>
                                                             {
                                                                 listeLightThemes.map((l) => (
-                                                                    <div key={l.id} className={`borde rounded-xl overflow-hidden max-h-10 cursor-pointer ${(theme === 'light' && lightTheme?.id === l.id) ? 'border-[var(--special-purple)] border-2' : 'border-gray-300'}`}>
+                                                                    <div key={l.id} className={`borde rounded-xl overflow-hidden max-h-10 cursor-pointer ${(theme === 'light' && lightTheme?.id === l.id) ? 'border-[var(--special-purple)] border-2' : 'border-gray-300'}`} onClick={(() => handleChangeTheme(l.id, 'light'))}>
                                                                         <img src={l.src} width={50} />
                                                                     </div>
                                                                 ))
@@ -517,7 +531,7 @@ export const Messenger = () => {
                                                         <div className='grid grid-cols-4 gap-2'>
                                                             {
                                                                 listeDarkThemes.map((l) => (
-                                                                    <div key={l.id} className={`borde rounded-xl overflow-hidden max-h-10 cursor-pointer ${(theme === 'dark' && darkTheme?.id === l.id) ? 'border-[var(--special-purple)] border-2' : 'border-gray-300'}`}>
+                                                                    <div key={l.id} className={`borde rounded-xl overflow-hidden max-h-10 cursor-pointer ${(theme === 'dark' && darkTheme?.id === l.id) ? 'border-[var(--special-purple)] border-2' : 'border-gray-300'}`} onClick={() => handleChangeTheme(l.id, 'dark')}>
                                                                         <img src={l.src} width={50} />
                                                                     </div>
                                                                 ))
@@ -530,7 +544,11 @@ export const Messenger = () => {
                                     </div>
                                 </header>
 
-                                <div ref={messagesContainerRef} className={`min-h-0 flex-1 flex flex-col overflow-y-auto overscroll-contain p-4 bg-[url('${lightTheme?.src}')] dark:bg-[url('${darkTheme?.src}')] sm:p-6`}>
+                                <div ref={messagesContainerRef} style={
+                                    activeWallpaperSrc
+                                        ? { backgroundImage: `url("${activeWallpaperSrc}")` }
+                                        : undefined
+                                } className={`min-h-0 flex-1 flex flex-col overflow-y-auto overscroll-contain p-4 sm:p-6`}>
                                     <div className="mt-auto flex flex-col gap-4">
                                         {
                                             messagesLoading ? (
