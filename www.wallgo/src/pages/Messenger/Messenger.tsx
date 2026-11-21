@@ -29,8 +29,8 @@ export const Messenger = () => {
     const queryClient = useQueryClient();
     const { t, i18n } = useTranslation();
     const currentLang = i18n.language?.toLowerCase().startsWith('ar') ? 'ar' : 'en';
-
     const m = (date?: string | Date | null) => moment.utc(date).local().locale(currentLang);
+
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showChatInfo, setShowChatInfo] = useState(false);
     const [notification, setNotification] = useState<string | null>(null);

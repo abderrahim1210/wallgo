@@ -127,6 +127,7 @@ class Messages extends Controller
             'time' => $message->created_at?->format('H:i') ?? '',
             'can_edit' => $message->created_at ? abs($message->created_at->diffInMinutes(now())) <= 45 : false,
             'created_at' => $message->created_at,
+            'updated_at' => $message->updated_at,
             'edited' => (bool) $message->edited
         ];
     }

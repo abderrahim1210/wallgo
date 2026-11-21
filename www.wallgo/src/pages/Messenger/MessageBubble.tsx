@@ -1,4 +1,4 @@
-import { Check, CheckCheck, Flag, Pencil, Trash2, X } from 'lucide-react';
+import { Calendar, Check, CheckCheck, Flag, Info, Pencil, Trash2, X } from 'lucide-react';
 import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
@@ -12,6 +12,8 @@ import ModalTemplate from '../../templates/ModalTemplate';
 import { Report } from '../../components/Report';
 import { Tooltip } from '../../templates/Tooltip';
 import { Spinner } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
+import useMoment from '../../hooks/useMoment';
 
 export type ChatMessage = {
     id: number;
@@ -21,7 +23,9 @@ export type ChatMessage = {
     image?: string;
     conversation_id: number;
     edited: boolean;
-    can_edit:boolean;
+    can_edit: boolean;
+    created_at: string;
+    updated_at: string;
 };
 
 type MessageBubbleProps = {
@@ -62,7 +66,22 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
         }
     }, [messageToEdit]);
 
+    const m = useMoment()!;
+
     const messageMenu: DropdownItem[] = [
+        {
+            label: `${m(message?.created_at).calendar()}`,
+            icon: <Calendar className="w-4 h-4 text-[var(--special-purple)]" />,
+            danger: false,
+            onClick: () => { },
+        },
+        ...((message?.edited) ? [
+            {
+                label: `Edited at : ${m(message?.updated_at).calendar()}`,
+                danger: false,
+                onClick: () => { },
+            },
+        ] : []),
         ...((!isOwner) ? [
             {
                 label: t('messenger.reportMessage'),
