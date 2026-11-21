@@ -16,6 +16,10 @@ import Spinner from '../../templates/Spinner';
 import { ErrorPage } from '../../components/ErrorPage';
 import moment from 'moment';
 import { cloudName } from '../../components/CreateReel';
+import useMoment from '../../hooks/useMoment';
+import { t } from 'i18next';
+import i18n from '../../i18n';
+import useDarkMode from '../../hooks/useDarkMode';
 
 export type StateParams = {
     conversation: Conversation,
@@ -27,9 +31,7 @@ export const Messenger = () => {
     const location = useLocation();
     const id = location.state?.id;
     const queryClient = useQueryClient();
-    const { t, i18n } = useTranslation();
-    const currentLang = i18n.language?.toLowerCase().startsWith('ar') ? 'ar' : 'en';
-    const m = (date?: string | Date | null) => moment.utc(date).local().locale(currentLang);
+    const m = useMoment();
 
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showChatInfo, setShowChatInfo] = useState(false);
@@ -79,7 +81,8 @@ export const Messenger = () => {
         time: conv.time ?? '',
         online: conv.online ?? false,
         user: conv.user,
-        unread: conv.unread ?? 0
+        unread: conv.unread ?? 0,
+        theme: conv.theme
     } : null;
     const currentSelection = chatSelection?.locationKey === location.key ? chatSelection : null;
     const activeChat = currentSelection?.conversation ?? linkedConversation;
@@ -258,6 +261,7 @@ export const Messenger = () => {
         });
     }, [messages.length, activeChatId]);
 
+    const currentLang = i18n.language?.toLowerCase().startsWith('ar') ? 'ar' : 'en';
 
     const getDateLabel = (rawDate?: string | Date | null) => {
         if (!rawDate) return null;
@@ -288,6 +292,66 @@ export const Messenger = () => {
 
         fn({ conversation, x, y });
     }
+
+    const baseUrl = '/backgrounds/messenger_wallpapers';
+    const listeLightThemes = [
+        {
+            id: 1,
+            src: `${baseUrl}/chat-bg-classic-full.webp`
+        },
+        {
+            id: 2,
+            src: `${baseUrl}/chat-bg-classic-tile.webp`
+        },
+        {
+            id: 3,
+            src: `${baseUrl}/chat-bg-lavender-full.webp`
+        },
+        {
+            id: 4,
+            src: `${baseUrl}/chat-bg-mint-full.webp`
+        },
+        {
+            id: 5,
+            src: `${baseUrl}/chat-bg-rose-full.webp`
+        },
+        {
+            id: 6,
+            src: `${baseUrl}/chat-bg-sand-full.webp`
+        },
+        {
+            id: 7,
+            src: `${baseUrl}/chat-bg-sky-full.webp`
+        },
+    ]
+
+    const listeDarkThemes = [
+        {
+            id: 1,
+            src: `${baseUrl}/chat-bg-dark-full.webp`
+        },
+        {
+            id: 2,
+            src: `${baseUrl}/chat-bg-dark-purple-full.webp`
+        },
+        {
+            id: 3,
+            src: `${baseUrl}/chat-bg-dark-teal-full.webp`
+        },
+    ];
+
+    const [lightTheme, setLightTheme] = useState<{id:number;src:string;} | null>(null);
+    const [darkTheme, setDarkTheme] = useState<{id:number;src:string} | null>(null);
+    const { theme } = useDarkMode();
+    useEffect(() => {
+        if (!activeChat?.theme) {
+            if (theme === 'light') {
+                setLightTheme({id:listeLightThemes[0].id, src:listeLightThemes[0].src});
+            } else {
+                setDarkTheme({id:listeDarkThemes[0].id, src:listeDarkThemes[0].src});
+            }
+        }
+    }, [theme]);
 
     return (
         <>
@@ -432,13 +496,41 @@ export const Messenger = () => {
                                                             {activeChat?.user?.online ? t('messenger.activeNow') : t('messenger.offline')}
                                                         </p>
                                                     </div>
+
+                                                </div>
+                                                <div className='mt-2'>
+                                                    <span className='text-[15px]'>Choose you theme</span>
+                                                    {
+                                                        theme === 'light' &&
+                                                        <div className='grid grid-cols-4 gap-2'>
+                                                            {
+                                                                listeLightThemes.map((l) => (
+                                                                    <div key={l.id} className={`borde rounded-xl overflow-hidden max-h-10 cursor-pointer ${(theme === 'light' && lightTheme?.id === l.id) ? 'border-[var(--special-purple)] border-2' : 'border-gray-300'}`}>
+                                                                        <img src={l.src} width={50} />
+                                                                    </div>
+                                                                ))
+                                                            }
+                                                        </div>
+                                                    }
+                                                    {
+                                                        theme === 'dark' &&
+                                                        <div className='grid grid-cols-4 gap-2'>
+                                                            {
+                                                                listeDarkThemes.map((l) => (
+                                                                    <div key={l.id} className={`borde rounded-xl overflow-hidden max-h-10 cursor-pointer ${(theme === 'dark' && darkTheme?.id === l.id) ? 'border-[var(--special-purple)] border-2' : 'border-gray-300'}`}>
+                                                                        <img src={l.src} width={50} />
+                                                                    </div>
+                                                                ))
+                                                            }
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         )}
                                     </div>
                                 </header>
 
-                                <div ref={messagesContainerRef} className="min-h-0 flex-1 flex flex-col overflow-y-auto overscroll-contain bg-gradient-to-b from-white via-[#fafaff] to-[#f6f5fc] p-4 dark:from-gray-900 dark:via-gray-900 dark:to-gray-950 sm:p-6">
+                                <div ref={messagesContainerRef} className={`min-h-0 flex-1 flex flex-col overflow-y-auto overscroll-contain p-4 bg-[url('${lightTheme?.src}')] dark:bg-[url('${darkTheme?.src}')] sm:p-6`}>
                                     <div className="mt-auto flex flex-col gap-4">
                                         {
                                             messagesLoading ? (

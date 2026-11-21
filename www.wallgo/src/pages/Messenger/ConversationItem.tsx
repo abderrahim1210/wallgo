@@ -28,6 +28,7 @@ export type Conversation = {
     } | null;
     time: string;
     online: boolean;
+    theme:string;
     user: {
         id: number;
         name: string;
