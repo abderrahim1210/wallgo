@@ -294,101 +294,64 @@ export const Messenger = () => {
         fn({ conversation, x, y });
     }
 
+    type WallpaperItem = {
+        id: number;
+        file: string;
+        src: string;
+        mode: 'light' | 'dark'
+    };
+
     const baseUrl = '/backgrounds/messenger_wallpapers';
-    const listeLightThemes = [
-        {
-            id: 1,
-            src: `${baseUrl}/chat-bg-classic-full.webp`
-        },
-        {
-            id: 2,
-            src: `${baseUrl}/chat-bg-classic-tile.webp`
-        },
-        {
-            id: 3,
-            src: `${baseUrl}/chat-bg-lavender-full.webp`
-        },
-        {
-            id: 4,
-            src: `${baseUrl}/chat-bg-mint-full.webp`
-        },
-        {
-            id: 5,
-            src: `${baseUrl}/chat-bg-rose-full.webp`
-        },
-        {
-            id: 6,
-            src: `${baseUrl}/chat-bg-sand-full.webp`
-        },
-        {
-            id: 7,
-            src: `${baseUrl}/chat-bg-sky-full.webp`
-        },
-    ]
 
-    const listeDarkThemes = [
-        {
-            id: 1,
-            src: `${baseUrl}/chat-bg-dark-full.webp`
-        },
-        {
-            id: 2,
-            src: `${baseUrl}/chat-bg-dark-purple-full.webp`
-        },
-        {
-            id: 3,
-            src: `${baseUrl}/chat-bg-dark-teal-full.webp`
-        },
+    const createWallpaper = (id: number, file: string, mode: 'light' | 'dark'): WallpaperItem => ({
+        id,
+        file,
+        src: `${baseUrl}/${file}`,
+        mode,
+    });
+
+    const wallpapers: WallpaperItem[] = [
+        createWallpaper(1, 'chat-bg-classic-full.webp', 'light'),
+        createWallpaper(2, 'chat-bg-classic-tile.webp', 'light'),
+        createWallpaper(3, 'chat-bg-lavender-full.webp', 'light'),
+        createWallpaper(4, 'chat-bg-mint-full.webp', 'light'),
+        createWallpaper(5, 'chat-bg-rose-full.webp', 'light'),
+        createWallpaper(6, 'chat-bg-sand-full.webp', 'light'),
+        createWallpaper(7, 'chat-bg-sky-full.webp', 'light'),
+        createWallpaper(1, 'chat-bg-dark-full.webp', 'dark'),
+        createWallpaper(2, 'chat-bg-dark-purple-full.webp', 'dark'),
+        createWallpaper(3, 'chat-bg-dark-teal-full.webp', 'dark'),
     ];
-
-    const [lightTheme, setLightTheme] = useState<{ id: number; src: string; } | null>(null);
-    const [darkTheme, setDarkTheme] = useState<{ id: number; src: string } | null>(null);
     const { theme } = useDarkMode();
-    useEffect(() => {
-        if (!activeChat?.theme) {
-            if (theme === 'light') {
-                setLightTheme({ id: listeLightThemes[0].id, src: listeLightThemes[0].src });
-            } else {
-                setDarkTheme({ id: listeDarkThemes[0].id, src: listeDarkThemes[0].src });
-            }
-        }
-    }, [theme]);
+    const currentMode: 'light' | 'dark' = theme === 'dark' ? 'dark' : 'light';
+    const visibleWallpapers = wallpapers.filter((item) => item.mode === currentMode);
+    const activeWallpaperFile = activeChat?.theme || visibleWallpapers[0]?.file || null;
+    const activeWallpaperSrc = activeWallpaperFile ? `${baseUrl}/${activeWallpaperFile}` : null;
 
-    const activeWallpaperSrc =
-        theme === 'dark'
-            ? (darkTheme?.src ?? listeDarkThemes[0]?.src)
-            : (lightTheme?.src ?? listeLightThemes[0]?.src);
+    const handleChangeTheme = async (file: string) => {
+        if (!activeChat?.id || !file) return;
+        try {
+            await axios.put(`${api_url}/messenger/change_theme`, { conversation_id: activeChat?.id, theme: file }, { withCredentials: true, withXSRFToken: true }).then(res => {
+                if (res.data.success) {
 
-    const [themFile, setThemeFile] = useState<string | null>(null);
-    const handleChangeTheme = (id: number, t: 'light' | 'dark') => {
-        if (t === 'light') {
-            const item = listeLightThemes.find(l => l.id === id);
-            setLightTheme({ id: Number(item?.id), src: String(item?.src) });
-            setThemeFile(String(item?.src?.split('/')[3]));
-        } else {
-            const item = listeDarkThemes.find(l => l.id === id);
-            setDarkTheme({ id: Number(item?.id), src: String(item?.src) });
-            setThemeFile(String(item?.src?.split('/')[3]));
-        }
+                    toast.success(res.data.message || 'Theme updated successfully');
 
-        if (themFile) {
-            try {
-                const change = async () => {
-                    await axios.put(`${api_url}/messenger/change_theme`, { conversation_id: activeChat?.id, theme: themFile }, { withCredentials: true, withXSRFToken: true }).then(res => {
-                        if (res.data.success) {
-                            toast.success(res.data.message || 'Theme updated successfully');
-                        } else {
-                            toast.error(res.data.message || 'Failed to update theme');
-                        }
-                    });
+                    if (currentSelection) {
+                        setChatSelection({
+                            ...currentSelection,
+                            conversation: {
+                                ...currentSelection.conversation,
+                                theme: file,
+                            },
+                        });
+                    }
+                } else {
+                    toast.error(res.data.message || 'Failed to update theme');
                 }
-
-                change();
-            } catch (err) {
-                console.error(err);
-            }
+            });
+        } catch (err) {
+            console.error(err);
         }
-
     }
     return (
         <>
@@ -537,30 +500,28 @@ export const Messenger = () => {
                                                 </div>
                                                 <div className='mt-2'>
                                                     <span className='text-[15px]'>Choose you theme</span>
-                                                    {
-                                                        theme === 'light' &&
-                                                        <div className='grid grid-cols-4 gap-2'>
-                                                            {
-                                                                listeLightThemes.map((l) => (
-                                                                    <div key={l.id} className={`borde rounded-xl overflow-hidden max-h-10 cursor-pointer ${(theme === 'light' && lightTheme?.id === l.id) ? 'border-[var(--special-purple)] border-2' : 'border-gray-300'}`} onClick={(() => handleChangeTheme(l.id, 'light'))}>
-                                                                        <img src={l.src} width={50} />
-                                                                    </div>
-                                                                ))
-                                                            }
-                                                        </div>
-                                                    }
-                                                    {
-                                                        theme === 'dark' &&
-                                                        <div className='grid grid-cols-4 gap-2'>
-                                                            {
-                                                                listeDarkThemes.map((l) => (
-                                                                    <div key={l.id} className={`borde rounded-xl overflow-hidden max-h-10 cursor-pointer ${(theme === 'dark' && darkTheme?.id === l.id) ? 'border-[var(--special-purple)] border-2' : 'border-gray-300'}`} onClick={() => handleChangeTheme(l.id, 'dark')}>
-                                                                        <img src={l.src} width={50} />
-                                                                    </div>
-                                                                ))
-                                                            }
-                                                        </div>
-                                                    }
+                                                    <div className='grid grid-cols-4 gap-2'>
+                                                        {
+                                                            visibleWallpapers.map((item) => {
+                                                                const isSelected = activeWallpaperFile === item.file;
+                                                                return (
+                                                                    (
+                                                                        <button
+                                                                            key={`${item.mode}-${item.id}`}
+                                                                            type="button"
+                                                                            onClick={() => handleChangeTheme(item.file)}
+                                                                            className={`overflow-hidden rounded-xl border max-h-10 cursor-pointer ${isSelected
+                                                                                ? 'border-[var(--special-purple)] border-2'
+                                                                                : 'border-gray-300 dark:border-white/10'
+                                                                                }`}
+                                                                        >
+                                                                            <img src={item.src} alt={item.file} className="h-full w-full object-cover" />
+                                                                        </button>
+                                                                    )
+                                                                )
+                                                            })
+                                                        }
+                                                    </div>
                                                 </div>
                                             </div>
                                         )}

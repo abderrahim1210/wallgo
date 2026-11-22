@@ -133,6 +133,7 @@ class Messenger extends Controller
             'unread' => (int) ($conversation->unread ?? 0),
             'created_at' => $conversation->created_at,
             'updated_at' => $conversation->updated_at,
+            'theme' => DB::table('conversation_user')->where('user_id',Auth::id())->where('conversation_id',$conversation->id)->value('theme')
         ];
     }
 
