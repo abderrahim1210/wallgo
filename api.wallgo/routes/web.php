@@ -264,6 +264,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [Messenger::class, 'index']);
         Route::get('/{id}', [Messenger::class, 'show']);
         Route::put('/read_conversation', [Messenger::class, 'read_conversation']);
+        Route::put('/change_theme', [Messenger::class, 'change_theme']);
     });
 
     Route::prefix('/messages')->group(function () {

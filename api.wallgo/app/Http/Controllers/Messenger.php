@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class Messenger extends Controller
 {
@@ -145,5 +146,65 @@ class Messenger extends Controller
         return response()->json([
             'success' => true,
         ], 200);
+    }
+
+    public function change_theme(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User unauthorized'
+            ], 401);
+        }
+
+        $user_id = Auth::id();
+
+        $allowedWallpapers = [
+            'chat-bg-classic-full.webp',
+            'chat-bg-classic-tile.webp',
+            'chat-bg-lavender-full.webp',
+            'chat-bg-mint-full.webp',
+            'chat-bg-rose-full.webp',
+            'chat-bg-sand-full.webp',
+            'chat-bg-sky-full.webp',
+            'chat-bg-dark-full.webp',
+            'chat-bg-dark-purple-full.webp',
+            'chat-bg-dark-teal-full.webp',
+        ];
+        $request->validate([
+            'conversation_id' => ['required', 'numeric', 'exists:conversations,id'],
+            'theme' => ['nullable', 'string', 'max:255', 'not_regex:/[\/\\\\]|\.\./', Rule::in($allowedWallpapers)]
+        ]);
+
+        $conversation = Conversation::findOrFail((int) $request->conversation_id);
+        $isParticipant = $conversation->users()->where('users.id', $user_id)->first();
+        if (!$isParticipant) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You dont have permission for change the theme of this conversation'
+            ], 403);
+        }
+
+        if ($conversation->theme !== $request->theme) {
+            try {
+                DB::table('conversation_user')->where('user_id',$user_id)->where('conversation_id',$conversation->id)->update([
+                    'theme' => $request->theme
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Theme updated successfully'
+                ], 200);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed : ' . $e->getMessage()
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'success' => false
+            ]);
+        }
     }
 }

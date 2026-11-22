@@ -20,6 +20,7 @@ import useMoment from '../../hooks/useMoment';
 import { t } from 'i18next';
 import i18n from '../../i18n';
 import useDarkMode from '../../hooks/useDarkMode';
+import toast from 'react-hot-toast';
 
 export type StateParams = {
     conversation: Conversation,
@@ -358,14 +359,36 @@ export const Messenger = () => {
             ? (darkTheme?.src ?? listeDarkThemes[0]?.src)
             : (lightTheme?.src ?? listeLightThemes[0]?.src);
 
+    const [themFile, setThemeFile] = useState<string | null>(null);
     const handleChangeTheme = (id: number, t: 'light' | 'dark') => {
         if (t === 'light') {
             const item = listeLightThemes.find(l => l.id === id);
             setLightTheme({ id: Number(item?.id), src: String(item?.src) });
+            setThemeFile(String(item?.src?.split('/')[3]));
         } else {
             const item = listeDarkThemes.find(l => l.id === id);
             setDarkTheme({ id: Number(item?.id), src: String(item?.src) });
+            setThemeFile(String(item?.src?.split('/')[3]));
         }
+
+        if (themFile) {
+            try {
+                const change = async () => {
+                    await axios.put(`${api_url}/messenger/change_theme`, { conversation_id: activeChat?.id, theme: themFile }, { withCredentials: true, withXSRFToken: true }).then(res => {
+                        if (res.data.success) {
+                            toast.success(res.data.message || 'Theme updated successfully');
+                        } else {
+                            toast.error(res.data.message || 'Failed to update theme');
+                        }
+                    });
+                }
+
+                change();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
     }
     return (
         <>
