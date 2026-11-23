@@ -588,7 +588,14 @@
     "confirmDeleteMessage":"Are you sure to delete this message ?",
     "reportMessage":"Report Message",
     "editMessage":"Edit Message",
-    "edited":"Edited"
+    "edited":"Edited",
+    "image":"Image",
+    "images":"Images",
+    "choosed":"Choosed",
+    "rotateImage":"Rotate Image",
+    "cancel":"Cancel",
+    "addImage":"Add Image",
+    "addCaption":"Add Caption"
   },
   "pageTitles": {
     "myPosts": "WallGo: My Posts",

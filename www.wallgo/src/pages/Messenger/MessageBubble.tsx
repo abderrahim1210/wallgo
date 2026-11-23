@@ -1,4 +1,4 @@
-import { Calendar, Check, CheckCheck, Flag, Info, Pencil, Trash2, X } from 'lucide-react';
+import { Calendar, Check, CheckCheck, Flag, Pencil, Trash2, X } from 'lucide-react';
 import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
@@ -11,8 +11,6 @@ import { useModal } from '../../hooks/ModalProvider';
 import ModalTemplate from '../../templates/ModalTemplate';
 import { Report } from '../../components/Report';
 import { Tooltip } from '../../templates/Tooltip';
-import { Spinner } from 'react-bootstrap';
-import { useTranslation } from 'react-i18next';
 import useMoment from '../../hooks/useMoment';
 
 export type ChatMessage = {
@@ -36,7 +34,6 @@ type MessageBubbleProps = {
 export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) => {
     const [dropdownMenu, setDropDownMenu] = useState<{ message: ChatMessage, x: number, y: number } | null>(null);
     const { show, openModal, closeModal } = useModal()!;
-    const [loading, setLoading] = useState(false);
     const [newContent, setNewContent] = useState('');
 
     useEffect(() => {
@@ -59,12 +56,6 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
 
     const isOwner: boolean = message?.sender === 'me';
     const [messageToEdit, setMessageToEdit] = useState(false);
-
-    useEffect(() => {
-        if (messageToEdit) {
-            setNewContent(message?.content);
-        }
-    }, [messageToEdit]);
 
     const m = useMoment()!;
 
@@ -95,7 +86,10 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
                 label: t('messenger.editMessage'),
                 icon: <Pencil className="w-4 h-4 text-[var(--special-purple)]" />,
                 danger: false,
-                onClick: () => { setMessageToEdit(prev => !prev) },
+                onClick: () => {
+                    setNewContent(message?.content);
+                    setMessageToEdit(true);
+                },
             },
         ] : []),
         ...((isOwner) ? [
@@ -152,20 +146,16 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
 
     const handleEdit = async () => {
         if (!message.id && newContent === '') return null;
-        setLoading(true);
         try {
             const res = await axios.put(`${api_url}/messages/edit`, { message_id: message?.id, content: newContent }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
-                setLoading(false);
                 setMessageToEdit(false);
                 toast.success(res.data.message);
                 queryClient.invalidateQueries({ queryKey: [`messages-${message?.conversation_id}`] });
             } else {
-                setLoading(false);
                 toast.error(res.data.messages || 'Failed to edit message');
             }
         } catch (err) {
-            setLoading(false);
             console.error(err);
         }
     }
@@ -205,6 +195,11 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
                         (!message?.image) ? <p className="break-words whitespace-pre-wrap px-4 py-2.5 [overflow-wrap:anywhere]">{message.content}</p> :
                             <div className="p-1.5">
                                 <img src={message.image} alt={attachmentAlt} className="max-h-60 w-full max-w-full rounded-xl object-cover" />
+                                {message.content && (
+                                    <p className="break-words whitespace-pre-wrap px-2.5 py-2 [overflow-wrap:anywhere]">
+                                        {message.content}
+                                    </p>
+                                )}
                             </div>}
                     <div className={`flex items-center justify-end gap-1.5 px-3 pb-2 text-[10px] ${message.sender === 'me' ? 'text-white/75' : 'text-gray-400 dark:text-gray-500'}`}>
                         {

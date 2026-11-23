@@ -587,7 +587,14 @@
     "confirmDeleteMessage":"هل أنت متأكد لحذف هذه الرسالة ؟",
     "reportMessage":"الابلاغ عن الرسالة",
     "editMessage":"تعديل الرسالة",
-    "edited":"تم تعديله"
+    "edited":"تم تعديله",
+    "image":"صورة",
+    "images":"صور",
+    "choosed":"مختارة",
+    "rotateImage":"تدوير الصورة",
+    "cancel":"الغاء",
+    "addImage":"اضافة صورة",
+    "addCaption":"اضافة تسمية توضيحية"
   },
   "pageTitles": {
     "myPosts": "WallGo: منشوراتي",

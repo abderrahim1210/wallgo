@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Flag, Image, Info, MessageCircle, Phone, Search, Send, Smile, Trash2, Video } from 'lucide-react';
+import { ArrowLeft, Image, Info, MessageCircle, Phone, Search, Send, Smile, Video } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { useTranslation } from 'react-i18next';
 import { Navbar } from '../../layouts/Navbar';
 import { MobileCellNavbar } from '../../layouts/MobileCellNavbar';
 import axios from 'axios';
@@ -21,6 +20,8 @@ import { t } from 'i18next';
 import i18n from '../../i18n';
 import useDarkMode from '../../hooks/useDarkMode';
 import toast from 'react-hot-toast';
+import type { SelectedMediaItem } from './ImageComposerPopover';
+import ImageComposerPopover from './ImageComposerPopover';
 
 export type StateParams = {
     conversation: Conversation,
@@ -38,6 +39,124 @@ export const Messenger = () => {
     const [showChatInfo, setShowChatInfo] = useState(false);
     const [notification, setNotification] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [selectedMedia, setSelectedMedia] = useState<SelectedMediaItem[]>([]);
+    const selectedMediaRef = useRef<SelectedMediaItem[]>([]);
+
+    useEffect(() => {
+        selectedMediaRef.current = selectedMedia;
+    }, [selectedMedia]);
+
+    useEffect(() => () => {
+        selectedMediaRef.current.forEach((item) => URL.revokeObjectURL(item.previewUrl));
+    }, []);
+
+    const handleAddMediaFiles = (filesList: FileList) => {
+        const validFiles = Array.from(filesList).filter((f) => f.type.startsWith('image/'));
+        if (validFiles.length !== filesList.length) {
+            showNotify(t('messenger.invalidImage'));
+        }
+        if (!validFiles.length) return;
+
+        const newItems: SelectedMediaItem[] = validFiles.map((file) => ({
+            id: `${file.name}-${file.lastModified}-${Math.random().toString(36).slice(2, 7)}`,
+            file,
+            previewUrl: URL.createObjectURL(file),
+            rotation: 0,
+        }));
+
+        setSelectedMedia((prev) => [...prev, ...newItems]);
+    };
+
+    const handleRemoveMediaItem = (id: string) => {
+        const target = selectedMedia.find((item) => item.id === id);
+        if (target) URL.revokeObjectURL(target.previewUrl);
+        setSelectedMedia((prev) => {
+            return prev.filter((item) => item.id !== id);
+        });
+    };
+
+    const handleRotateMediaItem = (id: string) => {
+        setSelectedMedia((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, rotation: (item.rotation + 90) % 360 } : item
+            )
+        );
+    };
+
+    const clearSelectedMedia = () => {
+        selectedMedia.forEach((item) => URL.revokeObjectURL(item.previewUrl));
+        setSelectedMedia([]);
+    };
+
+    const handleSendFromPopover = async (
+        caption: string,
+        finalFiles: File[],
+        itemIds: string[]
+    ): Promise<number> => {
+        if (!activeChat || isSending || isUploadingImage) return 0;
+        if (finalFiles.length === 0) return 0;
+
+        let sentCount = 0;
+        try {
+            setIsSending(true);
+            setIsUploadingImage(true);
+
+            for (const [index, file] of finalFiles.entries()) {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', 'wallgo_messages_image');
+
+                const upload = await axios.post(
+                    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+                    formData
+                );
+                const mediaUrl = upload.data.secure_url;
+                const publicId = upload.data.public_id;
+                if (typeof mediaUrl !== 'string' || typeof publicId !== 'string') {
+                    throw new Error('Image upload returned an invalid response');
+                }
+
+                const res = await axios.post(
+                    `${api_url}/messages/send`,
+                    {
+                        content: index === 0 ? caption || null : null,
+                        media_url: mediaUrl,
+                        public_id: publicId,
+                        conversation_id: activeChat.id,
+                    },
+                    { withCredentials: true, withXSRFToken: true }
+                );
+
+                if (!res.data.success || !res.data.message) throw new Error('Failed to send image');
+                queryClient.setQueryData<ChatMessage[]>([`messages-${activeChat.id}`], (currentMessages = []) => [
+                    ...currentMessages,
+                    res.data.message,
+                ]);
+                sentCount += 1;
+            }
+
+            setMessageInput('');
+            setShowEmojiPicker(false);
+        } catch (err) {
+            console.error(err);
+            showNotify(t('messenger.sendFailed'));
+        } finally {
+            setIsUploadingImage(false);
+            setIsSending(false);
+        }
+
+        if (sentCount > 0) {
+            const sentIds = new Set(itemIds.slice(0, sentCount));
+            const sentItems = selectedMedia.filter((item) => sentIds.has(item.id));
+            sentItems.forEach((item) => URL.revokeObjectURL(item.previewUrl));
+            setSelectedMedia((prev) => prev.filter((item) => !sentIds.has(item.id)));
+            void queryClient.invalidateQueries({ queryKey: ['conversations'] }).catch((err) => {
+                console.error('Failed to refresh conversations after sending images', err);
+            });
+        }
+
+        return sentCount;
+    };
 
     const fetchConversations = async () => {
         const res = await axios.get(`${api_url}/messenger`, { withCredentials: true, withXSRFToken: true });
@@ -139,6 +258,7 @@ export const Messenger = () => {
     };
 
     const handleSelectChat = (conversation: Conversation) => {
+        clearSelectedMedia();
         setChatSelection({ locationKey: location.key, conversation, showOnMobile: true });
         setMessageInput('');
         setShowChatInfo(false);
@@ -152,39 +272,8 @@ export const Messenger = () => {
     };
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file || !activeChat) return;
-        if (!file.type.startsWith('image/')) {
-            showNotify(t('messenger.invalidImage'));
-            e.target.value = '';
-            return;
-        }
-
-        try {
-            setIsUploadingImage(true);
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', 'wallgo_messages_image');
-            formData.append('resource_type', 'image');
-            const upload = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, formData);
-            const res = await axios.post(
-                `${api_url}/messages/send`,
-                { media_url: upload.data.secure_url, public_id: upload.data.public_id, conversation_id: activeChat.id },
-                { withCredentials: true, withXSRFToken: true }
-            );
-            if (!res.data.success || !res.data.message) throw new Error('Failed to send image');
-            queryClient.setQueryData<ChatMessage[]>([`messages-${activeChat.id}`], (currentMessages = []) => [
-                ...currentMessages,
-                res.data.message,
-            ]);
-            await queryClient.invalidateQueries({ queryKey: ['conversations'] });
-        } catch (err) {
-            console.error(err);
-            showNotify(t('messenger.sendFailed'));
-        } finally {
-            setIsUploadingImage(false);
-            e.target.value = '';
-        }
+        if (e.target.files) handleAddMediaFiles(e.target.files);
+        e.target.value = '';
     };
 
     const addEmoji = (emoji: string) => {
@@ -592,6 +681,19 @@ export const Messenger = () => {
                                                 </button>
                                             ))}
                                         </div>
+                                    )}
+
+                                    {selectedMedia.length > 0 && (
+                                        <ImageComposerPopover
+                                            items={selectedMedia}
+                                            onAddMore={handleAddMediaFiles}
+                                            onRemoveItem={handleRemoveMediaItem}
+                                            onRotationItem={handleRotateMediaItem}
+                                            onClose={clearSelectedMedia}
+                                            onSend={handleSendFromPopover}
+                                            onError={() => showNotify(t('messenger.sendFailed'))}
+                                            isSending={isSending || isUploadingImage}
+                                        />
                                     )}
 
                                     <form onSubmit={handleSendMessage} className="flex items-center gap-1.5 p-3 sm:gap-2.5 sm:p-4">
