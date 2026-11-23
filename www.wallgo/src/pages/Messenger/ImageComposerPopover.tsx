@@ -208,7 +208,7 @@ const ImageComposerPopover: React.FC<ImageComposerPopoverProps> = ({
                 <button
                     type="submit"
                     disabled={busy}
-                    className="p-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white transition"
+                    className="p-2 rounded-xl bg-[var(--special-purple)] disabled:opacity-50 text-white transition"
                 >
                     <Send className="w-4 h-4" />
                 </button>

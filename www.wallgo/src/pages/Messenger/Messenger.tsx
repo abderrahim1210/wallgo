@@ -96,7 +96,8 @@ export const Messenger = () => {
         if (!activeChat || isSending || isUploadingImage) return 0;
         if (finalFiles.length === 0) return 0;
 
-        let sentCount = 0;
+        const sentIds: string[] = [];
+
         try {
             setIsSending(true);
             setIsUploadingImage(true);
@@ -110,6 +111,7 @@ export const Messenger = () => {
                     `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
                     formData
                 );
+
                 const mediaUrl = upload.data.secure_url;
                 const publicId = upload.data.public_id;
                 if (typeof mediaUrl !== 'string' || typeof publicId !== 'string') {
@@ -127,12 +129,18 @@ export const Messenger = () => {
                     { withCredentials: true, withXSRFToken: true }
                 );
 
-                if (!res.data.success || !res.data.message) throw new Error('Failed to send image');
-                queryClient.setQueryData<ChatMessage[]>([`messages-${activeChat.id}`], (currentMessages = []) => [
-                    ...currentMessages,
-                    res.data.message,
-                ]);
-                sentCount += 1;
+                if (!res.data.success || !res.data.message) {
+                    throw new Error('Failed to send image');
+                }
+
+                queryClient.setQueryData<ChatMessage[]>(
+                    [`messages-${activeChat.id}`],
+                    (currentMessages = []) => [...currentMessages, res.data.message]
+                );
+
+                if (itemIds[index]) {
+                    sentIds.push(itemIds[index]);
+                }
             }
 
             setMessageInput('');
@@ -143,19 +151,22 @@ export const Messenger = () => {
         } finally {
             setIsUploadingImage(false);
             setIsSending(false);
+
+            if (sentIds.length > 0) {
+                const sentSet = new Set(sentIds);
+                setSelectedMedia((prev) => {
+                    prev.forEach((item) => {
+                        if (sentSet.has(item.id)) URL.revokeObjectURL(item.previewUrl);
+                    });
+                    return prev.filter((item) => !sentSet.has(item.id));
+                });
+            }
+
+            await queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            await queryClient.invalidateQueries({ queryKey: [`messages-${activeChat.id}`] });
         }
 
-        if (sentCount > 0) {
-            const sentIds = new Set(itemIds.slice(0, sentCount));
-            const sentItems = selectedMedia.filter((item) => sentIds.has(item.id));
-            sentItems.forEach((item) => URL.revokeObjectURL(item.previewUrl));
-            setSelectedMedia((prev) => prev.filter((item) => !sentIds.has(item.id)));
-            void queryClient.invalidateQueries({ queryKey: ['conversations'] }).catch((err) => {
-                console.error('Failed to refresh conversations after sending images', err);
-            });
-        }
-
-        return sentCount;
+        return sentIds.length;
     };
 
     const fetchConversations = async () => {
@@ -243,7 +254,7 @@ export const Messenger = () => {
             setIsSending(true);
             const res = await axios.post(`${api_url}/messages/send`, { content: text, conversation_id: activeChat.id }, { withCredentials: true, withXSRFToken: true });
             if (!res.data.success || !res.data.message) throw new Error('Failed to send message');
-            queryClient.setQueryData<ChatMessage[]>([`messages-${activeChat.id}`], (currentMessages = []) => [
+            queryClient.setQueryData<ChatMessage[]>([`messages-${activeChatId}`], (currentMessages = []) => [
                 ...currentMessages,
                 res.data.message,
             ]);
