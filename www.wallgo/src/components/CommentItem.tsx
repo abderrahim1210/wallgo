@@ -190,6 +190,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, type, postId,
             <img
                 src={comment?.page_info?.logo_url ?? comment?.user.avatar_url ?? "/icons/avatar1.svg"}
                 alt={comment?.user.name}
+                onContextMenu={(event) => event.preventDefault()}
                 className="w-9 h-9 rounded-full object-cover shrink-0"
             />
             <div className="flex-1 min-w-0">

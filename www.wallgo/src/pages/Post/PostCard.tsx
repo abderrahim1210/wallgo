@@ -1,4 +1,4 @@
-import { Bookmark, CalendarClock, Crown, Edit3, EyeIcon, Flag, Globe, Heart, Link, Lock, MessageCircle, MoreHorizontal, Play, Share2, Sparkles, Timer, Trash2, X } from 'lucide-react';
+import { Bookmark, CalendarClock, Crown, Edit3, EyeIcon, Flag, Globe, Heart, Link, Lock, Maximize, MessageCircle, MoreHorizontal, Play, Share2, Sparkles, Timer, Trash2, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react'
 import { DropdownMenu, type DropdownItem } from '../../templates/DropdownMenu';
 import { useModal } from '../../hooks/ModalProvider';
@@ -21,6 +21,7 @@ import Swal from 'sweetalert2';
 import TimeCapsuleLocked from '../../Icons/TimeCapsule';
 import { Tooltip } from '../../templates/Tooltip';
 import { useTranslation } from 'react-i18next';
+import Gallery from '../../templates/Gallery';
 interface PostCardProps {
     post: Post;
 }
@@ -219,12 +220,14 @@ export const PostCard: React.FC<PostCardProps> = ({
                             <img
                                 src={post?.postable?.logo_url || '/icons/users.svg'}
                                 alt={t('common.profile')}
+                                onContextMenu={(event) => event.preventDefault()}
                                 className="w-10 h-10 rounded-full object-cover border border-purple-100 dark:border-purple-900/60"
                             />
                         ) : (
                             <img
                                 src={post?.user?.avatar_url || '/icons/avatar1.svg'}
                                 alt={t('common.profile')}
+                                onContextMenu={(event) => event.preventDefault()}
                                 className="w-10 h-10 rounded-full object-cover border border-purple-100 dark:border-purple-900/60"
                             />
                         )
@@ -298,31 +301,45 @@ export const PostCard: React.FC<PostCardProps> = ({
 
                         {post?.media_url && post?.media_url.includes('image') && (
                             <div className="w-full bg-gray-50 dark:bg-gray-800 max-h-[500px] overflow-hidden flex items-center justify-center">
-                                <img src={post?.media_url} alt={t('feed.postContent')} className="w-full h-auto object-cover max-h-[500px]" onClick={() => setSelectedPost(post)} />
+                                <img src={post?.media_url} onContextMenu={(event) => event.preventDefault()} alt={t('feed.postContent')} className="w-full h-auto object-cover max-h-[500px]" onClick={() => setSelectedPost(post)} />
                             </div>
                         )}
 
                         {post?.media_url && post?.media_url.includes('video') && (
                             <div className="w-full bg-gray-50 dark:bg-gray-800 max-h-[500px] overflow-hidden flex items-center justify-center">
-                                <div className="relative overflow-hidden bg-black flex items-center justify-center border border-gray-200 dark:border-gray-700">
-                                    <video
-                                        src={post?.media_url}
-                                        autoPlay
-                                        playsInline
-                                        onClick={togglePlay}
-                                        onPlay={() => setIsPlaying(true)}
-                                        onPause={() => setIsPlaying(false)}
-                                        ref={videoRef}
-                                    />
+                                <Gallery items={[{ src: post.media_url, alt: t('feed.postContent'), type: 'video' }]}>
+                                    {(openMedia) => (
+                                        <div className="relative flex items-center justify-center overflow-hidden border border-gray-200 bg-black dark:border-gray-700">
+                                            <video
+                                                src={post?.media_url}
+                                                autoPlay
+                                                playsInline
+                                                onClick={togglePlay}
+                                                onPlay={() => setIsPlaying(true)}
+                                                onPause={() => setIsPlaying(false)}
+                                                ref={videoRef}
+                                                onContextMenu={(event) => event.preventDefault()}
+                                            />
 
-                                    {!isPlaying && (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none z-10">
-                                            <div className="p-3 bg-black/60 backdrop-blur-md rounded-full text-white">
-                                                <Play className="w-6 h-6" />
-                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => openMedia(0)}
+                                                aria-label={t('common.viewMedia')}
+                                                className="absolute right-3 top-3 z-20 rounded-full bg-black/60 p-2 text-white transition hover:bg-black/80"
+                                            >
+                                                <Maximize className="h-5 w-5" />
+                                            </button>
+
+                                            {!isPlaying && (
+                                                <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-black/30">
+                                                    <div className="rounded-full bg-black/60 p-3 text-white backdrop-blur-md">
+                                                        <Play className="h-6 w-6" />
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
-                                </div>
+                                </Gallery>
                             </div>
                         )}
                     </>

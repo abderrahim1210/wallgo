@@ -22,6 +22,7 @@ import { DropdownMenu, type DropdownItem } from '../templates/DropdownMenu'
 import ShareDropdown from './ShareDropdown'
 import { Report } from './Report'
 import { useTranslation } from 'react-i18next'
+import Gallery from '../templates/Gallery'
 
 interface User {
     id: number;
@@ -222,22 +223,26 @@ export const Profile = () => {
                         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm">
                             {
                                 <div className="h-48 md:h-60 w-full rounded-xl overflow-hidden relative bg-gray-200 dark:bg-gray-700">
-                                    <img
-                                        src={profile?.banner_url ?? '/backgrounds/user_banner.svg'}
-                                        alt={t('common.profileBanner')}
-                                        className="w-full h-full object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                                    <Gallery items={[{ src: profile?.banner_url ?? '/backgrounds/user_banner.svg', alt: t('common.profileBanner') }]}>
+                                        {(openMedia) => (
+                                            <button type="button" onClick={() => openMedia(0)} className="h-full w-full cursor-zoom-in" aria-label={t('common.profileBanner')}>
+                                                <img src={profile?.banner_url ?? '/backgrounds/user_banner.svg'} alt="" className="h-full w-full object-cover" />
+                                            </button>
+                                        )}
+                                    </Gallery>
+                                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                                 </div>
                             }
                             <div className="px-6 pb-6 relative">
                                 <div className="flex flex-col sm:flex-row justify-between shrink-0 items-start sm:items-end -mt-16 md:-mt-20 mb-4 gap-4">
                                     <div className="flex items-end gap-4">
-                                        <img
-                                            src={profile?.avatar_url ?? '/icons/avatar1.svg'}
-                                            alt={t('common.avatar')}
-                                            className="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover border-4 border-white shadow-md bg-white dark:bg-gray-900"
-                                        />
+                                        <Gallery items={[{ src: profile?.avatar_url ?? '/icons/avatar1.svg', alt: t('common.avatar') }]}>
+                                            {(openMedia) => (
+                                                <button type="button" onClick={() => openMedia(0)} className="cursor-zoom-in rounded-full" aria-label={t('common.avatar')}>
+                                                    <img src={profile?.avatar_url ?? '/icons/avatar1.svg'} alt="" className="h-28 w-28 rounded-full border-4 border-white bg-white object-cover shadow-md dark:bg-gray-900 md:h-36 md:w-36" />
+                                                </button>
+                                            )}
+                                        </Gallery>
                                         <div className="">
                                             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                                                 {profile?.name}

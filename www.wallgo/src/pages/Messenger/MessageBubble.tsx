@@ -12,23 +12,14 @@ import ModalTemplate from '../../templates/ModalTemplate';
 import { Report } from '../../components/Report';
 import { Tooltip } from '../../templates/Tooltip';
 import useMoment from '../../hooks/useMoment';
+import { MessageImageGallery, type MessageAttachment } from './MessageImageGallery';
 
 export type ChatMessage = {
     id: number;
     sender: 'me' | 'them';
     content: string;
     time: string;
-    attachments?: [
-        {
-            id:number;
-            media_url:string;
-            created_at:string;
-            message_id:number;
-            position:number;
-            public_id:string;
-            updated_at:string;
-        }
-    ];
+    attachments?: MessageAttachment[];
     conversation_id: number;
     edited: boolean;
     can_edit: boolean;
@@ -45,6 +36,7 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
     const [dropdownMenu, setDropDownMenu] = useState<{ message: ChatMessage, x: number, y: number } | null>(null);
     const { show, openModal, closeModal } = useModal()!;
     const [newContent, setNewContent] = useState('');
+    const attachments = message.attachments ?? [];
 
     useEffect(() => {
         if (!dropdownMenu) return;
@@ -203,13 +195,9 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
                                 </button>
                             </Tooltip>
                         </div> :
-                        (!message?.attachments) ? <p className="break-words whitespace-pre-wrap px-4 py-2.5 [overflow-wrap:anywhere]">{message.content}</p> :
+                        (!attachments.length) ? <p className="break-words whitespace-pre-wrap px-4 py-2.5 [overflow-wrap:anywhere]">{message.content}</p> :
                             <div className="p-1.5">
-                                {
-                                    message?.attachments?.map((m) => (
-                                        <img src={m.media_url} className="max-h-60 w-full max-w-full rounded-xl object-cover" />
-                                    ))
-                                }
+                                <MessageImageGallery attachments={attachments} attachmentAlt={attachmentAlt} />
                                 {message.content && (
                                     <p className="break-words whitespace-pre-wrap px-2.5 py-2 [overflow-wrap:anywhere]">
                                         {message.content}

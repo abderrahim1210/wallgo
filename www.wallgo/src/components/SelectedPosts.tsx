@@ -1,11 +1,12 @@
 import { Edit3, Flag, Heart, Link, MessageCircle, MoreHorizontal, Trash2, X } from 'lucide-react';
-import moment from 'moment';
 import React, { useState } from 'react'
 import { useAuth } from '../hooks/AuthProvider';
 import { DropdownMenu, type DropdownItem } from '../templates/DropdownMenu';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import Gallery from '../templates/Gallery';
+import useMoment from '../hooks/useMoment';
 
 interface Post {
     id: number;
@@ -62,6 +63,7 @@ export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose ,onD
             },
         ] : [])
     ];
+    const m = useMoment();
     return (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
             <div className="bg-white dark:bg-gray-900 w-full max-w-2xl rounded-2xl shadow-2xl relative flex flex-col md:flex-row animate-in zoom-in-95 duration-150">
@@ -83,7 +85,13 @@ export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose ,onD
                     />
                 </div>
                 <div className="md:w-1/2 bg-black flex items-center justify-center rounded-2xl">
-                    <img src={post?.media_url} alt={t('postDetails.imageAlt')} className="max-h-[400px] rounded-2xl w-full object-contain" />
+                    <Gallery items={[{ src: post.media_url, alt: t('postDetails.imageAlt') }]}>
+                        {(openMedia) => (
+                            <button type="button" onClick={() => openMedia(0)} className="flex w-full cursor-zoom-in items-center justify-center">
+                                <img src={post.media_url} alt={t('postDetails.imageAlt')} className="max-h-[400px] w-full rounded-2xl object-contain" />
+                            </button>
+                        )}
+                    </Gallery>
                 </div>
 
                 <div className="md:w-1/2 p-5 flex flex-col justify-between">
@@ -94,7 +102,7 @@ export const SelectedPosts: React.FC<SelectedPostsProps> = ({ post, onClose ,onD
                                 <div>
                                     <h4 className="font-semibold text-sm text-gray-900 dark:text-gray-100">{post?.user.name}</h4>
                                     <p className="text-xs text-gray-500 dark:text-gray-400">@{post?.user.username}</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">{moment(post?.created_at).fromNow()}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{m(post?.created_at).fromNow()}</p>
                                 </div>
                             </div>
                         </div>

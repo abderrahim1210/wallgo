@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import type { Reel } from './CreateReel';
 import PostsGrid from '../templates/PostsGrid';
 import FollowersPageGroup from './FollowersPageGroup';
+import Gallery from '../templates/Gallery';
 
 export interface Page {
     id: number;
@@ -227,21 +228,25 @@ export const PageProfile = () => {
                     <div className="max-w-4xl mx-auto px-4 py-6">
                         <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
                             <div className="h-48 w-full bg-gray-200 dark:bg-gray-700 relative">
-                                <img
-                                    src={page?.banner_url ?? '/backgrounds/users_banner.svg'}
-                                    alt={page?.name}
-                                    className="w-full h-full object-cover"
-                                />
+                                <Gallery items={[{ src: page?.banner_url ?? '/backgrounds/users_banner.svg', alt: page?.name ?? '' }]}>
+                                    {(openMedia) => (
+                                        <button type="button" onClick={() => openMedia(0)} className="h-full w-full cursor-zoom-in" aria-label={page?.name}>
+                                            <img src={page?.banner_url ?? '/backgrounds/users_banner.svg'} alt="" className="h-full w-full object-cover" />
+                                        </button>
+                                    )}
+                                </Gallery>
                             </div>
 
                             <div className="px-6 pb-6 relative">
                                 <div className="flex justify-between items-end -mt-12 mb-4">
                                     <div className="w-24 h-24 rounded-full border-4 border-white overflow-hidden shadow-md bg-white dark:bg-gray-900">
-                                        <img
-                                            src={page?.logo_url ?? "/icons/users.svg"}
-                                            alt={page?.name}
-                                            className="w-full h-full object-cover"
-                                        />
+                                        <Gallery items={[{ src: page?.logo_url ?? '/icons/users.svg', alt: page?.name ?? '' }]}>
+                                            {(openMedia) => (
+                                                <button type="button" onClick={() => openMedia(0)} className="h-full w-full cursor-zoom-in" aria-label={page?.name}>
+                                                    <img src={page?.logo_url ?? '/icons/users.svg'} alt="" className="h-full w-full object-cover" />
+                                                </button>
+                                            )}
+                                        </Gallery>
                                     </div>
 
                                     {

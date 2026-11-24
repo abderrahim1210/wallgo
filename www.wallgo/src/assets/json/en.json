@@ -38,6 +38,10 @@
     "group": "Group",
     "avatar": "Avatar",
     "profileBanner": "Profile banner",
+    "image": "Image",
+    "viewMedia": "View media",
+    "previousMedia": "Previous item",
+    "nextMedia": "Next item",
     "wait": "Wait a few seconds..."
   },
   "auth": {
@@ -566,7 +570,7 @@
     "send": "Send",
     "yesterday": "Yesterday",
     "startConversation": "Start a conversation",
-    "imageMessage": "Photo",
+    "imageMessage": "{{count}} Photo",
     "noMessages": "No messages yet. Send a message to start the conversation!",
     "noConversations": "No conversations yet.",
     "noSearchResults": "No conversations match your search.",

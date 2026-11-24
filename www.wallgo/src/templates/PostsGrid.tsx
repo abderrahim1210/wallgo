@@ -45,6 +45,7 @@ const PostsGrid: React.FC<PostsGridProps> = ({ data, isLoading, isFetchingNextPa
                         <video
                             src={item.video_url}
                             className='w-full h-full object-cover'
+                            onContextMenu={(e) => e.preventDefault()}
                         />
                         <div className='absolute top-2 right-2 bg-black/40 backdrop-blur-sm p-1 rounded-full text-white'>
                             <svg className='w-4 h-4 fill-current' viewBox='0 0 24 24'>

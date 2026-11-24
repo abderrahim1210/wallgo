@@ -124,21 +124,6 @@ export const Messenger = () => {
                     };
                 })
             )
-            // for (const [index, file] of finalFiles.entries()) {
-            //     const formData = new FormData();
-            //     formData.append('file', file);
-            //     formData.append('upload_preset', 'wallgo_messages_image');
-
-            //     const upload = await axios.post(
-            //         `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-            //         formData
-            //     );
-
-            //     const mediaUrl = upload.data.secure_url;
-            //     const publicId = upload.data.public_id;
-            //     if (typeof mediaUrl !== 'string' || typeof publicId !== 'string') {
-            //         throw new Error('Image upload returned an invalid response');
-            //     }
 
             const res = await axios.post(
                 `${api_url}/messages/send`,
@@ -518,7 +503,7 @@ export const Messenger = () => {
                                     active={activeChat?.id === conversation?.id}
                                     yesterdayLabel={t('messenger.yesterday')}
                                     startConversationLabel={t('messenger.startConversation')}
-                                    imageMessageLabel={t('messenger.imageMessage')}
+                                    imageMessageLabel={t('messenger.imageMessage', { count: conversation?.latest_message?.medias_count ?? ''})}
                                     onSelect={handleSelectChat}
                                     m={m}
                                     handleOpenConversationMenu={handleOpenConversationMenu}
