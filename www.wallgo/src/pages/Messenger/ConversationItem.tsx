@@ -114,11 +114,12 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
                 try {
                     const res = await axios.delete(`${api_url}/conversations/${convId}/${type}`, { withCredentials: true, withXSRFToken: true });
                     if (res.data.success) {
-                        toast.success(res.data.message || 'Conversation deleted successfully');
+                        toast.success(res.data.message || t('messenger.deletedConversation'));
                         queryClient.invalidateQueries({ queryKey: ['notifications'] });
                     }
                 } catch (err) {
                     console.error(err);
+                    toast.error(t('messenger.conversationDeleteFailed'));
                 }
             }
         })

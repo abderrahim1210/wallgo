@@ -103,7 +103,7 @@ const ImageComposerPopover: React.FC<ImageComposerPopoverProps> = ({
         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 z-40 w-[92%] max-w-md rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-zinc-100 dark:border-zinc-800">
                 <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
-                    {items.length} {items.length === 1 ? t('messenger.image') : t('messenger.images')} {t('messenger.choosed')}
+                    {t('messenger.choosed', { count: items.length })}
                 </span>
                 <div className="flex items-center gap-1.5">
                     <button
@@ -130,7 +130,7 @@ const ImageComposerPopover: React.FC<ImageComposerPopoverProps> = ({
             <div className="relative h-56 bg-zinc-100/70 dark:bg-zinc-950/70 flex items-center justify-center overflow-hidden p-2">
                 <img
                     src={activeItem.previewUrl}
-                    alt="Preview"
+                    alt={t('messenger.previewImage')}
                     style={{ transform: `rotate(${activeItem.rotation}deg)` }}
                     className="max-h-full max-w-full object-contain rounded-lg transition-transform duration-200"
                 />
@@ -160,6 +160,7 @@ const ImageComposerPopover: React.FC<ImageComposerPopoverProps> = ({
                                 e.stopPropagation();
                                 onRemoveItem(item.id);
                             }}
+                            aria-label={t('messenger.removeImage')}
                             className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-red-600 disabled:opacity-50"
                         >
                             <X className="w-2.5 h-2.5" />

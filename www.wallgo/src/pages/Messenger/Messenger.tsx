@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Image, Info, MessageCircle, Phone, Search, Send, Smile, Video } from 'lucide-react';
+import { ArrowLeft, Image, Info, MessageCircle, Phone, Reply, Search, Send, Smile, Video, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Navbar } from '../../layouts/Navbar';
 import { MobileCellNavbar } from '../../layouts/MobileCellNavbar';
@@ -41,6 +41,7 @@ export const Messenger = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [selectedMedia, setSelectedMedia] = useState<SelectedMediaItem[]>([]);
     const selectedMediaRef = useRef<SelectedMediaItem[]>([]);
+    const [messageToReply, setMessageToReply] = useState<ChatMessage | null>(null);
 
     useEffect(() => {
         selectedMediaRef.current = selectedMedia;
@@ -254,11 +255,18 @@ export const Messenger = () => {
 
         try {
             setIsSending(true);
-            const res = await axios.post(`${api_url}/messages/send`, { content: text, conversation_id: activeChat.id }, { withCredentials: true, withXSRFToken: true });
+            const formData = new FormData();
+            formData.append('content', text);
+            formData.append('conversation_id', String(activeChat.id));
+            if (messageToReply) {
+                formData.append('reply_to', String(messageToReply.id));
+            }
+            const res = await axios.post(`${api_url}/messages/send`, formData, { withCredentials: true, withXSRFToken: true });
             if (!res.data.success || !res.data.message) throw new Error('Failed to send message');
             appendMessage(activeChat?.id, res.data.message);
             setMessageInput('');
             setShowEmojiPicker(false);
+            setMessageToReply(null);
         } catch (err) {
             console.error(err);
             showNotify(t('messenger.sendFailed'));
@@ -315,6 +323,7 @@ export const Messenger = () => {
                 }
             } catch (err) {
                 console.error(err);
+                toast.error(t('messenger.themeUpdateFailed'));
             }
         };
 
@@ -427,7 +436,7 @@ export const Messenger = () => {
             await axios.put(`${api_url}/messenger/change_theme`, { conversation_id: activeChat?.id, theme: file }, { withCredentials: true, withXSRFToken: true }).then(res => {
                 if (res.data.success) {
 
-                    toast.success(res.data.message || 'Theme updated successfully');
+                    toast.success(res.data.message || t('messenger.themeUpdated'));
 
                     if (currentSelection) {
                         setChatSelection({
@@ -439,13 +448,55 @@ export const Messenger = () => {
                         });
                     }
                 } else {
-                    toast.error(res.data.message || 'Failed to update theme');
+                    toast.error(res.data.message || t('messenger.themeUpdateFailed'));
                 }
             });
         } catch (err) {
             console.error(err);
         }
     }
+
+    const onReply = (message: ChatMessage) => {
+        if (!message) return;
+        setMessageToReply(message);
+    }
+
+    const highlightTimeoutRef = useRef<number | null>(null);
+
+    const handleJumpToMessage = (targetId: number) => {
+        const container = messagesContainerRef.current;
+        if (!container) return;
+
+        const targetEl = container.querySelector<HTMLElement>(
+            `[data-message-id="${targetId}"]`
+        );
+
+        if (!targetEl) {
+            toast(t('messenger.messageNotLoaded'));
+            return;
+        }
+
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        if (highlightTimeoutRef.current) {
+            window.clearTimeout(highlightTimeoutRef.current);
+        }
+
+        container
+            .querySelectorAll<HTMLElement>('[data-highlighted="true"]')
+            .forEach((el) => {
+                el.removeAttribute('data-highlighted');
+                el.classList.remove('ring-2', 'ring-[var(--special-purple)]', 'bg-[var(--special-purple)]/10');
+            });
+
+        targetEl.setAttribute('data-highlighted', 'true');
+        targetEl.classList.add('ring-2', 'ring-[var(--special-purple)]', 'bg-[var(--special-purple)]/10');
+
+        highlightTimeoutRef.current = window.setTimeout(() => {
+            targetEl.removeAttribute('data-highlighted');
+            targetEl.classList.remove('ring-2', 'ring-[var(--special-purple)]', 'bg-[var(--special-purple)]/10');
+        }, 1200);
+    };
     return (
         <>
             <Navbar />
@@ -503,7 +554,7 @@ export const Messenger = () => {
                                     active={activeChat?.id === conversation?.id}
                                     yesterdayLabel={t('messenger.yesterday')}
                                     startConversationLabel={t('messenger.startConversation')}
-                                    imageMessageLabel={t('messenger.imageMessage', { count: conversation?.latest_message?.medias_count ?? ''})}
+                                    imageMessageLabel={t('messenger.imageMessage', { count: conversation?.latest_message?.medias_count ?? '' })}
                                     onSelect={handleSelectChat}
                                     m={m}
                                     handleOpenConversationMenu={handleOpenConversationMenu}
@@ -514,7 +565,7 @@ export const Messenger = () => {
 
                     {
                         convLoading ? (
-                            <Spinner type='mini' text='Fetching conversation ...' />
+                            <Spinner type='mini' text={t('messenger.fetchingConversation')} />
                         ) : convError ? (
                             <ErrorPage codeP='500' />
                         ) : activeChat ? (
@@ -592,7 +643,7 @@ export const Messenger = () => {
 
                                                 </div>
                                                 <div className='mt-2'>
-                                                    <span className='text-[15px]'>Choose you theme</span>
+                                                    <span className='text-[15px]'>{t('messenger.chooseTheme')}</span>
                                                     <div className='grid grid-cols-4 gap-2'>
                                                         {
                                                             visibleWallpapers.map((item) => {
@@ -629,7 +680,7 @@ export const Messenger = () => {
                                     <div className="mt-auto flex flex-col gap-4">
                                         {
                                             messagesLoading ? (
-                                                <Spinner text='Fetching messages ...' type='mini' />
+                                                <Spinner text={t('messenger.fetchingMessages')} type='mini' />
                                             ) : messagesError ? (
                                                 <p role="alert" className="text-center text-sm text-red-600 dark:text-red-400">{t('messenger.messagesLoadFailed')}</p>
                                             ) : messages?.length > 0 ? (
@@ -657,6 +708,8 @@ export const Messenger = () => {
                                                                 <MessageBubble
                                                                     message={message}
                                                                     attachmentAlt={t('messenger.uploadedAttachmentAlt')}
+                                                                    onReply={onReply}
+                                                                    onJumpToMessage={handleJumpToMessage}
                                                                 />
                                                             </React.Fragment>
                                                         );
@@ -700,6 +753,39 @@ export const Messenger = () => {
                                         />
                                     )}
 
+                                    {
+                                        messageToReply && (
+                                            <div className="border-b border-gray-200/80 bg-[#f8f9fc]/90 px-3 pt-2.5 pb-1.5 backdrop-blur-md dark:border-white/10 dark:bg-gray-900/80">
+                                                <div className="flex items-start justify-between gap-3 rounded-xl bg-white/85 px-3 py-2 shadow-xs dark:bg-gray-800/85">
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className="flex items-center gap-1.5 text-[11px] font-medium text-[var(--special-purple)]">
+                                                            <Reply className="h-3.5 w-3.5 shrink-0 rtl:scale-x-[-1]" />
+                                                            <span>
+                                                                {messageToReply.sender === 'me'
+                                                                    ? t('messenger.replyingToSelf')
+                                                                    : t('messenger.replyingTo')}
+                                                            </span>
+                                                        </div>
+                                                        <p className="mt-0.5 truncate text-xs text-gray-600 dark:text-gray-300">
+                                                            {messageToReply.content ||
+                                                                (messageToReply.attachments?.length
+                                                                    ? t('messenger.photoAttachment', { count: messageToReply.attachments.length })
+                                                                    : '')}
+                                                        </p>
+                                                    </div>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setMessageToReply(null)}
+                                                        aria-label={t('messenger.cancelReply')}
+                                                        className="mt-0.5 shrink-0 cursor-pointer rounded-full p-1 text-gray-400 transition hover:bg-red-500/10 hover:text-red-500 dark:text-gray-400 dark:hover:bg-red-500/15 dark:hover:text-red-400"
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )
+                                    }
                                     <form onSubmit={handleSendMessage} className="flex items-center gap-1.5 p-3 sm:gap-2.5 sm:p-4">
                                         <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" disabled={isUploadingImage || isSending} className="hidden" />
                                         <button

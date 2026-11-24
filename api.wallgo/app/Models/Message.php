@@ -12,10 +12,9 @@ class Message extends Model
         'conversation_id',
         'sender_id',
         'content',
-        'media_url',
         'is_read',
-        'public_id',
-        'edited'
+        'edited',
+        'reply_to'
     ];
 
     protected $casts = [
@@ -40,5 +39,10 @@ class Message extends Model
     public function medias()
     {
         return $this->hasMany(MessageAttachement::class);
+    }
+
+    public function messageToReply()
+    {
+        return $this->belongsTo(Message::class, 'reply_to');
     }
 }

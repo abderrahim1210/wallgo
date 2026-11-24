@@ -31,7 +31,8 @@ class Messages extends Controller
             'attachments' => ['nullable', 'array'],
             'attachments.*.media_url' => ['nullable', 'url', 'max:2048', 'required_without:content', 'required_with:attachments'],
             'attachments.*.public_id' => ['nullable', 'string', 'required_with:attachements'],
-            'attachments.*.position' => ['nullable', 'numeric']
+            'attachments.*.position' => ['nullable', 'numeric'],
+            'reply_to' => ['nullable', 'integer', 'exists:messages,id']
         ]);
 
         $conversation = $user->conversations()->whereKey($data['conversation_id'])->first();
@@ -45,6 +46,8 @@ class Messages extends Controller
 
         $content = trim($data['content'] ?? '');
         $attachments = $data['attachments'] ?? [];
+        $reply_to = (int) $data['reply_to'] ?? null;
+
         if ($content === '' && count($attachments) === 0) {
             return response()->json([
                 'success' => false,
@@ -56,6 +59,7 @@ class Messages extends Controller
             'sender_id' => $user->id,
             'content' => $content,
             'is_read' => false,
+            'reply_to' => $reply_to
         ]);
 
         foreach ($attachments as $index => $att) {
@@ -123,6 +127,7 @@ class Messages extends Controller
 
     private function messagePayload(Message $message, int $currentUserId): array
     {
+        $reply = $message->messageToReply;
         return [
             'id' => $message->id,
             'sender_id' => (int) $message->sender_id,
@@ -136,7 +141,15 @@ class Messages extends Controller
             'can_edit' => $message->created_at ? abs($message->created_at->diffInMinutes(now())) <= 45 : false,
             'created_at' => $message->created_at,
             'updated_at' => $message->updated_at,
-            'edited' => (bool) $message->edited
+            'edited' => (bool) $message->edited,
+            'message_to_reply' => $reply ? [
+                'id' => $reply->id,
+                'sender_id' => (int) $reply->sender_id,
+                'sender' => (int) $reply->sender_id === $currentUserId ? 'me' : 'them',
+                'content' => $reply->content,
+                'time' => $reply->created_at?->format('H:i') ?? '',
+                'attachments' => $reply->medias ?? [],
+            ] : null,
         ];
     }
 
