@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Bookmark, FileText, Layers, LogOut, Settings, Users, X } from 'lucide-react';
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 

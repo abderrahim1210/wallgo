@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { MainLayout } from '../MainLayout';
+import { MainLayout } from '../layouts/MainLayout';
 import { Helmet } from 'react-helmet-async';
 import { FaCamera, FaSave, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Skeleton } from '../templates/Skeleton';
-import { ErrorPage } from './ErrorPage';
+import { ErrorPage } from '../components/ErrorPage';
 import toast from 'react-hot-toast';
 import LoadingButton from '../Icons/LoadingButton';
 import { useTranslation } from 'react-i18next';

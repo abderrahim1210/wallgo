@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import type { User } from './Home'
-import { useFollow } from './useFollow';
+import type { User } from '../types'
+import { useFollow } from '../hooks/useFollow';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 

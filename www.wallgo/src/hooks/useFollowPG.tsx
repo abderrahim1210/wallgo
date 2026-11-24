@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React from 'react'
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 
 interface useFollowPG {
     setFollowed?: React.Dispatch<React.SetStateAction<boolean>>;

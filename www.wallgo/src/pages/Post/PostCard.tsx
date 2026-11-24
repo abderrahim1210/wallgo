@@ -10,12 +10,12 @@ import moment from 'moment';
 import 'moment/dist/locale/ar';
 import { useAuth } from '../../hooks/AuthProvider';
 import { useLocation, useNavigate } from 'react-router-dom';
-import type { Post } from '../../templates/PostGrid';
+import type { Post } from '../../types';
 import { SelectedPosts } from '../../components/SelectedPosts';
 import { Report } from '../../components/Report';
 import { Link as LinkR } from 'react-router-dom'
 import axios from 'axios';
-import { api_url } from '../Auth/getUser';
+import { api_url } from '../../services/api';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 import TimeCapsuleLocked from '../../Icons/TimeCapsule';

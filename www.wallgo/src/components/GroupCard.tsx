@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import type { Group } from './Groups';
+import type { Group } from '../types';
 import { FaGlobe, FaLock } from 'react-icons/fa';
-import { useFollowPG } from './useFollowPG';
+import { useFollowPG } from '../hooks/useFollowPG';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthProvider';
 import { useTranslation } from 'react-i18next';

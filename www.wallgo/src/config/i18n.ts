@@ -4,8 +4,8 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import moment from 'moment';
 // @ts-ignore Moment locale modules do not include their own type declarations.
 import 'moment/locale/ar';
-import en from './assets/json/en.json';
-import ar from './assets/json/ar.json';
+import en from '../assets/json/en.json';
+import ar from '../assets/json/ar.json';
 
 const resources = {
   en: { translation: en },

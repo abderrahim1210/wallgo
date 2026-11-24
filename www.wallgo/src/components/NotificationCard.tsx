@@ -1,12 +1,12 @@
 import React from 'react'
-import type { Notification } from './Notifications'
+import type { Notification } from '../types';
 import { FiHeart, FiMessageSquare, FiUserPlus } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { api_url } from '../pages/Auth/getUser'
+import { api_url } from '../services/api'
 import moment from 'moment'
 import { Check, Heart, MessageSquare, UserCheck, UserPlus, X } from 'lucide-react'
-import i18n from '../i18n'
+import i18n from '../config/i18n'
 
 interface NotificationCardProps {
     notif: Notification

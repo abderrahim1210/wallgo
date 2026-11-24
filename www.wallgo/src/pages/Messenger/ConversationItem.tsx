@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import type { StateParams } from './Messenger';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import { api_url } from '../Auth/getUser';
+import { api_url } from '../../services/api';
 import toast from 'react-hot-toast';
 import ModalTemplate from '../../templates/ModalTemplate';
 import { Report } from '../../components/Report';

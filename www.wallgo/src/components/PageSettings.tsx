@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React from 'react'
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';

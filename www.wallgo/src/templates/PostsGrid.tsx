@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import type { Reel } from '../components/CreateReel'
+import type { Reel } from '../types'
 import { useNavigate } from 'react-router-dom';
 import { EmptyContent } from '../components/EmptyContent';
 import { Video } from 'lucide-react';

@@ -1,29 +1,20 @@
 import { useState } from 'react'
-import { MainLayout } from '../MainLayout'
-import { Clock, FileText, Globe, Hash, Search, User, Users, X } from 'lucide-react';
+import { MainLayout } from '../layouts/MainLayout'
+import { Clock, FileText, Globe, Hash, Search, User as UserIcon, Users, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { PostGrid, type Post } from '../templates/PostGrid';
-import { api_url } from '../pages/Auth/getUser';
+import { PostGrid } from '../templates/PostGrid';
+import type { Group, Page, Post, User } from '../types';
+import { api_url } from '../services/api';
 import Spinner from '../templates/Spinner';
-import { ErrorPage } from './ErrorPage';
-import { EmptyContent } from './EmptyContent';
-import { FollowUser } from './FollowUser';
-import { useFollow } from './useFollow';
-import type { Page } from './PageProfile';
-import { PageCard } from './PageCard';
-import type { Group } from './Groups';
-import { GroupCard } from './GroupCard';
+import { ErrorPage } from '../components/ErrorPage';
+import { EmptyContent } from '../components/EmptyContent';
+import { FollowUser } from '../components/FollowUser';
+import { useFollow } from '../hooks/useFollow';
+import { PageCard } from '../components/PageCard';
+import { GroupCard } from '../components/GroupCard';
 import { useTranslation } from 'react-i18next';
-
-type User = {
-    id: number;
-    name: string;
-    username: string;
-    avatar_url: string;
-    followers_count?: number;
-}
 
 type Search = {
     id: number;
@@ -72,7 +63,7 @@ export const Discover = () => {
     const filters = [
         { id: 'all', label: t('discover.filters.all'), icon: <Globe className="w-4 h-4" /> },
         { id: 'posts', label: t('discover.filters.posts'), icon: <FileText className="w-4 h-4" /> },
-        { id: 'users', label: t('discover.filters.users'), icon: <User className="w-4 h-4" /> },
+        { id: 'users', label: t('discover.filters.users'), icon: <UserIcon className="w-4 h-4" /> },
         { id: 'groups', label: t('discover.filters.groups'), icon: <Users className="w-4 h-4" /> },
         { id: 'pages', label: t('discover.filters.pages'), icon: <Users className="w-4 h-4" /> },
         { id: 'tags', label: t('discover.filters.tags'), icon: <Hash className="w-4 h-4" /> },

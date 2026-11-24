@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import type { Request } from './JoinGroupRequests'
+import type { Request } from '../types'
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { useFollowPG } from './useFollowPG';
+import { useFollowPG } from '../hooks/useFollowPG';
 import { useTranslation } from 'react-i18next';
 
 interface RequestCardProps {

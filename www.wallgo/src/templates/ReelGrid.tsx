@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import type { Reel } from '../components/CreateReel'
+import type { Reel } from '../types'
 import { EmptyContent } from '../components/EmptyContent';
 import { Heart, MessageCircle, MoreVertical, Music, Send, Video, VolumeX } from 'lucide-react';
 import { Skeleton } from './Skeleton';

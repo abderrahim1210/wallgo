@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import type { User } from './Home'
+import type { User } from '../types'
 import { t } from 'i18next';
 import axios from 'axios';
-import { api_url } from '../pages/Auth/getUser';
-import type { Group } from './Groups';
+import { api_url } from '../services/api';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';

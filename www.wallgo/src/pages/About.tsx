@@ -13,7 +13,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
-import { MainLayout } from '../MainLayout'
+import { MainLayout } from '../layouts/MainLayout'
 import useDarkMode from '../hooks/useDarkMode'
 
 const About = () => {

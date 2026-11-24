@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import LoadingButton from '../Icons/LoadingButton';
 import axios from 'axios';
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import { useTranslation } from 'react-i18next';
 
 const ResetPassword = () => {

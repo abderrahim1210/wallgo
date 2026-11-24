@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Navbar } from '../layouts/Navbar';
 import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import type { Reel } from './CreateReel';
+import type { Reel } from '../types';
 import Spinner from '../templates/Spinner';
-import { ErrorPage } from './ErrorPage';
+import { ErrorPage } from '../components/ErrorPage';
 import { ReelGrid } from '../templates/ReelGrid';
 import { Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';

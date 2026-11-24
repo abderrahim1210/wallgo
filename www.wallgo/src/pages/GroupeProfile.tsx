@@ -1,30 +1,31 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/AuthProvider';
-import { MainLayout } from '../MainLayout';
+import { MainLayout } from '../layouts/MainLayout';
 import { Helmet } from 'react-helmet-async';
-import { PostGrid, type Post } from '../templates/PostGrid';
-import { EmptyContent } from './EmptyContent';
+import { PostGrid } from '../templates/PostGrid';
+import type { Post } from '../types';
+import { EmptyContent } from '../components/EmptyContent';
 import { Check, Clapperboard, Flag, Lock, MoreHorizontal, Pencil, PlusIcon, PlusSquare, Settings, Share2, Timer, User, Users, X } from 'lucide-react';
 import { FaGlobe, FaLock, FaRegNewspaper } from 'react-icons/fa';
-import { useFollowPG } from './useFollowPG';
+import { useFollowPG } from '../hooks/useFollowPG';
 import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
-import { PageSettings } from './PageSettings';
+import { PageSettings } from '../components/PageSettings';
 import { DropdownMenu, type DropdownItem } from '../templates/DropdownMenu';
-import ShareDropdown from './ShareDropdown';
-import { Report } from './Report';
+import ShareDropdown from '../components/ShareDropdown';
+import { Report } from '../components/Report';
 import { Skeleton } from '../templates/Skeleton';
 import { useTranslation } from 'react-i18next';
-import { ErrorPage } from './ErrorPage';
+import { ErrorPage } from '../components/ErrorPage';
 import toast from 'react-hot-toast';
 import LoadingButton from '../Icons/LoadingButton';
-import type { Reel } from './CreateReel';
+import type { Reel } from '../types';
 import PostsGrid from '../templates/PostsGrid';
-import FollowersPageGroup from './FollowersPageGroup';
+import FollowersPageGroup from '../components/FollowersPageGroup';
 
 export const GroupeProfile = () => {
     const { id } = useParams();

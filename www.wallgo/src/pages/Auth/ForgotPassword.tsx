@@ -5,7 +5,7 @@ import LoadingButton from '../../Icons/LoadingButton';
 import { ArrowLeft, ArrowRight, Lock, Mail, Send } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
-import { api_url } from './getUser';
+import { api_url } from '../../services/api';
 import { useTranslation } from 'react-i18next';
 
 const ForgotPassword = () => {

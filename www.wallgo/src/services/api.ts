@@ -8,7 +8,6 @@ export const api = axios.create({
     'Accept': 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
   },
-  //   'X-Requested-With': 'XMLHttpRequest',
 });
 
 export const api_url = "https://api.wallgo.test";

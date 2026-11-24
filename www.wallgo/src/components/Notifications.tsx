@@ -1,29 +1,12 @@
 import axios from 'axios';
 import React from 'react'
 import { FiCheck } from 'react-icons/fi';
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { NotificationCard } from './NotificationCard';
 import { useTranslation } from 'react-i18next';
-
-export interface Notification {
-    id: string;
-    type: string;
-    read_at: string;
-    data: {
-        user_id: number;
-        user_name: string;
-        user_avatar: string;
-        post_id: number;
-        type: string;
-        message: string;
-        link: string;
-        followig_id?: number;
-        comment_content?: string;
-    }
-    created_at: string;
-}
+import type { Notification } from '../types';
 
 interface NotificationsProps {
     isOpen: boolean;

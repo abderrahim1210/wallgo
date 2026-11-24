@@ -1,156 +1,137 @@
 import {
-    AlertTriangle,
-    CalendarDays,
     Check,
-    FileText,
+    Database,
+    EyeOff,
     Fingerprint,
     LockKeyhole,
-    MessageCircle,
-    Scale,
     ShieldCheck,
     SlidersHorizontal,
     UserRound,
+    WandSparkles,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Helmet } from 'react-helmet-async'
-import { MainLayout } from '../MainLayout'
+import { MainLayout } from '../layouts/MainLayout'
 
-const termsSections = [
+const privacySections = [
     {
-        id: 'acceptance-of-terms',
-        icon: FileText,
-        title: 'terms.sections.acceptance.title',
-        eyebrow: 'terms.sections.acceptance.eyebrow',
-        description: 'terms.sections.acceptance.description',
+        id: 'information-we-collect',
+        icon: Database,
+        title: 'privacy.sections.information.title',
+        eyebrow: 'privacy.sections.information.eyebrow',
+        description: 'privacy.sections.information.description',
         items: [
             {
-                title: 'terms.sections.acceptance.items.agreement.title',
-                description: 'terms.sections.acceptance.items.agreement.description',
+                title: 'privacy.sections.information.items.account.title',
+                description: 'privacy.sections.information.items.account.description',
             },
             {
-                title: 'terms.sections.acceptance.items.updates.title',
-                description: 'terms.sections.acceptance.items.updates.description',
+                title: 'privacy.sections.information.items.profile.title',
+                description: 'privacy.sections.information.items.profile.description',
+            },
+            {
+                title: 'privacy.sections.information.items.content.title',
+                description: 'privacy.sections.information.items.content.description',
+            },
+            {
+                title: 'privacy.sections.information.items.interactions.title',
+                description: 'privacy.sections.information.items.interactions.description',
             },
         ],
     },
     {
-        id: 'accounts-and-security',
+        id: 'profile-views',
+        icon: EyeOff,
+        title: 'privacy.sections.profileViews.title',
+        eyebrow: 'privacy.sections.profileViews.eyebrow',
+        description: 'privacy.sections.profileViews.description',
+        items: [
+            {
+                title: 'privacy.sections.profileViews.items.recording.title',
+                description: 'privacy.sections.profileViews.items.recording.description',
+            },
+            {
+                title: 'privacy.sections.profileViews.items.visibility.title',
+                description: 'privacy.sections.profileViews.items.visibility.description',
+            },
+        ],
+    },
+    {
+        id: 'how-we-use-data',
+        icon: WandSparkles,
+        title: 'privacy.sections.usage.title',
+        eyebrow: 'privacy.sections.usage.eyebrow',
+        description: 'privacy.sections.usage.description',
+        items: [
+            {
+                title: 'privacy.sections.usage.items.feed.title',
+                description: 'privacy.sections.usage.items.feed.description',
+            },
+            {
+                title: 'privacy.sections.usage.items.security.title',
+                description: 'privacy.sections.usage.items.security.description',
+            },
+            {
+                title: 'privacy.sections.usage.items.notifications.title',
+                description: 'privacy.sections.usage.items.notifications.description',
+            },
+            {
+                title: 'privacy.sections.usage.items.improvement.title',
+                description: 'privacy.sections.usage.items.improvement.description',
+            },
+        ],
+    },
+    {
+        id: 'data-security',
         icon: LockKeyhole,
-        title: 'terms.sections.accounts.title',
-        eyebrow: 'terms.sections.accounts.eyebrow',
-        description: 'terms.sections.accounts.description',
+        title: 'privacy.sections.security.title',
+        eyebrow: 'privacy.sections.security.eyebrow',
+        description: 'privacy.sections.security.description',
         items: [
             {
-                title: 'terms.sections.accounts.items.accuracy.title',
-                description: 'terms.sections.accounts.items.accuracy.description',
+                title: 'privacy.sections.security.items.authentication.title',
+                description: 'privacy.sections.security.items.authentication.description',
             },
             {
-                title: 'terms.sections.accounts.items.credentials.title',
-                description: 'terms.sections.accounts.items.credentials.description',
+                title: 'privacy.sections.security.items.storage.title',
+                description: 'privacy.sections.security.items.storage.description',
             },
             {
-                title: 'terms.sections.accounts.items.responsibility.title',
-                description: 'terms.sections.accounts.items.responsibility.description',
+                title: 'privacy.sections.security.items.control.title',
+                description: 'privacy.sections.security.items.control.description',
             },
         ],
     },
     {
-        id: 'user-generated-content',
-        icon: Fingerprint,
-        title: 'terms.sections.content.title',
-        eyebrow: 'terms.sections.content.eyebrow',
-        description: 'terms.sections.content.description',
-        items: [
-            {
-                title: 'terms.sections.content.items.ownership.title',
-                description: 'terms.sections.content.items.ownership.description',
-            },
-            {
-                title: 'terms.sections.content.items.permission.title',
-                description: 'terms.sections.content.items.permission.description',
-            },
-            {
-                title: 'terms.sections.content.items.bookmarks.title',
-                description: 'terms.sections.content.items.bookmarks.description',
-            },
-            {
-                title: 'terms.sections.content.items.rules.title',
-                description: 'terms.sections.content.items.rules.description',
-            },
-        ],
-    },
-    {
-        id: 'features-and-interactions',
-        icon: MessageCircle,
-        title: 'terms.sections.features.title',
-        eyebrow: 'terms.sections.features.eyebrow',
-        description: 'terms.sections.features.description',
-        items: [
-            {
-                title: 'terms.sections.features.items.feeds.title',
-                description: 'terms.sections.features.items.feeds.description',
-            },
-            {
-                title: 'terms.sections.features.items.messaging.title',
-                description: 'terms.sections.features.items.messaging.description',
-            },
-            {
-                title: 'terms.sections.features.items.profileViews.title',
-                description: 'terms.sections.features.items.profileViews.description',
-            },
-            {
-                title: 'terms.sections.features.items.integrity.title',
-                description: 'terms.sections.features.items.integrity.description',
-            },
-        ],
-    },
-    {
-        id: 'termination-and-suspension',
+        id: 'your-rights',
         icon: UserRound,
-        title: 'terms.sections.termination.title',
-        eyebrow: 'terms.sections.termination.eyebrow',
-        description: 'terms.sections.termination.description',
+        title: 'privacy.sections.rights.title',
+        eyebrow: 'privacy.sections.rights.eyebrow',
+        description: 'privacy.sections.rights.description',
         items: [
             {
-                title: 'terms.sections.termination.items.enforcement.title',
-                description: 'terms.sections.termination.items.enforcement.description',
+                title: 'privacy.sections.rights.items.profile.title',
+                description: 'privacy.sections.rights.items.profile.description',
             },
             {
-                title: 'terms.sections.termination.items.access.title',
-                description: 'terms.sections.termination.items.access.description',
-            },
-        ],
-    },
-    {
-        id: 'limitation-of-liability',
-        icon: Scale,
-        title: 'terms.sections.liability.title',
-        eyebrow: 'terms.sections.liability.eyebrow',
-        description: 'terms.sections.liability.description',
-        items: [
-            {
-                title: 'terms.sections.liability.items.availability.title',
-                description: 'terms.sections.liability.items.availability.description',
+                title: 'privacy.sections.rights.items.content.title',
+                description: 'privacy.sections.rights.items.content.description',
             },
             {
-                title: 'terms.sections.liability.items.limits.title',
-                description: 'terms.sections.liability.items.limits.description',
-            },
-            {
-                title: 'terms.sections.liability.items.protection.title',
-                description: 'terms.sections.liability.items.protection.description',
+                title: 'privacy.sections.rights.items.settings.title',
+                description: 'privacy.sections.rights.items.settings.description',
             },
         ],
     },
 ]
 
-const Terms = () => {
+const Privacy = () => {
     const { t } = useTranslation()
 
     return (
         <MainLayout>
             <Helmet>
-                <title>{t('terms.pageTitle')}</title>
+                <title>{t('privacy.pageTitle')}</title>
             </Helmet>
             <main className="relative min-h-screen overflow-hidden bg-gray-50 px-4 py-12 transition-colors duration-300 dark:bg-gray-950 sm:px-6 sm:py-16 lg:px-8">
                 <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[42rem] overflow-hidden">
@@ -167,29 +148,24 @@ const Terms = () => {
                     <header className="relative isolate mb-14 space-y-6 py-4 text-center sm:mb-16 sm:py-8">
                         <div className="absolute left-1/2 top-[-8rem] -z-10 h-72 w-72 -translate-x-1/2 rounded-full bg-[var(--special-purple)]/10 blur-3xl" />
                         <span className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-white/70 bg-white/65 text-[var(--special-purple)] shadow-xl shadow-purple-950/5 backdrop-blur-md dark:border-white/10 dark:bg-gray-800/55">
-                            <FileText className="h-8 w-8" strokeWidth={1.8} aria-hidden="true" />
+                            <ShieldCheck className="h-8 w-8" strokeWidth={1.8} aria-hidden="true" />
                         </span>
                         <div className="space-y-4">
                             <p className="inline-flex items-center gap-2 rounded-full border border-purple-200/70 bg-white/70 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-[var(--special-purple)] shadow-sm backdrop-blur-md dark:border-purple-400/20 dark:bg-gray-900/60">
-                                <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-                                {t('terms.eyebrow')}
+                                <Fingerprint className="h-3.5 w-3.5" aria-hidden="true" />
+                                {t('privacy.eyebrow')}
                             </p>
                             <h1 className="bg-gradient-to-r from-[var(--special-purple)] to-indigo-500 bg-clip-text text-5xl font-black tracking-tight text-transparent sm:text-6xl lg:text-7xl">
-                                {t('terms.title')}
+                                {t('privacy.title')}
                             </h1>
                             <p className="mx-auto max-w-3xl text-base leading-8 text-gray-600 dark:text-gray-300 sm:text-lg">
-                                {t('terms.subtitle')}
+                                {t('privacy.subtitle')}
                             </p>
                         </div>
-                        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-purple-200/70 bg-white/70 px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm backdrop-blur-md dark:border-purple-300/15 dark:bg-gray-900/60 dark:text-gray-200">
-                            <CalendarDays className="h-4 w-4 text-[var(--special-purple)]" aria-hidden="true" />
-                            <span>{t('terms.effectiveDateLabel')}</span>
-                            <span className="text-[var(--special-purple)]">{t('terms.effectiveDate')}</span>
-                        </div>
                         <div className="mx-auto flex max-w-2xl items-start gap-3 rounded-2xl border border-purple-200/60 bg-white/60 p-4 text-start shadow-sm backdrop-blur-md dark:border-purple-300/10 dark:bg-gray-900/55">
-                            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-[var(--special-purple)]" aria-hidden="true" />
+                            <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-[var(--special-purple)]" aria-hidden="true" />
                             <p className="text-sm leading-6 text-gray-600 dark:text-gray-300">
-                                {t('terms.summaryNote')}
+                                {t('privacy.summaryNote')}
                             </p>
                         </div>
                     </header>
@@ -197,17 +173,17 @@ const Terms = () => {
                     <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-10">
                         <aside className="h-fit lg:sticky lg:top-24">
                             <nav
-                                aria-label={t('terms.toc.ariaLabel')}
+                                aria-label={t('privacy.toc.ariaLabel')}
                                 className="rounded-2xl border border-white/70 bg-white/65 p-4 shadow-lg shadow-gray-950/[0.03] backdrop-blur-md dark:border-white/10 dark:bg-gray-900/60 sm:p-5"
                             >
                                 <div className="mb-3 flex items-center gap-2 px-2">
                                     <SlidersHorizontal className="h-4 w-4 text-[var(--special-purple)]" aria-hidden="true" />
                                     <p className="text-sm font-bold text-gray-900 dark:text-white">
-                                        {t('terms.toc.title')}
+                                        {t('privacy.toc.title')}
                                     </p>
                                 </div>
                                 <ul className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
-                                    {termsSections.map((section, index) => (
+                                    {privacySections.map((section, index) => (
                                         <li key={section.id} className="shrink-0 lg:shrink">
                                             <a
                                                 href={`#${section.id}`}
@@ -225,7 +201,7 @@ const Terms = () => {
                         </aside>
 
                         <div className="space-y-6">
-                            {termsSections.map(({ id, icon: Icon, title, eyebrow, description, items }) => (
+                            {privacySections.map(({ id, icon: Icon, title, eyebrow, description, items }) => (
                                 <section
                                     key={id}
                                     id={id}
@@ -281,4 +257,4 @@ const Terms = () => {
     )
 }
 
-export default Terms
+export default Privacy

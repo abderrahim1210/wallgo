@@ -6,7 +6,7 @@ import { useAuth } from '../hooks/AuthProvider';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 
 export const MobileCellNavbar = () => {
     const { t } = useTranslation();

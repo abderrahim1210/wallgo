@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import type { Page } from './PageProfile'
+import type { Page } from '../types'
 import { useNavigate } from 'react-router-dom'
-import { useFollowPG } from './useFollowPG'
+import { useFollowPG } from '../hooks/useFollowPG'
 import { useAuth } from '../hooks/AuthProvider'
 import { useTranslation } from 'react-i18next'
 

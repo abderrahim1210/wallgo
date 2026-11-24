@@ -3,7 +3,7 @@ import { Check, Edit3, Flag, Heart, Link, MoreHorizontal, Trash2, X } from 'luci
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import { FiSend } from 'react-icons/fi';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/AuthProvider';

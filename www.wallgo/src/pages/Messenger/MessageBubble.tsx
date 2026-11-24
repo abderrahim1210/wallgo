@@ -4,7 +4,7 @@ import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import { api_url } from '../Auth/getUser';
+import { api_url } from '../../services/api';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { useModal } from '../../hooks/ModalProvider';

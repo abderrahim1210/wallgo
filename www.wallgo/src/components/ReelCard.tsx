@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
-import type { Reel } from './CreateReel';
+import type { Reel } from '../types';
 import { Bookmark, Eye, Heart, MessageCircle, MoreVertical, Music, Pause, Send, Volume2, VolumeX } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useFollow } from './useFollow';
+import { useFollow } from '../hooks/useFollow';
 import { useAuth } from '../hooks/AuthProvider';
 import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
 import { CommentSection } from './CommentSection';

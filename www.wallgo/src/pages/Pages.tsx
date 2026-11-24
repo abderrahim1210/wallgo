@@ -1,18 +1,18 @@
 import React from 'react'
-import { MainLayout } from '../MainLayout';
+import { MainLayout } from '../layouts/MainLayout';
 import { FaNoteSticky, FaRectangleList, FaSliders } from 'react-icons/fa6';
 import { FaCompass, FaLayerGroup, FaNewspaper, FaPage4 } from 'react-icons/fa';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { api_url } from '../pages/Auth/getUser';
-import type { Page } from './PageProfile';
-import { EmptyContent } from './EmptyContent';
+import { api_url } from '../services/api';
+import type { Page } from '../types';
+import { EmptyContent } from '../components/EmptyContent';
 import { useNavigate } from 'react-router-dom';
-import { PageCard } from './PageCard';
+import { PageCard } from '../components/PageCard';
 import PagesIcon from '../Icons/PageIcon';
 import { ArrowLeft, PlusIcon } from 'lucide-react';
 import { Skeleton } from '../templates/Skeleton';
-import { ErrorPage } from './ErrorPage';
+import { ErrorPage } from '../components/ErrorPage';
 import { useTranslation } from 'react-i18next';
 
 export const Pages = () => {

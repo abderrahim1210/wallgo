@@ -3,7 +3,7 @@ import { FiSend } from 'react-icons/fi';
 import { CommentItem, type Comment } from './CommentItem';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import toast from 'react-hot-toast';
 import Spinner from '../templates/Spinner';
 import { EmptyContent } from './EmptyContent';

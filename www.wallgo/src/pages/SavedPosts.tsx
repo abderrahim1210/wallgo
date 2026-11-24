@@ -1,12 +1,12 @@
 import { Helmet } from 'react-helmet-async';
-import { MainLayout } from '../MainLayout';
+import { MainLayout } from '../layouts/MainLayout';
 import { PostGrid } from '../templates/PostGrid';
 import { FaBookmark } from 'react-icons/fa';
 import axios from 'axios';
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Skeleton } from '../templates/Skeleton';
-import { ErrorPage } from './ErrorPage';
+import { ErrorPage } from '../components/ErrorPage';
 import { useState } from 'react';
 import PostsGrid from '../templates/PostsGrid';
 import { useTranslation } from 'react-i18next';

@@ -1,7 +1,7 @@
 import React, { type ReactNode } from 'react'
-import { Navbar } from './layouts/Navbar'
-import { Footer } from './layouts/Footer';
-import { MobileCellNavbar } from './layouts/MobileCellNavbar';
+import { Navbar } from './Navbar'
+import { Footer } from './Footer';
+import { MobileCellNavbar } from './MobileCellNavbar';
 import { Toaster } from 'react-hot-toast';
 interface MainLayoutProps {
   children: ReactNode;

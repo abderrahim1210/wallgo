@@ -1,12 +1,12 @@
 import axios from 'axios';
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import { useQuery } from '@tanstack/react-query';
-import type { Reel } from './CreateReel';
-import { ReelCard } from './ReelCard';
+import type { Reel } from '../types';
+import { ReelCard } from '../components/ReelCard';
 import Spinner from '../templates/Spinner';
-import { ErrorPage } from './ErrorPage';
+import { ErrorPage } from '../components/ErrorPage';
 import { Helmet } from 'react-helmet-async';
 import { Navbar } from '../layouts/Navbar';
 import { useTranslation } from 'react-i18next';

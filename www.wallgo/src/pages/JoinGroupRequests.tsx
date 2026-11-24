@@ -1,32 +1,16 @@
 import axios from 'axios';
 import React, { useEffect, useRef } from 'react'
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { MainLayout } from '../MainLayout';
+import { MainLayout } from '../layouts/MainLayout';
 import { Helmet } from 'react-helmet-async';
 import Spinner from '../templates/Spinner';
-import { ErrorPage } from './ErrorPage';
-import { RequestCard } from './RequestCard';
+import { ErrorPage } from '../components/ErrorPage';
+import { RequestCard } from '../components/RequestCard';
 import { UserCheck, UserCheck2 } from 'lucide-react';
-import { EmptyContent } from './EmptyContent';
+import { EmptyContent } from '../components/EmptyContent';
 import { useTranslation } from 'react-i18next';
-
-export type Request = {
-    id: number;
-    group: {
-        id: number;
-        name: string;
-        logo_url: string;
-    };
-    answer: string;
-    user: {
-        id: number;
-        username: string;
-        avatar_url: string;
-    }
-    status: string;
-    created_at: string;
-}
+import type { Request } from '../types';
 
 const JoinGroupRequests = () => {
     const { t } = useTranslation();

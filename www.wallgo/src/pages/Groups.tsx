@@ -1,29 +1,17 @@
 import React, { useState } from 'react'
-import { MainLayout } from '../MainLayout';
+import { MainLayout } from '../layouts/MainLayout';
 import { FaCompass, FaGlobe, FaLock, FaUsers } from 'react-icons/fa';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { api_url } from '../pages/Auth/getUser';
-import { EmptyContent } from './EmptyContent';
+import { api_url } from '../services/api';
+import { EmptyContent } from '../components/EmptyContent';
 import { ArrowLeft, PlusIcon, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { GroupCard } from './GroupCard';
+import { GroupCard } from '../components/GroupCard';
 import { Skeleton } from '../templates/Skeleton';
-import { ErrorPage } from './ErrorPage';
+import { ErrorPage } from '../components/ErrorPage';
 import { useTranslation } from 'react-i18next';
-
-export interface Group {
-    id: number;
-    owner_id: number;
-    name: string;
-    description: string;
-    visibility: string;
-    logo_url: string;
-    banner_url: string;
-    created_at: string;
-    followers_count: number;
-    is_followed: boolean;
-}
+import type { Group } from '../types';
 
 export const Groups = () => {
     const navigate = useNavigate();

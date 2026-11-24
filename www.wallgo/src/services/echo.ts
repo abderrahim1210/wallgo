@@ -1,6 +1,6 @@
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
-import { api } from './pages/Auth/getUser';
+import { api } from './api';
 
 declare global {
     interface Window {

@@ -1,27 +1,21 @@
 import React, { useEffect, useState } from 'react'
-import { MainLayout } from '../MainLayout'
-import { PostCard } from '../pages/Post/PostCard';
+import { MainLayout } from '../layouts/MainLayout'
+import { PostCard } from './Post/PostCard';
 import { Bookmark, Code, Compass, Flame, Globe, ImageIcon, Layers, Pencil, Plus, Settings, TrendingUp, Users } from 'lucide-react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
 import axios from 'axios';
-import type { Post } from '../templates/PostGrid';
+import type { Post, User } from '../types';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PostGrid } from '../templates/PostGrid';
 import toast from 'react-hot-toast';
-import { useFollow } from './useFollow';
-import { FollowUser } from './FollowUser';
+import { useFollow } from '../hooks/useFollow';
+import { FollowUser } from '../components/FollowUser';
 import Spinner from '../templates/Spinner';
-import { ErrorPage } from './ErrorPage';
+import { ErrorPage } from '../components/ErrorPage';
 import { useTranslation } from 'react-i18next';
 
-export type User = {
-  id: number,
-  name: string,
-  username: string,
-  avatar_url: string
-}
 export const Home = () => {
   const { t } = useTranslation();
   const api_url = 'https://api.wallgo.test';

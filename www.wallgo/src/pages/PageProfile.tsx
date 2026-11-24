@@ -1,48 +1,29 @@
 import React, { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async';
-import { MainLayout } from '../MainLayout';
-import { PostGrid, type Post } from '../templates/PostGrid';
+import { MainLayout } from '../layouts/MainLayout';
+import { PostGrid } from '../templates/PostGrid';
 import { Check, Clapperboard, Flag, MoreHorizontal, Pencil, PlusIcon, PlusSquare, Settings, Share2, User, Users } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { EmptyContent } from './EmptyContent';
+import { EmptyContent } from '../components/EmptyContent';
 import { FaRegNewspaper } from 'react-icons/fa';
 import { useAuth } from '../hooks/AuthProvider';
 import { useModal } from '../hooks/ModalProvider';
 import ModalTemplate from '../templates/ModalTemplate';
-import { PageSettings } from './PageSettings';
-import { useFollowPG } from './useFollowPG';
+import { PageSettings } from '../components/PageSettings';
+import { useFollowPG } from '../hooks/useFollowPG';
 import { Skeleton } from '../templates/Skeleton';
-import { ErrorPage } from './ErrorPage';
+import { ErrorPage } from '../components/ErrorPage';
 import { DropdownMenu, type DropdownItem } from '../templates/DropdownMenu';
-import ShareDropdown from './ShareDropdown';
-import { Report } from './Report';
+import ShareDropdown from '../components/ShareDropdown';
+import { Report } from '../components/Report';
 import { useTranslation } from 'react-i18next';
-import type { Reel } from './CreateReel';
 import PostsGrid from '../templates/PostsGrid';
-import FollowersPageGroup from './FollowersPageGroup';
+import FollowersPageGroup from '../components/FollowersPageGroup';
 import Gallery from '../templates/Gallery';
-
-export interface Page {
-    id: number;
-    owner_id: number;
-    owner: {
-        id: number;
-        name: string;
-        username: string;
-        avatar_url: string;
-    }
-    name: string;
-    description?: string;
-    logo_url?: string;
-    banner_url?: string;
-    created_at: string;
-    followers_count: number;
-    is_followed: boolean;
-    posts: Post[]
-}
+import type { Post, Reel } from '../types';
 
 export const PageProfile = () => {
     const { id } = useParams();

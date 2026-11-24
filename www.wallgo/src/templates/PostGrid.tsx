@@ -5,44 +5,7 @@ import { PostCard } from '../pages/Post/PostCard';
 import { Skeleton } from './Skeleton';
 import FollowUserCard from '../components/FollowUserCard';
 import { useTranslation } from 'react-i18next';
-
-interface User {
-    id: number;
-    name: string;
-    username: string;
-    avatar_url: string;
-}
-export interface Post {
-    id: number;
-    user: {
-        id: number;
-        name: string;
-        username: string;
-        avatar_url: string;
-    };
-    content: string;
-    media_url: string;
-    schedule_time: string,
-    unlock_time: string;
-    expires_at: string;
-    likes_count: number;
-    is_liked: boolean;
-    comments_count: number;
-    created_at: string;
-    is_owner?: boolean;
-    postable?: {
-        id?: number;
-        name?: string;
-        logo_url?: string;
-        owner_id?:number;
-    };
-    postable_type: string;
-    is_saved: boolean;
-    visibility: 'private' | 'public';
-    is_group_owner?: boolean;
-    is_page_owner?:boolean;
-    views_count:number;
-};
+import type { Post, User } from '../types';
 
 interface PostGridProps {
     posts: Post[];

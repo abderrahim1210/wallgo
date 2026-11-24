@@ -2,42 +2,12 @@ import { Clapperboard, Disc, Eye, EyeClosed, Loader2, Music, Play, Sparkles, Upl
 import React, { useEffect, useRef, useState } from 'react'
 import { ReelIcon } from '../Icons/ReelIcon';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { MainLayout } from '../MainLayout';
+import { MainLayout } from '../layouts/MainLayout';
 import axios from 'axios';
-import { api_url } from '../pages/Auth/getUser';
+import { api_url } from '../services/api';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-
-export type Reel = {
-    id: number;
-    user_id: number;
-    video_url: string;
-    caption: string;
-    audio_name: string;
-    audio_url: string;
-    likes_count: number;
-    comments_count: number;
-    created_at: string;
-    is_owner: boolean;
-    is_followed: boolean;
-    is_liked: boolean;
-    is_saved: boolean;
-    public_id: number;
-    views_count: number;
-    user: {
-        id: number;
-        name: string;
-        username: string;
-        avatar_url: string;
-    };
-    reelable: {
-        id: number;
-        name: string;
-        owner_id: number;
-        logo_url: string;
-    }
-    reelable_type:string;
-}
+import type { Reel } from '../types';
 
 export const cloudName = "dhysaozog";
 

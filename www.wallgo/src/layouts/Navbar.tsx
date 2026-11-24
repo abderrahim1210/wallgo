@@ -9,7 +9,7 @@ import AnimatedMenuIcon from '../Icons/AnimatedMenuIcon'
 import { DropdownMenu } from '../templates/DropdownMenu'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { api_url } from '../pages/Auth/getUser'
+import { api_url } from '../services/api'
 import { useTranslation } from 'react-i18next'
 import useDarkMode from '../hooks/useDarkMode'
 
