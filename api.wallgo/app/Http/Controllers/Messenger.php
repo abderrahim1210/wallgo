@@ -120,6 +120,7 @@ class Messenger extends Controller
             'username' => $otherUser->username,
             'avatar_url' => $otherUser->avatar_url,
             'online' => (bool) ($otherUser->online ?? false),
+            'last_seen_at' => $otherUser->last_seen_at?->toISOString(),
         ] : null;
 
         return [

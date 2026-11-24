@@ -9,3 +9,14 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
     return $user->conversations()->whereKey($conversationId)->exists();
 });
+
+Broadcast::channel('online', function ($user) {
+    if (!$user) {
+        return false;
+    }
+    return [
+        'id' => $user->id,
+        'name' => $user->name,
+        'last_seen_at' => $user->last_seen_at?->toISOString(),
+    ];
+});

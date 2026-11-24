@@ -39,6 +39,7 @@ export const AppRoutes = () => {
             <Route path='/search' element={<Discover />} />
             <Route path='/reels' element={<Reels />} />
             <Route path='/messenger' element={<Messenger />} />
+            <Route path='/messenger/:userId' element={<Messenger />} />
             <Route path='/saved_posts' element={<SavedPosts />} />
             <Route path='/create_post' element={<CreatePost />} />
             {/* <Route path='/myposts' element={<MyPosts />} /> */}

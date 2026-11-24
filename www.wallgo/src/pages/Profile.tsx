@@ -285,7 +285,7 @@ export const Profile = () => {
                                                     <span>{follow ? t('profile.followed') : t('profile.follow')}</span>
                                                 </button>
 
-                                                <button onClick={() => navigate('/messenger', { state: { id: profile?.id } })} className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0">
+                                                <button type="button" onClick={() => profile?.id && navigate(`/messenger/${profile.id}`, { state: { id: profile.id } })} className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer shrink-0">
                                                     <span>{t('profile.message')}</span>
                                                 </button>
                                                 <DropdownMenu

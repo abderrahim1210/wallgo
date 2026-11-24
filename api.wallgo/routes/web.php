@@ -18,6 +18,7 @@ use App\Http\Controllers\Messenger;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Post;
+use App\Http\Controllers\PresenceController;
 use App\Http\Controllers\ReelController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
@@ -276,6 +277,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/conversations')->group(function () {
         Route::delete('/{id}/{type}', [ConversationController::class, 'destroy']);
+    });
+
+    Route::prefix('/presence')->group(function () {
+        Route::post('/ping', [PresenceController::class, 'ping']);
+        Route::post('/offline', [PresenceController::class, 'offline']);
     });
 });
 Route::post('/send_link_email', [ForgotPassword::class, 'send_link']);

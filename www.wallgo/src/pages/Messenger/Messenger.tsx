@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Image, Info, MessageCircle, Phone, Reply, Search, Send, Smile, Video, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Navbar } from '../../layouts/Navbar';
@@ -10,7 +10,7 @@ import { MessageBubble, type ChatMessage } from './MessageBubble';
 import type { Conversation } from './ConversationItem';
 import ConversationItem from './ConversationItem';
 import { EmptyContent } from '../../components/EmptyContent';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Spinner from '../../templates/Spinner';
 import { ErrorPage } from '../../components/ErrorPage';
 import moment from 'moment';
@@ -22,6 +22,7 @@ import useDarkMode from '../../hooks/useDarkMode';
 import toast from 'react-hot-toast';
 import type { SelectedMediaItem } from './ImageComposerPopover';
 import ImageComposerPopover from './ImageComposerPopover';
+import { usePresence } from '../../hooks/usePresence';
 
 export type StateParams = {
     conversation: Conversation,
@@ -31,9 +32,11 @@ export type StateParams = {
 
 export const Messenger = () => {
     const location = useLocation();
-    const id = location.state?.id;
+    const { userId } = useParams();
+    const id = userId ?? location.state?.id;
     const queryClient = useQueryClient();
     const m = useMoment();
+    const { getPresenceInfo } = usePresence();
 
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showChatInfo, setShowChatInfo] = useState(false);
@@ -165,12 +168,12 @@ export const Messenger = () => {
         }
     };
 
-    const appendMessage = (conversationId: number | string, msg: ChatMessage) => {
+    const appendMessage = useCallback((conversationId: number | string, msg: ChatMessage) => {
         queryClient.setQueryData<ChatMessage[]>(
             [`messages-${conversationId}`],
             (current = []) => current.some((m) => m.id === msg.id) ? current : [...current, msg]
         );
-    };
+    }, [queryClient]);
 
     const fetchConversations = async () => {
         const res = await axios.get(`${api_url}/messenger`, { withCredentials: true, withXSRFToken: true });
@@ -222,6 +225,9 @@ export const Messenger = () => {
     const activeChat = currentSelection?.conversation ?? linkedConversation;
     const showMobileChat = currentSelection?.showOnMobile ?? Boolean(id);
     const activeChatId = activeChat?.id;
+    const activeChatPresence = activeChat
+        ? getPresenceInfo(activeChat.user.id, activeChat.user.last_seen_at)
+        : null;
 
     const navigate = useNavigate();
 
@@ -251,7 +257,7 @@ export const Messenger = () => {
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
         const text = messageInput.trim();
-        if (!text || !activeChat) return;
+        if (!text || !activeChat || isSending || isUploadingImage) return;
 
         try {
             setIsSending(true);
@@ -267,6 +273,7 @@ export const Messenger = () => {
             setMessageInput('');
             setShowEmojiPicker(false);
             setMessageToReply(null);
+            await queryClient.invalidateQueries({ queryKey: ['conversations'] });
         } catch (err) {
             console.error(err);
             showNotify(t('messenger.sendFailed'));
@@ -279,6 +286,7 @@ export const Messenger = () => {
         clearSelectedMedia();
         setChatSelection({ locationKey: location.key, conversation, showOnMobile: true });
         setMessageInput('');
+        setMessageToReply(null);
         setShowChatInfo(false);
         setShowEmojiPicker(false);
     };
@@ -341,7 +349,7 @@ export const Messenger = () => {
 
         const handleMessageSent = (e: { message: ChatMessage }) => {
             if (!e?.message) return;
-            appendMessage(activeChat?.id, e.message);
+            appendMessage(activeChatId, e.message);
             void queryClient.invalidateQueries({ queryKey: ['conversations'] });
         };
 
@@ -351,7 +359,7 @@ export const Messenger = () => {
             channel.stopListening('.message.sent', handleMessageSent);
             window.Echo.leave(channelName);
         };
-    }, [activeChatId, queryClient]);
+    }, [activeChatId, appendMessage, queryClient]);
 
     const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -497,6 +505,7 @@ export const Messenger = () => {
             targetEl.classList.remove('ring-2', 'ring-[var(--special-purple)]', 'bg-[var(--special-purple)]/10');
         }, 1200);
     };
+
     return (
         <>
             <Navbar />
@@ -582,15 +591,15 @@ export const Messenger = () => {
                                         </button>
                                         <span className="relative shrink-0">
                                             <img src={activeChat?.user?.avatar_url ?? '/icons/avatar1.svg'} alt="" className="h-11 w-11 rounded-full object-cover ring-2 ring-white dark:ring-gray-800" />
-                                            {activeChat?.online && <span className="absolute bottom-0 end-0 h-3 w-3 rounded-full border-2 border-white bg-emerald-500 dark:border-gray-900" />}
+                                            {activeChatPresence?.isOnline && <span className="absolute bottom-0 end-0 h-3 w-3 rounded-full border-2 border-white bg-emerald-500 dark:border-gray-900" />}
                                         </span>
                                         <div className="min-w-0">
-                                            <h2 className="truncate text-sm font-bold text-gray-900 dark:text-white cursor-pointer" onClick={() => navigate(`/profile/${activeChat.id}/${activeChat.user.username}`)}>{activeChat?.user?.name}</h2>
+                                            <h2 className="truncate text-sm font-bold text-gray-900 dark:text-white cursor-pointer" onClick={() => navigate(`/profile/${activeChat.user.id}/${activeChat.user.username}`)}>{activeChat?.user?.name}</h2>
                                             <span className='text-[10px]'>@{activeChat?.user?.username}</span>
-                                            {activeChat?.online && (
-                                                <p className="mt-0.5 flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-                                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                                                    {t('messenger.activeNow')}
+                                            {activeChatPresence && (
+                                                <p className={`mt-0.5 flex items-center gap-1.5 text-[11px] font-medium ${activeChatPresence.isOnline ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                                                    {activeChatPresence.isOnline && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />}
+                                                    {activeChatPresence.statusLabel}
                                                 </p>
                                             )}
                                         </div>
@@ -632,12 +641,12 @@ export const Messenger = () => {
                                                 <div className="flex items-center gap-3">
                                                     <span className="relative shrink-0">
                                                         <img src={activeChat?.user?.avatar_url ?? '/icons/avatar1.svg'} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-white dark:ring-gray-800" />
-                                                        {activeChat?.user?.online && <span className="absolute bottom-0 end-0 h-3 w-3 rounded-full border-2 border-white bg-emerald-500 dark:border-gray-900" />}
+                                                        {activeChatPresence?.isOnline && <span className="absolute bottom-0 end-0 h-3 w-3 rounded-full border-2 border-white bg-emerald-500 dark:border-gray-900" />}
                                                     </span>
                                                     <div className="min-w-0">
                                                         <h3 className="truncate text-sm font-semibold text-gray-900 dark:text-white">{activeChat?.name}</h3>
-                                                        <p className={`mt-0.5 text-xs ${activeChat?.user?.online ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}`}>
-                                                            {activeChat?.user?.online ? t('messenger.activeNow') : t('messenger.offline')}
+                                                        <p className={`mt-0.5 text-xs ${activeChatPresence?.isOnline ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                                                            {activeChatPresence?.statusLabel}
                                                         </p>
                                                     </div>
 

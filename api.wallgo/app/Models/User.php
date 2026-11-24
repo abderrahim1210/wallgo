@@ -34,6 +34,8 @@ class User extends Authenticatable
         'bio',
         'avatar_url',
         'banner_url',
+        'online',
+        'last_seen_at'
     ];
 
     /**
@@ -120,6 +122,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_seen_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

@@ -218,7 +218,7 @@ export const MessageBubble = ({ message, attachmentAlt, onReply, onJumpToMessage
                         <button
                             type='button'
                             onClick={() => onJumpToMessage(repliedId)}
-                            className={`mx-2 mt-2 cursor-pointer rounded-xl border-s-4 px-3 py-1.5 text-xs ${message.sender === 'me'
+                            className={`mx-2 mt-2 block w-[calc(100%-1rem)] cursor-pointer rounded-xl border-s-4 px-3 py-1.5 text-xs ${message.sender === 'me'
                                 ? 'border-white/80 bg-black/15 text-white/95'
                                 : 'border-[var(--special-purple)] bg-gray-100/90 text-gray-700 dark:border-[var(--special-purple)] dark:bg-gray-900/75 dark:text-gray-200'
                                 }`}

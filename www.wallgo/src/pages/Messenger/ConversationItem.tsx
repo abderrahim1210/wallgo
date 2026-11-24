@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 import ModalTemplate from '../../templates/ModalTemplate';
 import { Report } from '../../components/Report';
 import { useQueryClient } from '@tanstack/react-query';
+import { usePresence } from '../../hooks/usePresence';
 
 
 export type Conversation = {
@@ -25,19 +26,19 @@ export type Conversation = {
         created_at: string;
         is_read: boolean;
         media_url?: string | null;
-        medias_count:number;
+        medias_count: number;
     } | null;
     time: string;
     online: boolean;
-    theme:string;
+    theme: string;
     user: {
         id: number;
         name: string;
         avatar_url: string;
         username: string;
         online: boolean;
+        last_seen_at: string | null;
     }
-
 };
 
 type ConversationItemProps = {
@@ -125,6 +126,9 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
         })
     }
 
+    const { getPresenceInfo } = usePresence();
+    const { isOnline } = getPresenceInfo(conversation?.user?.id, conversation?.user?.last_seen_at);
+
     return (
         <div className='relative'>
             {
@@ -146,7 +150,7 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
             >
                 <span className="relative shrink-0">
                     <img src={conversation?.user?.avatar_url || '/icons/avatar1.svg'} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-white/80 dark:ring-gray-800" />
-                    {conversation.online && (
+                    {isOnline && (
                         <span className="absolute bottom-0 end-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-500 dark:border-gray-900" />
                     )}
                 </span>
@@ -161,7 +165,7 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
                             )
                         }
                     </span>
-                    <span className={`mt-1 block truncate text-xs text-gray-500 ${conversation.unread > 0 ? 'font-bold' : ''} dark:text-gray-400`}>{conversation.latest_message?.content || (conversation.latest_message?.medias_count! > 0 ? imageMessageLabel : startConversationLabel)}</span>
+                    <span className={`mt-1 block truncate text-xs text-gray-500 ${conversation.unread > 0 ? 'font-bold' : ''} dark:text-gray-400`}>{conversation.latest_message?.content || ((conversation.latest_message?.medias_count ?? 0) > 0 ? imageMessageLabel : startConversationLabel)}</span>
                 </span>
                 {conversation?.unread > 0 && (
                     <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-[var(--special-purple)] px-1 text-[10px] font-bold text-white shadow-sm shadow-[var(--special-purple)]/25">
