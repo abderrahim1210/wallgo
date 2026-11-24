@@ -36,7 +36,7 @@ class Messenger extends Controller
                     ->where('sender_id', '!=', $user->id)
                     ->where('is_read', false),
             ])
-            ->orderByDesc('updated_at')
+            ->orderByDesc('conversations.updated_at')
             ->get()
             ->map(fn(Conversation $conversation) => $this->conversationPayload($conversation));
 
@@ -48,7 +48,7 @@ class Messenger extends Controller
 
     public function show(string $otherUserId)
     {
-        $user_id = Auth::user();
+        $user_id = Auth::id();
 
         if (!$user_id) {
             return response()->json([
@@ -90,6 +90,8 @@ class Messenger extends Controller
             if (!$conversation) {
                 $conversation = Conversation::create();
                 $conversation->users()->attach([$user->id, $otherUser->id]);
+            } else {
+                $conversation->users()->updateExistingPivot($user->id, ['deleted_at' => null]);
             }
 
             return $conversation;

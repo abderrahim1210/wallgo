@@ -46,7 +46,7 @@ class Messages extends Controller
 
         $content = trim($data['content'] ?? '');
         $attachments = $data['attachments'] ?? [];
-        $reply_to = (int) $data['reply_to'] ?? null;
+        $reply_to = isset($data['reply_to']) ? (int) $data['reply_to'] : null;
 
         if ($content === '' && count($attachments) === 0) {
             return response()->json([

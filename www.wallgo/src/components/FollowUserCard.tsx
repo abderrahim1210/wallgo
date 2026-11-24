@@ -24,7 +24,7 @@ const FollowUserCard: React.FC<FollowUserCardProps> = ({ user }) => {
             className="min-w-[150px] sm:min-w-[170px] md:max-w-[160px] bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-800 rounded-xl p-3 flex flex-col items-center text-center snap-start shrink-0"
         >
             <img
-                src={user.avatar_url || 'https://via.placeholder.com/150'}
+                src={user.avatar_url || '/icons/avatar1.svg'}
                 alt={user.name}
                 className="w-12 h-12 rounded-full object-cover mb-2 border border-white shadow-sm"
             />

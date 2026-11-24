@@ -42,7 +42,6 @@ export const AppRoutes = () => {
             <Route path='/messenger/:userId' element={<Messenger />} />
             <Route path='/saved_posts' element={<SavedPosts />} />
             <Route path='/create_post' element={<CreatePost />} />
-            {/* <Route path='/myposts' element={<MyPosts />} /> */}
             <Route path='/pages' element={<Pages />} />
             <Route path='/groups' element={<Groups />} />
             <Route path='/account/profile' element={<Profile />} />
