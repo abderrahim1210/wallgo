@@ -103,7 +103,7 @@ const ImageComposerPopover: React.FC<ImageComposerPopoverProps> = ({
         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 z-40 w-[92%] max-w-md rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-zinc-100 dark:border-zinc-800">
                 <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
-                    {items.length} {items.length === 1 ? t('messenger.image') : t('messenger.images')} مختارة
+                    {items.length} {items.length === 1 ? t('messenger.image') : t('messenger.images')} {t('messenger.choosed')}
                 </span>
                 <div className="flex items-center gap-1.5">
                     <button

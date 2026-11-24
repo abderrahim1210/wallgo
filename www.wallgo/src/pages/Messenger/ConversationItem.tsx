@@ -25,6 +25,7 @@ export type Conversation = {
         created_at: string;
         is_read: boolean;
         media_url?: string | null;
+        medias_count:number;
     } | null;
     time: string;
     online: boolean;
@@ -159,7 +160,7 @@ const ConversationItem = ({ conversation, active, yesterdayLabel, startConversat
                             )
                         }
                     </span>
-                    <span className={`mt-1 block truncate text-xs text-gray-500 ${conversation.unread > 0 ? 'font-bold' : ''} dark:text-gray-400`}>{conversation.latest_message?.content || (conversation.latest_message?.media_url ? imageMessageLabel : startConversationLabel)}</span>
+                    <span className={`mt-1 block truncate text-xs text-gray-500 ${conversation.unread > 0 ? 'font-bold' : ''} dark:text-gray-400`}>{conversation.latest_message?.content || (conversation.latest_message?.medias_count! > 0 ? imageMessageLabel : startConversationLabel)}</span>
                 </span>
                 {conversation?.unread > 0 && (
                     <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-[var(--special-purple)] px-1 text-[10px] font-bold text-white shadow-sm shadow-[var(--special-purple)]/25">

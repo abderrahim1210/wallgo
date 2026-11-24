@@ -26,10 +26,12 @@ class Messages extends Controller
         $user = User::find($user_id);
 
         $data = $request->validate([
-            'content' => ['nullable', 'string', 'max:10000', 'required_without:media_url'],
-            'media_url' => ['nullable', 'url', 'max:2048', 'required_without:content'],
+            'content' => ['nullable', 'string', 'max:10000', 'required_without:attachments'],
             'conversation_id' => ['required', 'integer', 'exists:conversations,id'],
-            'public_id' => ['nullable', 'string']
+            'attachments' => ['nullable', 'array'],
+            'attachments.*.media_url' => ['nullable', 'url', 'max:2048', 'required_without:content', 'required_with:attachments'],
+            'attachments.*.public_id' => ['nullable', 'string', 'required_with:attachements'],
+            'attachments.*.position' => ['nullable', 'numeric']
         ]);
 
         $conversation = $user->conversations()->whereKey($data['conversation_id'])->first();
@@ -42,10 +44,8 @@ class Messages extends Controller
         }
 
         $content = trim($data['content'] ?? '');
-        $mediaUrl = $data['media_url'] ?? null;
-        $public_id = $data['public_id'] ?? null;
-
-        if ($content === '' && !$mediaUrl) {
+        $attachments = $data['attachments'] ?? [];
+        if ($content === '' && count($attachments) === 0) {
             return response()->json([
                 'success' => false,
                 'message' => 'A message or attachment is required',
@@ -55,11 +55,16 @@ class Messages extends Controller
         $message = $conversation->messages()->create([
             'sender_id' => $user->id,
             'content' => $content,
-            'media_url' => $mediaUrl,
             'is_read' => false,
-            'public_id' => $public_id
-
         ]);
+
+        foreach ($attachments as $index => $att) {
+            $message->medias()->create([
+                'media_url' => $att['media_url'],
+                'public_id' => $att['public_id'],
+                'position' => $att['position'] ?? $index
+            ]);
+        }
         $conversation->touch();
 
         broadcast(new MessageSent($this->messagePayload($message, (int) $user->id), (int) $conversation->id))->toOthers();
@@ -69,6 +74,8 @@ class Messages extends Controller
             'message' => $this->messagePayload($message, (int) $user->id),
         ], 201);
     }
+
+
 
     public function messages(Request $request)
     {
@@ -113,6 +120,7 @@ class Messages extends Controller
         ]);
     }
 
+
     private function messagePayload(Message $message, int $currentUserId): array
     {
         return [
@@ -121,7 +129,7 @@ class Messages extends Controller
             'sender' => (int) $message->sender_id === $currentUserId ? 'me' : 'them',
             'content' => $message->content,
             'image' => $message->media_url,
-            'media_url' => $message->media_url,
+            'attachments' => $message->medias()->get(),
             'conversation_id' => $message->conversation_id,
             'is_read' => (bool) $message->is_read,
             'time' => $message->created_at?->format('H:i') ?? '',

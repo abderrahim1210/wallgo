@@ -18,7 +18,17 @@ export type ChatMessage = {
     sender: 'me' | 'them';
     content: string;
     time: string;
-    image?: string;
+    attachments?: [
+        {
+            id:number;
+            media_url:string;
+            created_at:string;
+            message_id:number;
+            position:number;
+            public_id:string;
+            updated_at:string;
+        }
+    ];
     conversation_id: number;
     edited: boolean;
     can_edit: boolean;
@@ -81,7 +91,7 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
                 onClick: () => { openModal(`report-message-${message?.id}`) },
             },
         ] : []),
-        ...((isOwner && message?.can_edit && !message?.image) ? [
+        ...((isOwner && message?.can_edit && !message?.attachments) ? [
             {
                 label: t('messenger.editMessage'),
                 icon: <Pencil className="w-4 h-4 text-[var(--special-purple)]" />,
@@ -193,9 +203,13 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
                                 </button>
                             </Tooltip>
                         </div> :
-                        (!message?.image) ? <p className="break-words whitespace-pre-wrap px-4 py-2.5 [overflow-wrap:anywhere]">{message.content}</p> :
+                        (!message?.attachments) ? <p className="break-words whitespace-pre-wrap px-4 py-2.5 [overflow-wrap:anywhere]">{message.content}</p> :
                             <div className="p-1.5">
-                                <img src={message.image} alt={attachmentAlt} className="max-h-60 w-full max-w-full rounded-xl object-cover" />
+                                {
+                                    message?.attachments?.map((m) => (
+                                        <img src={m.media_url} className="max-h-60 w-full max-w-full rounded-xl object-cover" />
+                                    ))
+                                }
                                 {message.content && (
                                     <p className="break-words whitespace-pre-wrap px-2.5 py-2 [overflow-wrap:anywhere]">
                                         {message.content}

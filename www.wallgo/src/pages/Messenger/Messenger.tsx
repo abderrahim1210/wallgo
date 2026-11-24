@@ -96,74 +96,87 @@ export const Messenger = () => {
         if (!activeChat || isSending || isUploadingImage) return 0;
         if (finalFiles.length === 0) return 0;
 
-        const sentIds: string[] = [];
-
         try {
             setIsSending(true);
             setIsUploadingImage(true);
 
-            for (const [index, file] of finalFiles.entries()) {
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('upload_preset', 'wallgo_messages_image');
+            const uploadedMedias = await Promise.all(
+                finalFiles.map(async (file, index) => {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', 'wallgo_messages_image');
 
-                const upload = await axios.post(
-                    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-                    formData
-                );
+                    const upload = await axios.post(
+                        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+                        formData
+                    );
 
-                const mediaUrl = upload.data.secure_url;
-                const publicId = upload.data.public_id;
-                if (typeof mediaUrl !== 'string' || typeof publicId !== 'string') {
-                    throw new Error('Image upload returned an invalid response');
-                }
+                    const mediaUrl = upload.data.secure_url;
+                    const publicId = upload.data.public_id;
+                    if (typeof mediaUrl !== 'string' || typeof publicId !== 'string') {
+                        throw new Error('Image upload returned an invalid response');
+                    }
 
-                const res = await axios.post(
-                    `${api_url}/messages/send`,
-                    {
-                        content: index === 0 ? caption || null : null,
+                    return {
                         media_url: mediaUrl,
                         public_id: publicId,
-                        conversation_id: activeChat.id,
-                    },
-                    { withCredentials: true, withXSRFToken: true }
-                );
+                        position: index
+                    };
+                })
+            )
+            // for (const [index, file] of finalFiles.entries()) {
+            //     const formData = new FormData();
+            //     formData.append('file', file);
+            //     formData.append('upload_preset', 'wallgo_messages_image');
 
-                if (!res.data.success || !res.data.message) {
-                    throw new Error('Failed to send image');
-                }
+            //     const upload = await axios.post(
+            //         `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+            //         formData
+            //     );
 
-                appendMessage(activeChat?.id, res.data.message);
+            //     const mediaUrl = upload.data.secure_url;
+            //     const publicId = upload.data.public_id;
+            //     if (typeof mediaUrl !== 'string' || typeof publicId !== 'string') {
+            //         throw new Error('Image upload returned an invalid response');
+            //     }
 
-                if (itemIds[index]) {
-                    sentIds.push(itemIds[index]);
-                }
+            const res = await axios.post(
+                `${api_url}/messages/send`,
+                {
+                    content: caption.trim() || null,
+                    attachments: uploadedMedias,
+                    conversation_id: activeChat.id,
+                },
+                { withCredentials: true, withXSRFToken: true }
+            );
+
+            if (!res.data.success || !res.data.message) {
+                throw new Error('Failed to send image');
             }
 
+            appendMessage(activeChat?.id, res.data.message);
             setMessageInput('');
             setShowEmojiPicker(false);
+
+            const sentSet = new Set(itemIds);
+            setSelectedMedia((prev) => {
+                prev.forEach((item) => {
+                    if (sentSet.has(item.id)) URL.revokeObjectURL(item.previewUrl);
+                });
+                return prev.filter((item) => !sentSet.has(item.id));
+            });
+
+            return uploadedMedias.length;
         } catch (err) {
             console.error(err);
             showNotify(t('messenger.sendFailed'));
+            return 0;
         } finally {
             setIsUploadingImage(false);
             setIsSending(false);
-
-            if (sentIds.length > 0) {
-                const sentSet = new Set(sentIds);
-                setSelectedMedia((prev) => {
-                    prev.forEach((item) => {
-                        if (sentSet.has(item.id)) URL.revokeObjectURL(item.previewUrl);
-                    });
-                    return prev.filter((item) => !sentSet.has(item.id));
-                });
-            }
-
             await queryClient.invalidateQueries({ queryKey: ['conversations'] });
             await queryClient.invalidateQueries({ queryKey: [`messages-${activeChat.id}`] });
         }
-
-        return sentIds.length;
     };
 
     const appendMessage = (conversationId: number | string, msg: ChatMessage) => {
