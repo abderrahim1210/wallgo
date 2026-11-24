@@ -130,10 +130,11 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
                     const res = await axios.delete(`${api_url}/messages/${id}`, { withCredentials: true, withXSRFToken: true });
                     if (res.data.success) {
                         toast.success(res.data.message || 'Message deleted successfully');
-                        queryClient.setQueryData<ChatMessage[]>([`messages-${message.conversation_id}`], (currentMessages = []) => [
-                            ...currentMessages,
-                            res.data.message,
-                        ]);
+                        queryClient.setQueryData<ChatMessage[]>(
+                            [`messages-${message.conversation_id}`],
+                            (currentMessages = []) => currentMessages.filter((m) => m.id !== id)
+                        );
+                        void queryClient.invalidateQueries({ queryKey: ['conversations'] });
                     } else {
                         toast.error(res.data.message || 'Failed to delete this message');
                     }
@@ -145,7 +146,7 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
     }
 
     const handleEdit = async () => {
-        if (!message.id && newContent === '') return null;
+        if (!message.id || !newContent.trim()) return null;
         try {
             const res = await axios.put(`${api_url}/messages/edit`, { message_id: message?.id, content: newContent }, { withCredentials: true, withXSRFToken: true });
             if (res.data.success) {
@@ -153,7 +154,7 @@ export const MessageBubble = ({ message, attachmentAlt }: MessageBubbleProps) =>
                 toast.success(res.data.message);
                 queryClient.invalidateQueries({ queryKey: [`messages-${message?.conversation_id}`] });
             } else {
-                toast.error(res.data.messages || 'Failed to edit message');
+                toast.error(res.data.message || 'Failed to edit message');
             }
         } catch (err) {
             console.error(err);

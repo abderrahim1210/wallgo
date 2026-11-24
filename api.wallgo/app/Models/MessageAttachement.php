@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class MessageAttachement extends Model
+{
+    protected $table = 'message_attachements';
+
+    protected $fillable = [
+        'message_id',
+        'media_url',
+        'public_id',
+        'position'
+    ];
+
+    public function message()
+    {
+        return $this->belongsTo(Message::class);
+    }
+}

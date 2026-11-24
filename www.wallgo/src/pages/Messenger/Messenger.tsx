@@ -133,10 +133,7 @@ export const Messenger = () => {
                     throw new Error('Failed to send image');
                 }
 
-                queryClient.setQueryData<ChatMessage[]>(
-                    [`messages-${activeChat.id}`],
-                    (currentMessages = []) => [...currentMessages, res.data.message]
-                );
+                appendMessage(activeChat?.id, res.data.message);
 
                 if (itemIds[index]) {
                     sentIds.push(itemIds[index]);
@@ -167,6 +164,13 @@ export const Messenger = () => {
         }
 
         return sentIds.length;
+    };
+
+    const appendMessage = (conversationId: number | string, msg: ChatMessage) => {
+        queryClient.setQueryData<ChatMessage[]>(
+            [`messages-${conversationId}`],
+            (current = []) => current.some((m) => m.id === msg.id) ? current : [...current, msg]
+        );
     };
 
     const fetchConversations = async () => {
@@ -254,10 +258,7 @@ export const Messenger = () => {
             setIsSending(true);
             const res = await axios.post(`${api_url}/messages/send`, { content: text, conversation_id: activeChat.id }, { withCredentials: true, withXSRFToken: true });
             if (!res.data.success || !res.data.message) throw new Error('Failed to send message');
-            queryClient.setQueryData<ChatMessage[]>([`messages-${activeChatId}`], (currentMessages = []) => [
-                ...currentMessages,
-                res.data.message,
-            ]);
+            appendMessage(activeChat?.id, res.data.message);
             setMessageInput('');
             setShowEmojiPicker(false);
         } catch (err) {
@@ -333,14 +334,8 @@ export const Messenger = () => {
 
         const handleMessageSent = (e: { message: ChatMessage }) => {
             if (!e?.message) return;
-
-            queryClient.setQueryData<ChatMessage[]>([`messages-${activeChatId}`], (current = []) => {
-                if (current.some((m) => m.id === e.message.id)) return current;
-                return [...current, e.message];
-            });
-
+            appendMessage(activeChat?.id, e.message);
             void queryClient.invalidateQueries({ queryKey: ['conversations'] });
-            void queryClient.invalidateQueries({ queryKey: ['messages_count'] });
         };
 
         channel.listen('.message.sent', handleMessageSent);

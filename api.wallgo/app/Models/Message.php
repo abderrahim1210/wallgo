@@ -36,4 +36,9 @@ class Message extends Model
     {
         return $this->morphMany(Report::class, 'reportable');
     }
+
+    public function medias()
+    {
+        return $this->hasMany(MessageAttachement::class);
+    }
 }
