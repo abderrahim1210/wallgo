@@ -2,12 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserTyping;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ConversationController extends Controller
 {
+    public function typing(Request $request, string $id)
+    {
+        $conversation = Conversation::findOrFail($id);
+
+        if (!$conversation->users()
+            ->where('users.id', Auth::id())
+            ->wherePivotNull('deleted_at')
+            ->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You dont have permission to access this conversation'
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'is_typing' => ['required', 'boolean'],
+        ]);
+
+        broadcast(new UserTyping(
+            (int) $conversation->id,
+            (int) Auth::id(),
+            (bool) $validated['is_typing'],
+        ))->toOthers();
+
+        return response()->json(['success' => true]);
+    }
+
     public function destroy(string $id, string $type)
     {
         if (!Auth::check()) {

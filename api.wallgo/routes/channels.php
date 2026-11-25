@@ -7,7 +7,10 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
-    return $user->conversations()->whereKey($conversationId)->exists();
+    return $user->conversations()
+        ->whereKey($conversationId)
+        ->wherePivotNull('deleted_at')
+        ->exists();
 });
 
 Broadcast::channel('online', function ($user) {

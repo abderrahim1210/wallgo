@@ -151,6 +151,25 @@ export const usePresence = (currentUserId?: number | null, channelName = 'online
         }
     }, [currentUserId, channelName]);
 
+    useEffect(() => {
+        if (currentUserId === undefined) return;
+
+        const handleVisibilityChange = () => {
+            if (
+                document.visibilityState === 'visible'
+                && subscribedUserId !== null
+                && subscribedUserId === currentUserId
+            ) {
+                void sendPing(subscribedUserId);
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [currentUserId]);
+
     const isUserOnline = useCallback((userId?: number | null): boolean => {
         if (!userId) return false;
         return onlineIds.has(Number(userId));

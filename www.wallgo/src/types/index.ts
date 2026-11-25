@@ -1,3 +1,5 @@
+import type Echo from 'laravel-echo';
+
 export type User = {
     id: number;
     name: string;
@@ -134,4 +136,13 @@ export interface Notification {
         comment_content?: string;
     };
     created_at: string;
+}
+
+
+export type UserConversationTypingParams = {
+    echo: Echo<'reverb'> | null;
+    conversationId: number | null;
+    currentUserId?: number;
+    messageInput: string;
+    isSending?: boolean;
 }

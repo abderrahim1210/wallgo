@@ -277,6 +277,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/conversations')->group(function () {
         Route::delete('/{id}/{type}', [ConversationController::class, 'destroy']);
+        Route::post('/{id}/typing', [ConversationController::class, 'typing']);
     });
 
     Route::prefix('/presence')->group(function () {

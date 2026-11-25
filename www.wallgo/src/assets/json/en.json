@@ -623,7 +623,8 @@
     "themeUpdated": "Theme updated successfully",
     "themeUpdateFailed": "Could not update the theme.",
     "previewImage": "Image preview",
-    "removeImage": "Remove image"
+    "removeImage": "Remove image",
+    "typing":"Typing"
   },
   "pageTitles": {
     "myPosts": "WallGo: My Posts",

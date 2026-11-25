@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Image, Info, MessageCircle, Phone, Reply, Search, Send, Smile, Video, X } from 'lucide-react';
+import { ArrowLeft, Image, Info, MessageCircle, Phone, Reply, Search, Send, Smile, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Navbar } from '../../layouts/Navbar';
 import { MobileCellNavbar } from '../../layouts/MobileCellNavbar';
@@ -23,6 +23,8 @@ import toast from 'react-hot-toast';
 import type { SelectedMediaItem } from './ImageComposerPopover';
 import ImageComposerPopover from './ImageComposerPopover';
 import { usePresence } from '../../hooks/usePresence';
+import { useConversationTyping } from '../../hooks/useConversationTyping';
+import { useAuth } from '../../hooks/AuthProvider';
 
 export type StateParams = {
     conversation: Conversation,
@@ -36,7 +38,8 @@ export const Messenger = () => {
     const id = userId ?? location.state?.id;
     const queryClient = useQueryClient();
     const m = useMoment();
-    const { getPresenceInfo } = usePresence();
+    const { user } = useAuth()!;
+    const { getPresenceInfo } = usePresence(user?.id ?? null);
 
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showChatInfo, setShowChatInfo] = useState(false);
@@ -506,6 +509,14 @@ export const Messenger = () => {
         }, 1200);
     };
 
+    const { isPerringTyping } = useConversationTyping({
+        echo: window.Echo,
+        conversationId: activeChat?.id ? Number(activeChat.id) : null,
+        currentUserId: user?.id,
+        messageInput,
+        isSending
+    });
+
     return (
         <>
             <Navbar />
@@ -615,7 +626,7 @@ export const Messenger = () => {
                                         >
                                             <Phone className="h-4.5 w-4.5" />
                                         </button>
-                                        <button
+                                        {/* <button
                                             type="button"
                                             onClick={() => showNotify(t('messenger.startingVideoCall', { name: activeChat?.user?.name }))}
                                             className="rounded-xl p-2.5 transition cursor-pointer hover:bg-[var(--special-purple)]/10 hover:text-[var(--special-purple)]"
@@ -623,7 +634,7 @@ export const Messenger = () => {
                                             aria-label={t('messenger.videoCall')}
                                         >
                                             <Video className="h-4.5 w-4.5" />
-                                        </button>
+                                        </button> */}
                                         <button
                                             type="button"
                                             onClick={() => setShowChatInfo(!showChatInfo)}
@@ -730,6 +741,16 @@ export const Messenger = () => {
                                                 </span>
                                             )}
                                     </div>
+                                    {isPerringTyping && (
+                                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-500 dark:text-indigo-400">
+                                            <span>{t('messenger.typing')}</span>
+                                            <span className="inline-flex items-center gap-0.5">
+                                                <span className="h-1 w-1 animate-bounce rounded-full bg-current [animation-delay:-0.2s]" />
+                                                <span className="h-1 w-1 animate-bounce rounded-full bg-current [animation-delay:-0.1s]" />
+                                                <span className="h-1 w-1 animate-bounce rounded-full bg-current" />
+                                            </span>
+                                        </span>
+                                    )}
                                 </div>
 
                                 <div className="relative shrink-0 border-t border-gray-200/70 bg-white dark:border-white/10 dark:bg-gray-900">
@@ -828,12 +849,13 @@ export const Messenger = () => {
                                         />
                                         <button
                                             type="submit"
+                                            dir='ltr'
                                             disabled={isSending || isUploadingImage || !messageInput.trim()}
                                             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--special-purple)] text-white shadow-lg shadow-[var(--special-purple)]/25 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[var(--special-purple)]/30 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--special-purple)]/25 disabled:cursor-not-allowed disabled:opacity-50"
                                             title={t('messenger.send')}
                                             aria-label={t('messenger.send')}
                                         >
-                                            <Send className="h-4 w-4 rtl:rotate-180" />
+                                            <Send className="h-4 w-4 " />
                                         </button>
                                     </form>
                                 </div>

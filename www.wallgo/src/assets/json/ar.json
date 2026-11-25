@@ -628,7 +628,8 @@
     "themeUpdated": "تم تحديث السمة بنجاح",
     "themeUpdateFailed": "تعذر تحديث السمة.",
     "previewImage": "معاينة الصورة",
-    "removeImage": "إزالة الصورة"
+    "removeImage": "إزالة الصورة",
+    "typing":"يكتب"
   },
   "pageTitles": {
     "myPosts": "WallGo: منشوراتي",
