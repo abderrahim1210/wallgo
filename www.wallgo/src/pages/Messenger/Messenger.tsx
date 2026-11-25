@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Image, Info, MessageCircle, Phone, Reply, Search, Send, Smile, X } from 'lucide-react';
+import { ArrowLeft, Image, Info, MessageCircle, Mic, Phone, Reply, Search, Send, Smile, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Navbar } from '../../layouts/Navbar';
 import { MobileCellNavbar } from '../../layouts/MobileCellNavbar';
@@ -818,6 +818,14 @@ export const Messenger = () => {
                                     }
                                     <form onSubmit={handleSendMessage} className="flex items-center gap-1.5 p-3 sm:gap-2.5 sm:p-4">
                                         <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" disabled={isUploadingImage || isSending} className="hidden" />
+                                        <button
+                                            type="button"
+                                            disabled={isUploadingImage || isSending}
+                                            className="shrink-0 rounded-xl p-2.5 text-gray-400 transition hover:bg-[var(--special-purple)]/10 hover:text-[var(--special-purple)] disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-500"
+                                            title={t('messenger.sendAudio')}
+                                        >
+                                            <Mic className="h-5 w-5" />
+                                        </button>
                                         <button
                                             type="button"
                                             onClick={() => fileInputRef.current?.click()}
