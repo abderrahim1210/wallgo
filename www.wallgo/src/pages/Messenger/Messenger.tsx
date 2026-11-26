@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Image, Info, MessageCircle, Mic, Phone, Reply, Search, Send, Smile, X } from 'lucide-react';
+import { ArrowLeft, Image, Info, MessageCircle, Mic, Phone, Reply, Search, Send, Smile, Square, Trash2, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Navbar } from '../../layouts/Navbar';
 import { MobileCellNavbar } from '../../layouts/MobileCellNavbar';
 import axios from 'axios';
-import { api_url } from '../../services/api';
+import { api, api_url } from '../../services/api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { MessageBubble, type ChatMessage } from './MessageBubble';
 import type { Conversation } from './ConversationItem';
@@ -25,6 +25,7 @@ import ImageComposerPopover from './ImageComposerPopover';
 import { usePresence } from '../../hooks/usePresence';
 import { useConversationTyping } from '../../hooks/useConversationTyping';
 import { useAuth } from '../../hooks/AuthProvider';
+import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
 
 export type StateParams = {
     conversation: Conversation,
@@ -517,6 +518,64 @@ export const Messenger = () => {
         isSending
     });
 
+    const {
+        isRecording,
+        duration,
+        audioPreview,
+        error: audioError,
+        startRecording,
+        stopRecording,
+        cancelRecording,
+        clearPreview,
+    } = useVoiceRecorder();
+
+    const onSendAudio = async () => {
+        if (!audioPreview) return;
+        if (audioError) {
+            toast.error(audioError);
+            return;
+        }
+
+        try {
+            const extension = audioPreview.mimeType.includes('ogg')
+                ? 'ogg'
+                : audioPreview.mimeType.includes('mp4')
+                    ? 'm4a'
+                    : 'webm';
+
+            const audioFile = new File(
+                [audioPreview.blob],
+                `voice-${Date.now()}.${extension}`,
+                { type: audioPreview.blob.type || audioPreview.mimeType || 'audio/webm' }
+            );
+            const cloudinaryFormData = new FormData();
+            const presetFile = 'wallgo_audio_messages';
+            cloudinaryFormData.append('file', audioFile);
+            cloudinaryFormData.append('upload_preset', presetFile);
+
+            const resCloud = await axios.post(
+                `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
+                cloudinaryFormData
+            );
+
+            const mediaUrl = resCloud.data.secure_url;
+            const publicId = resCloud.data.public_id;
+
+            const formData = new FormData();
+            formData.append('audio_url', mediaUrl);
+            formData.append('public_id', publicId);
+            formData.append('duration', String(audioPreview.duration));
+            formData.append('conversation_id', String(activeChat?.id));
+            await api.post('/messages/send_audio', formData, { withCredentials: true, withXSRFToken: true }).then((res) => {
+                if (res.data.success) {
+                    clearPreview();
+                    queryClient.invalidateQueries({ queryKey: [`messages-${activeChat?.id}`] });
+                }
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
     return (
         <>
             <Navbar />
@@ -818,14 +877,44 @@ export const Messenger = () => {
                                     }
                                     <form onSubmit={handleSendMessage} className="flex items-center gap-1.5 p-3 sm:gap-2.5 sm:p-4">
                                         <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" disabled={isUploadingImage || isSending} className="hidden" />
-                                        <button
-                                            type="button"
-                                            disabled={isUploadingImage || isSending}
-                                            className="shrink-0 rounded-xl p-2.5 text-gray-400 transition hover:bg-[var(--special-purple)]/10 hover:text-[var(--special-purple)] disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-500"
-                                            title={t('messenger.sendAudio')}
-                                        >
-                                            <Mic className="h-5 w-5" />
-                                        </button>
+                                        {isRecording ? (
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-xs font-medium text-red-500 tabular-nums">
+                                                    {duration}s
+                                                </span>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={cancelRecording}
+                                                    className="shrink-0 rounded-xl p-2 text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
+                                                    title={t('messenger.cancelAudio')}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        stopRecording();
+                                                        onSendAudio();
+                                                    }}
+                                                    className="shrink-0 rounded-xl bg-red-500 p-2.5 text-white transition hover:bg-red-600"
+                                                    title={t('messenger.stopAudio')}
+                                                >
+                                                    <Square className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                disabled={isUploadingImage || isSending || Boolean(audioPreview)}
+                                                onClick={() => void startRecording()}
+                                                className="shrink-0 rounded-xl p-2.5 text-gray-400 transition hover:bg-[var(--special-purple)]/10 hover:text-[var(--special-purple)] disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-500"
+                                                title={t('messenger.sendAudio')}
+                                            >
+                                                <Mic className="h-5 w-5" />
+                                            </button>
+                                        )}
                                         <button
                                             type="button"
                                             onClick={() => fileInputRef.current?.click()}

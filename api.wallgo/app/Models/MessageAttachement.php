@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MessageAttachement extends Model
 {
-    protected $table = 'message_attachements';
+    protected $table = 'message_attachments';
 
     protected $fillable = [
         'message_id',

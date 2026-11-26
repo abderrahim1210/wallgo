@@ -79,7 +79,51 @@ class Messages extends Controller
         ], 201);
     }
 
+    public function send_audio(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 401);
+        }
 
+        $user_id = Auth::id();
+        $request->validate([
+            'media_url' => ['required', 'string'],
+            'public_id' => ['nullable', 'string'],
+            'duration' => ['nullable','string'],
+            'conversation_id' => ['required', 'numeric', 'exists:conversations,id']
+        ]);
+
+        $user = User::find($user_id);
+        $conversation = $user->conversations()->whereKey((int) $request->conversation_id)->first();
+
+        if (!$conversation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not a participant in this conversation',
+            ], 403);
+        }
+
+        try {
+            $conversation->medias()->create([
+                'media_url' => $request->media_url,
+                'public_id' => $request->public_id ?? null,
+                'duration' => $request->duration
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Audio sent successfully'
+            ],201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed : ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function messages(Request $request)
     {

@@ -624,7 +624,8 @@
     "themeUpdateFailed": "Could not update the theme.",
     "previewImage": "Image preview",
     "removeImage": "Remove image",
-    "typing":"Typing"
+    "typing":"Typing",
+    "sendAudio":"Send Audio"
   },
   "pageTitles": {
     "myPosts": "WallGo: My Posts",
