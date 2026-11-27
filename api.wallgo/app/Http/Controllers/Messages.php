@@ -92,7 +92,7 @@ class Messages extends Controller
         $request->validate([
             'media_url' => ['required', 'string'],
             'public_id' => ['nullable', 'string'],
-            'duration' => ['nullable','string'],
+            'duration' => ['nullable', 'string'],
             'conversation_id' => ['required', 'numeric', 'exists:conversations,id']
         ]);
 
@@ -107,7 +107,12 @@ class Messages extends Controller
         }
 
         try {
-            $conversation->medias()->create([
+            $message = $conversation->messages()->create([
+                'sender_id' => $user->id,
+                'content' => '',
+                'is_read' => false,
+            ]);
+            $message->medias()->create([
                 'media_url' => $request->media_url,
                 'public_id' => $request->public_id ?? null,
                 'duration' => $request->duration
@@ -116,7 +121,7 @@ class Messages extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Audio sent successfully'
-            ],201);
+            ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

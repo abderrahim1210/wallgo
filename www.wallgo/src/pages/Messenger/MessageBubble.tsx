@@ -13,6 +13,7 @@ import { Report } from '../../components/Report';
 import { Tooltip } from '../../templates/Tooltip';
 import useMoment from '../../hooks/useMoment';
 import { MessageImageGallery, type MessageAttachment } from './MessageImageGallery';
+import { VoiceMessage } from './VoiceMessage';
 
 type RepliedMessagePreview = {
     id: number;
@@ -191,6 +192,8 @@ export const MessageBubble = ({ message, attachmentAlt, onReply, onJumpToMessage
 
     const repliedId = Number(message?.message_to_reply?.id);
 
+    const audio = message?.attachments?.find(a => a.type === 'audio' && a.message_id === message?.id) ?? null;
+    const isMine = message?.sender === 'me' ? true : false;
     return (
         <div className='relative' data-message-id={message?.id}>
             {
@@ -214,6 +217,7 @@ export const MessageBubble = ({ message, attachmentAlt, onReply, onJumpToMessage
                             <MessageImageGallery attachments={attachments} attachmentAlt={attachmentAlt} />
                         )
                     }
+
                     {message.message_to_reply && (
                         <button
                             type='button'
@@ -254,15 +258,18 @@ export const MessageBubble = ({ message, attachmentAlt, onReply, onJumpToMessage
                                     </button>
                                 </Tooltip>
                             </div>
-                        </> :
-                        (!attachments.length) ? <p className="break-words whitespace-pre-wrap px-4 py-2.5 [overflow-wrap:anywhere]">{message.content}</p> :
-                            <div>
-                                {message.content && (
-                                    <p className="break-words whitespace-pre-wrap px-2.5 py-2 [overflow-wrap:anywhere]">
-                                        {message.content}
-                                    </p>
-                                )}
-                            </div>}
+                        </> : audio ? (
+                            <VoiceMessage src={audio?.media_url} duration={audio?.duration} isMine={isMine}  />
+
+                        ) :
+                            (!attachments.length) ? <p className="break-words whitespace-pre-wrap px-4 py-2.5 [overflow-wrap:anywhere]">{message.content}</p> :
+                                <div>
+                                    {message.content && (
+                                        <p className="break-words whitespace-pre-wrap px-2.5 py-2 [overflow-wrap:anywhere]">
+                                            {message.content}
+                                        </p>
+                                    )}
+                                </div>}
                     <div className={`flex items-center justify-end gap-1.5 px-3 pb-2 text-[10px] ${message.sender === 'me' ? 'text-white/75' : 'text-gray-400 dark:text-gray-500'}`}>
                         {
                             message?.edited && (
@@ -288,7 +295,6 @@ export const MessageBubble = ({ message, attachmentAlt, onReply, onJumpToMessage
                     />
                 </div>
             )}
-            {/* <button className=''><Reply /></button> */}
         </div>
     )
 };

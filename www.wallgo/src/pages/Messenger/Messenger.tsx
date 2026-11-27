@@ -562,7 +562,7 @@ export const Messenger = () => {
             const publicId = resCloud.data.public_id;
 
             const formData = new FormData();
-            formData.append('audio_url', mediaUrl);
+            formData.append('media_url', mediaUrl);
             formData.append('public_id', publicId);
             formData.append('duration', String(audioPreview.duration));
             formData.append('conversation_id', String(activeChat?.id));
@@ -633,7 +633,7 @@ export const Messenger = () => {
                                     active={activeChat?.id === conversation?.id}
                                     yesterdayLabel={t('messenger.yesterday')}
                                     startConversationLabel={t('messenger.startConversation')}
-                                    imageMessageLabel={t('messenger.imageMessage', { count: conversation?.latest_message?.medias_count ?? '' })}
+                                    imageMessageLabel={t('messenger.attachments', { count: conversation?.latest_message?.medias_count ?? '' })}
                                     onSelect={handleSelectChat}
                                     m={m}
                                     handleOpenConversationMenu={handleOpenConversationMenu}
@@ -685,15 +685,6 @@ export const Messenger = () => {
                                         >
                                             <Phone className="h-4.5 w-4.5" />
                                         </button>
-                                        {/* <button
-                                            type="button"
-                                            onClick={() => showNotify(t('messenger.startingVideoCall', { name: activeChat?.user?.name }))}
-                                            className="rounded-xl p-2.5 transition cursor-pointer hover:bg-[var(--special-purple)]/10 hover:text-[var(--special-purple)]"
-                                            title={t('messenger.videoCall')}
-                                            aria-label={t('messenger.videoCall')}
-                                        >
-                                            <Video className="h-4.5 w-4.5" />
-                                        </button> */}
                                         <button
                                             type="button"
                                             onClick={() => setShowChatInfo(!showChatInfo)}
@@ -896,7 +887,6 @@ export const Messenger = () => {
                                                     type="button"
                                                     onClick={() => {
                                                         stopRecording();
-                                                        onSendAudio();
                                                     }}
                                                     className="shrink-0 rounded-xl bg-red-500 p-2.5 text-white transition hover:bg-red-600"
                                                     title={t('messenger.stopAudio')}
@@ -914,6 +904,30 @@ export const Messenger = () => {
                                             >
                                                 <Mic className="h-5 w-5" />
                                             </button>
+                                        )}
+                                        {!isRecording && audioPreview && (
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-xs tabular-nums text-gray-500">
+                                                    {audioPreview.duration}s
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={clearPreview}
+                                                    className="shrink-0 rounded-xl p-2 text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
+                                                    title={t('messenger.cancelAudio')}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={onSendAudio}
+                                                    disabled={isSending}
+                                                    className="shrink-0 rounded-xl bg-[var(--special-purple)] p-2.5 text-white transition disabled:opacity-50"
+                                                    title={t('messenger.send')}
+                                                >
+                                                    <Send className="h-4 w-4" />
+                                                </button>
+                                            </div>
                                         )}
                                         <button
                                             type="button"

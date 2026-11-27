@@ -571,7 +571,7 @@
     "send": "إرسال",
     "yesterday": "أمس",
     "startConversation": "ابدأ محادثة",
-    "imageMessage": "صورة",
+    "attachments": "{{count}} مرفقات",
     "noMessages": "لا توجد رسائل بعد. أرسل رسالة لبدء المحادثة!",
     "noConversations": "لا توجد محادثات بعد.",
     "noSearchResults": "لا توجد محادثات تطابق البحث.",
@@ -630,7 +630,10 @@
     "previewImage": "معاينة الصورة",
     "removeImage": "إزالة الصورة",
     "typing":"يكتب",
-    "sendAudio":"ارسال ملف صوتي"
+    "sendAudio":"ارسال ملف صوتي",
+    "pause":"ايقاف",
+    "play":"تشغيل",
+    "voice":"ملف صوتي"
   },
   "pageTitles": {
     "myPosts": "WallGo: منشوراتي",

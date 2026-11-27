@@ -8,6 +8,8 @@ export type MessageAttachment = {
     message_id: number;
     position: number;
     public_id: string;
+    type?: 'image' | 'audio';
+    duration?: number;
     updated_at: string;
 };
 

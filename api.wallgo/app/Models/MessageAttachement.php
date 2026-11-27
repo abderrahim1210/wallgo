@@ -12,7 +12,9 @@ class MessageAttachement extends Model
         'message_id',
         'media_url',
         'public_id',
-        'position'
+        'position',
+        'duration',
+        'type'
     ];
 
     public function message()

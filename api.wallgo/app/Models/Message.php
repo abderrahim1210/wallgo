@@ -14,7 +14,7 @@ class Message extends Model
         'content',
         'is_read',
         'edited',
-        'reply_to'
+        'reply_to',
     ];
 
     protected $casts = [

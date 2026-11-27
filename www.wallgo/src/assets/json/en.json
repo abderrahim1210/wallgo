@@ -572,7 +572,7 @@
     "send": "Send",
     "yesterday": "Yesterday",
     "startConversation": "Start a conversation",
-    "imageMessage": "{{count}} Photo",
+    "attachments": "{{count}} Attachments",
     "noMessages": "No messages yet. Send a message to start the conversation!",
     "noConversations": "No conversations yet.",
     "noSearchResults": "No conversations match your search.",
@@ -625,7 +625,10 @@
     "previewImage": "Image preview",
     "removeImage": "Remove image",
     "typing":"Typing",
-    "sendAudio":"Send Audio"
+    "sendAudio":"Send Audio",
+    "pause":"Pause",
+    "play":"Play",
+    "voice":"Voice"
   },
   "pageTitles": {
     "myPosts": "WallGo: My Posts",
